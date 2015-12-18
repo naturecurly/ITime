@@ -19,6 +19,9 @@ public class MenuFragment extends Fragment {
     private ImageView mSettings;
     private View mMenu;
 
+    private Fragment mMeetingFragment;
+    private Fragment mCalendarFragment;
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 
@@ -26,9 +29,11 @@ public class MenuFragment extends Fragment {
         MenuListener menuListener = new MenuListener();
 
         mCalendar = (ImageView) mMenu.findViewById(R.id.calendar_button);
+        mCalendarFragment = new CalendarFragment();
         mCalendar.setOnClickListener(menuListener);
 
         mMeeting = (ImageView) mMenu.findViewById(R.id.meeting_button);
+        mMeetingFragment = new MeetingFragment();
         mMeeting.setOnClickListener(menuListener);
 
         mInbox = (ImageView) mMenu.findViewById(R.id.mail_button);
@@ -45,16 +50,13 @@ public class MenuFragment extends Fragment {
         public void onClick(View v) {
             switch (v.getId()) {
                 case R.id.calendar_button:
-                    Fragment calendarFragment = new CalendarFragment();
                     getFragmentManager().beginTransaction()
-                            .replace(R.id.app_body, calendarFragment)
+                            .replace(R.id.app_body, mCalendarFragment)
                             .commit();
-
                     break;
                 case R.id.meeting_button:
-                    Fragment meetingFragment = new MeetingFragment();
                     getFragmentManager().beginTransaction()
-                            .replace(R.id.app_body, meetingFragment)
+                            .replace(R.id.app_body, mMeetingFragment)
                             .commit();
                     break;
                 case R.id.mail_button:

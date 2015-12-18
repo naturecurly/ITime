@@ -16,12 +16,11 @@ import com.itime.team.itime.views.adapters.CalendarPagerAdapter;
  * Created by leveyleonhardt on 12/17/15.
  */
 public class CalendarFragment extends Fragment {
+
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_calendar, container, false);
-
-
         return view;
     }
 
@@ -34,5 +33,12 @@ public class CalendarFragment extends Fragment {
         viewPager.setAdapter(pagerAdapter);
     }
 
+    @Override
+    public void onResume() {
+        super.onResume();
+        ViewPager viewPager = (ViewPager) getActivity().findViewById(R.id.pager);
+        PagerAdapter pagerAdapter = new CalendarPagerAdapter(getFragmentManager());
+        viewPager.setAdapter(pagerAdapter);
+    }
 
 }

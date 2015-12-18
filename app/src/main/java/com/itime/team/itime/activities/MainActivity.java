@@ -1,22 +1,17 @@
 package com.itime.team.itime.activities;
 
 import android.os.Bundle;
-import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
 
 import com.itime.team.itime.R;
-import com.itime.team.itime.fragments.CalendarViewFragment;
-import com.itime.team.itime.fragments.MeetingFragment;
+import com.itime.team.itime.fragments.CalendarFragment;
 import com.itime.team.itime.fragments.MenuFragment;
-import com.itime.team.itime.views.adapters.CalendarPagerAdapter;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -32,7 +27,7 @@ public class MainActivity extends AppCompatActivity {
         setSupportActionBar(toolbar);
 
         FragmentManager fm = getSupportFragmentManager();
-        fm.beginTransaction().add(R.id.app_body, new CalendarViewFragment()).commit();
+        fm.beginTransaction().add(R.id.app_body, new CalendarFragment()).commit();
         fm.beginTransaction().add(R.id.app_foot, new MenuFragment()).commit();
 
     }

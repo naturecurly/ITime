@@ -20,7 +20,7 @@ public class MeetingDurationDialogFragment extends DialogFragment implements Num
     private NumberPicker minPicker;
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        durationDialog = inflater.inflate(R.layout.meeting_duration_dialog,null);
+        durationDialog = inflater.inflate(R.layout.fragment_meeting_duration_dialog,null);
         hourPicker = (NumberPicker) durationDialog.findViewById(R.id.meeting_hourpicker);
         minPicker = (NumberPicker) durationDialog.findViewById(R.id.meeting_minuteicker);
         init();

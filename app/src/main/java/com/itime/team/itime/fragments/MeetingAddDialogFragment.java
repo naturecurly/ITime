@@ -22,7 +22,7 @@ public class MeetingAddDialogFragment extends DialogFragment {
     private View addDialog;
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        addDialog = inflater.inflate(R.layout.meeting_adddialog,container);
+        addDialog = inflater.inflate(R.layout.fragment_meeting_adddialog,container);
         listView = (ListView) addDialog.findViewById(R.id.meeting_add_listview);
         listItem = new ArrayList<HashMap<String, Object>>();
         getDialog().setTitle("Search");
@@ -62,7 +62,7 @@ public class MeetingAddDialogFragment extends DialogFragment {
         listItem.add(map);
 
         SimpleAdapter listItemAdapter = new SimpleAdapter(getActivity(),listItem,
-                R.layout.meeting_adddoalog_listview,
+                R.layout.fragment_meeting_adddoalog_listview,
                 new String[] {"ItemImage","ItemText"},
                 new int[] {R.id.meeting_add_image,R.id.meeting_add_text}
         );

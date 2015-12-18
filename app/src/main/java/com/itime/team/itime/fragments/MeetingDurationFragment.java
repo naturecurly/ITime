@@ -21,7 +21,7 @@ public class MeetingDurationFragment extends Fragment {
     private ListView listView;
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        view = inflater.inflate(R.layout.meeting_duration,null);
+        view = inflater.inflate(R.layout.fragment_meeting_duration,null);
         listView = (ListView) view.findViewById(R.id.meeting_duration_listview);
         listView.setAdapter(new ArrayAdapter<String>(getActivity(),
                 android.R.layout.simple_expandable_list_item_1,initListview()));

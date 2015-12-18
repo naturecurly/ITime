@@ -45,7 +45,7 @@ public class MenuFragment extends Fragment {
         public void onClick(View v) {
             switch (v.getId()) {
                 case R.id.calendar_button:
-                    Fragment calendarFragment = new CalendarViewFragment();
+                    Fragment calendarFragment = new CalendarFragment();
                     getFragmentManager().beginTransaction()
                             .replace(R.id.app_body, calendarFragment)
                             .commit();

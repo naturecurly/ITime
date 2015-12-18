@@ -10,7 +10,7 @@ import android.support.v4.app.FragmentStatePagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.view.View;
 
-import com.itime.team.itime.fragments.CalendarFragment;
+import com.itime.team.itime.fragments.CalendarBodyFragment;
 
 public class CalendarViewPagerAdapter extends FragmentStatePagerAdapter {
 
@@ -54,7 +54,7 @@ public class CalendarViewPagerAdapter extends FragmentStatePagerAdapter {
 
     @Override
     public Fragment getItem(int position) {
-        return new CalendarFragment();
+        return new CalendarBodyFragment();
     }
 
     @Override

@@ -62,9 +62,9 @@ public class MeetingFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         this.inflater = inflater;
-        mmeeting = inflater.inflate(R.layout.meeting_fragment,null);
-        timeSelection = inflater.inflate(R.layout.meeting_timeselection, null);
-        timeSelection2 = inflater.inflate(R.layout.meeting_timeselection, null);
+        mmeeting = inflater.inflate(R.layout.fragment_meeting,null);
+        timeSelection = inflater.inflate(R.layout.fragment_meeting_timeselection, null);
+        timeSelection2 = inflater.inflate(R.layout.fragment_meeting_timeselection, null);
         initData();
         mExpandableList = (CustomExpandableListView) mmeeting.findViewById(R.id.meeting_expandablelist);
         mExpandableList.setAdapter(new MyAdapter());
@@ -138,7 +138,7 @@ public class MeetingFragment extends Fragment {
             listItem.add(map);
         }
         SimpleAdapter listItemAdapter = new SimpleAdapter(getActivity(),listItem,
-                R.layout.meeting_listview,
+                R.layout.fragment_meeting_listview,
                 new String[] {"ItemImage","ItemID", "ItemName", "ItemInvite"},
                 new int[] {R.id.meeting_profile,R.id.meeting_id,R.id.meeting_name,R.id.meeting_invite}
         );

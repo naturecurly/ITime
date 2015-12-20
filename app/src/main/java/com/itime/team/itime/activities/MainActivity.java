@@ -1,7 +1,6 @@
 package com.itime.team.itime.activities;
 
 import android.os.Bundle;
-import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTabHost;
 import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
@@ -18,6 +17,7 @@ import android.widget.TextView;
 import com.itime.team.itime.R;
 import com.itime.team.itime.fragments.CalendarFragment;
 import com.itime.team.itime.fragments.MeetingFragment;
+import com.itime.team.itime.fragments.SettingsFragment;
 //import com.itime.team.itime.fragments.MenuFragment;
 
 public class MainActivity extends AppCompatActivity {
@@ -26,9 +26,10 @@ public class MainActivity extends AppCompatActivity {
     private ViewPager mPager;
     private PagerAdapter mAdapter;
     private FragmentTabHost tabHost;
-    private Class fragmentArray[] = {CalendarFragment.class, MeetingFragment.class};
-    private int mImageViewArray[] = {R.drawable.ic_date_range_black_48px, R.drawable.ic_group_work_black_48px};
-    private String mTextViewArray[] = {"Calendar", "Meeting"};
+    private Class fragmentArray[] = {CalendarFragment.class, MeetingFragment.class, SettingsFragment.class};
+    private int mImageViewArray[] = {R.drawable.ic_date_range_black_48px, R.drawable.ic_group_work_black_48px,
+            R.drawable.ic_group_work_black_48px};
+    private String mTextViewArray[] = {"Calendar", "Meeting","Settings"};
     private LayoutInflater layoutInflater;
 
     @Override

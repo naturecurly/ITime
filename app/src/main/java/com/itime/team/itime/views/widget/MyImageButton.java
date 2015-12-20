@@ -43,6 +43,6 @@ public class MyImageButton extends LinearLayout {
         addView(mImage);
 
         addView(mText);
-
     }
+
 }

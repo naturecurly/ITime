@@ -10,4 +10,7 @@
     <string name="meeting_duration">Duration</string>
     <string name="Save">Save</string>
     <string name="Cancel">Cancel</string>
+    <string name="Logout">Log Out</string>
+    <string name="settings_preference">Meeting Preferences</string>
+    <string name="settings_import">Import Calendars</string>
 </resources>

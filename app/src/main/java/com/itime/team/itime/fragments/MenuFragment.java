@@ -1,7 +1,7 @@
 package com.itime.team.itime.fragments;
 
-import android.support.v4.app.Fragment;
 import android.os.Bundle;
+import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -21,6 +21,7 @@ public class MenuFragment extends Fragment {
 
     private Fragment mMeetingFragment;
     private Fragment mCalendarFragment;
+    private Fragment mSettingsFragment;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -40,6 +41,7 @@ public class MenuFragment extends Fragment {
         mInbox.setOnClickListener(menuListener);
 
         mSettings = (ImageView) mMenu.findViewById(R.id.setting_button);
+        mSettingsFragment = new SettingsFragment();
         mSettings.setOnClickListener(menuListener);
 
         return mMenu;
@@ -62,6 +64,9 @@ public class MenuFragment extends Fragment {
                 case R.id.mail_button:
                     break;
                 case R.id.setting_button:
+                    getFragmentManager().beginTransaction()
+                            .replace(R.id.app_body, mSettingsFragment)
+                            .commit();
                     break;
                 default:
 

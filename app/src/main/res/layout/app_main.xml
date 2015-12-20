@@ -22,24 +22,56 @@
 
     </android.support.design.widget.AppBarLayout>
 
-
-    <LinearLayout
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:id="@+id/app_body"
-        android:orientation="horizontal"
-        app:layout_behavior="@string/appbar_scrolling_view_behavior">
-
-    </LinearLayout>
-
-
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:id="@+id/app_foot"
-        android:orientation="horizontal"
-        android:layout_gravity="bottom">
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
+        <LinearLayout
+            android:id="@+id/realtab_content"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:orientation="vertical" />
+
+        <android.support.v4.app.FragmentTabHost
+            android:id="@+id/tab_host"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <LinearLayout
+                android:id="@+id/tab_content"
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:orientation="vertical" />
+        </android.support.v4.app.FragmentTabHost>
     </LinearLayout>
+    <!--  <LinearLayout
+          android:layout_width="match_parent"
+          android:layout_height="match_parent"
+          android:orientation="vertical"
 
+          app:layout_behavior="@string/appbar_scrolling_view_behavior">
+
+          <LinearLayout
+              android:id="@+id/app_body"
+              android:layout_width="match_parent"
+              android:layout_height="wrap_content"
+              android:layout_weight="1"
+              android:orientation="horizontal">
+
+          </LinearLayout>
+
+
+          <LinearLayout
+              android:id="@+id/app_foot"
+              android:layout_width="match_parent"
+              android:layout_height="wrap_content"
+              android:layout_gravity="bottom"
+              android:orientation="horizontal">
+
+          </LinearLayout>
+
+      </LinearLayout>-->
 </android.support.design.widget.CoordinatorLayout>

@@ -14,6 +14,7 @@ import android.graphics.Paint;
 
 import android.util.AttributeSet;
 import android.util.Log;
+import android.view.MotionEvent;
 import android.view.View;
 
 import com.itime.team.itime.R;
@@ -29,6 +30,7 @@ public class CalendarView extends View {
     private static final int TOTAL_COL = 7;
     private static final int TOTAL_ROW = 6;
 
+    private int isDateSelected = 0;
     private Paint mCirclePaint;
     private Paint mTextPaint;
     private Paint mGridPaint;
@@ -118,6 +120,34 @@ public class CalendarView extends View {
         mViewHight = h;
         mCellSpace = Math.min((float) mViewHight / TOTAL_ROW, (float) mViewWidth / TOTAL_COL);
         mTextPaint.setTextSize(mCellSpace / 3);
+    }
+
+
+    @Override
+    public boolean onTouchEvent(MotionEvent event) {
+        int action = event.getActionMasked();
+        float x = 0;
+        float y = 0;
+        switch (action) {
+            case MotionEvent.ACTION_DOWN:
+                x = event.getX();
+                y = event.getY();
+                //Log.i("TTTT", x + " " + y);
+                //performClick();
+
+                return true;
+
+            case MotionEvent.ACTION_UP:
+                float upX = event.getX();
+                float upY = event.getY();
+                Log.i("TTTT", upX + "+" + upY + " " + mCellSpace);
+                if ((Math.abs(upX - x) < mCellSpace) && (Math.abs(upY - y) < mCellSpace)) {
+                    Log.i("TTTT", x + "+" + y);
+                }
+
+                return true;
+        }
+        return super.onTouchEvent(event);
     }
 
 
@@ -269,7 +299,7 @@ public class CalendarView extends View {
         int height = measure(heightMeasureSpec);
         int d = Math.min(width, height);
         mCellSpace = (float) MeasureSpec.getSize(widthMeasureSpec) / TOTAL_COL;
-        Log.i("TTTT", mCellSpace + " " + width + " " + height);
+        //Log.i("TTTT", mCellSpace + " " + width + " " + height);
         setMeasuredDimension(d, d);
     }
 

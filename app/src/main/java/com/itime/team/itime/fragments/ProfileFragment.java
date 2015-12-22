@@ -6,6 +6,7 @@ import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.LinearLayout;
 
 import com.itime.team.itime.R;
@@ -18,6 +19,7 @@ public class ProfileFragment extends Fragment {
     private View profile;
     private LinearLayout mProfilePhotoLayout;
     private ImageButton_Text_Image mPhoto;
+    private Button mBack;
 
     @Nullable
     @Override
@@ -31,5 +33,15 @@ public class ProfileFragment extends Fragment {
         mProfilePhotoLayout = (LinearLayout) profile.findViewById(R.id.profile_photo);
         mPhoto = new ImageButton_Text_Image(getActivity(),R.drawable.facebook,R.string.profile_photo);
         mProfilePhotoLayout.addView(mPhoto);
+
+        mBack = (Button) profile.findViewById(R.id.profile_back);
+        mBack.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                getFragmentManager().beginTransaction()
+                        .replace(R.id.realtab_content, new SettingsFragment())
+                        .commit();
+            }
+        });
     }
 }

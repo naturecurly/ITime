@@ -103,4 +103,9 @@ public class DateUtil {
         }
         return date;
     }
+
+    public static int analysePosition(float x, float mCellSpace) {
+        int dateX = (int) Math.floor(x / mCellSpace);
+        return dateX;
+    }
 }

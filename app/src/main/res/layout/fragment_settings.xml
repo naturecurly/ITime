@@ -2,32 +2,24 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:orientation="vertical" android:layout_width="match_parent"
     android:layout_height="match_parent">
-    <com.itime.team.itime.views.widget.MyImageButton
-        android:layout_width="match_parent"
+
+    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        android:orientation="vertical" android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:src="@mipmap/ic_launcher"
-        android:background="#00000000"
-        android:text="Hello.."
         android:id="@+id/setting_name">
-    </com.itime.team.itime.views.widget.MyImageButton>
+    </LinearLayout>
 
-    <com.itime.team.itime.views.widget.MyImageButton
-        android:layout_width="match_parent"
+    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        android:orientation="vertical" android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:src="@mipmap/ic_launcher"
-        android:background="#00000000"
-        android:text="@string/settings_preference"
         android:id="@+id/setting_preferences">
-    </com.itime.team.itime.views.widget.MyImageButton>
+    </LinearLayout>
 
-    <com.itime.team.itime.views.widget.MyImageButton
-        android:layout_width="match_parent"
+    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        android:orientation="vertical" android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:src="@mipmap/ic_launcher"
-        android:background="#00000000"
-        android:text="@string/settings_import"
         android:id="@+id/setting_import">
-    </com.itime.team.itime.views.widget.MyImageButton>
+    </LinearLayout>
 
     <Button
         android:layout_width="match_parent"

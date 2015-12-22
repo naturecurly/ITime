@@ -13,4 +13,5 @@
     <string name="Logout">Log Out</string>
     <string name="settings_preference">Meeting Preferences</string>
     <string name="settings_import">Import Calendars</string>
+    <string name="profile_photo">Profile Photo</string>
 </resources>

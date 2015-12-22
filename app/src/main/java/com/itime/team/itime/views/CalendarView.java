@@ -14,6 +14,7 @@ import android.graphics.Paint;
 
 import android.util.AttributeSet;
 import android.util.Log;
+import android.view.MotionEvent;
 import android.view.View;
 
 import com.itime.team.itime.R;
@@ -29,7 +30,10 @@ public class CalendarView extends View {
     private static final int TOTAL_COL = 7;
     private static final int TOTAL_ROW = 6;
 
+    private int isDateSelected = 0;
     private Paint mCirclePaint;
+    private Paint mSelectedCirclePaint;
+
     private Paint mTextPaint;
     private Paint mGridPaint;
     private Paint mLinePaint;
@@ -45,6 +49,10 @@ public class CalendarView extends View {
     protected int defaultStyle = MONTH_STYLE;
     private static final int WEEK = 7;
 
+    float downX = 0;
+    float downY = 0;
+    float upX = 0;
+    float upY = 0;
 
     public CalendarView(Context context, AttributeSet attrs, int defStyle) {
         super(context, attrs, defStyle);
@@ -77,6 +85,11 @@ public class CalendarView extends View {
             if (rows[i] != null)
                 rows[i].drawCells(canvas, i);
         }
+        if (isDateSelected == 1) {
+            int dateX = analysePosition(upX);
+            int dateY = analysePosition(upY);
+            canvas.drawCircle(dateX * mCellSpace + mCellSpace / 2, dateY * mCellSpace + mCellSpace / 2, mCellSpace / 3, mSelectedCirclePaint);
+        }
     }
 
     private void init(Context context) {
@@ -85,9 +98,14 @@ public class CalendarView extends View {
         mTextPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
         mTextPaint.setTextAlign(Paint.Align.CENTER);
         mCirclePaint = new Paint(Paint.ANTI_ALIAS_FLAG);
-        mCirclePaint.setStyle(Paint.Style.STROKE);
+        mCirclePaint.setStyle(Paint.Style.FILL);
+        // mCirclePaint.setColor(Color.parseColor("#FF559CFF"));
 
-        mCirclePaint.setColor(Color.parseColor("#F24949"));
+        mSelectedCirclePaint = new Paint(Paint.ANTI_ALIAS_FLAG);
+        mSelectedCirclePaint.setStyle(Paint.Style.FILL);
+        mSelectedCirclePaint.setColor(Color.parseColor("#FF559CFF"));
+        mSelectedCirclePaint.setAlpha(80);
+
         mGridPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
         mGridPaint.setStyle(Paint.Style.STROKE);
         mLinePaint = new Paint((Paint.ANTI_ALIAS_FLAG));
@@ -118,6 +136,40 @@ public class CalendarView extends View {
         mViewHight = h;
         mCellSpace = Math.min((float) mViewHight / TOTAL_ROW, (float) mViewWidth / TOTAL_COL);
         mTextPaint.setTextSize(mCellSpace / 3);
+    }
+
+
+    @Override
+    public boolean onTouchEvent(MotionEvent event) {
+        int action = event.getActionMasked();
+
+        switch (action) {
+            case MotionEvent.ACTION_DOWN:
+                downX = event.getX();
+                downY = event.getY();
+                // Log.i("TTTT", x + " " + y);
+                //performClick();
+
+                return true;
+
+            case MotionEvent.ACTION_UP:
+                upX = event.getX();
+                upY = event.getY();
+                //Log.i("TTTT", x + "+" + y);
+                if ((Math.abs(upX - downX) < mCellSpace) && (Math.abs(upY - downY) < mCellSpace)) {
+                    Log.i("TTTT", upX + "+" + upY);
+                    isDateSelected = 1;
+                    invalidate();
+                }
+
+                return true;
+        }
+        return super.onTouchEvent(event);
+    }
+
+    public int analysePosition(float x) {
+        int dateX = (int) Math.floor(x / mCellSpace);
+        return dateX;
     }
 
 
@@ -269,7 +321,7 @@ public class CalendarView extends View {
         int height = measure(heightMeasureSpec);
         int d = Math.min(width, height);
         mCellSpace = (float) MeasureSpec.getSize(widthMeasureSpec) / TOTAL_COL;
-        Log.i("TTTT", mCellSpace + " " + width + " " + height);
+        //Log.i("TTTT", mCellSpace + " " + width + " " + height);
         setMeasuredDimension(d, d);
     }
 

@@ -18,28 +18,28 @@ import com.itime.team.itime.views.adapters.CalendarPagerAdapter;
  */
 public class CalendarFragment extends Fragment {
 
+    private ViewPager viewPager;
+    private PagerAdapter pagerAdapter;
+
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_calendar, container, false);
+        viewPager = (ViewPager) view.findViewById(R.id.pager);
+        pagerAdapter = new CalendarPagerAdapter(getChildFragmentManager());
+        viewPager.setAdapter(pagerAdapter);
+        //setRetainInstance(true);
         return view;
     }
 
-    @Nullable
-    @Override
-    public void onActivityCreated(Bundle savedInstanceState) {
-        super.onActivityCreated(savedInstanceState);
-        ViewPager viewPager = (ViewPager) getActivity().findViewById(R.id.pager);
-        PagerAdapter pagerAdapter = new CalendarPagerAdapter(getFragmentManager());
-        viewPager.setAdapter(pagerAdapter);
-    }
 
     @Override
     public void onResume() {
         super.onResume();
-        ViewPager viewPager = (ViewPager) getActivity().findViewById(R.id.pager);
-        PagerAdapter pagerAdapter = new CalendarPagerAdapter(getFragmentManager());
-        viewPager.setAdapter(pagerAdapter);
+        //viewPager = (ViewPager) getActivity().findViewById(R.id.pager);
+        if (pagerAdapter == null) {
+            pagerAdapter = new CalendarPagerAdapter(getChildFragmentManager());
+            viewPager.setAdapter(pagerAdapter);
+        }
     }
-
 }

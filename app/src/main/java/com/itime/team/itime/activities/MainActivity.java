@@ -28,8 +28,8 @@ public class MainActivity extends AppCompatActivity {
     private FragmentTabHost tabHost;
     private Class fragmentArray[] = {CalendarFragment.class, MeetingFragment.class, SettingsFragment.class};
     private int mImageViewArray[] = {R.drawable.ic_date_range_black_48px, R.drawable.ic_group_work_black_48px,
-            R.drawable.ic_group_work_black_48px};
-    private String mTextViewArray[] = {"Calendar", "Meeting","Settings"};
+            R.drawable.ic_menu_manage};
+    private String mTextViewArray[] = {"Calendar", "Meeting", "Settings"};
     private LayoutInflater layoutInflater;
 
     @Override
@@ -43,7 +43,7 @@ public class MainActivity extends AppCompatActivity {
         tabHost.setup(this, getSupportFragmentManager(), R.id.realtab_content);
         for (int i = 0; i < fragmentArray.length; i++) {
             TabHost.TabSpec tabSpec = tabHost.newTabSpec(mTextViewArray[i]).setIndicator(getTabItemView(i));
-            tabHost.addTab(tabSpec,fragmentArray[i],null);
+            tabHost.addTab(tabSpec, fragmentArray[i], null);
         }
 //        FragmentManager fm = getSupportFragmentManager();
 //        fm.beginTransaction().add(R.id.app_body, new CalendarFragment()).commit();

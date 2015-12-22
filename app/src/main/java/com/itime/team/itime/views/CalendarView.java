@@ -133,14 +133,15 @@ public class CalendarView extends View {
         }
     }
 
-    @Override
-    protected void onSizeChanged(int w, int h, int oldw, int oldh) {
-        super.onSizeChanged(w, h, oldw, oldh);
-        mViewWidth = w;
-        mViewHight = h;
-        mCellSpace = Math.min((float) mViewHight / TOTAL_ROW, (float) mViewWidth / TOTAL_COL);
-        mTextPaint.setTextSize(mCellSpace / 3);
-    }
+//    @Override
+//    protected void onSizeChanged(int w, int h, int oldw, int oldh) {
+//        super.onSizeChanged(w, h, oldw, oldh);
+//        mViewWidth = w;
+//        mViewHight = h;
+//       // mCellSpace = Math.min((float) mViewHight / TOTAL_ROW, (float) mViewWidth / TOTAL_COL);
+//        //mCellSpace = mViewWidth / TOTAL_COL;
+//        //mTextPaint.setTextSize(mCellSpace / 3);
+//    }
 
 
     @Override
@@ -176,7 +177,7 @@ public class CalendarView extends View {
 //    }
 
 
-    class Row {
+    public class Row {
         public Cell[] cells = new Cell[TOTAL_COL];
 
         public void drawCells(Canvas canvas, int j) {
@@ -186,9 +187,13 @@ public class CalendarView extends View {
             }
 
         }
+
+        public Cell[] getCells() {
+            return cells;
+        }
     }
 
-    class Cell {
+    public class Cell {
         public String text;
         public State state;
 
@@ -235,9 +240,17 @@ public class CalendarView extends View {
                     (j + 1) * mCellSpace - mCellSpace / 2 - (fm.ascent - fm.descent) / 2 - dip2px(context, 2), mTextPaint);
             //canvas.drawLine(i * mCellSpace, j * mCellSpace, (i + 1) * mCellSpace, j * mCellSpace,mLinePaint );
         }
+
+        public String getText() {
+            return text;
+        }
+
+        public State getState() {
+            return state;
+        }
     }
 
-    enum State {
+    public enum State {
         CURRENT_MONTH_DAY, PAST_MONTH_DAY, NEXT_MONTH_DAY, TODAY;
     }
 
@@ -323,8 +336,9 @@ public class CalendarView extends View {
         int width = measure(widthMeasureSpec);
         int height = measure(heightMeasureSpec);
         int d = Math.min(width, height);
-        mCellSpace = (float) MeasureSpec.getSize(widthMeasureSpec) / TOTAL_COL;
+        mCellSpace = (float) d / TOTAL_COL;
         //Log.i("TTTT", mCellSpace + " " + width + " " + height);
+        mTextPaint.setTextSize(mCellSpace / 3);
         setMeasuredDimension(d, d);
     }
 
@@ -364,6 +378,10 @@ public class CalendarView extends View {
 
     public int getmShowDay() {
         return mShowDay;
+    }
+
+    public Row[] getRows() {
+        return rows;
     }
 
     public float getmCellSpace() {

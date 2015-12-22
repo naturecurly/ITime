@@ -16,8 +16,10 @@ import android.util.AttributeSet;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
+import android.widget.TextView;
 
 import com.itime.team.itime.R;
+import com.itime.team.itime.listener.OnDateSelectedListener;
 import com.itime.team.itime.utils.DateUtil;
 
 public class CalendarView extends View {
@@ -53,6 +55,7 @@ public class CalendarView extends View {
     float downY = 0;
     float upX = 0;
     float upY = 0;
+    private OnDateSelectedListener listener;
 
     public CalendarView(Context context, AttributeSet attrs, int defStyle) {
         super(context, attrs, defStyle);
@@ -86,9 +89,10 @@ public class CalendarView extends View {
                 rows[i].drawCells(canvas, i);
         }
         if (isDateSelected == 1) {
-            int dateX = analysePosition(upX);
-            int dateY = analysePosition(upY);
+            int dateX = DateUtil.analysePosition(upX, mCellSpace);
+            int dateY = DateUtil.analysePosition(upY, mCellSpace);
             canvas.drawCircle(dateX * mCellSpace + mCellSpace / 2, dateY * mCellSpace + mCellSpace / 2, mCellSpace / 3, mSelectedCirclePaint);
+            mShowDay = 2;
         }
     }
 
@@ -147,8 +151,6 @@ public class CalendarView extends View {
             case MotionEvent.ACTION_DOWN:
                 downX = event.getX();
                 downY = event.getY();
-                // Log.i("TTTT", x + " " + y);
-                //performClick();
 
                 return true;
 
@@ -159,6 +161,7 @@ public class CalendarView extends View {
                 if ((Math.abs(upX - downX) < mCellSpace) && (Math.abs(upY - downY) < mCellSpace)) {
                     Log.i("TTTT", upX + "+" + upY);
                     isDateSelected = 1;
+                    listener.dateSelected(upX, upY);
                     invalidate();
                 }
 
@@ -167,10 +170,10 @@ public class CalendarView extends View {
         return super.onTouchEvent(event);
     }
 
-    public int analysePosition(float x) {
-        int dateX = (int) Math.floor(x / mCellSpace);
-        return dateX;
-    }
+//    public int analysePosition(float x) {
+//        int dateX = (int) Math.floor(x / mCellSpace);
+//        return dateX;
+//    }
 
 
     class Row {
@@ -350,4 +353,25 @@ public class CalendarView extends View {
         }
         return views;
     }
+
+    public int getmShowYear() {
+        return mShowYear;
+    }
+
+    public int getmShowMonth() {
+        return mShowMonth;
+    }
+
+    public int getmShowDay() {
+        return mShowDay;
+    }
+
+    public float getmCellSpace() {
+        return mCellSpace;
+    }
+
+    public void setOnDateSelectedListener(OnDateSelectedListener listener) {
+        this.listener = listener;
+    }
+
 }

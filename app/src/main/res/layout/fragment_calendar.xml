@@ -1,17 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    app:layout_behavior="@string/appbar_scrolling_view_behavior"
+    android:id="@+id/calendar_view"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:id="@+id/calendar_view">
+    app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
     <TableLayout
         android:layout_width="match_parent"
         android:layout_height="20dip"
         android:layout_marginBottom="2dip"
-        android:layout_marginTop="2dip">
+        android:layout_marginTop="2dip"
+        android:layout_weight="0">
 
         <TableRow>
 
@@ -70,7 +71,15 @@
         xmlns:app="http://schemas.android.com/apk/res-auto"
         android:id="@+id/pager"
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="0dp"
+        android:layout_weight="1">
 
     </android.support.v4.view.ViewPager>
+
+    <TextView
+        android:id="@+id/text_display"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_weight="0"
+        android:text="test" />
 </LinearLayout>

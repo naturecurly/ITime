@@ -11,14 +11,12 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Matrix;
 import android.graphics.Paint;
-
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
-import android.widget.TextView;
 
-import com.itime.team.itime.R;
+import com.itime.team.itime.activities.R;
 import com.itime.team.itime.listener.OnDateSelectedListener;
 import com.itime.team.itime.utils.DateUtil;
 

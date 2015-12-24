@@ -1,5 +1,6 @@
 package com.itime.team.itime.fragments;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.util.Log;
@@ -8,7 +9,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
 
-import com.itime.team.itime.R;
+import com.itime.team.itime.activities.ProfileActivity;
+import com.itime.team.itime.activities.R;
 import com.itime.team.itime.views.widget.ImageButton_Image_Text;
 
 /**
@@ -39,9 +41,8 @@ public class SettingsFragment extends Fragment{
         mName.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                getFragmentManager().beginTransaction()
-                        .replace(R.id.realtab_content, mProfileFragment)
-                        .commit();
+                Intent intent = new Intent(getActivity(), ProfileActivity.class);
+                getActivity().startActivity(intent);
             }
         });
 

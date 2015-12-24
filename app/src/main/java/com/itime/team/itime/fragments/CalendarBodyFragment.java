@@ -10,11 +10,10 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
-import com.itime.team.itime.R;
+import com.itime.team.itime.activities.R;
 import com.itime.team.itime.listener.OnDateSelectedListener;
 import com.itime.team.itime.utils.DateUtil;
 import com.itime.team.itime.views.CalendarView;
-import com.itime.team.itime.views.adapters.CalendarPagerAdapter;
 
 /**
  * Created by leveyleonhardt on 12/17/15.

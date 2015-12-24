@@ -8,7 +8,7 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 
-import com.itime.team.itime.R;
+import com.itime.team.itime.activities.R;
 
 import java.util.ArrayList;
 import java.util.List;

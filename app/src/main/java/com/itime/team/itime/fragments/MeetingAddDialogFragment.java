@@ -1,14 +1,14 @@
 package com.itime.team.itime.fragments;
 
-import android.support.v4.app.DialogFragment;
 import android.os.Bundle;
+import android.support.v4.app.DialogFragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ListView;
 import android.widget.SimpleAdapter;
 
-import com.itime.team.itime.R;
+import com.itime.team.itime.activities.R;
 
 import java.util.ArrayList;
 import java.util.HashMap;

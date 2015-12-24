@@ -9,7 +9,7 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.LinearLayout;
 
-import com.itime.team.itime.R;
+import com.itime.team.itime.activities.R;
 import com.itime.team.itime.views.widget.ImageButton_Text_Image;
 
 /**

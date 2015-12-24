@@ -10,7 +10,8 @@ import android.widget.AbsListView;
 import android.widget.Button;
 import android.widget.NumberPicker;
 
-import com.itime.team.itime.R;
+import com.itime.team.itime.activities.R;
+
 
 /**
  * Created by mac on 15/12/18.

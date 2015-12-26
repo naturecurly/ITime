@@ -46,7 +46,7 @@ public class CalendarView extends View {
     private int mShowYear;
     private int mShowMonth;
     private int mShowDay;
-    protected int defaultStyle = MONTH_STYLE;
+    protected int defaultStyle = WEEK_STYLE;
     private static final int WEEK = 7;
 
     float downX = 0;
@@ -81,7 +81,7 @@ public class CalendarView extends View {
     @Override
     protected void onDraw(Canvas canvas) {
         super.onDraw(canvas);
-        fillDate();
+
         for (int i = 0; i < TOTAL_ROW; i++) {
             if (rows[i] != null)
                 rows[i].drawCells(canvas, i);
@@ -129,6 +129,7 @@ public class CalendarView extends View {
             mShowMonth = time[1];
             mShowDay = time[2];
         }
+        fillDate();
     }
 
 //    @Override

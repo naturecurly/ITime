@@ -4,6 +4,7 @@ import android.app.AlertDialog;
 import android.app.DatePickerDialog;
 import android.app.TimePickerDialog;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
@@ -17,6 +18,7 @@ import android.widget.ListView;
 import android.widget.SimpleAdapter;
 import android.widget.TimePicker;
 
+import com.itime.team.itime.activities.PreferenceActivity;
 import com.itime.team.itime.activities.R;
 import com.itime.team.itime.utils.DateUtil;
 
@@ -81,6 +83,14 @@ public class MeetingFragment extends Fragment implements View.OnClickListener{
             public void onClick(View v) {
                 MeetingAddDialogFragment searchDialog = new MeetingAddDialogFragment();
                 searchDialog.show(getFragmentManager(), "searchDialog");
+            }
+        });
+
+        invite.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(getActivity(), PreferenceActivity.class);
+                getActivity().startActivity(intent);
             }
         });
     }
@@ -174,9 +184,9 @@ public class MeetingFragment extends Fragment implements View.OnClickListener{
             datePicker1 = new DatePickerDialog(getActivity(), new DatePickerDialog.OnDateSetListener() {
                 @Override
                 public void onDateSet(DatePicker view, int year, int monthOfYear, int dayOfMonth) {
-                    mStartDate.setText(dayOfMonth + "  " + DateUtil.month[monthOfYear - 1] +  "  " + year);
+                    mStartDate.setText(dayOfMonth + "  " + DateUtil.month[monthOfYear] +  "  " + year);
                     if(mEndDate.getText() == null || mEndDate.getText().equals("")){
-                        mEndDate.setText(dayOfMonth + "  " + DateUtil.month[monthOfYear - 1] +  "  " + year);
+                        mEndDate.setText(dayOfMonth + "  " + DateUtil.month[monthOfYear] +  "  " + year);
                     }
                 }
             },mCalendar.get(Calendar.YEAR), mCalendar.get(Calendar.MONTH), mCalendar.get(Calendar.DAY_OF_MONTH));
@@ -193,7 +203,7 @@ public class MeetingFragment extends Fragment implements View.OnClickListener{
             datePicker2 = new DatePickerDialog(getActivity(), new DatePickerDialog.OnDateSetListener() {
                 @Override
                 public void onDateSet(DatePicker view, int year, int monthOfYear, int dayOfMonth) {
-                    mEndDate.setText(dayOfMonth + "  " + DateUtil.month[monthOfYear - 1] +  "  " + year);
+                    mEndDate.setText(dayOfMonth + "  " + DateUtil.month[monthOfYear] +  "  " + year);
                 }
             },mCalendar.get(Calendar.YEAR), mCalendar.get(Calendar.MONTH), mCalendar.get(Calendar.DAY_OF_MONTH));
             datePicker2.show();

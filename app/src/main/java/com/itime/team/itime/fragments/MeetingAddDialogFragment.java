@@ -2,9 +2,11 @@ package com.itime.team.itime.fragments;
 
 import android.os.Bundle;
 import android.support.v4.app.DialogFragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.SimpleAdapter;
 
@@ -67,6 +69,23 @@ public class MeetingAddDialogFragment extends DialogFragment {
                 new int[] {R.id.meeting_add_image,R.id.meeting_add_text}
         );
         listView.setAdapter(listItemAdapter);
+
+        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                Log.i("TestClick", String.valueOf(position));
+                if(position == 0){
+
+                }else if (position == 1){
+
+                }else if (position == 2){
+
+                }else{
+
+                }
+                dismiss();
+            }
+        });
     }
 
 }

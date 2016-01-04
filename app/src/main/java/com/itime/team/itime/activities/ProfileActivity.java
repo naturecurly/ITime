@@ -2,8 +2,6 @@ package com.itime.team.itime.activities;
 
 import android.app.Activity;
 import android.os.Bundle;
-import android.os.PersistableBundle;
-import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.LinearLayout;
@@ -20,9 +18,8 @@ public class ProfileActivity extends Activity {
     private View profile;
 
     @Override
-    public void onCreate(Bundle savedInstanceState, PersistableBundle persistentState) {
-        super.onCreate(savedInstanceState, persistentState);
-        Log.i("Profile","oooooooooooooo");
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
         setContentView(R.layout.fragment_profile);
 //        initData();
     }

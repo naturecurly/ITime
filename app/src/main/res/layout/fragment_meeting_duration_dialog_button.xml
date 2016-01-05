@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical" android:layout_width="match_parent"
+    android:layout_height="match_parent">
+    <Button
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="10mins"
+        android:id="@+id/meeting_duration_tenmins"/>
+    <Button
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="15mins"
+        android:id="@+id/meeting_duration_fifteenmins"/>
+    <Button
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="30mins"
+        android:id="@+id/meeting_duration_thirtymins"/>
+    <Button
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="1hr"
+        android:id="@+id/meeting_duration_onehour"/>
+    <Button
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="2hrs"
+        android:id="@+id/meeting_duration_twohours"/>
+    <Button
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="6hrs"
+        android:id="@+id/meeting_duration_sixhours"/>
+
+</LinearLayout>

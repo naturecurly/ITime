@@ -44,11 +44,48 @@
                 android:layout_height="wrap_content"
                 android:text="@string/meeting_setting"/>
 
-            <com.itime.team.itime.views.CustomExpandableListView
+            <LinearLayout
+                xmlns:android="http://schemas.android.com/apk/res/android"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:id="@+id/meeting_expandablelist"
-                android:background="#FFFFFF"/>
+                android:orientation="horizontal">
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/meeting_start_time"/>
+                <Button
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/meeting_start_date"
+                    android:text="@string/meeting_time_button"/>
+                <Button
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/meeting_start_time"
+                    android:text="@string/meeting_date_button"/>
+            </LinearLayout>
+
+            <LinearLayout
+                xmlns:android="http://schemas.android.com/apk/res/android"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/meeting_end_time"/>
+                <Button
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/meeting_end_date"
+                    android:text="@string/meeting_time_button"/>
+                <Button
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/meeting_end_time"
+                    android:text="@string/meeting_date_button"/>
+            </LinearLayout>
+
 
             <Button
                 android:layout_width="match_parent"

@@ -1,54 +1,48 @@
 package com.itime.team.itime.fragments;
 
 import android.app.AlertDialog;
+import android.app.DatePickerDialog;
+import android.app.TimePickerDialog;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
-import android.widget.BaseExpandableListAdapter;
 import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.SimpleAdapter;
-import android.widget.TextView;
 import android.widget.TimePicker;
 
+import com.itime.team.itime.activities.DateSelectionActivity;
 import com.itime.team.itime.activities.R;
-import com.itime.team.itime.views.CustomExpandableListView;
+import com.itime.team.itime.utils.DateUtil;
 
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 /**
  * Created by mac on 15/12/11.
  */
-public class MeetingFragment extends Fragment {
-    private List<TextView> parent;
+public class MeetingFragment extends Fragment implements View.OnClickListener{
+//    private List<TextView> parent;
     private Map<Integer, View> map;
-    private LayoutInflater inflater;
     private View mmeeting;
-    private CustomExpandableListView mExpandableList;
-    private TimePicker timePicker1;
-    private TimePicker timePicker2;
-    private DatePicker datePicker1;
-    private DatePicker datePicker2;
-    private TextView textView1;
-    private TextView textView2;
-    private View timeSelection;
-    private View timeSelection2;
-    private Calendar calendar;
-
-    private String startDate = "";
-    private String startTime = "";
-    private String endDate = "";
-    private String endTime = "";
+    private TimePickerDialog timePicker1;
+    private TimePickerDialog timePicker2;
+    private DatePickerDialog datePicker1;
+    private DatePickerDialog datePicker2;
+    private Button mStartTime;
+    private Button mEndTime;
+    private Button mStartDate;
+    private Button mEndDate;
+    private Calendar mCalendar;
 
     private ListView listView;
     private ArrayList<HashMap<String, Object>> listItem;
@@ -58,16 +52,23 @@ public class MeetingFragment extends Fragment {
     private Button add;
     private Button invite;
 
+    private int mStartYear;
+    private int mStartMonth;
+    private int mStartDay;
+    private int mStartHour;
+    private int mStartMin;
+    private int mEndYear;
+    private int mEndMonth;
+    private int mEndDay;
+    private int mEndHour;
+    private int mEndMin;
+
+    public static int mDuration = 60;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        this.inflater = inflater;
         mmeeting = inflater.inflate(R.layout.fragment_meeting,null);
-        timeSelection = inflater.inflate(R.layout.fragment_meeting_timeselection, null);
-        timeSelection2 = inflater.inflate(R.layout.fragment_meeting_timeselection, null);
         initData();
-        mExpandableList = (CustomExpandableListView) mmeeting.findViewById(R.id.meeting_expandablelist);
-        mExpandableList.setAdapter(new MyAdapter());
 
         listView = (ListView) mmeeting.findViewById(R.id.meeting_listview);
         duration = (Button) mmeeting.findViewById(R.id.meeting_duration);
@@ -78,44 +79,15 @@ public class MeetingFragment extends Fragment {
     }
 
     private void initData(){
-        textView1 = new TextView(getActivity());
-        textView2 = new TextView(getActivity());
-        textView1.setText("Starts");
-        textView2.setText("Ends");
-
-        parent = new ArrayList<TextView>();
-        parent.add(textView1);
-        parent.add(textView2);
-
-        timePicker1 = (TimePicker) timeSelection.findViewById(R.id.meeting_list_timepicker);
-        timePicker2 = (TimePicker) timeSelection2.findViewById(R.id.meeting_list_timepicker);
-        timePicker1.setOnTimeChangedListener(new TimePicker.OnTimeChangedListener() {
-            @Override
-            public void onTimeChanged(TimePicker view, int hourOfDay, int minute) {
-                startTime = timePicker1.getCurrentHour() + " : " + timePicker1.getCurrentMinute();
-                textView1.setText(timeFormat("Starts",startDate,startTime));
-            }
-        });
-        timePicker2.setOnTimeChangedListener(new TimePicker.OnTimeChangedListener() {
-            @Override
-            public void onTimeChanged(TimePicker view, int hourOfDay, int minute) {
-                endTime = timePicker2.getCurrentHour() + " : " + timePicker2.getCurrentMinute();
-                textView2.setText(timeFormat("Ends",endDate,endTime));
-            }
-        });
-
-        datePicker1 = (DatePicker) timeSelection.findViewById(R.id.meeting_list_datepicker);
-        datePicker2 = (DatePicker) timeSelection2.findViewById(R.id.meeting_list_datepicker);
-
-        calendar = Calendar.getInstance();
-        datePicker1.init(calendar.get(Calendar.YEAR),calendar.get(Calendar.MONTH),
-                calendar.get(Calendar.DAY_OF_MONTH),dateSetListener);
-        datePicker2.init(calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH),
-                calendar.get(Calendar.DAY_OF_MONTH), dateSetListener2);
-
-        map = new HashMap<Integer, View>();
-        map.put(0, timeSelection);
-        map.put(1, timeSelection2);
+        mCalendar = Calendar.getInstance();
+        mStartTime = (Button) mmeeting.findViewById(R.id.meeting_start_time);
+        mStartTime.setOnClickListener(this);
+        mEndTime = (Button) mmeeting.findViewById(R.id.meeting_end_time);
+        mEndTime.setOnClickListener(this);
+        mStartDate = (Button) mmeeting.findViewById(R.id.meeting_start_date);
+        mStartDate.setOnClickListener(this);
+        mEndDate = (Button) mmeeting.findViewById(R.id.meeting_end_date);
+        mEndDate.setOnClickListener(this);
 
         add = (Button) mmeeting.findViewById(R.id.meeting_add);
         invite = (Button) mmeeting.findViewById(R.id.meeting_invitebutton);
@@ -126,6 +98,8 @@ public class MeetingFragment extends Fragment {
                 searchDialog.show(getFragmentManager(), "searchDialog");
             }
         });
+
+        invite.setOnClickListener(this);
     }
 
     private void initListView(){
@@ -199,82 +173,71 @@ public class MeetingFragment extends Fragment {
         listView.setLayoutParams(params);
     }
 
-    //A listener for datepicker1
-    private DatePicker.OnDateChangedListener dateSetListener = new DatePicker.OnDateChangedListener() {
-        @Override
-        public void onDateChanged(DatePicker view, int year, int monthOfYear, int dayOfMonth) {
-            String[] month = {"Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"};
-            startDate = dayOfMonth + " " + month[monthOfYear-1] + " " + year;
-            textView1.setText(timeFormat("Starts",startDate,startTime));
-        }
-    };
-
-    //A listener for datepicker2
-    private DatePicker.OnDateChangedListener dateSetListener2 = new DatePicker.OnDateChangedListener() {
-        @Override
-        public void onDateChanged(DatePicker view, int year, int monthOfYear, int dayOfMonth) {
-            String[] month = {"Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"};
-            endDate = dayOfMonth + " " + month[monthOfYear-1] + " " + year;
-            textView2.setText(timeFormat("Ends",endDate,endTime));
-        }
-    };
-
-    //A format for representing date
-    private String timeFormat(String title, String date, String time){
-        String s = title + "      " + date + "   " + time;
-        return s;
-    }
-    class MyAdapter extends BaseExpandableListAdapter {
-
-        @Override
-        public int getGroupCount() {
-            return parent.size();
-        }
-
-        @Override
-        public int getChildrenCount(int groupPosition) {
-            return 1;
-        }
-
-        @Override
-        public Object getGroup(int groupPosition) {
-            return parent.get(groupPosition);
-        }
-
-        @Override
-        public Object getChild(int groupPosition, int childPosition) {
-            return (map.get(groupPosition));
-        }
-
-        @Override
-        public long getGroupId(int groupPosition) {
-            return groupPosition;
-        }
-
-        @Override
-        public long getChildId(int groupPosition, int childPosition) {
-            return childPosition;
-        }
-
-        @Override
-        public boolean hasStableIds() {
-            return true;
-        }
-
-        @Override
-        public View getGroupView(int groupPosition, boolean isExpanded, View convertView, ViewGroup parent) {
-            return (TextView)MeetingFragment.this.parent.get(groupPosition);
-        }
-
-        @Override
-        public View getChildView(int groupPosition, int childPosition, boolean isLastChild, View convertView, ViewGroup parent) {
-            View view = map.get(groupPosition);
-            return view;
-        }
-
-        @Override
-        public boolean isChildSelectable(int groupPosition, int childPosition) {
-            return true;
+    @Override
+    public void onClick(View v) {
+        if(v.getId() == R.id.meeting_start_time){
+            timePicker1 = new TimePickerDialog(getActivity(),new TimePickerDialog.OnTimeSetListener() {
+                @Override
+                public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
+                    mStartTime.setText(hourOfDay + " : " + minute);
+                    //If the end time is not set, the default value is one hour latter.
+                    if(mEndTime.getText() == null || mEndTime.getText().equals("")){
+                        mEndTime.setText((hourOfDay + 1) + " : " + minute);
+                    }
+                    mStartHour = hourOfDay;
+                    mStartMin = minute;
+                }
+            },mCalendar.get(Calendar.HOUR_OF_DAY),mCalendar.get(Calendar.MINUTE),false);
+            timePicker1.show();
+        }else if (v.getId() == R.id.meeting_start_date){
+            datePicker1 = new DatePickerDialog(getActivity(), new DatePickerDialog.OnDateSetListener() {
+                @Override
+                public void onDateSet(DatePicker view, int year, int monthOfYear, int dayOfMonth) {
+                    mStartDate.setText(dayOfMonth + "  " + DateUtil.month[monthOfYear] +  "  " + year);
+                    if(mEndDate.getText() == null || mEndDate.getText().equals("")){
+                        mEndDate.setText(dayOfMonth + "  " + DateUtil.month[monthOfYear] +  "  " + year);
+                    }
+                    mStartYear = year;
+                    mStartMonth = monthOfYear;
+                    mStartDay = dayOfMonth;
+                }
+            },mCalendar.get(Calendar.YEAR), mCalendar.get(Calendar.MONTH), mCalendar.get(Calendar.DAY_OF_MONTH));
+            datePicker1.show();
+        }else if (v.getId() == R.id.meeting_end_time){
+            timePicker2 = new TimePickerDialog(getActivity(), new TimePickerDialog.OnTimeSetListener() {
+                @Override
+                public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
+                    mEndTime.setText(hourOfDay + " : " + minute);
+                    mEndHour = hourOfDay;
+                    mEndMin = minute;
+                }
+            },mCalendar.get(Calendar.HOUR_OF_DAY),mCalendar.get(Calendar.MINUTE),false);
+            timePicker2.show();
+        }else if(v.getId() == R.id.meeting_end_date){
+            datePicker2 = new DatePickerDialog(getActivity(), new DatePickerDialog.OnDateSetListener() {
+                @Override
+                public void onDateSet(DatePicker view, int year, int monthOfYear, int dayOfMonth) {
+                    mEndDate.setText(dayOfMonth + "  " + DateUtil.month[monthOfYear] +  "  " + year);
+                    mEndYear = year;
+                    mEndMonth = monthOfYear;
+                    mEndDay = dayOfMonth;
+                }
+            },mCalendar.get(Calendar.YEAR), mCalendar.get(Calendar.MONTH), mCalendar.get(Calendar.DAY_OF_MONTH));
+            datePicker2.show();
+        }else if(v.getId() == R.id.meeting_invitebutton){
+            Intent intent = new Intent(getActivity(), DateSelectionActivity.class);
+            intent.putExtra("startyear",mStartYear);
+            intent.putExtra("startmonth",mStartMonth + 1);
+            intent.putExtra("startday",mStartDay);
+            intent.putExtra("starthour",mStartHour);
+            intent.putExtra("startmin",mStartMin);
+            intent.putExtra("endyear",mEndYear);
+            intent.putExtra("endmonth",mEndMonth + 1);
+            intent.putExtra("endday",mEndDay);
+            intent.putExtra("endhour",mEndHour);
+            intent.putExtra("endmin",mEndMin);
+            intent.putExtra("duration",mDuration);
+            getActivity().startActivity(intent);
         }
     }
 }

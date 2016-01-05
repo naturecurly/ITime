@@ -22,9 +22,17 @@
 
         <activity
             android:name=".ProfileActivity"
-            android:label="@string/app_name"
             android:theme="@style/AppTheme.NoActionBar">
+        </activity>
 
+        <activity
+            android:name=".PreferenceActivity"
+            android:theme="@style/AppTheme.NoActionBar">
+        </activity>
+
+        <activity
+            android:name=".DateSelectionActivity"
+            android:theme="@style/AppTheme.NoActionBar">
         </activity>
 
     </application>

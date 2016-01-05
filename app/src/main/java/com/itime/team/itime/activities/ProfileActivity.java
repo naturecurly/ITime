@@ -2,9 +2,7 @@ package com.itime.team.itime.activities;
 
 
 import android.os.Bundle;
-import android.os.PersistableBundle;
 import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.LinearLayout;
@@ -22,9 +20,8 @@ public class ProfileActivity extends AppCompatActivity {
 
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        Log.i("Profile", "oooooooooooooo");
         setContentView(R.layout.fragment_profile);
     }
 

@@ -18,7 +18,7 @@ import android.widget.ListView;
 import android.widget.SimpleAdapter;
 import android.widget.TimePicker;
 
-import com.itime.team.itime.activities.PreferenceActivity;
+import com.itime.team.itime.activities.DateSelectionActivity;
 import com.itime.team.itime.activities.R;
 import com.itime.team.itime.utils.DateUtil;
 
@@ -51,6 +51,19 @@ public class MeetingFragment extends Fragment implements View.OnClickListener{
     //Topmenu
     private Button add;
     private Button invite;
+
+    private int mStartYear;
+    private int mStartMonth;
+    private int mStartDay;
+    private int mStartHour;
+    private int mStartMin;
+    private int mEndYear;
+    private int mEndMonth;
+    private int mEndDay;
+    private int mEndHour;
+    private int mEndMin;
+
+    public static int mDuration = 60;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -86,13 +99,7 @@ public class MeetingFragment extends Fragment implements View.OnClickListener{
             }
         });
 
-        invite.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(getActivity(), PreferenceActivity.class);
-                getActivity().startActivity(intent);
-            }
-        });
+        invite.setOnClickListener(this);
     }
 
     private void initListView(){
@@ -177,6 +184,8 @@ public class MeetingFragment extends Fragment implements View.OnClickListener{
                     if(mEndTime.getText() == null || mEndTime.getText().equals("")){
                         mEndTime.setText((hourOfDay + 1) + " : " + minute);
                     }
+                    mStartHour = hourOfDay;
+                    mStartMin = minute;
                 }
             },mCalendar.get(Calendar.HOUR_OF_DAY),mCalendar.get(Calendar.MINUTE),false);
             timePicker1.show();
@@ -188,6 +197,9 @@ public class MeetingFragment extends Fragment implements View.OnClickListener{
                     if(mEndDate.getText() == null || mEndDate.getText().equals("")){
                         mEndDate.setText(dayOfMonth + "  " + DateUtil.month[monthOfYear] +  "  " + year);
                     }
+                    mStartYear = year;
+                    mStartMonth = monthOfYear;
+                    mStartDay = dayOfMonth;
                 }
             },mCalendar.get(Calendar.YEAR), mCalendar.get(Calendar.MONTH), mCalendar.get(Calendar.DAY_OF_MONTH));
             datePicker1.show();
@@ -196,6 +208,8 @@ public class MeetingFragment extends Fragment implements View.OnClickListener{
                 @Override
                 public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
                     mEndTime.setText(hourOfDay + " : " + minute);
+                    mEndHour = hourOfDay;
+                    mEndMin = minute;
                 }
             },mCalendar.get(Calendar.HOUR_OF_DAY),mCalendar.get(Calendar.MINUTE),false);
             timePicker2.show();
@@ -204,9 +218,26 @@ public class MeetingFragment extends Fragment implements View.OnClickListener{
                 @Override
                 public void onDateSet(DatePicker view, int year, int monthOfYear, int dayOfMonth) {
                     mEndDate.setText(dayOfMonth + "  " + DateUtil.month[monthOfYear] +  "  " + year);
+                    mEndYear = year;
+                    mEndMonth = monthOfYear;
+                    mEndDay = dayOfMonth;
                 }
             },mCalendar.get(Calendar.YEAR), mCalendar.get(Calendar.MONTH), mCalendar.get(Calendar.DAY_OF_MONTH));
             datePicker2.show();
+        }else if(v.getId() == R.id.meeting_invitebutton){
+            Intent intent = new Intent(getActivity(), DateSelectionActivity.class);
+            intent.putExtra("startyear",mStartYear);
+            intent.putExtra("startmonth",mStartMonth + 1);
+            intent.putExtra("startday",mStartDay);
+            intent.putExtra("starthour",mStartHour);
+            intent.putExtra("startmin",mStartMin);
+            intent.putExtra("endyear",mEndYear);
+            intent.putExtra("endmonth",mEndMonth + 1);
+            intent.putExtra("endday",mEndDay);
+            intent.putExtra("endhour",mEndHour);
+            intent.putExtra("endmin",mEndMin);
+            intent.putExtra("duration",mDuration);
+            getActivity().startActivity(intent);
         }
     }
 }

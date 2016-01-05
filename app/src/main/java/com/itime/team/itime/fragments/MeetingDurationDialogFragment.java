@@ -16,25 +16,49 @@ import com.itime.team.itime.activities.R;
 /**
  * Created by mac on 15/12/18.
  */
-public class MeetingDurationDialogFragment extends DialogFragment implements NumberPicker.OnValueChangeListener,AbsListView.OnScrollListener,NumberPicker.Formatter {
+public class MeetingDurationDialogFragment extends DialogFragment implements NumberPicker.OnValueChangeListener,AbsListView.OnScrollListener,NumberPicker.Formatter, View.OnClickListener {
     private View durationDialog;
     private NumberPicker hourPicker;
     private NumberPicker minPicker;
     private Button save;
     private Button cancel;
 
+    private Button mTenMins;
+    private Button mFifteenMins;
+    private Button mThirtyMins;
+    private Button mOneHour;
+    private Button mTwoHours;
+    private Button mSixHours;
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        durationDialog = inflater.inflate(R.layout.fragment_meeting_duration_dialog,null);
+//        durationDialog = inflater.inflate(R.layout.fragment_meeting_duration_dialog_numberpicker,null);
+        durationDialog = inflater.inflate(R.layout.fragment_meeting_duration_dialog_button, null);
+//        init();
+        initVerTwo();
+        return durationDialog;
+    }
+
+    private void initVerTwo(){
+        mTenMins = (Button) durationDialog.findViewById(R.id.meeting_duration_tenmins);
+        mFifteenMins = (Button) durationDialog.findViewById(R.id.meeting_duration_fifteenmins);
+        mThirtyMins = (Button) durationDialog.findViewById(R.id.meeting_duration_thirtymins);
+        mOneHour = (Button) durationDialog.findViewById(R.id.meeting_duration_onehour);
+        mTwoHours = (Button) durationDialog.findViewById(R.id.meeting_duration_twohours);
+        mSixHours = (Button) durationDialog.findViewById(R.id.meeting_duration_sixhours);
+        mTenMins.setOnClickListener(this);
+        mFifteenMins.setOnClickListener(this);
+        mThirtyMins.setOnClickListener(this);
+        mOneHour.setOnClickListener(this);
+        mTwoHours.setOnClickListener(this);
+        mSixHours.setOnClickListener(this);
+    }
+
+    private void init() {
         hourPicker = (NumberPicker) durationDialog.findViewById(R.id.meeting_hourpicker);
         minPicker = (NumberPicker) durationDialog.findViewById(R.id.meeting_minuteicker);
         save = (Button) durationDialog.findViewById(R.id.meeting_duration_dialog_save);
         cancel = (Button) durationDialog.findViewById(R.id.meeting_duration_dialog_cancel);
-        init();
-        return durationDialog;
-    }
-
-    private void init() {
         hourPicker.setFormatter(this);
         hourPicker.setOnValueChangedListener(this);
         hourPicker.setMaxValue(24);
@@ -86,5 +110,23 @@ public class MeetingDurationDialogFragment extends DialogFragment implements Num
     @Override
     public void onScroll(AbsListView view, int firstVisibleItem, int visibleItemCount, int totalItemCount) {
 
+    }
+
+    @Override
+    public void onClick(View v) {
+        if(v.getId() == R.id.meeting_duration_tenmins){
+            MeetingFragment.mDuration = 10;
+        }else if(v.getId() == R.id.meeting_duration_fifteenmins){
+            MeetingFragment.mDuration = 15;
+        }else if(v.getId() == R.id.meeting_duration_thirtymins){
+            MeetingFragment.mDuration = 30;
+        }else if(v.getId() == R.id.meeting_duration_onehour){
+            MeetingFragment.mDuration = 60;
+        }else if(v.getId() == R.id.meeting_duration_twohours){
+            MeetingFragment.mDuration = 120;
+        }else if(v.getId() == R.id.meeting_duration_sixhours){
+            MeetingFragment.mDuration = 360;
+        }
+        MeetingDurationDialogFragment.this.dismiss();
     }
 }

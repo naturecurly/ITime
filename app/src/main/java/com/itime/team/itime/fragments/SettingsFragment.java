@@ -9,8 +9,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
 
-import com.itime.team.itime.activities.ProfileActivity;
 import com.itime.team.itime.activities.R;
+import com.itime.team.itime.activities.SendInvitationActivity;
 import com.itime.team.itime.views.widget.ImageButton_Image_Text;
 
 /**
@@ -41,7 +41,7 @@ public class SettingsFragment extends Fragment{
         mName.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(getActivity(), ProfileActivity.class);
+                Intent intent = new Intent(getActivity(), SendInvitationActivity.class);
                 getActivity().startActivity(intent);
             }
         });

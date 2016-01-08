@@ -15,6 +15,7 @@ import android.widget.TableRow;
 import android.widget.TextView;
 
 import com.itime.team.itime.activities.R;
+import com.itime.team.itime.activities.SendInvitationActivity;
 import com.itime.team.itime.listener.ScrollViewListener;
 import com.itime.team.itime.views.MeetingSelectionScrollView;
 

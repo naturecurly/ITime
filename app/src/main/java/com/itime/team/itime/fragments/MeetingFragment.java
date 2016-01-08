@@ -7,6 +7,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -18,9 +19,16 @@ import android.widget.ListView;
 import android.widget.SimpleAdapter;
 import android.widget.TimePicker;
 
+import com.android.volley.Request;
+import com.android.volley.RequestQueue;
 import com.itime.team.itime.activities.DateSelectionActivity;
 import com.itime.team.itime.activities.R;
 import com.itime.team.itime.utils.DateUtil;
+import com.itime.team.itime.utils.JsonManager;
+import com.itime.team.itime.utils.MySingleton;
+
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -124,6 +132,7 @@ public class MeetingFragment extends Fragment implements View.OnClickListener{
         listView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
             @Override
             public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
+                //test();
                 AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
                 builder.setMessage("Do you want to delete " + listItem.get(position).get("ItemID"));
                 builder.setIcon(R.mipmap.ic_launcher);
@@ -152,6 +161,33 @@ public class MeetingFragment extends Fragment implements View.OnClickListener{
             }
         });
     }
+
+    private void test(){
+        String url = "http://www.kooyear.com/iTIME_Server/load_friends";
+        final JSONObject a = new JSONObject();
+        try {
+            a.put("user_id","cai");
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        final JsonManager jm = new JsonManager();
+        jm.postForJsonArray(url, a, getActivity());
+        url = "http://www.kooyear.com/iTIME_Server/load_user_infor";
+        jm.postForJsonObject(url,a,getActivity());
+        MySingleton.getInstance(getContext()).getRequestQueue().addRequestFinishedListener(
+                new RequestQueue.RequestFinishedListener<String>() {
+                    @Override
+                    public void onRequestFinished(Request<String> request) {
+                       // JSONArray b = (JSONArray) jm.getJsonQueue().poll();
+                        Log.i("success", jm.getJsonQueue().peek().toString());
+                     //   Log.i("success", jm.getJsonQueue().poll().toString());
+                    }
+                }
+        );
+    }
+
+
+
 
     // Since the content of listview cannot be completely represented, it is necessary to use this
     //method to calculated the height of the listview

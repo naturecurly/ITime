@@ -18,4 +18,6 @@
     <string name="meeting_end_time">Ends</string>
     <string name="meeting_time_button">Time</string>
     <string name="meeting_date_button">Date</string>
+    <string name="meeting_send_invitation_name">Name</string>
+    <string name="meeting_send_invitation_venue">Venue</string>
 </resources>

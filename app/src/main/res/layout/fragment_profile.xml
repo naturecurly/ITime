@@ -16,6 +16,11 @@
             android:layout_height="wrap_content"
             android:layout_marginLeft="100px"
             android:text="Profile"/>
+
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/test_imageview"/>
     </LinearLayout>
 
     <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"

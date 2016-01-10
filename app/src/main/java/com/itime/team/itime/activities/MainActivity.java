@@ -1,10 +1,14 @@
 package com.itime.team.itime.activities;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.FragmentTabHost;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.preference.PreferenceFragmentCompat;
+import android.support.v7.preference.PreferenceScreen;
 import android.support.v7.widget.Toolbar;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -19,7 +23,8 @@ import com.itime.team.itime.fragments.MeetingFragment;
 import com.itime.team.itime.fragments.SettingsFragment;
 //import com.itime.team.itime.fragments.MenuFragment;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements
+        PreferenceFragmentCompat.OnPreferenceStartScreenCallback {
 
 
     private ViewPager mPager;
@@ -90,5 +95,18 @@ public class MainActivity extends AppCompatActivity {
     protected void onPause() {
         super.onPause();
         //Log.i("Pause","oooqqqqqqqq");
+    }
+
+    @Override
+    public boolean onPreferenceStartScreen(PreferenceFragmentCompat preferenceFragmentCompat, PreferenceScreen preferenceScreen) {
+        FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
+        SettingsFragment fragment = new SettingsFragment();
+        Bundle args = new Bundle();
+        args.putString(PreferenceFragmentCompat.ARG_PREFERENCE_ROOT, preferenceScreen.getKey());
+        fragment.setArguments(args);
+        ft.add(R.id.fragment_container, fragment, preferenceScreen.getKey());
+        ft.addToBackStack(preferenceScreen.getKey());
+        ft.commit();
+        return true;
     }
 }

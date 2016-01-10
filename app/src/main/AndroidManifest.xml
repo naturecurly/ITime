@@ -29,16 +29,6 @@
         </activity>
 
         <activity
-            android:name=".ProfileActivity"
-            android:theme="@style/AppTheme.NoActionBar">
-        </activity>
-
-        <activity
-            android:name=".PreferenceActivity"
-            android:theme="@style/AppTheme.NoActionBar">
-        </activity>
-
-        <activity
             android:name=".DateSelectionActivity"
             android:theme="@style/AppTheme.NoActionBar">
         </activity>

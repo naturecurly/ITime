@@ -34,10 +34,10 @@
                     android:id="@+id/meeting_invitebutton"/>
             </LinearLayout>
 
-            <SearchView
+            <android.support.v7.widget.SearchView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:id="@+id/meeting_search2" />
+                android:id="@+id/meeting_search" />
 
             <TextView
                 android:layout_width="match_parent"

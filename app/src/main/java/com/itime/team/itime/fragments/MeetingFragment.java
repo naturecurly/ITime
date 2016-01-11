@@ -7,6 +7,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v7.widget.SearchView;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -38,7 +39,8 @@ import java.util.Map;
 /**
  * Created by mac on 15/12/11.
  */
-public class MeetingFragment extends Fragment implements View.OnClickListener{
+public class MeetingFragment extends Fragment implements View.OnClickListener,SearchView.OnQueryTextListener,
+        AdapterView.OnItemLongClickListener{
 //    private List<TextView> parent;
     private Map<Integer, View> map;
     private View mmeeting;
@@ -51,9 +53,12 @@ public class MeetingFragment extends Fragment implements View.OnClickListener{
     private Button mStartDate;
     private Button mEndDate;
     private Calendar mCalendar;
+    private SearchView mSearch;
 
     private ListView listView;
+    //This variable stores users' friends, and it will be not changed after initialization
     private ArrayList<HashMap<String, Object>> listItem;
+    private ArrayList<HashMap<String, Object>> listItemForPresent;
     private Button duration;
 
     //Topmenu
@@ -87,8 +92,11 @@ public class MeetingFragment extends Fragment implements View.OnClickListener{
         duration.setText("1Hour");
         duration.setOnClickListener(this);
 
+        mSearch = (SearchView) mmeeting.findViewById(R.id.meeting_search);
+        mSearch.setOnQueryTextListener(this);
 
         listItem = new ArrayList<HashMap<String, Object>>();
+        listItemForPresent = new ArrayList<HashMap<String, Object>>();
         initListView();
         return mmeeting;
     }
@@ -143,8 +151,10 @@ public class MeetingFragment extends Fragment implements View.OnClickListener{
             map.put("ItemName", "Cai "+ i);
             map.put("ItemInvite", mmeeting.findViewById(R.id.meeting_invite));
             listItem.add(map);
+            //The deep copy of listItem
+            listItemForPresent.add(map);
         }
-        SimpleAdapter listItemAdapter = new SimpleAdapter(getActivity(),listItem,
+        SimpleAdapter listItemAdapter = new SimpleAdapter(getActivity(),listItemForPresent,
                 R.layout.fragment_meeting_listview,
                 new String[] {"ItemImage","ItemID", "ItemName", "ItemInvite"},
                 new int[] {R.id.meeting_profile,R.id.meeting_id,R.id.meeting_name,R.id.meeting_invite}
@@ -154,29 +164,27 @@ public class MeetingFragment extends Fragment implements View.OnClickListener{
         setListViewHeightBasedOnChildren(listView);
 
         //Make a long click to delete a friend
-        listView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
-            @Override
-            public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
-                //test();
-                AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-                builder.setMessage("Do you want to delete " + listItem.get(position).get("ItemID"));
-                builder.setIcon(R.mipmap.ic_launcher);
-                builder.setTitle("Warning");
-                builder.setNegativeButton("No", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                    }
-                });
-                builder.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                    }
-                });
-                builder.show();
-                return false;
-            }
-        });
+        listView.setOnItemLongClickListener(this);
+    }
 
+    private void searchListView(String query){
+        listItemForPresent.clear();
+        for(HashMap<String, Object> map : listItem){
+            if(map.get("ItemID").toString().contains(query)){
+                listItemForPresent.add(map);
+            }else if(query == null || query.equals("")){
+                listItemForPresent.add(map);
+            }
+        }
+        SimpleAdapter listItemAdapter = new SimpleAdapter(getActivity(),listItemForPresent,
+                R.layout.fragment_meeting_listview,
+                new String[] {"ItemImage","ItemID", "ItemName", "ItemInvite"},
+                new int[] {R.id.meeting_profile,R.id.meeting_id,R.id.meeting_name,R.id.meeting_invite}
+        );
+        listView.setAdapter(listItemAdapter);
+
+        //reset height
+        setListViewHeightBasedOnChildren(listView);
     }
 
     private void test(){
@@ -319,5 +327,38 @@ public class MeetingFragment extends Fragment implements View.OnClickListener{
     public void onResume() {
         super.onResume();
         Log.i("Resume","okok");
+    }
+
+    @Override
+    public boolean onQueryTextSubmit(String query) {
+        return false;
+    }
+
+    @Override
+    public boolean onQueryTextChange(String newText) {
+        searchListView(newText);
+        return true;
+    }
+
+
+    @Override
+    public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
+        //test();
+        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+        builder.setMessage("Do you want to delete " + listItemForPresent.get(position).get("ItemID"));
+        builder.setIcon(R.mipmap.ic_launcher);
+        builder.setTitle("Warning");
+        builder.setNegativeButton("No", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+            }
+        });
+        builder.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+            }
+        });
+        builder.show();
+        return false;
     }
 }

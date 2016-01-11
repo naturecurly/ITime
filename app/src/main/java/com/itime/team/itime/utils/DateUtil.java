@@ -155,4 +155,17 @@ public class DateUtil {
         }
 
     }
+//If the start time is easier than the end time, then the time is seemed feasible
+    public static boolean isFeasible(int startYear, int startMonth, int startDay, int startHour, int startMin,
+                                   int endYear, int endMonth, int endDay, int endHour, int endMin){
+        Calendar start = Calendar.getInstance();
+        start.set(startYear,startMonth,startDay,startHour,startMin);
+        Calendar end = Calendar.getInstance();
+        end.set(endYear,endMonth,endDay,endHour,endMin);
+        if(start.compareTo(end) >= 0){
+            return false;
+        }else {
+            return true;
+        }
+    }
 }

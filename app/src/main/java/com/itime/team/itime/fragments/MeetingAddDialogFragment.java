@@ -1,5 +1,6 @@
 package com.itime.team.itime.fragments;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.DialogFragment;
 import android.util.Log;
@@ -11,6 +12,7 @@ import android.widget.ListView;
 import android.widget.SimpleAdapter;
 
 import com.itime.team.itime.activities.R;
+import com.zxing.activity.CaptureActivity;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -79,8 +81,13 @@ public class MeetingAddDialogFragment extends DialogFragment {
                 }else if (position == 1){
 
                 }else if (position == 2){
+                    Intent intent = new Intent(getActivity(), CaptureActivity.class);
+                    startActivity(intent);
+                }else if (position == 3){
 
-                }else{
+                }else if(position == 4){
+
+                } else{
 
                 }
                 dismiss();

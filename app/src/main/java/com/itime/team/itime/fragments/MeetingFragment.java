@@ -19,15 +19,18 @@ import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.SimpleAdapter;
 import android.widget.TimePicker;
+import android.widget.Toast;
 
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.itime.team.itime.activities.DateSelectionActivity;
 import com.itime.team.itime.activities.R;
+import com.itime.team.itime.interfaces.DataRequest;
 import com.itime.team.itime.utils.DateUtil;
 import com.itime.team.itime.utils.JsonManager;
 import com.itime.team.itime.utils.MySingleton;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -40,7 +43,7 @@ import java.util.Map;
  * Created by mac on 15/12/11.
  */
 public class MeetingFragment extends Fragment implements View.OnClickListener,SearchView.OnQueryTextListener,
-        AdapterView.OnItemLongClickListener{
+        AdapterView.OnItemLongClickListener, DataRequest{
 //    private List<TextView> parent;
     private Map<Integer, View> map;
     private View mmeeting;
@@ -75,6 +78,8 @@ public class MeetingFragment extends Fragment implements View.OnClickListener,Se
     private int mEndDay;
     private int mEndHour;
     private int mEndMin;
+
+    private JsonManager mJsonManager;
 
     //If the value is true, it satisfies the condition of inviting people
     private boolean mIsFeasible;
@@ -141,6 +146,7 @@ public class MeetingFragment extends Fragment implements View.OnClickListener,Se
 
         invite.setOnClickListener(this);
         mIsFeasible = true;
+        mJsonManager = new JsonManager();
     }
 
     private void initListView(){
@@ -187,29 +193,7 @@ public class MeetingFragment extends Fragment implements View.OnClickListener,Se
         setListViewHeightBasedOnChildren(listView);
     }
 
-    private void test(){
-        String url = "http://www.kooyear.com/iTIME_Server/load_friends";
-        final JSONObject a = new JSONObject();
-        try {
-            a.put("user_id","cai");
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-        final JsonManager jm = new JsonManager();
-        jm.postForJsonArray(url, a, getActivity());
-        url = "http://www.kooyear.com/iTIME_Server/load_user_infor";
-        jm.postForJsonObject(url, a, getActivity());
-        MySingleton.getInstance(getContext()).getRequestQueue().addRequestFinishedListener(
-                new RequestQueue.RequestFinishedListener<String>() {
-                    @Override
-                    public void onRequestFinished(Request<String> request) {
-                        // JSONArray b = (JSONArray) jm.getJsonQueue().poll();
-                        Log.i("success", jm.getJsonQueue().peek().toString());
-                        //   Log.i("success", jm.getJsonQueue().poll().toString());
-                    }
-                }
-        );
-    }
+
 
 
 
@@ -302,21 +286,26 @@ public class MeetingFragment extends Fragment implements View.OnClickListener,Se
                 }
             },mCalendar.get(Calendar.YEAR), mCalendar.get(Calendar.MONTH), mCalendar.get(Calendar.DAY_OF_MONTH));
             datePicker2.show();
-        }else if(mIsFeasible && v.getId() == R.id.meeting_invitebutton){
-            Intent intent = new Intent(getActivity(), DateSelectionActivity.class);
-            intent.putExtra("startyear",mStartYear);
-            intent.putExtra("startmonth",mStartMonth + 1);
-            intent.putExtra("startday",mStartDay);
-            intent.putExtra("starthour",mStartHour);
-            intent.putExtra("startmin",mStartMin);
-            intent.putExtra("endyear",mEndYear);
-            intent.putExtra("endmonth",mEndMonth + 1);
-            intent.putExtra("endday",mEndDay);
-            intent.putExtra("endhour",mEndHour);
-            intent.putExtra("endmin",mEndMin);
-            intent.putExtra("duration",mDuration);
-            getActivity().startActivity(intent);
-            checkTime();
+        }else if(v.getId() == R.id.meeting_invitebutton){
+            if(mIsFeasible) {
+                Intent intent = new Intent(getActivity(), DateSelectionActivity.class);
+                intent.putExtra("startyear", mStartYear);
+                intent.putExtra("startmonth", mStartMonth + 1);
+                intent.putExtra("startday", mStartDay);
+                intent.putExtra("starthour", mStartHour);
+                intent.putExtra("startmin", mStartMin);
+                intent.putExtra("endyear", mEndYear);
+                intent.putExtra("endmonth", mEndMonth + 1);
+                intent.putExtra("endday", mEndDay);
+                intent.putExtra("endhour", mEndHour);
+                intent.putExtra("endmin", mEndMin);
+                intent.putExtra("duration", mDuration);
+                getActivity().startActivity(intent);
+                checkTime();
+            }else{
+                Toast.makeText(getActivity(), "the Start Time should be earlier than End Time",
+                        Toast.LENGTH_LONG).show();
+            }
         }else if(v.getId() == R.id.meeting_duration){
             MeetingDurationDialogFragment durationDialog = new MeetingDurationDialogFragment();
             durationDialog.show(getFragmentManager(), "durationDialog");
@@ -326,7 +315,7 @@ public class MeetingFragment extends Fragment implements View.OnClickListener,Se
     @Override
     public void onResume() {
         super.onResume();
-        Log.i("Resume","okok");
+        Log.i("Resume", "okok");
     }
 
     @Override
@@ -343,7 +332,7 @@ public class MeetingFragment extends Fragment implements View.OnClickListener,Se
 
     @Override
     public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
-        //test();
+        test();
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
         builder.setMessage("Do you want to delete " + listItemForPresent.get(position).get("ItemID"));
         builder.setIcon(R.mipmap.ic_launcher);
@@ -360,5 +349,54 @@ public class MeetingFragment extends Fragment implements View.OnClickListener,Se
         });
         builder.show();
         return false;
+    }
+
+    private void test(){
+        String url = "http://www.kooyear.com/iTIME_Server/load_friends";
+        final JSONObject a = new JSONObject();
+        try {
+            a.put("user_id","cai");
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        requestJSONArray(mJsonManager, a, url, "one");
+        requestJSONArray(mJsonManager, a, url, "one");
+        url = "http://www.kooyear.com/iTIME_Server/load_user_infor";
+        requestJSONObject(mJsonManager, a, url, "Two");
+        requestJSONObject(mJsonManager, a, url, "Two");
+        requestJSONObject(mJsonManager, a, url, "Two");
+        handleJSON(mJsonManager);
+    }
+
+    @Override
+    public void handleJSON(JsonManager manager) {
+        MySingleton.getInstance(getContext()).getRequestQueue().addRequestFinishedListener(
+                new RequestQueue.RequestFinishedListener<String>() {
+                    @Override
+                    public void onRequestFinished(Request<String> request) {
+                        JSONObject jsonObject;
+                        JSONArray jsonArray;
+                        HashMap map;
+                        while((map = mJsonManager.getJsonQueue().poll()) != null) {
+                            if ((jsonArray = (JSONArray) map.get("one")) != null) {
+                                Log.i("success", jsonArray.toString());
+                            }
+                            if ((jsonObject = (JSONObject) map.get("Two")) != null) {
+                                Log.i("success", jsonObject.toString());
+                            }
+                        }
+                    }
+                }
+        );
+    }
+
+    @Override
+    public void requestJSONObject(JsonManager manager,JSONObject jsonObject, String url, String tag) {
+        manager.postForJsonObject(url,jsonObject,getActivity(),tag);
+    }
+
+    @Override
+    public void requestJSONArray(JsonManager manager,JSONObject jsonObject, String url, String tag) {
+        manager.postForJsonArray(url, jsonObject, getActivity(),tag);
     }
 }

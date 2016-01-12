@@ -20,11 +20,11 @@ import java.util.concurrent.ConcurrentLinkedQueue;
  * Created by mac on 16/1/7.
  */
 public class JsonManager {
-    private Queue jsonQueue;
+    private Queue<HashMap> jsonQueue;
     private JSONArray jsonArray;
     private JSONObject jsonObject;
     public JsonManager(){
-        jsonQueue = new ConcurrentLinkedQueue();
+        jsonQueue = new ConcurrentLinkedQueue<HashMap>();
     }
 
     public JSONArray getJsonArray() {
@@ -35,51 +35,52 @@ public class JsonManager {
         return jsonObject;
     }
 
-    public Queue getJsonQueue(){
+    public Queue<HashMap> getJsonQueue(){
         return jsonQueue;
     }
-    public void postForJsonObject(String url, JSONObject parameter, final Activity activity){
+    public void postForJsonObject(String url, JSONObject parameter, final Activity activity, final String tag){
         String param = turnJSONintoString(url, parameter);
         MyJsonObjectRequest jsonObjectRequest = new MyJsonObjectRequest
                 (Request.Method.POST, url, null, new Response.Listener<JSONObject>() {
                     @Override
                     public void onResponse(JSONObject response) {
-                        jsonQueue.add(response);
+                        HashMap<String, JSONObject> map = new HashMap<>();
+                        map.put(tag, response);
+                        jsonQueue.add(map);
                     }
                 }, new Response.ErrorListener() {
                     @Override
                     public void onErrorResponse(VolleyError error) {
-                        Log.i("Error_Volley_getJsonObject",error.toString());
+                        Log.i("Error_Volley_getJsonObject",tag + " : " + error.toString());
                     }
                 });
         jsonObjectRequest.setParameters(param);
         MySingleton.getInstance(activity).addToRequestQueue(jsonObjectRequest);
     }
 
-    public void postForJsonObject(String url, JSONArray parameter,final Activity activity){
+//    public void postForJsonObject(String url, JSONArray parameter,final Activity activity){}
 
-    }
-
-    public void postForJsonArray(String url, JSONObject parameter, final Activity activity){
+    public void postForJsonArray(String url, JSONObject parameter, final Activity activity, final String tag){
         String param = turnJSONintoString(url,parameter);
         MyJsonArrayRequest jsObjRequest = new MyJsonArrayRequest
                 (Request.Method.POST, url, null, new Response.Listener<JSONArray>() {
                     @Override
                     public void onResponse(JSONArray response) {
-                        jsonQueue.add(response);
+                        HashMap<String, JSONArray> map = new HashMap<>();
+                        map.put(tag, response);
+                        jsonQueue.add(map);
                     }
                 }, new Response.ErrorListener() {
                     @Override
                     public void onErrorResponse(VolleyError error) {
-                        Log.i("Error_Volley_getJsonArray",error.toString());
+                        Log.i("Error_Volley_getJsonArray",tag + " : " + error.toString());
                     }
                 });
         jsObjRequest.setParameters(param);
         MySingleton.getInstance(activity).addToRequestQueue(jsObjRequest);
     }
 
-    public void postForJsonArray(String url, JSONArray parameter,final Activity activity){
-    }
+//    public void postForJsonArray(String url, JSONArray parameter,final Activity activity){}
 
     private String turnJSONintoString(String url, JSONObject parameter){
         Map<String,String> params = new HashMap<>();

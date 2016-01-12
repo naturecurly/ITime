@@ -26,7 +26,7 @@ public class MeetingSelectionTopFragment extends Fragment implements ScrollViewL
     private View mCentralFragment;
 
     private int DATE;
-    private int WIDTH = 100;
+    private int WIDTH = 151;
 
     private int STARTYEAR;
     private int STARTMONTH;

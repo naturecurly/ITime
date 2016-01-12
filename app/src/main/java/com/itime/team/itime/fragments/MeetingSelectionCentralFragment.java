@@ -15,7 +15,6 @@ import android.widget.TableRow;
 import android.widget.TextView;
 
 import com.itime.team.itime.activities.R;
-import com.itime.team.itime.activities.SendInvitationActivity;
 import com.itime.team.itime.listener.ScrollViewListener;
 import com.itime.team.itime.views.MeetingSelectionScrollView;
 
@@ -55,6 +54,7 @@ public class MeetingSelectionCentralFragment extends Fragment implements ScrollV
     private String COLOROFTOPLINE = "#87CEFA";
     private String COLOROFLINE = "#87CEFA";
     private String COLOROFTABLE = "#7CFC00";
+
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {

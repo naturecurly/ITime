@@ -8,20 +8,23 @@ import android.support.annotation.Nullable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TableLayout;
 import android.widget.TableRow;
 import android.widget.TextView;
 
 import com.itime.team.itime.activities.R;
+import com.itime.team.itime.interfaces.DataRequest;
 import com.itime.team.itime.listener.ScrollViewListener;
+import com.itime.team.itime.utils.JsonManager;
 import com.itime.team.itime.views.MeetingSelectionScrollView;
+
+import org.json.JSONObject;
 
 /**
  * Created by mac on 15/12/27.
  */
-public class MeetingSelectionCentralFragment extends Fragment implements ScrollViewListener {
+public class MeetingSelectionCentralFragment extends Fragment implements ScrollViewListener, DataRequest {
     private Intent intent;
     private View mParent;
     private View mTopView;
@@ -32,7 +35,7 @@ public class MeetingSelectionCentralFragment extends Fragment implements ScrollV
     private LinearLayout[][] mChildTableRow;
     private View[] mTopLine;
     private View[][] mLines;
-    private ImageView[][][] mColors;
+    private TextView[][][] mColors;
     private static MeetingSelectionScrollView mScrollView;
     private MeetingSelectionTopFragment topFragment;
     //store the number of people who are available in the specific period of time (24 * 60)
@@ -126,7 +129,7 @@ public class MeetingSelectionCentralFragment extends Fragment implements ScrollV
             //e.g. meeting duration is 20 mins, then the table row is divided into 60 / 20 = 3
             //parts. Each part will contain certain ImageView
 
-            mColors = new ImageView[24][DAYS][parts];
+            mColors = new TextView[24][DAYS][parts];
             //The layout parameters of each "big" table row
 //            childTablePara = new TableRow.LayoutParams(SIZEOFCOLORSQUARE
 //                    ,SIZEOFCOLORSQUARE);
@@ -135,7 +138,7 @@ public class MeetingSelectionCentralFragment extends Fragment implements ScrollV
 
 
         }else{
-            mColors = new ImageView[24][DAYS][parts];
+            mColors = new TextView[24][DAYS][parts];
             toplinepara = new TableLayout.LayoutParams(
                     LinearLayout.LayoutParams.MATCH_PARENT,HEIGHTOFTOPLINE);
             toplinepara.setMargins(0,0,MARGINOFLINE,0);
@@ -169,7 +172,7 @@ public class MeetingSelectionCentralFragment extends Fragment implements ScrollV
                 mChildTableRow[i][j].setOrientation(LinearLayout.VERTICAL);
                 //mChildTableRow[i][j].setLayoutParams(childTablePara);
                 for(int k = 0; k < parts; k ++){
-                    mColors[i][j][k] = new ImageView(getActivity());
+                    mColors[i][j][k] = new TextView(getActivity());
                     mColors[i][j][k].setLayoutParams(tablepara);
                     //If the background color is invisible, which means the period of the time is unavailable.
                     mColors[i][j][k].setBackgroundColor(Color.parseColor(COLOROFTABLE));
@@ -216,5 +219,20 @@ public class MeetingSelectionCentralFragment extends Fragment implements ScrollV
         if (scrollView == mScrollView) {
             topFragment.setPosition(x,y);
         }
+    }
+
+    @Override
+    public void handleJSON(JsonManager manager) {
+
+    }
+
+    @Override
+    public void requestJSONObject(JsonManager manager, JSONObject jsonObject, String url, String tag) {
+
+    }
+
+    @Override
+    public void requestJSONArray(JsonManager manager, JSONObject jsonObject, String url, String tag) {
+
     }
 }

@@ -1,12 +1,16 @@
 package com.itime.team.itime.utils;
 
 import android.app.Activity;
+import android.graphics.Bitmap;
 import android.net.Uri;
 import android.util.Log;
+import android.widget.ImageView;
 
 import com.android.volley.Request;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
+import com.android.volley.toolbox.ImageRequest;
+import com.itime.team.itime.activities.R;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -81,6 +85,22 @@ public class JsonManager {
     }
 
 //    public void postForJsonArray(String url, JSONArray parameter,final Activity activity){}
+
+    public void postForImage(String url, final ImageView imageView, final Activity activity){
+        ImageRequest request = new ImageRequest(url,
+                new Response.Listener<Bitmap>() {
+                    @Override
+                    public void onResponse(Bitmap bitmap) {
+                        imageView.setImageBitmap(bitmap);
+                    }
+                }, 0, 0, null,
+                new Response.ErrorListener() {
+                    public void onErrorResponse(VolleyError error) {
+                        imageView.setImageResource(R.drawable.default_profile_image);
+                    }
+                });
+        MySingleton.getInstance(activity).addToRequestQueue(request);
+    }
 
     private String turnJSONintoString(String url, JSONObject parameter){
         Map<String,String> params = new HashMap<>();

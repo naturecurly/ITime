@@ -7,10 +7,10 @@
         android:layout_height="wrap_content"
         android:orientation="horizontal">
         <Button
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_width="100dp"
+            android:layout_height="50dp"
             android:id="@+id/profile_back"
-            android:text="Back"/>
+            android:text="BackBackBackBackBackBackBackBackBackBackBackBackBackBackBackBackBackBack"/>
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -21,6 +21,14 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:id="@+id/test_imageview"/>
+        <TextView
+            android:layout_width="40dp"
+            android:layout_height="80dp"
+            android:text="hellohellohellohellohellohellohellohellohellohello"
+            android:background="@color/colorPrimary"
+            android:id="@+id/oo"
+            android:lines="3"
+            android:ellipsize="end"/>
     </LinearLayout>
 
     <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"

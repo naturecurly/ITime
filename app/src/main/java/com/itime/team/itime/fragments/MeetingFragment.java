@@ -8,7 +8,6 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.SearchView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -17,7 +16,6 @@ import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.ListAdapter;
 import android.widget.ListView;
-import android.widget.SimpleAdapter;
 import android.widget.TimePicker;
 import android.widget.Toast;
 
@@ -25,10 +23,12 @@ import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.itime.team.itime.activities.DateSelectionActivity;
 import com.itime.team.itime.activities.R;
+import com.itime.team.itime.bean.User;
 import com.itime.team.itime.interfaces.DataRequest;
 import com.itime.team.itime.utils.DateUtil;
 import com.itime.team.itime.utils.JsonManager;
 import com.itime.team.itime.utils.MySingleton;
+import com.itime.team.itime.views.adapters.DynamicListViewAdapter;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -85,7 +85,6 @@ public class MeetingFragment extends Fragment implements View.OnClickListener,Se
     private boolean mIsFeasible;
 
     public static int mDuration = 60;
-
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -150,21 +149,40 @@ public class MeetingFragment extends Fragment implements View.OnClickListener,Se
     }
 
     private void initListView(){
-        for(int i = 0; i < 20; i ++){
-            HashMap<String, Object> map = new HashMap<String, Object>();
-            map.put("ItemImage", R.drawable.default_profile_image);
-            map.put("ItemID", "Cai " + i);
-            map.put("ItemName", "Cai "+ i);
-            map.put("ItemInvite", mmeeting.findViewById(R.id.meeting_invite));
-            listItem.add(map);
-            //The deep copy of listItem
-            listItemForPresent.add(map);
+        JSONObject userID = new JSONObject();
+        try {
+            userID.put("user_id", new User().getID());
+            requestJSONArray(mJsonManager, userID, "http://www.kooyear.com/iTIME_Server/load_friends",
+                    "load_friends");
+            handleJSON(mJsonManager);
+        } catch (JSONException e) {
+            e.printStackTrace();
         }
-        SimpleAdapter listItemAdapter = new SimpleAdapter(getActivity(),listItemForPresent,
-                R.layout.fragment_meeting_listview,
-                new String[] {"ItemImage","ItemID", "ItemName", "ItemInvite"},
-                new int[] {R.id.meeting_profile,R.id.meeting_id,R.id.meeting_name,R.id.meeting_invite}
-        );
+    }
+
+    private void doInitListView(JSONArray mUserInfo){
+        try {
+            for(int i = 0; i < mUserInfo.length(); i ++){
+                JSONObject jsonObject = (JSONObject) mUserInfo.get(i);
+                HashMap<String, Object> map = new HashMap<String, Object>();
+                map.put("ItemID", jsonObject.get("user_id"));
+                map.put("ItemName", jsonObject.get("user_name"));
+                String url = null;
+                if(jsonObject.get("user_profile_picture") != null &&
+                        !jsonObject.get("user_profile_picture").equals("")) {
+                    url = "http://www.kooyear.com/iTIME_Server/static/user_profiles/" +
+                            jsonObject.get("user_id") + "/profile_picture.png";
+                }
+                map.put("url",url);
+                listItem.add(map);
+                //The deep copy of listItem
+                listItemForPresent.add(map);
+            }
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+        DynamicListViewAdapter listItemAdapter = new DynamicListViewAdapter(getActivity(),listItemForPresent);
         listView.setAdapter(listItemAdapter);
         //reset height
         setListViewHeightBasedOnChildren(listView);
@@ -182,21 +200,12 @@ public class MeetingFragment extends Fragment implements View.OnClickListener,Se
                 listItemForPresent.add(map);
             }
         }
-        SimpleAdapter listItemAdapter = new SimpleAdapter(getActivity(),listItemForPresent,
-                R.layout.fragment_meeting_listview,
-                new String[] {"ItemImage","ItemID", "ItemName", "ItemInvite"},
-                new int[] {R.id.meeting_profile,R.id.meeting_id,R.id.meeting_name,R.id.meeting_invite}
-        );
+        DynamicListViewAdapter listItemAdapter = new DynamicListViewAdapter(getActivity(),listItemForPresent);
         listView.setAdapter(listItemAdapter);
 
         //reset height
         setListViewHeightBasedOnChildren(listView);
     }
-
-
-
-
-
 
     // Since the content of listview cannot be completely represented, it is necessary to use this
     //method to calculated the height of the listview
@@ -313,12 +322,6 @@ public class MeetingFragment extends Fragment implements View.OnClickListener,Se
     }
 
     @Override
-    public void onResume() {
-        super.onResume();
-        Log.i("Resume", "okok");
-    }
-
-    @Override
     public boolean onQueryTextSubmit(String query) {
         return false;
     }
@@ -332,7 +335,6 @@ public class MeetingFragment extends Fragment implements View.OnClickListener,Se
 
     @Override
     public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
-        test();
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
         builder.setMessage("Do you want to delete " + listItemForPresent.get(position).get("ItemID"));
         builder.setIcon(R.mipmap.ic_launcher);
@@ -351,23 +353,6 @@ public class MeetingFragment extends Fragment implements View.OnClickListener,Se
         return false;
     }
 
-    private void test(){
-        String url = "http://www.kooyear.com/iTIME_Server/load_friends";
-        final JSONObject a = new JSONObject();
-        try {
-            a.put("user_id","cai");
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-        requestJSONArray(mJsonManager, a, url, "one");
-        requestJSONArray(mJsonManager, a, url, "one");
-        url = "http://www.kooyear.com/iTIME_Server/load_user_infor";
-        requestJSONObject(mJsonManager, a, url, "Two");
-        requestJSONObject(mJsonManager, a, url, "Two");
-        requestJSONObject(mJsonManager, a, url, "Two");
-        handleJSON(mJsonManager);
-    }
-
     @Override
     public void handleJSON(JsonManager manager) {
         MySingleton.getInstance(getContext()).getRequestQueue().addRequestFinishedListener(
@@ -378,11 +363,8 @@ public class MeetingFragment extends Fragment implements View.OnClickListener,Se
                         JSONArray jsonArray;
                         HashMap map;
                         while((map = mJsonManager.getJsonQueue().poll()) != null) {
-                            if ((jsonArray = (JSONArray) map.get("one")) != null) {
-                                Log.i("success", jsonArray.toString());
-                            }
-                            if ((jsonObject = (JSONObject) map.get("Two")) != null) {
-                                Log.i("success", jsonObject.toString());
+                            if((jsonArray = (JSONArray) map.get("load_friends")) != null){
+                                doInitListView(jsonArray);
                             }
                         }
                     }

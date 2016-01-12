@@ -4,29 +4,36 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.view.ViewPager;
+import android.support.v7.widget.LinearLayoutManager;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
 import com.itime.team.itime.activities.R;
+
+import com.itime.team.itime.views.VerticalViewPagerModified;
 import com.itime.team.itime.views.adapters.CalendarPagerAdapter;
+
+import fr.castorflex.android.verticalviewpager.VerticalViewPager;
+
 
 /**
  * Created by leveyleonhardt on 12/17/15.
  */
 public class CalendarFragment extends Fragment {
 
-    private ViewPager viewPager;
-    private CalendarPagerAdapter pagerAdapter;
+    private VerticalViewPagerModified viewPager;
 
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_calendar, container, false);
-        viewPager = (ViewPager) view.findViewById(R.id.pager);
-        pagerAdapter = new CalendarPagerAdapter(getChildFragmentManager());
-        viewPager.setAdapter(pagerAdapter);
+        viewPager = (VerticalViewPagerModified) view.findViewById(R.id.pager);
+        viewPager.setAdapter(new CalendarPagerAdapter(getChildFragmentManager()));
+        //viewPager = (ViewPager) view.findViewById(R.id.pager);
+        //pagerAdapter = new CalendarPagerAdapter(getChildFragmentManager());
+        //viewPager.setAdapter(pagerAdapter);
         //viewPager.getCurrentItem()
         //setRetainInstance(true);
         //CalendarBodyFragment calendarBodyFragment = (CalendarBodyFragment) viewPager.getAdapter().instantiateItem(viewPager, viewPager.getCurrentItem());
@@ -37,23 +44,22 @@ public class CalendarFragment extends Fragment {
 //        System.out.print(viewPager.getCurrentItem());
         // Log.i("TTT", "ts");
         //CalendarPagerAdapter cpa = (CalendarPagerAdapter) viewPager.getAdapter();
-       // CalendarBodyFragment fragment = pagerAdapter.getFragment(viewPager.getCurrentItem());
+        // CalendarBodyFragment fragment = pagerAdapter.getFragment(viewPager.getCurrentItem());
 //        CalendarView cv = fragment.getCalendarView();
 //        Log.i("TTTT", cv.getmShowDay() + " " + cv.getmShowMonth() + " " + cv.getmShowYear());
-        Log.i("TTT",viewPager.getChildCount()+"");
+        //Log.i("TTT", viewPager.getChildCount() + "");
+
         return view;
     }
-
-
 
 
     @Override
     public void onResume() {
         super.onResume();
         //viewPager = (ViewPager) getActivity().findViewById(R.id.pager);
-        if (pagerAdapter == null) {
-            pagerAdapter = new CalendarPagerAdapter(getChildFragmentManager());
-            viewPager.setAdapter(pagerAdapter);
-        }
+//        if (pagerAdapter == null) {
+//            pagerAdapter = new CalendarPagerAdapter(getChildFragmentManager());
+//            viewPager.setAdapter(pagerAdapter);
+//        }
     }
 }

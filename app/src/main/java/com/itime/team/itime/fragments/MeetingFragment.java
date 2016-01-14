@@ -146,6 +146,7 @@ public class MeetingFragment extends Fragment implements View.OnClickListener,Se
         invite.setOnClickListener(this);
         mIsFeasible = true;
         mJsonManager = new JsonManager();
+//        test();
     }
 
     private void initListView(){
@@ -167,6 +168,7 @@ public class MeetingFragment extends Fragment implements View.OnClickListener,Se
                 HashMap<String, Object> map = new HashMap<String, Object>();
                 map.put("ItemID", jsonObject.get("user_id"));
                 map.put("ItemName", jsonObject.get("user_name"));
+                map.put("CheckBox", false);
                 String url = null;
                 if(jsonObject.get("user_profile_picture") != null &&
                         !jsonObject.get("user_profile_picture").equals("")) {
@@ -181,7 +183,6 @@ public class MeetingFragment extends Fragment implements View.OnClickListener,Se
         } catch (JSONException e) {
             e.printStackTrace();
         }
-
         DynamicListViewAdapter listItemAdapter = new DynamicListViewAdapter(getActivity(),listItemForPresent);
         listView.setAdapter(listItemAdapter);
         //reset height
@@ -189,6 +190,7 @@ public class MeetingFragment extends Fragment implements View.OnClickListener,Se
 
         //Make a long click to delete a friend
         listView.setOnItemLongClickListener(this);
+//        listView.setOnClickListener(this);
     }
 
     private void searchListView(String query){
@@ -297,20 +299,34 @@ public class MeetingFragment extends Fragment implements View.OnClickListener,Se
             datePicker2.show();
         }else if(v.getId() == R.id.meeting_invitebutton){
             if(mIsFeasible) {
-                Intent intent = new Intent(getActivity(), DateSelectionActivity.class);
-                intent.putExtra("startyear", mStartYear);
-                intent.putExtra("startmonth", mStartMonth + 1);
-                intent.putExtra("startday", mStartDay);
-                intent.putExtra("starthour", mStartHour);
-                intent.putExtra("startmin", mStartMin);
-                intent.putExtra("endyear", mEndYear);
-                intent.putExtra("endmonth", mEndMonth + 1);
-                intent.putExtra("endday", mEndDay);
-                intent.putExtra("endhour", mEndHour);
-                intent.putExtra("endmin", mEndMin);
-                intent.putExtra("duration", mDuration);
-                getActivity().startActivity(intent);
-                checkTime();
+                boolean isChecked = false;
+                ArrayList<String> IDs = new ArrayList<>();
+                for (HashMap<String, Object> map : listItemForPresent ){
+                    if((Boolean)map.get("CheckBox")){
+                        isChecked = true;
+                        IDs.add((String) map.get("ItemID"));
+                    }
+                }
+                if(isChecked) {
+                    Intent intent = new Intent(getActivity(), DateSelectionActivity.class);
+                    intent.putExtra("startyear", mStartYear);
+                    intent.putExtra("startmonth", mStartMonth + 1);
+                    intent.putExtra("startday", mStartDay);
+                    intent.putExtra("starthour", mStartHour);
+                    intent.putExtra("startmin", mStartMin);
+                    intent.putExtra("endyear", mEndYear);
+                    intent.putExtra("endmonth", mEndMonth + 1);
+                    intent.putExtra("endday", mEndDay);
+                    intent.putExtra("endhour", mEndHour);
+                    intent.putExtra("endmin", mEndMin);
+                    intent.putExtra("duration", mDuration);
+                    intent.putStringArrayListExtra("friendIDs", IDs);
+                    getActivity().startActivity(intent);
+                    checkTime();
+                }else{
+                    Toast.makeText(getContext(),"Please select a friend at least", Toast.LENGTH_LONG)
+                            .show();
+                }
             }else{
                 Toast.makeText(getActivity(), "the Start Time should be earlier than End Time",
                         Toast.LENGTH_LONG).show();
@@ -318,6 +334,8 @@ public class MeetingFragment extends Fragment implements View.OnClickListener,Se
         }else if(v.getId() == R.id.meeting_duration){
             MeetingDurationDialogFragment durationDialog = new MeetingDurationDialogFragment();
             durationDialog.show(getFragmentManager(), "durationDialog");
+        }else if(v.getId() == R.id.meeting_listview){
+
         }
     }
 

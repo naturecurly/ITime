@@ -77,7 +77,7 @@ public class JsonManager {
                 }, new Response.ErrorListener() {
                     @Override
                     public void onErrorResponse(VolleyError error) {
-                        Log.i("Error_Volley_getJsonArray",tag + " : " + error.toString());
+                        Log.i("Error_Volley_getJsonArray",tag + " : " + error.getLocalizedMessage());
                     }
                 });
         jsObjRequest.setParameters(param);

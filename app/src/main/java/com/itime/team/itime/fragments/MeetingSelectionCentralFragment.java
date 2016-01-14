@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -13,13 +14,25 @@ import android.widget.TableLayout;
 import android.widget.TableRow;
 import android.widget.TextView;
 
+import com.android.volley.Request;
+import com.android.volley.RequestQueue;
 import com.itime.team.itime.activities.R;
+import com.itime.team.itime.bean.Preference;
+import com.itime.team.itime.bean.User;
 import com.itime.team.itime.interfaces.DataRequest;
 import com.itime.team.itime.listener.ScrollViewListener;
+import com.itime.team.itime.utils.DateUtil;
 import com.itime.team.itime.utils.JsonManager;
+import com.itime.team.itime.utils.MySingleton;
+import com.itime.team.itime.utils.URLConnectionUtil;
 import com.itime.team.itime.views.MeetingSelectionScrollView;
 
+import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
+
+import java.util.ArrayList;
+import java.util.HashMap;
 
 /**
  * Created by mac on 15/12/27.
@@ -40,8 +53,14 @@ public class MeetingSelectionCentralFragment extends Fragment implements ScrollV
     private MeetingSelectionTopFragment topFragment;
     //store the number of people who are available in the specific period of time (24 * 60)
     private int[][] availability;
+    private Preference[] mPreference;
 
+    private ArrayList<String> mFriendIDS;
+    private JsonManager mJsonManager;
     private int DAYS;
+    private String mStartDateForPost;
+    private String mEndDateForPost;
+
     private int HEIGHTOFTOPLINE = 5;
     private int MARGINOFTOPLINE = 2; //5
 
@@ -67,14 +86,22 @@ public class MeetingSelectionCentralFragment extends Fragment implements ScrollV
         init();
         initLeftView();
         initTable();
+        getPreference();
+        getAvailability();
         return mParent;
     }
+
     private void initParameters(Bundle savedInstanceState){
         savedInstanceState = getArguments();
         DAYS  = savedInstanceState.getInt("totaldays");
         DURATION = savedInstanceState.getInt("duration");
+        mFriendIDS = savedInstanceState.getStringArrayList("friendIDs");
+        mStartDateForPost = savedInstanceState.getString("startdate");
+        mEndDateForPost = savedInstanceState.getString("enddate");
     }
+
     public void init(){
+        mJsonManager = new JsonManager();
         mLeftView = (LinearLayout) mParent.findViewById(R.id.meeting_selection_left);
         mTable = (TableLayout) mParent.findViewById(R.id.meeting_selection_center_table);
         mScrollView = (MeetingSelectionScrollView) mParent.findViewById(R.id.meeting_selection_center_scroll);
@@ -203,6 +230,72 @@ public class MeetingSelectionCentralFragment extends Fragment implements ScrollV
 
     }
 
+    private void getPreference(){
+        try {
+            JSONArray friendID = new JSONArray();
+            for(String ids : mFriendIDS){
+                friendID.put(ids);
+            }
+            String url = "http://www.kooyear.com/iTIME_Server/load_frds_prefer_preferences";
+            JSONObject post = new JSONObject();
+            post.put("friend_id", friendID);
+            requestJSONArray(mJsonManager, post, url, "load_frds_prefer_preferences");
+            handleJSON(mJsonManager);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void doGetPreference(JSONArray jsonArray){
+        mPreference = new Preference[jsonArray.length()];
+        try {
+            for(int i = 0; i < jsonArray.length(); i ++){
+                JSONObject jsonObject = (JSONObject) jsonArray.get(i);
+                mPreference[i] = new Preference();
+                mPreference[i].setStarts_time(DateUtil.getLocalTime(jsonObject.get("starts_time").toString()));
+                mPreference[i].setEnds_time(DateUtil.getLocalTime(jsonObject.get("ends_time").toString()));
+                mPreference[i].setRepeat_type(jsonObject.get("repeat_type").toString());
+            }
+        }catch (JSONException e) {
+            e.printStackTrace();
+        }
+    }
+    private void getAvailability(){
+        try {
+            JSONArray friendID = new JSONArray();
+            for(String ids : mFriendIDS){
+                friendID.put(ids);
+            }
+            String url = "http://www.kooyear.com/iTIME_Server/match_time_with_friends";
+            String duration = "";
+            JSONObject post = new JSONObject();
+            post.put("user_id",new User().getID());
+            switch (DURATION){
+                case 10:
+                    duration = "10mins";break;
+                case 15:
+                    duration = "15mins";break;
+                case 30:
+                    duration = "30mins";break;
+                case 60:
+                    duration = "1hrs";break;
+                case 120:
+                    duration = "2hrs";break;
+                case 360:
+                    duration = "6hrs";break;
+            }
+            post.put("duration", duration);
+            post.put("starts", URLConnectionUtil.encode(mStartDateForPost));
+            post.put("events",new JSONArray());
+            post.put("ends",URLConnectionUtil.encode(mEndDateForPost));
+            post.put("friend_id",friendID);
+            requestJSONArray(mJsonManager, post, url, "match_time_with_friends");
+            handleJSON(mJsonManager);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+    }
+
     private String getColor(){
         String color = null;
 
@@ -223,16 +316,33 @@ public class MeetingSelectionCentralFragment extends Fragment implements ScrollV
 
     @Override
     public void handleJSON(JsonManager manager) {
-
+        MySingleton.getInstance(getActivity()).getRequestQueue().addRequestFinishedListener(
+                new RequestQueue.RequestFinishedListener<String>() {
+                    @Override
+                    public void onRequestFinished(Request<String> request) {
+                        JSONObject jsonObject;
+                        JSONArray jsonArray;
+                        HashMap map;
+                        while ((map = mJsonManager.getJsonQueue().poll()) != null) {
+                            if ((jsonArray = (JSONArray) map.get("load_frds_prefer_preferences")) != null) {
+                                doGetPreference(jsonArray);
+                            }
+                            if ((jsonArray = (JSONArray) map.get("match_time_with_friends")) != null) {
+                                Log.i("date",jsonArray.toString());
+                            }
+                        }
+                    }
+                }
+        );
     }
 
     @Override
-    public void requestJSONObject(JsonManager manager, JSONObject jsonObject, String url, String tag) {
-
+    public void requestJSONObject(JsonManager manager,JSONObject jsonObject, String url, String tag) {
+        manager.postForJsonObject(url, jsonObject, getActivity(), tag);
     }
 
     @Override
-    public void requestJSONArray(JsonManager manager, JSONObject jsonObject, String url, String tag) {
-
+    public void requestJSONArray(JsonManager manager,JSONObject jsonObject, String url, String tag) {
+        manager.postForJsonArray(url, jsonObject, getActivity(),tag);
     }
 }

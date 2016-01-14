@@ -6,10 +6,12 @@ package com.itime.team.itime.utils;
 
 import android.annotation.SuppressLint;
 
+import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.TimeZone;
 
 public class DateUtil {
 
@@ -168,4 +170,32 @@ public class DateUtil {
             return true;
         }
     }
+
+//Change Time Zone
+    private static String dateTransformBetweenTimeZone(Date sourceDate, DateFormat formatter,
+                                                  TimeZone sourceTimeZone, TimeZone targetTimeZone) {
+        Long targetTime = sourceDate.getTime() - sourceTimeZone.getRawOffset() + targetTimeZone.getRawOffset();
+        return formatter.format(new Date(targetTime));
+    }
+
+    public static Date getLocalTime(String data){
+        Date dateForReturn = null;
+        try {
+            String[] dataOfJson = data.split(" ");
+            String dateOfJson = dataOfJson[0];
+            String timeOfJson = dataOfJson[1];
+            String timezoneOfJson = dataOfJson[2];
+            DateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+            Date date = formatter.parse(dateOfJson + " "  + timeOfJson);
+            String scrTimeZoneFormat = "GMT" + timezoneOfJson.substring(0,3) + ":" +
+                    timezoneOfJson.substring(3,timezoneOfJson.length());
+            TimeZone srcTimeZone = TimeZone.getTimeZone(scrTimeZoneFormat);
+            TimeZone destTimeZone = TimeZone.getTimeZone(date.toString().split(" ")[4]);
+            dateForReturn = formatter.parse(dateTransformBetweenTimeZone(date, formatter, srcTimeZone, destTimeZone));
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+        return dateForReturn;
+    }
+
 }

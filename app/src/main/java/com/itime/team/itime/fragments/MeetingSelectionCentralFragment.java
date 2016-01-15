@@ -5,10 +5,10 @@ import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TableLayout;
 import android.widget.TableRow;
@@ -31,7 +31,11 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 
 /**
@@ -48,18 +52,23 @@ public class MeetingSelectionCentralFragment extends Fragment implements ScrollV
     private LinearLayout[][] mChildTableRow;
     private View[] mTopLine;
     private View[][] mLines;
-    private TextView[][][] mColors;
+    private ImageView[][][] mColors;
     private static MeetingSelectionScrollView mScrollView;
     private MeetingSelectionTopFragment topFragment;
     //store the number of people who are available in the specific period of time (24 * 60)
-    private int[][] availability;
+    private JSONArray mAvailability;
+    private boolean[][] mIsAvailable;
     private Preference[] mPreference;
 
     private ArrayList<String> mFriendIDS;
     private JsonManager mJsonManager;
+
     private int DAYS;
     private String mStartDateForPost;
     private String mEndDateForPost;
+    private int mStartYear;
+    private int mStartMonth;
+    private int mStartDay;
 
     private int HEIGHTOFTOPLINE = 5;
     private int MARGINOFTOPLINE = 2; //5
@@ -71,6 +80,7 @@ public class MeetingSelectionCentralFragment extends Fragment implements ScrollV
     private int MARGINEOFSQAURE = 10; //10
 
     private int MARGINOFCHILDTABLEROW = 2;
+    private int PADDINGOFCOLORSQUARE = 10;
     private int DURATION;
 
     private String COLOROFTOPLINE = "#87CEFA";
@@ -85,7 +95,7 @@ public class MeetingSelectionCentralFragment extends Fragment implements ScrollV
         mTopView = getActivity().getLayoutInflater().inflate(R.layout.meeting_selection_top_fragment, null);
         init();
         initLeftView();
-        initTable();
+//        initTable();
         getPreference();
         getAvailability();
         return mParent;
@@ -98,6 +108,9 @@ public class MeetingSelectionCentralFragment extends Fragment implements ScrollV
         mFriendIDS = savedInstanceState.getStringArrayList("friendIDs");
         mStartDateForPost = savedInstanceState.getString("startdate");
         mEndDateForPost = savedInstanceState.getString("enddate");
+        mStartYear = savedInstanceState.getInt("startyear");
+        mStartMonth = savedInstanceState.getInt("startmonth");
+        mStartDay = savedInstanceState.getInt("startday");
     }
 
     public void init(){
@@ -106,7 +119,6 @@ public class MeetingSelectionCentralFragment extends Fragment implements ScrollV
         mTable = (TableLayout) mParent.findViewById(R.id.meeting_selection_center_table);
         mScrollView = (MeetingSelectionScrollView) mParent.findViewById(R.id.meeting_selection_center_scroll);
         mScrollView.setOnScrollViewListener(this);
-        availability = new int[24][60];
     }
 
     public void initLeftView(){
@@ -132,6 +144,7 @@ public class MeetingSelectionCentralFragment extends Fragment implements ScrollV
         mTopLine = new View[24];
         mLines = new View[24][DAYS];
         mChildTableRow = new LinearLayout[24][DAYS];
+        mIsAvailable = new boolean[24][DAYS];
         //mColors = new ImageView[24][DAYS];
         TableLayout.LayoutParams toplinepara = null;
         TableRow.LayoutParams linepara = null;
@@ -156,7 +169,7 @@ public class MeetingSelectionCentralFragment extends Fragment implements ScrollV
             //e.g. meeting duration is 20 mins, then the table row is divided into 60 / 20 = 3
             //parts. Each part will contain certain ImageView
 
-            mColors = new TextView[24][DAYS][parts];
+            mColors = new ImageView[24][DAYS][parts];
             //The layout parameters of each "big" table row
 //            childTablePara = new TableRow.LayoutParams(SIZEOFCOLORSQUARE
 //                    ,SIZEOFCOLORSQUARE);
@@ -165,7 +178,7 @@ public class MeetingSelectionCentralFragment extends Fragment implements ScrollV
 
 
         }else{
-            mColors = new TextView[24][DAYS][parts];
+            mColors = new ImageView[24][DAYS][parts];
             toplinepara = new TableLayout.LayoutParams(
                     LinearLayout.LayoutParams.MATCH_PARENT,HEIGHTOFTOPLINE);
             toplinepara.setMargins(0,0,MARGINOFLINE,0);
@@ -199,35 +212,101 @@ public class MeetingSelectionCentralFragment extends Fragment implements ScrollV
                 mChildTableRow[i][j].setOrientation(LinearLayout.VERTICAL);
                 //mChildTableRow[i][j].setLayoutParams(childTablePara);
                 for(int k = 0; k < parts; k ++){
-                    mColors[i][j][k] = new TextView(getActivity());
+                    mColors[i][j][k] = new ImageView(getActivity());
                     mColors[i][j][k].setLayoutParams(tablepara);
-                    //If the background color is invisible, which means the period of the time is unavailable.
-                    mColors[i][j][k].setBackgroundColor(Color.parseColor(COLOROFTABLE));
+                    if(checkAvailability(i, k * 60 / parts, i, (k + 1) * 60 /parts, j)) {
+                        //If the background color is invisible, which means the period of the time is unavailable.
+                        mColors[i][j][k].setBackgroundColor(Color.parseColor(COLOROFTABLE));
+                        if(DURATION > 60){
+                            mIsAvailable[i][j] = true;
+                        }else{
+                            mColors[i][j][k].setOnClickListener(new View.OnClickListener() {
+                                @Override
+                                public void onClick(View v) {
+                                }
+                            });
+                        }
+                    }else{
+                        mColors[i][j][k].setBackgroundColor(Color.parseColor("#CCCCCC"));
+                        mIsAvailable[i][j] = false;
+                    }
+
                     mChildTableRow[i][j].addView(mColors[i][j][k]);
+
                 }
                 mTableRow[i].addView(mChildTableRow[i][j]);
                 mTableRow[i].addView(mLines[i][j]);
             }
-
-
-//            for(int j = 0; j < DAYS; j ++){
-//                mLines[i][j] = new View(getActivity());
-//                mLines[i][j].setLayoutParams(linepara);
-//                mLines[i][j].setBackgroundColor(Color.parseColor(COLOROFLINE));
-//                mColors[i][j] = new ImageView(getActivity());
-//                mColors[i][j].setLayoutParams(tablepara);
-//                //If the background color is invisible, which means the period of the time is unavailable.
-//                mColors[i][j].setBackgroundColor(Color.parseColor(COLOROFTABLE));
-//                mTableRow[i].addView(mColors[i][j]);
-//                mTableRow[i].addView(mLines[i][j]);
-//            }
             mTable.addView(mTableRow[i]);
+        }
+        if(DURATION > 60){
+            setListener();
+        }
+    }
+
+    private void setListener(){
+        int chunk = DURATION / 60;
+        for(int i = 0; i < DAYS; i ++){
+            boolean isSetPadding = false;
+            int count = 0;
+            int start,end;
+            for(int j = 0; j < 24; j ++){
+                if(mIsAvailable[j][i]){
+                    start = j;
+                    end = (j + DURATION / 60) >= 24 ? 24 : (j + DURATION / 60);
+                    count ++;
+                    if(count >= chunk){
+                        isSetPadding = true;
+                        count = 0;
+                    }
+                    if(isSetPadding) {
+                        mChildTableRow[j][i].setPadding(0, PADDINGOFCOLORSQUARE, 0, 0);
+                        isSetPadding = false;
+                    }
+
+                }else {
+                    if(isSetPadding == false && j - 1 >= 0){
+                        mChildTableRow[j - 1][i].setPadding(0,0,0,PADDINGOFCOLORSQUARE);
+                    }
+                    isSetPadding = true;
+                    count = 0;
+                }
+            }
         }
     }
     // 在上面 一边循环一边check，如果上面的颜色是白色那么 setPadding = X, 如果下面是白色设置 setPadding = x （或者超出了duration 也是这么设置）
     //设置一个flag, 两个白色之间的组建 监听事件是一样的
-    private void checkAvailability(){
+    private boolean checkAvailability(int startHour, int startMin, int endHour, int endMin, int currentDay){
+        int[] date = {mStartYear,mStartMonth,mStartDay};
+        for(int i = 0; i < currentDay; i ++){
+            date = DateUtil.addDaysBasedOnCalendar(date[0], date[1], date[2], 1);
+        }
+        DateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        try {
+            String startTimeFormat = date[0] + "-" + date[1] + "-" + date[2] + " " + startHour + ":" +
+                    startMin + ":00";
+            String endTimeFormat = date[0] + "-" + date[1] + "-" + date[2] + " " + endHour + ":" +
+                    endMin + ":00";
+            Date currentStartTime = formatter.parse(startTimeFormat);
+            Date currentEndTime = formatter.parse(endTimeFormat);
 
+            for(int i = 0; i < mAvailability.length(); i ++){
+                //mAvailability.get(i)
+                JSONObject object = (JSONObject) mAvailability.get(i);
+                Date targetStartTime = DateUtil.getLocalTime(object.get("starts_time").toString());
+                Date targetEndTime = DateUtil.getLocalTime(object.get("ends_time").toString());
+                if(targetStartTime.getTime() <= currentStartTime.getTime() &&
+                        targetEndTime.getTime() >= currentEndTime.getTime()){
+                    return true;
+                }
+            }
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+        return false;
     }
 
     private void getPreference(){
@@ -328,7 +407,8 @@ public class MeetingSelectionCentralFragment extends Fragment implements ScrollV
                                 doGetPreference(jsonArray);
                             }
                             if ((jsonArray = (JSONArray) map.get("match_time_with_friends")) != null) {
-                                Log.i("date",jsonArray.toString());
+                                mAvailability = jsonArray;
+                                initTable();
                             }
                         }
                     }

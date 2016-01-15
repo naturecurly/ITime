@@ -52,8 +52,11 @@ public class DateSelectionActivity extends AppCompatActivity {
                 DateUtil.diffDate(STARTYEAR, STARTMONTH, STARTDAY, ENDYEAR, ENDMONTH, ENDDAY));
         centralMSG.putInt("duration", DURATION);
         centralMSG.putStringArrayList("friendIDs", mFriendIDs);
-        centralMSG.putString("startdate",getDateWithTimeZone(STARTYEAR, STARTMONTH, STARTDAY, STARTHOUR, STARTMIN));
-        centralMSG.putString("enddate",getDateWithTimeZone(ENDYEAR, ENDMONTH, ENDDAY, ENDHOUR, ENDMIN));
+        centralMSG.putString("startdate", getDateWithTimeZone(STARTYEAR, STARTMONTH, STARTDAY, STARTHOUR, STARTMIN));
+        centralMSG.putString("enddate", getDateWithTimeZone(ENDYEAR, ENDMONTH, ENDDAY, ENDHOUR, ENDMIN));
+        centralMSG.putInt("startyear", STARTYEAR);
+        centralMSG.putInt("startmonth", STARTMONTH);
+        centralMSG.putInt("startday", STARTDAY);
         centralFragment.setArguments(centralMSG);
         topFragment = new MeetingSelectionTopFragment();
         Bundle topMSG = new Bundle();

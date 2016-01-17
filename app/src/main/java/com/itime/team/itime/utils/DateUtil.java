@@ -157,6 +157,20 @@ public class DateUtil {
         }
 
     }
+
+    public static Date plusDay(int year, int month, int day, long addDays){
+        SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        Date date = null;
+        try {
+            long days = 24*60*60*1000*addDays;
+            Date changeDate = formatter.parse(year + "-" + month + "-" + day + " 10:00:00");
+            date = new Date(changeDate.getTime() + days);
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+        return date;
+    }
+
 //If the start time is easier than the end time, then the time is seemed feasible
     public static boolean isFeasible(int startYear, int startMonth, int startDay, int startHour, int startMin,
                                    int endYear, int endMonth, int endDay, int endHour, int endMin){
@@ -197,5 +211,6 @@ public class DateUtil {
         }
         return dateForReturn;
     }
+
 
 }

@@ -2,6 +2,7 @@ package com.itime.team.itime.fragments;
 
 import android.app.Fragment;
 import android.os.Bundle;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -26,7 +27,7 @@ public class MeetingSelectionTopFragment extends Fragment implements ScrollViewL
     private View mCentralFragment;
 
     private int DATE;
-    private int WIDTH = 151;
+    private int WIDTH = 141;
 
     private int STARTYEAR;
     private int STARTMONTH;
@@ -36,6 +37,8 @@ public class MeetingSelectionTopFragment extends Fragment implements ScrollViewL
     private int ENDMONTH;
     private int ENDDAY;
 
+    private int mInitDays;
+    private int[] currentDay;
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         getParameters(savedInstanceState);
@@ -59,28 +62,48 @@ public class MeetingSelectionTopFragment extends Fragment implements ScrollViewL
 
     private void init(){
         mCentralScrollView = (MeetingSelectionScrollView) mCentralFragment.findViewById(R.id.meeting_selection_center_scroll);
-
         mChild = (LinearLayout) mParent.findViewById(R.id.meeting_selection_top_scroll_child);
+        if(DATE < 6 && DATE > 0){
+            WIDTH = MeetingSelectionCentralFragment.WIDTHOFCENTERLAYOUT / DATE;
+        }
         mMonth = (TextView) mParent.findViewById(R.id.meeting_selection_top_textview);
-        mMonth.setWidth(WIDTH);
+        mMonth.setWidth(100);
         mMonth.setText(DateUtil.month[STARTMONTH - 1]);
         mDates = new TextView[DATE];
+        currentDay = new int[3];
         mScrollView = (MeetingSelectionScrollView) mParent.findViewById(R.id.meeting_selection_top_scroll);
         mScrollView.setOnScrollViewListener(this);
     }
 
     private void initTopScrollView(){
         String show;
-        int[] date = {STARTYEAR,STARTMONTH,STARTDAY};
-        for(int i = 0; i < DATE; i ++){
-            show = DateUtil.weekName[DateUtil.getDateOfWeek(date[0], date[1], date[2]) - 1] + "\n"
-                        + date[2];
+        currentDay[0] = STARTYEAR;
+        currentDay[1] = STARTMONTH;
+        currentDay[2] = STARTDAY;
+        mInitDays = DATE > 12 ? 12 : DATE;
+        for(int i = 0; i < mInitDays; i ++){
+            show = DateUtil.weekName[DateUtil.getDateOfWeek(currentDay[0], currentDay[1], currentDay[2]) - 1] + "\n"
+                        + currentDay[2];
             mDates[i] = new TextView(getActivity());
-            mDates[i].setText(show);
             mDates[i].setWidth(WIDTH);
+            mDates[i].setText(show);
+            mDates[i].setGravity(Gravity.CENTER_HORIZONTAL);
             mChild.addView(mDates[i]);
-            date = DateUtil.addDaysBasedOnCalendar(date[0], date[1], date[2], 1);
+            currentDay = DateUtil.addDaysBasedOnCalendar(currentDay[0], currentDay[1], currentDay[2], 1);
         }
+    }
+
+    private void addView(){
+        if(mInitDays < DATE){
+            mDates[mInitDays] = new TextView(getActivity());
+            mDates[mInitDays].setText(DateUtil.weekName[DateUtil.getDateOfWeek(currentDay[0],
+                    currentDay[1], currentDay[2]) - 1] + "\n" + currentDay[2]);
+            mDates[mInitDays].setWidth(WIDTH);
+            mDates[mInitDays].setGravity(Gravity.CENTER_HORIZONTAL);
+            mChild.addView(mDates[mInitDays]);
+            currentDay = DateUtil.addDaysBasedOnCalendar(currentDay[0], currentDay[1], currentDay[2], 1);
+        }
+        mInitDays ++;
     }
 
     public static void setPosition(int x, int y){
@@ -90,6 +113,10 @@ public class MeetingSelectionTopFragment extends Fragment implements ScrollViewL
     @Override
     public void onScrollChanged(MeetingSelectionScrollView scrollView, int x, int y, int oldx, int oldy) {
         if (scrollView == mScrollView) {
+            if(mInitDays * WIDTH <= x + (12 * WIDTH) && mInitDays < DATE){
+                addView();
+            }
+            mMonth.setText(DateUtil.month[DateUtil.plusDay(STARTYEAR,STARTMONTH, STARTDAY,x / WIDTH).getMonth()]);
             MeetingSelectionCentralFragment.setPosition(x,y);
         }
     }

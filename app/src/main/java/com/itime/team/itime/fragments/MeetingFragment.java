@@ -152,7 +152,7 @@ public class MeetingFragment extends Fragment implements View.OnClickListener,Se
     private void initListView(){
         JSONObject userID = new JSONObject();
         try {
-            userID.put("user_id", new User().getID());
+            userID.put("user_id", User.ID);
             requestJSONArray(mJsonManager, userID, "http://www.kooyear.com/iTIME_Server/load_friends",
                     "load_friends");
             handleJSON(mJsonManager);
@@ -399,4 +399,5 @@ public class MeetingFragment extends Fragment implements View.OnClickListener,Se
     public void requestJSONArray(JsonManager manager,JSONObject jsonObject, String url, String tag) {
         manager.postForJsonArray(url, jsonObject, getActivity(),tag);
     }
+
 }

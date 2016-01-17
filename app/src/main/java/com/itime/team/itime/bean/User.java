@@ -4,7 +4,7 @@ package com.itime.team.itime.bean;
  * Created by mac on 16/1/12.
  */
 public class User {
-    private String ID = "cai";
+    public static String ID = "cai";
     private String profilePicture = "";
 
     public void setID(String ID) {

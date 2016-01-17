@@ -50,6 +50,8 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
+
+
     private View getTabItemView(int index) {
         View view = layoutInflater.inflate(R.layout.tab_item_view, null);
 

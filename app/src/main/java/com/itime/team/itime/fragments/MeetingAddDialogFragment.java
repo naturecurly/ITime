@@ -12,7 +12,13 @@ import android.widget.ListView;
 import android.widget.SimpleAdapter;
 
 import com.itime.team.itime.activities.R;
+import com.itime.team.itime.bean.User;
+import com.itime.team.itime.interfaces.DataRequest;
+import com.itime.team.itime.utils.JsonManager;
 import com.zxing.activity.CaptureActivity;
+
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -20,15 +26,17 @@ import java.util.HashMap;
 /**
  * Created by mac on 15/12/15.
  */
-public class MeetingAddDialogFragment extends DialogFragment {
+public class MeetingAddDialogFragment extends DialogFragment implements DataRequest{
     private ListView listView;
     private ArrayList<HashMap<String, Object>> listItem;
     private View addDialog;
+    private JsonManager mJsonManager;
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         addDialog = inflater.inflate(R.layout.fragment_meeting_adddialog,container);
         listView = (ListView) addDialog.findViewById(R.id.meeting_add_listview);
         listItem = new ArrayList<HashMap<String, Object>>();
+        mJsonManager = new JsonManager();
         getDialog().setTitle("Search");
         return addDialog;
     }
@@ -82,7 +90,7 @@ public class MeetingAddDialogFragment extends DialogFragment {
 
                 }else if (position == 2){
                     Intent intent = new Intent(getActivity(), CaptureActivity.class);
-                    startActivity(intent);
+                    startActivityForResult(intent, 0);
                 }else if (position == 3){
 
                 }else if(position == 4){
@@ -90,9 +98,41 @@ public class MeetingAddDialogFragment extends DialogFragment {
                 } else{
 
                 }
-                dismiss();
+
             }
         });
     }
 
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (resultCode == getActivity().RESULT_OK) {
+            String result = data.getExtras().getString("result");
+            String url = "http://www.kooyear.com/iTIME_Server/adding_friend_request";
+            JSONObject object = new JSONObject();
+            try {
+                object.put("user_id", User.ID);
+                object.put("friend_id",result);
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+            requestJSONObject(mJsonManager,object,url,"adding_friend_request");
+            dismiss();
+        }
+
+    }
+
+    @Override
+    public void handleJSON(JsonManager manager) {
+    }
+
+    @Override
+    public void requestJSONObject(JsonManager manager,JSONObject jsonObject, String url, String tag) {
+        manager.postForJsonObject(url, jsonObject, getActivity(), tag);
+    }
+
+    @Override
+    public void requestJSONArray(JsonManager manager,JSONObject jsonObject, String url, String tag) {
+        manager.postForJsonArray(url, jsonObject, getActivity(),tag);
+    }
 }

@@ -13,6 +13,7 @@ import android.widget.AbsoluteLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
@@ -39,8 +40,13 @@ import java.util.Date;
 import java.util.HashMap;
 
 /**
- * Created by mac on 15/12/27.
+ * The function of this fragment is to present the friends' preferences of meeting time.
+ * Each Green View is an ImageView which is contained by a LinearLayout (container) to control the
+ * padding of the view. The invisible part of the fragment (we call this part as default), is
+ * still a ImageView, but the continuous part is a single ImageView, rather than the combination of
+ * many ImageViews.
  */
+
 public class MeetingSelectionCentralFragment extends Fragment implements ScrollViewListener, DataRequest {
     private Intent intent;
     private View mParent;
@@ -51,19 +57,21 @@ public class MeetingSelectionCentralFragment extends Fragment implements ScrollV
     private LinearLayout[] mColumn;
     private View[] mLines;
     private ArrayList<ImageView>[] mColors;
-    private ArrayList<LinearLayout>[] mEachCOntainer;
     private static MeetingSelectionScrollView mScrollView;
     private MeetingSelectionTopFragment topFragment;
     //store the number of people who are available in the specific period of time (24 * 60)
     private JSONArray mAvailability;
-    private boolean[][] mIsAvailable;
     private Preference[] mPreference;
+    //This variable is virtual pointer which points to a sorted array (which is a jsonArray and sorted
+    // by time).When satisfying a condition, the pointer moves forward.
     private int checkDatePointer;
 
     private ArrayList<String> mFriendIDS;
     private JsonManager mJsonManager;
 
+    //The total days of meeting period.
     private int DAYS;
+    //Formats for post to server side
     private String mStartDateForPost;
     private String mEndDateForPost;
     private int mStartYear;
@@ -86,7 +94,6 @@ public class MeetingSelectionCentralFragment extends Fragment implements ScrollV
 
     public static int WIDTHOFCENTERLAYOUT = 800;
 
-    private int MARGINOFCHILDTABLEROW = 2;
     private int DURATION;
 
     private String COLOROFTOPLINE = "#87CEFA";
@@ -116,14 +123,16 @@ public class MeetingSelectionCentralFragment extends Fragment implements ScrollV
         mStartYear = savedInstanceState.getInt("startyear");
         mStartMonth = savedInstanceState.getInt("startmonth");
         mStartDay = savedInstanceState.getInt("startday");
+        //When the total days are less than 6, then we averagely separate the width to make screen full
         if(DAYS < 6 && DAYS > 0){
             WIDTHOFCOLORSQUARE = WIDTHOFCENTERLAYOUT / DAYS;
         }
+        //The values of duration might be one of 10,15,30,60,120,360
         double parts = 60.0 / DURATION;
         TOTALHEIGHT = (int) ((2 * PADDDINGOFSQAURE +
                 (parts < 1 ? (int) (HIGHTOFCOLORSQUARE / parts) : (int)(DURATION / 60.0 * HIGHTOFCOLORSQUARE))) *
                         24 * parts);
-        WIDTHFOREACH = WIDTHOFCOLORSQUARE + PADDDINGOFSQAURE + WEIGHTOFLINE;
+        WIDTHFOREACH = WIDTHOFCOLORSQUARE +  PADDDINGOFSQAURE + WEIGHTOFLINE;
         checkDatePointer = 0;
     }
 
@@ -150,10 +159,7 @@ public class MeetingSelectionCentralFragment extends Fragment implements ScrollV
     public void initTable(){
         mColumn = new LinearLayout[DAYS];
         mLines = new View[DAYS];
-        mIsAvailable = new boolean[24][DAYS];
         mColors = new ArrayList[DAYS];
-
-
 
         double parts = 60.0 / DURATION;
         int size = (int) (HIGHTOFCOLORSQUARE/parts);
@@ -162,82 +168,84 @@ public class MeetingSelectionCentralFragment extends Fragment implements ScrollV
         mLinepara.setMargins(PADDDINGOFSQAURE, 0, PADDDINGOFSQAURE, 0);
         mImagepara = new LinearLayout.LayoutParams(WIDTHOFCOLORSQUARE,
                 parts < 1 ? size : (int)(DURATION / 60.0 * HIGHTOFCOLORSQUARE));
-
+        //12 means that we initialize 12 days' data at beginning
         mInitDays = DAYS > 12 ? 12 : DAYS;
         for(int i = 0; i < mInitDays; i ++){
-            mColumn[i] = new LinearLayout(getActivity());
-            mColumn[i].setOrientation(LinearLayout.VERTICAL);
-            mColumn[i].setMinimumWidth(WIDTHFOREACH);
-            mColors[i] = new ArrayList<ImageView>();
-            mLines[i] = new View(getActivity());
-            mLines[i].setLayoutParams(mLinepara);
-            mLines[i].setBackgroundColor(Color.parseColor(COLOROFLINE));
-            int part = DURATION > 60 ? 1 : 60 / DURATION;
-            int index = 0;
-            int unMatchedNumber = 0;
-            for(int j = 0; j <= 24 * part; j ++){
-                LinearLayout container = new LinearLayout(getActivity());
-                ImageView imageView = new ImageView(getActivity());
-                ImageView defaultView = new ImageView(getActivity());
-                if(checkAvailability(j / part, DURATION > 60 ? 0 : j % part * DURATION, DURATION, i)){
-                    j += (DURATION/60 == 0 ? 1: DURATION/60) - 1;
-                    if(j + 1 <= 24 * part) {
-                        mDefaultImagePara = new LinearLayout.LayoutParams(WIDTHOFCOLORSQUARE,
-                                DURATION >= 60 ? TOTALHEIGHT / 24 * unMatchedNumber :
-                                        unMatchedNumber * (2 * PADDDINGOFSQAURE + size));
-                        defaultView.setLayoutParams(mDefaultImagePara);
-                        imageView.setBackgroundColor(Color.parseColor(COLOROFTABLE));
-                        imageView.setLayoutParams(mImagepara);
-                        mColors[i].add(imageView);
-                        container.setPadding(0, PADDDINGOFSQAURE, 0, PADDDINGOFSQAURE);
-                        container.addView(mColors[i].get(index ++));
-                        mColumn[i].addView(defaultView);
-                        mColumn[i].addView(container);
-                        unMatchedNumber = 0;
-                    }
-                }else{
-                    unMatchedNumber ++;
-                }
-            }
-            mColorsContainer.addView(mColumn[i]);
-            mColorsContainer.addView(mLines[i]);
+            addView(i, true);
         }
     }
+    /*
+        Since the operations of initializing the 12 views and add views are the same, the two functions
+        are programmed together.
+        If isInit is true means that initializing 12 views, otherwise, do add view operation.
+     */
+    private void addView(int i, boolean isInit){
 
-    private void addView(){
-        mColumn[mInitDays] = new LinearLayout(getActivity());
-        mColumn[mInitDays].setOrientation(LinearLayout.VERTICAL);
-        mColors[mInitDays] = new ArrayList<ImageView>();
-        mLines[mInitDays] = new View(getActivity());
-        mLines[mInitDays].setLayoutParams(mLinepara);
-        mLines[mInitDays].setBackgroundColor(Color.parseColor(COLOROFLINE));
+        double parts = 60.0 / DURATION;
+        int size = (int) (HIGHTOFCOLORSQUARE/parts);
+        if(isInit == false){
+            i = mInitDays;
+        }
+        mColumn[i] = new LinearLayout(getActivity());
+        mColumn[i].setOrientation(LinearLayout.VERTICAL);
+        mColumn[i].setMinimumWidth(WIDTHFOREACH - WEIGHTOFLINE - PADDDINGOFSQAURE);
+        mColors[i] = new ArrayList<ImageView>();
+        mLines[i] = new View(getActivity());
+        mLines[i].setLayoutParams(mLinepara);
+        mLines[i].setBackgroundColor(Color.parseColor(COLOROFLINE));
         int part = DURATION > 60 ? 1 : 60 / DURATION;
         int index = 0;
-        int unMatchedNumber = 0;
-        if(mInitDays < DAYS){
-            for(int j = 0; j < 24 * part; j ++){
-                LinearLayout container = new LinearLayout(getActivity());
-                ImageView imageView = new ImageView(getActivity());
-                if(checkAvailability(j / part, DURATION > 60 ? 0 : j % part * DURATION, DURATION, mInitDays)){
-                    j += (DURATION/60 == 0 ? 1: DURATION/60) - 1;
-                    if(j + 1 < 24 * part) {
 
-                        imageView.setBackgroundColor(Color.parseColor(COLOROFTABLE));
-                        imageView.setLayoutParams(mImagepara);
-                    }
-                }else{
-                    unMatchedNumber ++;
+        //Calculate the number of periods of time which cannot match the target data, it contributes
+        //to calculate the height of default view. Once one item matches, then this variable should be
+        //cleared.
+        int unMatchedNumber = 0;
+        for(int j = 0; j <= 24 * part; j ++){
+            LinearLayout container = new LinearLayout(getActivity());
+            ImageView imageView = new ImageView(getActivity());
+            ImageView defaultView = new ImageView(getActivity());
+
+            //Change the current values j to current time, we should the formula below.
+            final int hour = j / part;
+            final int min = DURATION > 60 ? 0 : j % part * DURATION;
+            if(checkAvailability(hour, min, DURATION, i)){
+                //Since after each loop, the value j is increased by 1. In order to use j correctly,
+                //just minus 1 temporarily. The meaning of this statement is that: Since some ImageView
+                //is bigger that 1 hour's length, it has to be done that increase j to match the current
+                //time.
+                j += (DURATION/60 == 0 ? 1: DURATION/60) - 1;
+                if(j + 1 <= 24 * part) {
+                    mDefaultImagePara = new LinearLayout.LayoutParams(WIDTHOFCOLORSQUARE,
+                            DURATION >= 60 ? TOTALHEIGHT / 24 * unMatchedNumber :
+                                    unMatchedNumber * (2 * PADDDINGOFSQAURE + size));
+                    defaultView.setLayoutParams(mDefaultImagePara);
+                    imageView.setBackgroundColor(Color.parseColor(COLOROFTABLE));
+                    imageView.setLayoutParams(mImagepara);
+                    mColors[i].add(imageView);
+
+                    container.setPadding(0, PADDDINGOFSQAURE, 0, PADDDINGOFSQAURE);
+                    container.addView(mColors[i].get(index++));
+                    mColors[i].get(index - 1).setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            Toast.makeText(getActivity(), hour + " :" + min, Toast.LENGTH_SHORT).show();
+                        }
+                    });
+                    mColumn[i].addView(defaultView);
+                    mColumn[i].addView(container);
+                    unMatchedNumber = 0;
                 }
-                container.setPadding(0,PADDDINGOFSQAURE,0,PADDDINGOFSQAURE);
-                mColors[mInitDays].add(imageView);
-                container.addView(mColors[mInitDays].get(index ++));
-                mColumn[mInitDays].addView(container);
+            }else{
+                unMatchedNumber ++;
             }
-            mColorsContainer.addView(mColumn[mInitDays]);
-            mColorsContainer.addView(mLines[mInitDays]);
+        }
+        mColorsContainer.addView(mColumn[i]);
+        mColorsContainer.addView(mLines[i]);
+        if(isInit == false) {
+            mInitDays++;
         }
 
-        mInitDays ++;
+
     }
 
     private boolean checkAvailability(int startHour, int startMin, long duration, int currentDay){
@@ -251,6 +259,7 @@ public class MeetingSelectionCentralFragment extends Fragment implements ScrollV
                     startMin + ":00";
             Date currentStartTime = formatter.parse(startTimeFormat);
             Date currentEndTime = new Date(currentStartTime.getTime() + duration * 60 * 1000);
+            //Here is the implementation of the pointer.
             for (int i = checkDatePointer; i < mAvailability.length(); i ++){
                 //mAvailability.get(i)
                 JSONObject object = (JSONObject) mAvailability.get(checkDatePointer);
@@ -315,7 +324,7 @@ public class MeetingSelectionCentralFragment extends Fragment implements ScrollV
             String url = "http://www.kooyear.com/iTIME_Server/match_time_with_friends";
             String duration = "";
             JSONObject post = new JSONObject();
-            post.put("user_id",new User().getID());
+            post.put("user_id",User.ID);
             switch (DURATION){
                 case 10:
                     duration = "10mins";break;
@@ -357,7 +366,7 @@ public class MeetingSelectionCentralFragment extends Fragment implements ScrollV
     public void onScrollChanged(MeetingSelectionScrollView scrollView, int x, int y, int oldx, int oldy) {
         if (scrollView == mScrollView) {
             if(mInitDays * WIDTHFOREACH <= x + (12 * WIDTHFOREACH) && mInitDays < DAYS){
-                addView();
+                addView(0,false);
             }
             topFragment.setPosition(x,y);
         }

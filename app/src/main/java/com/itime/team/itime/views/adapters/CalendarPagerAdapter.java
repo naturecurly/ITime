@@ -28,7 +28,7 @@ public class CalendarPagerAdapter extends FragmentStatePagerAdapter {
 
     @Override
     public int getCount() {
-        return Integer.MAX_VALUE;
+        return 1000;
     }
 
     public CalendarBodyFragment getFragment(int index) {

@@ -325,12 +325,13 @@ public class CalendarView extends View {
         }
     }
 
-    public void update(int year, int month, int day) {
+    public CalendarView update(int year, int month, int day) {
         this.mShowMonth = month;
         this.mShowYear = year;
         this.mShowDay = day;
 
         invalidate();
+        return null;
     }
 
 

@@ -29,4 +29,5 @@ dependencies {
     compile project(':volley')
     compile project(':barcode')
     compile 'com.github.castorflex.verticalviewpager:library:19.0.1'
+    compile 'com.android.support:recyclerview-v7:23.1.1'
 }

@@ -11,8 +11,9 @@
     <string name="Save">Save</string>
     <string name="Cancel">Cancel</string>
     <string name="Logout">Log Out</string>
-    <string name="settings_preference">Meeting Preferences</string>
-    <string name="settings_import">Import Calendars</string>
+    <string name="settings_meeting_preference">Meeting Preferences</string>
+    <string name="settings_import_calendar">Import Calendars</string>
+    <string name="settings_default_alert_time">Default Alert Time</string>
     <string name="profile_photo">Profile Photo</string>
     <string name="meeting_start_time">Starts</string>
     <string name="meeting_end_time">Ends</string>

@@ -19,7 +19,6 @@ android {
     }
 }
 
-
 dependencies {
     compile fileTree(include: ['*.jar'], dir: 'libs')
     testCompile 'junit:junit:4.12'
@@ -30,4 +29,6 @@ dependencies {
     compile project(':barcode')
     compile 'com.github.castorflex.verticalviewpager:library:19.0.1'
     compile 'com.android.support:recyclerview-v7:23.1.1'
+    compile 'com.android.support:preference-v7:23.1.0'
+    compile 'com.android.support:preference-v14:23.1.0'
 }

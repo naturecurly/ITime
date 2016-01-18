@@ -1,11 +1,41 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string-array name="entries_list_preference">
-        <item>Metric</item>
-        <item>Imperial</item>
+    <string-array name="entry_default_alert_time">
+        <item>None</item>
+        <item>At time of Departure</item>
+        <item>5 minutes before</item>
+        <item>10 minutes before</item>
+        <item>15 minutes before</item>
+        <item>30 minutes before</item>
+        <item>1 hour before</item>
     </string-array>
-    <string-array name="entry_values_list_preference">
-        <item>Metric value</item>
-        <item>Imperial value</item>
+    <string-array name="entry_values_default_alert_time">
+        <item>None</item>
+        <item>At time of Departure</item>
+        <item>5 minutes before</item>
+        <item>10 minutes before</item>
+        <item>15 minutes before</item>
+        <item>30 minutes before</item>
+        <item>1 hour before</item>
+    </string-array>
+    <string-array name="repeat_options">
+        <item>Daily</item>
+        <item>One-time event</item>
+        <item>Every weekday (Mon - Fri)</item>
+        <item>Every weekend (Sat - Sun)</item>
+        <item>Weekly</item>
+        <item>Bi-Weekly</item>
+        <item>Monthly</item>
+        <item>Yearly</item>
+    </string-array>
+    <string-array name="repeat_values">
+        <item>Daily</item>
+        <item>One-time event</item>
+        <item>Every weekday (Mon - Fri)</item>
+        <item>Every weekend (Sat - Sun)</item>
+        <item>Weekly</item>
+        <item>Bi-Weekly</item>
+        <item>Monthly</item>
+        <item>Yearly</item>
     </string-array>
 </resources>

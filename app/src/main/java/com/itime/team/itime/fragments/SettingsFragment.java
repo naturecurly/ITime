@@ -18,7 +18,10 @@ package com.itime.team.itime.fragments;
 
 import android.os.Bundle;
 import android.support.v4.content.ContextCompat;
+import android.support.v7.preference.EditTextPreference;
+import android.support.v7.preference.Preference;
 import android.support.v7.preference.PreferenceFragmentCompat;
+import android.support.v7.preference.PreferenceManager;
 import android.view.View;
 
 import com.itime.team.itime.activities.R;
@@ -26,7 +29,7 @@ import com.itime.team.itime.activities.R;
 /**
  * Created by Xuhui Chen (yorkfine) on 10/01/16.
  */
-public class SettingsFragment extends PreferenceFragmentCompat {
+public class SettingsFragment extends PreferenceFragmentCompat implements Preference.OnPreferenceChangeListener{
 
     @Override
     public void onViewCreated(View view, Bundle savedInstanceState) {
@@ -42,5 +45,37 @@ public class SettingsFragment extends PreferenceFragmentCompat {
     public void onCreatePreferences(Bundle bundle, String s) {
         //addPreferencesFromResource(R.xml.preferences);
         setPreferencesFromResource(R.xml.preferences, s);
+        bindPreferenceSummaryToValue(findPreference("name"));
+        bindPreferenceSummaryToValue(findPreference("iTime_id"));
+        bindPreferenceSummaryToValue(findPreference("email"));
+        bindPreferenceSummaryToValue(findPreference("phone"));
+    }
+
+
+/**
+     * Attaches a listener so the summary is always updated with the preference value.
+     * Also fires the listener once, to initialize the summary (so it shows up before the value
+     * is changed.)
+     */
+    private void bindPreferenceSummaryToValue(Preference preference) {
+        // Set the listener to watch for value changes.
+        preference.setOnPreferenceChangeListener(this);
+
+        // Trigger the listener immediately with the preference's
+        // current value.
+        onPreferenceChange(preference,
+                PreferenceManager
+                        .getDefaultSharedPreferences(preference.getContext())
+                        .getString(preference.getKey(), ""));
+    }
+
+    @Override
+    public boolean onPreferenceChange(Preference preference, Object o) {
+        String value = o.toString();
+
+        if (preference instanceof EditTextPreference) {
+            preference.setSummary(value);
+        }
+        return true;
     }
 }

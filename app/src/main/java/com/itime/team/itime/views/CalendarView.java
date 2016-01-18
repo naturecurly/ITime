@@ -264,22 +264,26 @@ public class CalendarView extends View {
     private void fillWeekDate() {
 
         int currentMonthDays = DateUtil.getMonthDays(mShowYear, mShowMonth);
-        rows[0] = new Row();
-        if (mShowDay + WEEK - 1 > currentMonthDays) {
-            mShowMonth += 1;
-        }
-        for (int i = 0; i < TOTAL_COL; i++) {
-            mShowDay += 1;
-            if (mShowDay > currentMonthDays) {
-                mShowDay = 1;
+//        rows[1] = new Row();
+//        rows[0] = new Row();
+        for (int week = 0; week < 3; week++) {
+            rows[week] = new Row();
+            if (mShowDay + WEEK - 1 > currentMonthDays) {
+                mShowMonth += 1;
             }
-            if (mShowDay == DateUtil.getCurrentMonthDays() &&
-                    mShowYear == DateUtil.getYear()
-                    && mShowMonth == DateUtil.getMonth()) {
-                rows[0].cells[i] = new Cell(mShowDay + "", State.TODAY);
-                continue;
+            for (int i = 0; i < TOTAL_COL; i++) {
+                mShowDay += 1;
+                if (mShowDay > currentMonthDays) {
+                    mShowDay = 1;
+                }
+                if (mShowDay == DateUtil.getCurrentMonthDays() &&
+                        mShowYear == DateUtil.getYear()
+                        && mShowMonth == DateUtil.getMonth()) {
+                    rows[week].cells[i] = new Cell(mShowDay + "", State.TODAY);
+                    continue;
+                }
+                rows[week].cells[i] = new Cell(mShowDay + "", State.CURRENT_MONTH_DAY);
             }
-            rows[0].cells[i] = new Cell(mShowDay + "", State.CURRENT_MONTH_DAY);
         }
     }
 
@@ -335,10 +339,10 @@ public class CalendarView extends View {
         int width = measure(widthMeasureSpec);
         int height = measure(heightMeasureSpec);
         int d = Math.min(width, height);
-        mCellSpace = (float) d / TOTAL_COL;
+        mCellSpace = (float) width / TOTAL_COL;
         //Log.i("TTTT", mCellSpace + " " + width + " " + height);
         mTextPaint.setTextSize(mCellSpace / 3);
-        setMeasuredDimension(d, d);
+        setMeasuredDimension(width, (int) mCellSpace * 3);
     }
 
     protected int measure(int measureSpec) {

@@ -20,6 +20,8 @@ import com.itime.team.itime.activities.R;
 import com.itime.team.itime.listener.OnDateSelectedListener;
 import com.itime.team.itime.utils.DateUtil;
 
+import java.util.Calendar;
+
 public class CalendarView extends View {
 
     private static final String TAG = "CalendarView";
@@ -54,6 +56,7 @@ public class CalendarView extends View {
     float upX = 0;
     float upY = 0;
     private OnDateSelectedListener listener;
+    private boolean isInitialed = false;
 
     public CalendarView(Context context, AttributeSet attrs, int defStyle) {
         super(context, attrs, defStyle);
@@ -76,6 +79,16 @@ public class CalendarView extends View {
         super(context);
         this.defaultStyle = style;
         init(context);
+    }
+
+    public CalendarView(Context context, int year, int month, int day) {
+        super(context);
+        this.mShowYear = year;
+        this.mShowMonth = month;
+        this.mShowDay = day;
+        isInitialed = true;
+        init(context);
+
     }
 
     @Override
@@ -113,8 +126,8 @@ public class CalendarView extends View {
         mLinePaint = new Paint((Paint.ANTI_ALIAS_FLAG));
         mLinePaint.setColor(Color.GRAY);
         this.context = context;
-
-        initDate();
+        if (isInitialed == false)
+            initDate();
 
     }
 
@@ -325,13 +338,12 @@ public class CalendarView extends View {
         }
     }
 
-    public CalendarView update(int year, int month, int day) {
+    public void update(int year, int month, int day) {
         this.mShowMonth = month;
         this.mShowYear = year;
         this.mShowDay = day;
-
+        fillDate();
         invalidate();
-        return null;
     }
 
 

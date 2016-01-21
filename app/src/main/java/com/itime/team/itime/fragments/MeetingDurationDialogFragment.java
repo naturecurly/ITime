@@ -2,7 +2,6 @@ package com.itime.team.itime.fragments;
 
 import android.os.Bundle;
 import android.support.v4.app.DialogFragment;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -16,12 +15,8 @@ import com.itime.team.itime.activities.R;
 /**
  * Created by mac on 15/12/18.
  */
-public class MeetingDurationDialogFragment extends DialogFragment implements NumberPicker.OnValueChangeListener,AbsListView.OnScrollListener,NumberPicker.Formatter, View.OnClickListener {
+public class MeetingDurationDialogFragment extends DialogFragment implements NumberPicker.OnValueChangeListener,AbsListView.OnScrollListener, View.OnClickListener {
     private View durationDialog;
-    private NumberPicker hourPicker;
-    private NumberPicker minPicker;
-    private Button save;
-    private Button cancel;
 
     private Button mTenMins;
     private Button mFifteenMins;
@@ -29,12 +24,15 @@ public class MeetingDurationDialogFragment extends DialogFragment implements Num
     private Button mOneHour;
     private Button mTwoHours;
     private Button mSixHours;
+    private Button duration;
+
+    public MeetingDurationDialogFragment(Button duration) {
+        this.duration = duration;
+    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-//        durationDialog = inflater.inflate(R.layout.fragment_meeting_duration_dialog_numberpicker,null);
         durationDialog = inflater.inflate(R.layout.fragment_meeting_duration_dialog_button, null);
-//        init();
         initVerTwo();
         return durationDialog;
     }
@@ -54,46 +52,8 @@ public class MeetingDurationDialogFragment extends DialogFragment implements Num
         mSixHours.setOnClickListener(this);
     }
 
-    private void init() {
-        hourPicker = (NumberPicker) durationDialog.findViewById(R.id.meeting_hourpicker);
-        minPicker = (NumberPicker) durationDialog.findViewById(R.id.meeting_minuteicker);
-        save = (Button) durationDialog.findViewById(R.id.meeting_duration_dialog_save);
-        cancel = (Button) durationDialog.findViewById(R.id.meeting_duration_dialog_cancel);
-        hourPicker.setFormatter(this);
-        hourPicker.setOnValueChangedListener(this);
-        hourPicker.setMaxValue(24);
-        hourPicker.setMinValue(0);
-        hourPicker.setValue(9);
 
-        minPicker.setFormatter(this);
-        minPicker.setOnValueChangedListener(this);
-        minPicker.setMaxValue(59);
-        minPicker.setMinValue(0);
-        minPicker.setValue(49);
 
-        save.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Log.i("Duration",hourPicker.getValue() + ":" + minPicker.getValue());
-                MeetingDurationDialogFragment.this.dismiss();
-            }
-        });
-
-        cancel.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                MeetingDurationDialogFragment.this.dismiss();
-            }
-        });
-    }
-
-    public String format(int value) {
-        String tmpStr = String.valueOf(value);
-        if (value < 10) {
-            tmpStr = "0" + tmpStr;
-        }
-        return tmpStr;
-    }
 
     public void onValueChange(NumberPicker picker, int oldVal, int newVal) {
 //        Toast.makeText(
@@ -116,17 +76,24 @@ public class MeetingDurationDialogFragment extends DialogFragment implements Num
     public void onClick(View v) {
         if(v.getId() == R.id.meeting_duration_tenmins){
             MeetingFragment.mDuration = 10;
+            duration.setText("10 mins");
         }else if(v.getId() == R.id.meeting_duration_fifteenmins){
             MeetingFragment.mDuration = 15;
+            duration.setText("15 mins");
         }else if(v.getId() == R.id.meeting_duration_thirtymins){
             MeetingFragment.mDuration = 30;
+            duration.setText("30 mins");
         }else if(v.getId() == R.id.meeting_duration_onehour){
             MeetingFragment.mDuration = 60;
+            duration.setText("1 hour");
         }else if(v.getId() == R.id.meeting_duration_twohours){
             MeetingFragment.mDuration = 120;
+            duration.setText("2 hours");
         }else if(v.getId() == R.id.meeting_duration_sixhours){
             MeetingFragment.mDuration = 360;
+            duration.setText("6 hours");
         }
         MeetingDurationDialogFragment.this.dismiss();
     }
+
 }

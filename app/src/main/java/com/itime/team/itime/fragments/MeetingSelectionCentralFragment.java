@@ -19,6 +19,7 @@ import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.itime.team.itime.activities.R;
 import com.itime.team.itime.bean.Preference;
+import com.itime.team.itime.bean.URLs;
 import com.itime.team.itime.bean.User;
 import com.itime.team.itime.interfaces.DataRequest;
 import com.itime.team.itime.listener.ScrollViewListener;
@@ -65,6 +66,8 @@ public class MeetingSelectionCentralFragment extends Fragment implements ScrollV
     //This variable is virtual pointer which points to a sorted array (which is a jsonArray and sorted
     // by time).When satisfying a condition, the pointer moves forward.
     private int checkDatePointer;
+    private boolean mIsAvailable;
+    private Date mEachEndDate;
 
     private ArrayList<String> mFriendIDS;
     private JsonManager mJsonManager;
@@ -134,6 +137,7 @@ public class MeetingSelectionCentralFragment extends Fragment implements ScrollV
                         24 * parts);
         WIDTHFOREACH = WIDTHOFCOLORSQUARE +  PADDDINGOFSQAURE + WEIGHTOFLINE;
         checkDatePointer = 0;
+        mIsAvailable = false;
     }
 
     public void init(){
@@ -204,11 +208,11 @@ public class MeetingSelectionCentralFragment extends Fragment implements ScrollV
             LinearLayout container = new LinearLayout(getActivity());
             ImageView imageView = new ImageView(getActivity());
             ImageView defaultView = new ImageView(getActivity());
-
             //Change the current values j to current time, we should the formula below.
             final int hour = j / part;
             final int min = DURATION > 60 ? 0 : j % part * DURATION;
-            if(checkAvailability(hour, min, DURATION, i)){
+            mIsAvailable = mEachEndDate == null ? false : priorityCheckAvailability(hour, min, i);
+            if(mIsAvailable || checkAvailability(hour, min, DURATION, i)){
                 //Since after each loop, the value j is increased by 1. In order to use j correctly,
                 //just minus 1 temporarily. The meaning of this statement is that: Since some ImageView
                 //is bigger that 1 hour's length, it has to be done that increase j to match the current
@@ -244,8 +248,44 @@ public class MeetingSelectionCentralFragment extends Fragment implements ScrollV
         if(isInit == false) {
             mInitDays++;
         }
+    }
 
-
+    //Check two dates which one is latter based on Year,month, day, hour and minute
+    //The logic and structure seems to be complicated, but in this way, which can improve the efficiency of the program.
+    private boolean priorityCheckAvailability(int startHour, int startMin, int currentDay){
+        int[] date = {mStartYear,mStartMonth,mStartDay};
+        for(int i = 0; i < currentDay; i ++){
+            date = DateUtil.addDaysBasedOnCalendar(date[0], date[1], date[2], 1);
+        }
+        if(date[0] < mEachEndDate.getYear() + 1900){
+            return true;
+        }else if(date[0] > mEachEndDate.getYear() + 1900){
+            return false;
+        }else{
+            if(date[1] < mEachEndDate.getMonth() + 1){
+                return true;
+            }else if(date[1] > mEachEndDate.getMonth() + 1){
+                return false;
+            }else{
+                if(date[2] < mEachEndDate.getDate()){
+                    return true;
+                }else if(date[2] > mEachEndDate.getDate()){
+                    return false;
+                }else{
+                    if(startHour < mEachEndDate.getHours()){
+                        return true;
+                    }else if(startHour > mEachEndDate.getHours()){
+                        return false;
+                    }else{
+                        if(startMin <= mEachEndDate.getMinutes()){
+                            return true;
+                        }else{
+                            return false;
+                        }
+                    }
+                }
+            }
+        }
     }
 
     private boolean checkAvailability(int startHour, int startMin, long duration, int currentDay){
@@ -267,6 +307,11 @@ public class MeetingSelectionCentralFragment extends Fragment implements ScrollV
                 Date targetEndTime = DateUtil.getLocalTime(object.get("ends_time").toString());
                 if(targetStartTime.getTime() <= currentStartTime.getTime() &&
                         targetEndTime.getTime() >= currentEndTime.getTime()){
+                    mEachEndDate = targetEndTime;
+                    mIsAvailable = true;
+//                    Log.i("FOrmat", mEachEndDate.toString());
+                    Log.i("mEachEndDate",mEachEndDate.getYear() + " " + mEachEndDate.getMonth() + " " +
+                    mEachEndDate.getDate() + " - " + mEachEndDate.getHours() + " : " + mEachEndDate.getMinutes());
                     return true;
                 }else{
                     if(currentStartTime.getTime() > targetEndTime.getTime()){
@@ -291,7 +336,7 @@ public class MeetingSelectionCentralFragment extends Fragment implements ScrollV
             for(String ids : mFriendIDS){
                 friendID.put(ids);
             }
-            String url = "http://www.kooyear.com/iTIME_Server/load_frds_prefer_preferences";
+            String url = URLs.LOAD_FRDS_PERFER_PREFERENCES;
             JSONObject post = new JSONObject();
             post.put("friend_id", friendID);
             requestJSONArray(mJsonManager, post, url, "load_frds_prefer_preferences");
@@ -321,7 +366,7 @@ public class MeetingSelectionCentralFragment extends Fragment implements ScrollV
             for(String ids : mFriendIDS){
                 friendID.put(ids);
             }
-            String url = "http://www.kooyear.com/iTIME_Server/match_time_with_friends";
+            String url = URLs.MATCH_TIME_WITH_FRIENDS;
             String duration = "";
             JSONObject post = new JSONObject();
             post.put("user_id",User.ID);

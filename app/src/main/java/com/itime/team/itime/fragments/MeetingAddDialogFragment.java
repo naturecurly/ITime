@@ -12,6 +12,7 @@ import android.widget.ListView;
 import android.widget.SimpleAdapter;
 
 import com.itime.team.itime.activities.R;
+import com.itime.team.itime.bean.URLs;
 import com.itime.team.itime.bean.User;
 import com.itime.team.itime.interfaces.DataRequest;
 import com.itime.team.itime.utils.JsonManager;
@@ -108,7 +109,7 @@ public class MeetingAddDialogFragment extends DialogFragment implements DataRequ
         super.onActivityResult(requestCode, resultCode, data);
         if (resultCode == getActivity().RESULT_OK) {
             String result = data.getExtras().getString("result");
-            String url = "http://www.kooyear.com/iTIME_Server/adding_friend_request";
+            String url = URLs.ADD_FRIEND_REQUEST;
             JSONObject object = new JSONObject();
             try {
                 object.put("user_id", User.ID);

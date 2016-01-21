@@ -23,6 +23,7 @@ import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.itime.team.itime.activities.DateSelectionActivity;
 import com.itime.team.itime.activities.R;
+import com.itime.team.itime.bean.URLs;
 import com.itime.team.itime.bean.User;
 import com.itime.team.itime.interfaces.DataRequest;
 import com.itime.team.itime.utils.DateUtil;
@@ -153,7 +154,7 @@ public class MeetingFragment extends Fragment implements View.OnClickListener,Se
         JSONObject userID = new JSONObject();
         try {
             userID.put("user_id", User.ID);
-            requestJSONArray(mJsonManager, userID, "http://www.kooyear.com/iTIME_Server/load_friends",
+            requestJSONArray(mJsonManager, userID, URLs.LOAD_FRIEND,
                     "load_friends");
             handleJSON(mJsonManager);
         } catch (JSONException e) {
@@ -332,7 +333,7 @@ public class MeetingFragment extends Fragment implements View.OnClickListener,Se
                         Toast.LENGTH_LONG).show();
             }
         }else if(v.getId() == R.id.meeting_duration){
-            MeetingDurationDialogFragment durationDialog = new MeetingDurationDialogFragment();
+            MeetingDurationDialogFragment durationDialog = new MeetingDurationDialogFragment(duration);
             durationDialog.show(getFragmentManager(), "durationDialog");
         }else if(v.getId() == R.id.meeting_listview){
 

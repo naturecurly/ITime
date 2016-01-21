@@ -14,29 +14,24 @@
  * limitations under the License.
  */
 
-package com.itime.team.itime.activities;
+package com.itime.team.itime.fragments;
 
 import android.os.Bundle;
+import android.preference.PreferenceFragment;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 
-import com.itime.team.itime.fragments.ProfileFragment;
+import com.itime.team.itime.activities.R;
 
 /**
  * Created by Xuhui Chen (yorkfine) on 19/01/16.
  */
-public class ProfileActivity extends AppCompatActivity {
+public class ProfileFragment extends PreferenceFragment {
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_profile);
-        Toolbar toolbar = (Toolbar) findViewById(R.id.setting_profile_toolbar);
-        setSupportActionBar(toolbar);
-        if (savedInstanceState == null) {
-            getFragmentManager().beginTransaction()
-                    .add(R.id.setting_profile_content, new ProfileFragment())
-                    .commit();
-        }
+
+        addPreferencesFromResource(R.xml.preferences_profile);
     }
 }

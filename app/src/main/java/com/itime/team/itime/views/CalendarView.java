@@ -156,32 +156,32 @@ public class CalendarView extends View {
 //    }
 
 
-    @Override
-    public boolean onTouchEvent(MotionEvent event) {
-        int action = event.getActionMasked();
-
-        switch (action) {
-            case MotionEvent.ACTION_DOWN:
-                downX = event.getX();
-                downY = event.getY();
-
-                return true;
-
-            case MotionEvent.ACTION_UP:
-                upX = event.getX();
-                upY = event.getY();
-                //Log.i("TTTT", x + "+" + y);
-                if ((Math.abs(upX - downX) < mCellSpace) && (Math.abs(upY - downY) < mCellSpace)) {
-                    Log.i("TTTT", upX + "+" + upY);
-                    isDateSelected = 1;
-                    listener.dateSelected(upX, upY);
-                    invalidate();
-                }
-
-                return true;
-        }
-        return super.onTouchEvent(event);
-    }
+//    @Override
+//    public boolean onTouchEvent(MotionEvent event) {
+//        int action = event.getActionMasked();
+//
+//        switch (action) {
+//            case MotionEvent.ACTION_DOWN:
+//                downX = event.getX();
+//                downY = event.getY();
+//
+//                return true;
+//
+//            case MotionEvent.ACTION_UP:
+//                upX = event.getX();
+//                upY = event.getY();
+//                //Log.i("TTTT", x + "+" + y);
+//                if ((Math.abs(upX - downX) < mCellSpace) && (Math.abs(upY - downY) < mCellSpace)) {
+//                    Log.i("TTTT", upX + "+" + upY);
+//                    isDateSelected = 1;
+//                    listener.dateSelected(upX, upY);
+//                    invalidate();
+//                }
+//
+//                return true;
+//        }
+//        return super.onTouchEvent(event);
+//    }
 
 //    public int analysePosition(float x) {
 //        int dateX = (int) Math.floor(x / mCellSpace);
@@ -279,7 +279,7 @@ public class CalendarView extends View {
         int currentMonthDays = DateUtil.getMonthDays(mShowYear, mShowMonth);
 //        rows[1] = new Row();
 //        rows[0] = new Row();
-        for (int week = 0; week < 3; week++) {
+        for (int week = 0; week < 1; week++) {
             rows[week] = new Row();
             if (mShowDay + WEEK - 1 > currentMonthDays) {
                 mShowMonth += 1;
@@ -346,6 +346,14 @@ public class CalendarView extends View {
         invalidate();
     }
 
+    public void update(Calendar calendar) {
+        calendar.add(Calendar.DATE, -calendar.get(Calendar.DAY_OF_WEEK));
+        this.mShowMonth = calendar.get(Calendar.MONTH)+1;
+        this.mShowYear = calendar.get(Calendar.YEAR);
+        this.mShowDay = calendar.get(Calendar.DATE);
+        fillDate();
+        invalidate();
+    }
 
     @Override
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
@@ -355,7 +363,7 @@ public class CalendarView extends View {
         mCellSpace = (float) width / TOTAL_COL;
         //Log.i("TTTT", mCellSpace + " " + width + " " + height);
         mTextPaint.setTextSize(mCellSpace / 3);
-        setMeasuredDimension(width, (int) mCellSpace * 3);
+        setMeasuredDimension(width, (int) mCellSpace);
     }
 
     protected int measure(int measureSpec) {

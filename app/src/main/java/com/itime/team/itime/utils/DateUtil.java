@@ -69,7 +69,7 @@ public class DateUtil {
     public static int[] getPerviousWeekSunday() {
         int[] time = new int[3];
         Calendar c = Calendar.getInstance();
-        c.add(Calendar.DATE, -getWeekDay() - 7);
+        c.add(Calendar.DATE, -getWeekDay());
         time[0] = c.get(Calendar.YEAR);
         time[1] = c.get(Calendar.MONTH) + 1;
         time[2] = c.get(Calendar.DAY_OF_MONTH);

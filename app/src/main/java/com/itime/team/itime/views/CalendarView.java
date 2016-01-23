@@ -55,6 +55,8 @@ public class CalendarView extends View {
     float downY = 0;
     float upX = 0;
     float upY = 0;
+    int dateX = 0;
+    int dateY = 0;
     private OnDateSelectedListener listener;
     private boolean isInitialed = false;
 
@@ -100,10 +102,11 @@ public class CalendarView extends View {
                 rows[i].drawCells(canvas, i);
         }
         if (isDateSelected == 1) {
-            int dateX = DateUtil.analysePosition(upX, mCellSpace);
-            int dateY = DateUtil.analysePosition(upY, mCellSpace);
+            dateX = DateUtil.analysePosition(upX, mCellSpace);
+            dateY = DateUtil.analysePosition(upY, mCellSpace);
             canvas.drawCircle(dateX * mCellSpace + mCellSpace / 2, dateY * mCellSpace + mCellSpace / 2, mCellSpace / 3, mSelectedCirclePaint);
-            mShowDay = 2;
+            //mShowDay = 2;
+            isDateSelected = 0;
         }
     }
 
@@ -156,37 +159,37 @@ public class CalendarView extends View {
 //    }
 
 
-//    @Override
-//    public boolean onTouchEvent(MotionEvent event) {
-//        int action = event.getActionMasked();
-//
-//        switch (action) {
-//            case MotionEvent.ACTION_DOWN:
-//                downX = event.getX();
-//                downY = event.getY();
-//
-//                return true;
-//
-//            case MotionEvent.ACTION_UP:
-//                upX = event.getX();
-//                upY = event.getY();
-//                //Log.i("TTTT", x + "+" + y);
-//                if ((Math.abs(upX - downX) < mCellSpace) && (Math.abs(upY - downY) < mCellSpace)) {
-//                    Log.i("TTTT", upX + "+" + upY);
-//                    isDateSelected = 1;
-//                    listener.dateSelected(upX, upY);
-//                    invalidate();
-//                }
-//
-//                return true;
-//        }
-//        return super.onTouchEvent(event);
-//    }
+    @Override
+    public boolean onTouchEvent(MotionEvent event) {
+        int action = event.getActionMasked();
 
-//    public int analysePosition(float x) {
-//        int dateX = (int) Math.floor(x / mCellSpace);
-//        return dateX;
-//    }
+        switch (action) {
+            case MotionEvent.ACTION_DOWN:
+                downX = event.getX();
+                downY = event.getY();
+
+                return true;
+
+            case MotionEvent.ACTION_UP:
+                upX = event.getX();
+                upY = event.getY();
+                //Log.i("TTTT", x + "+" + y);
+                if ((Math.abs(upX - downX) < mCellSpace) && (Math.abs(upY - downY) < mCellSpace)) {
+                    Log.i("TTTT", upX + "+" + upY);
+                    isDateSelected = 1;
+                    listener.dateSelected(upX, upY);
+                    invalidate();
+                }
+
+                return true;
+        }
+        return super.onTouchEvent(event);
+    }
+
+    public int analysePosition(float x) {
+        int dateX = (int) Math.floor(x / mCellSpace);
+        return dateX;
+    }
 
 
     public class Row {
@@ -348,7 +351,7 @@ public class CalendarView extends View {
 
     public void update(Calendar calendar) {
         calendar.add(Calendar.DATE, -calendar.get(Calendar.DAY_OF_WEEK));
-        this.mShowMonth = calendar.get(Calendar.MONTH)+1;
+        this.mShowMonth = calendar.get(Calendar.MONTH) + 1;
         this.mShowYear = calendar.get(Calendar.YEAR);
         this.mShowDay = calendar.get(Calendar.DATE);
         fillDate();
@@ -390,6 +393,11 @@ public class CalendarView extends View {
             views[i] = new CalendarView(context, CalendarView.MONTH_STYLE);
         }
         return views;
+    }
+
+    public void removeSelectedDate() {
+        isDateSelected = 0;
+        invalidate();
     }
 
     public int getmShowYear() {

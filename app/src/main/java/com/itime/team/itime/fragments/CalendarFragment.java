@@ -14,6 +14,7 @@ import android.widget.Toast;
 import com.itime.team.itime.activities.R;
 
 import com.itime.team.itime.listener.OnDateSelectedListener;
+import com.itime.team.itime.listener.RecyclerItemClickListener;
 import com.itime.team.itime.views.CalendarView;
 
 import java.util.ArrayList;
@@ -30,6 +31,7 @@ public class CalendarFragment extends Fragment {
 
     private RecyclerView recyclerView;
     private List<Map<String, Integer>> dates = new ArrayList<>();
+    private int lastPosition = -1;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -58,10 +60,19 @@ public class CalendarFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_calendar, container, false);
         recyclerView = (RecyclerView) view.findViewById(R.id.recycler_view);
         recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
-        recyclerView.setAdapter(new CalendarAdapter(dates, new RecyclerViewClickListener() {
+        recyclerView.setAdapter(new CalendarAdapter(dates));
+        recyclerView.addOnItemTouchListener(new RecyclerItemClickListener(getActivity(), new RecyclerItemClickListener.OnItemClickListener() {
             @Override
-            public void recyclerViewListClicked(View v, int position) {
-
+            public void onItemClick(View view, int position) {
+                Toast.makeText(getActivity(), position + "", Toast.LENGTH_LONG).show();
+                if (lastPosition == -1) {
+                    lastPosition = position;
+                } else {
+                    if (recyclerView.findViewHolderForAdapterPosition(lastPosition) != null) {
+                        ((CalendarViewHolder) recyclerView.findViewHolderForLayoutPosition(lastPosition)).calendarView.removeSelectedDate();
+                        lastPosition = position;
+                    }
+                }
             }
         }));
         return view;
@@ -70,9 +81,8 @@ public class CalendarFragment extends Fragment {
     private class CalendarAdapter extends RecyclerView.Adapter<CalendarViewHolder> {
 
         private List<Map<String, Integer>> dates;
-        private RecyclerViewClickListener itemListener;
 
-        public CalendarAdapter(List<Map<String, Integer>> dates, RecyclerViewClickListener itemListener) {
+        public CalendarAdapter(List<Map<String, Integer>> dates) {
             this.dates = dates;
         }
 
@@ -106,24 +116,27 @@ public class CalendarFragment extends Fragment {
 
     private class CalendarViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
         private CalendarView calendarView;
-        private TextView textView;
 
         public CalendarViewHolder(View itemView) {
             super(itemView);
             itemView.setOnClickListener(this);
             calendarView = (CalendarView) itemView.findViewById(R.id.calendar_view);
+            calendarView.setOnDateSelectedListener(new OnDateSelectedListener() {
+                @Override
+                public void dateSelected(float x, float y) {
+
+                }
+            });
             //textView = (TextView) itemView.findViewById(R.id.test_text);
         }
 
         @Override
         public void onClick(View v) {
             //Log.i("testtesttest","onClick"+getAdapterPosition());
-            Toast.makeText(getActivity(), getLayoutPosition() + "", Toast.LENGTH_LONG);
+            Toast.makeText(getActivity(), getLayoutPosition() + "", Toast.LENGTH_LONG).show();
         }
     }
 
-    public interface RecyclerViewClickListener {
-        public void recyclerViewListClicked(View v, int position);
-    }
+
 }
 

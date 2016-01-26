@@ -38,7 +38,7 @@ public class SettingsActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_profile);
+        setContentView(R.layout.activity_settings);
         Toolbar toolbar = (Toolbar) findViewById(R.id.setting_profile_toolbar);
         setSupportActionBar(toolbar);
         if (savedInstanceState == null) {
@@ -46,7 +46,7 @@ public class SettingsActivity extends AppCompatActivity {
             switch (settings) {
                 case PROFILE_SETTINGS:
                     getFragmentManager().beginTransaction()
-                            .add(R.id.setting_profile_content, new ProfileFragment())
+                            .add(R.id.setting_content, new ProfileFragment())
                             .commit();
                     break;
 

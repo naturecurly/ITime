@@ -58,6 +58,7 @@
             android:layout_marginRight="16dp"
             android:src="@drawable/ic_playlist_add_check_black_36dp" />
         <TextView
+            android:id="@+id/setting_meeting"
             android:layout_width="match_parent"
             android:layout_gravity="center_vertical"
             android:text="@string/settings_meeting_preference" />
@@ -73,6 +74,7 @@
             android:layout_marginRight="16dp"
             android:src="@drawable/ic_cloud_download_black_36dp" />
         <TextView
+            android:id="@+id/setting_import"
             android:layout_gravity="center_vertical"
             android:text="@string/settings_import_calendar" />
 

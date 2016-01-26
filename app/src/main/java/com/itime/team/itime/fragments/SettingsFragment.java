@@ -33,6 +33,8 @@ import com.itime.team.itime.activities.SettingsActivity;
 public class SettingsFragment extends Fragment implements View.OnClickListener {
 
     private static final int SETTINGS_PROFILE_ID = R.id.setting_profile;
+    private static final int SETTINGS_MEETING_ID = R.id.setting_meeting;
+    private static final int SETTINGS_IMPORT_ID = R.id.setting_import;
 
     private static final String SETTINGS = "Settings";
     private static final int PROFILE_SETTINGS = 1;
@@ -43,19 +45,34 @@ public class SettingsFragment extends Fragment implements View.OnClickListener {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_settings, container, false);
+
         View v1 = view.findViewById(SETTINGS_PROFILE_ID);
         v1.setOnClickListener(this);
+        View v2 = view.findViewById(SETTINGS_MEETING_ID);
+        v2.setOnClickListener(this);
+        View v3 = view.findViewById(SETTINGS_IMPORT_ID);
+        v3.setOnClickListener(this);
 
         return view;
     }
 
     @Override
     public void onClick(View v) {
-        if (v.getId() == SETTINGS_PROFILE_ID) {
-            Intent intent = new Intent(getActivity(), SettingsActivity.class);
-            intent.putExtra(SETTINGS, PROFILE_SETTINGS);
-            startActivity(intent);
-        }
+        switch (v.getId()) {
+            case SETTINGS_PROFILE_ID:
+                Intent intent = new Intent(getActivity(), SettingsActivity.class);
+                intent.putExtra(SETTINGS, PROFILE_SETTINGS);
+                startActivity(intent);
+                break;
 
+            case SETTINGS_MEETING_ID:
+                break;
+
+            case SETTINGS_IMPORT_ID:
+                break;
+
+            default:
+                break;
+        }
     }
 }

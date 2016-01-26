@@ -39,7 +39,7 @@
     </android.support.design.widget.AppBarLayout>
 
     <FrameLayout
-        android:id="@+id/setting_profile_content"
+        android:id="@+id/setting_content"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"></FrameLayout>
 

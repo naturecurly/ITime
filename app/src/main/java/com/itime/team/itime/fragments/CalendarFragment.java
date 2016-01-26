@@ -15,6 +15,7 @@ import com.itime.team.itime.activities.R;
 
 import com.itime.team.itime.listener.OnDateSelectedListener;
 import com.itime.team.itime.listener.RecyclerItemClickListener;
+import com.itime.team.itime.utils.DensityUtil;
 import com.itime.team.itime.views.CalendarView;
 
 import java.util.ArrayList;
@@ -32,6 +33,7 @@ public class CalendarFragment extends Fragment {
     private RecyclerView recyclerView;
     private List<Map<String, Integer>> dates = new ArrayList<>();
     private int lastPosition = -1;
+
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -70,13 +72,31 @@ public class CalendarFragment extends Fragment {
                 } else {
                     if (recyclerView.findViewHolderForAdapterPosition(lastPosition) != null) {
                         ((CalendarViewHolder) recyclerView.findViewHolderForLayoutPosition(lastPosition)).calendarView.removeSelectedDate();
-                        lastPosition = position;
+
                     }
+                    lastPosition = position;
                 }
             }
         }));
+        recyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
+            @Override
+            public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
+                super.onScrollStateChanged(recyclerView, newState);
+            }
+
+            @Override
+            public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
+                super.onScrolled(recyclerView, dx, dy);
+                if (dy > 0) {
+                    ViewGroup.LayoutParams params = recyclerView.getLayoutParams();
+                    params.height = DensityUtil.dip2px(getActivity(),400);
+                    recyclerView.setLayoutParams(params);
+                }
+            }
+        });
         return view;
     }
+
 
     private class CalendarAdapter extends RecyclerView.Adapter<CalendarViewHolder> {
 

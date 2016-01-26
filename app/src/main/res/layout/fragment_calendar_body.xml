@@ -4,9 +4,14 @@
     android:layout_height="wrap_content"
     android:orientation="vertical">
 
-   <com.itime.team.itime.views.CalendarView
-         android:id="@+id/calendar_view"
-         android:layout_width="match_parent"
-         android:layout_height="wrap_content"></com.itime.team.itime.views.CalendarView>
+    <com.itime.team.itime.views.CalendarView
+        android:id="@+id/calendar_view"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"></com.itime.team.itime.views.CalendarView>
 
+    <ImageView
+        android:layout_width="fill_parent"
+        android:layout_height="1dp"
+        android:background="#424242"
+        />
 </LinearLayout>

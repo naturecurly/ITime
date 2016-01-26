@@ -38,10 +38,9 @@
             android:theme="@style/AppTheme.NoActionBar">
         </activity>
 
-        <activity android:name=".SettingsActivity"></activity>
         <activity
-            android:name=".ProfileActivity"
-            android:theme="@style/AppTheme.NoActionBar">
+            android:name=".SettingsActivity"
+            android:theme="@style/SettingTheme">
         </activity>
 
     </application>

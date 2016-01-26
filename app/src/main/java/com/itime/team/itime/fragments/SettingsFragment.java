@@ -24,8 +24,8 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.itime.team.itime.activities.ProfileActivity;
 import com.itime.team.itime.activities.R;
+import com.itime.team.itime.activities.SettingsActivity;
 
 /**
  * Created by Xuhui Chen (yorkfine) on 10/01/16.
@@ -33,6 +33,11 @@ import com.itime.team.itime.activities.R;
 public class SettingsFragment extends Fragment implements View.OnClickListener {
 
     private static final int SETTINGS_PROFILE_ID = R.id.setting_profile;
+
+    private static final String SETTINGS = "Settings";
+    private static final int PROFILE_SETTINGS = 1;
+    private static final int MEETING_SETTINGS = 2;
+    private static final int IMPORT_SETTINGS = 3;
 
     @Nullable
     @Override
@@ -47,7 +52,8 @@ public class SettingsFragment extends Fragment implements View.OnClickListener {
     @Override
     public void onClick(View v) {
         if (v.getId() == SETTINGS_PROFILE_ID) {
-            Intent intent = new Intent(getActivity(), ProfileActivity.class);
+            Intent intent = new Intent(getActivity(), SettingsActivity.class);
+            intent.putExtra(SETTINGS, PROFILE_SETTINGS);
             startActivity(intent);
         }
 

@@ -16,98 +16,53 @@
 
 package com.itime.team.itime.activities;
 
-import android.app.TimePickerDialog;
 import android.os.Bundle;
-import android.preference.EditTextPreference;
-import android.preference.ListPreference;
-import android.preference.Preference;
-import android.preference.PreferenceActivity;
-import android.preference.PreferenceManager;
-import android.widget.TimePicker;
+import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
+import android.util.Log;
 
-import java.util.Calendar;
+import com.itime.team.itime.fragments.ProfileFragment;
 
 /**
  * Created by Xuhui Chen (yorkfine) on 12/01/16.
  */
-public class SettingsActivity extends PreferenceActivity implements Preference.OnPreferenceChangeListener, Preference.OnPreferenceClickListener {
+public class SettingsActivity extends AppCompatActivity {
+
+    private static final String LOG_TAG = SettingsActivity.class.getSimpleName();
+
+    private static final String SETTINGS = "Settings";
+    private static final int PROFILE_SETTINGS = 1;
+    private static final int MEETING_SETTINGS = 2;
+    private static final int IMPORT_SETTINGS = 3;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        addPreferencesFromResource(R.xml.preferences);
-        bindPreferenceSummaryToValue(findPreference("name"));
-        bindPreferenceSummaryToValue(findPreference("iTime_id"));
-        bindPreferenceSummaryToValue(findPreference("email"));
-        bindPreferenceSummaryToValue(findPreference("phone"));
-        bindPreferenceSummaryToValue(findPreference("default_alert_time"));
-        bindOnClickPreferenceSummaryToValue(findPreference("starts"));
-        bindOnClickPreferenceSummaryToValue(findPreference("ends"));
-        bindPreferenceSummaryToValue(findPreference("repeats"));
-        bindPreferenceSummaryToValue(findPreference("meeting_pref_type"));
-    }
+        setContentView(R.layout.activity_profile);
+        Toolbar toolbar = (Toolbar) findViewById(R.id.setting_profile_toolbar);
+        setSupportActionBar(toolbar);
+        if (savedInstanceState == null) {
+            int settings = getIntent().getIntExtra(SETTINGS, PROFILE_SETTINGS);
+            switch (settings) {
+                case PROFILE_SETTINGS:
+                    getFragmentManager().beginTransaction()
+                            .add(R.id.setting_profile_content, new ProfileFragment())
+                            .commit();
+                    break;
 
+                case MEETING_SETTINGS:
+                    break;
 
-    /**
-     * Attaches a listener so the summary is always updated with the preference value.
-     * Also fires the listener once, to initialize the summary (so it shows up before the value
-     * is changed.)
-     */
-    private void bindPreferenceSummaryToValue(Preference preference) {
-        // Set the listener to watch for value changes.
-        preference.setOnPreferenceChangeListener(this);
+                case IMPORT_SETTINGS:
+                    break;
 
-        // Trigger the listener immediately with the preference's
-        // current value.
-        onPreferenceChange(preference,
-                PreferenceManager
-                        .getDefaultSharedPreferences(preference.getContext())
-                        .getString(preference.getKey(), ""));
-    }
-
-    private void bindOnClickPreferenceSummaryToValue(Preference preference) {
-        // Set the listener to watch for value changes.
-        preference.setOnPreferenceClickListener(this);
-
-        // Trigger the listener immediately with the preference's
-        // current value.
-        onPreferenceClick(preference);
-    }
-    @Override
-    public boolean onPreferenceChange(final Preference preference, Object o) {
-        String value = o.toString();
-
-        if (preference instanceof ListPreference) {
-            // For list preferences, look up the correct display value in
-            // the preference's 'entries' list (since they have separate labels/values).
-            ListPreference listPreference = (ListPreference) preference;
-            int prefIndex = listPreference.findIndexOfValue(value);
-            if (prefIndex >= 0) {
-                preference.setSummary(listPreference.getEntries()[prefIndex]);
+                default:
+                    Log.e(LOG_TAG, "Unknows setting item");
             }
-        } else if (preference instanceof EditTextPreference) {
-            preference.setSummary(value);
-        } else {
 
         }
-        return true;
     }
 
-    @Override
-    public boolean onPreferenceClick(final Preference preference) {
-            switch (preference.getKey()) {
-                case "starts":
-                case "ends":
-                    TimePickerDialog timePicker1 = new TimePickerDialog(this,new TimePickerDialog.OnTimeSetListener() {
-                        @Override
-                        public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
-                            preference.setSummary(hourOfDay + " : " + minute);
-                        }
-                    }, Calendar.getInstance().get(Calendar.HOUR_OF_DAY), Calendar.getInstance().get(Calendar.MINUTE),false);
-                    timePicker1.show();
-                    break;
-                case "types":
-                    break;
-            }
-        return true;
-    }
+
+
 }

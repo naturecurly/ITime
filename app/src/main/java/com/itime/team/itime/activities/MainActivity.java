@@ -30,10 +30,12 @@ public class MainActivity extends AppCompatActivity implements
     private ViewPager mPager;
     private PagerAdapter mAdapter;
     private FragmentTabHost tabHost;
-    private Class fragmentArray[] = {CalendarFragment.class, MeetingFragment.class, SettingsFragment.class};
-    private int mImageViewArray[] = {R.drawable.ic_date_range_black_48px, R.drawable.ic_group_work_black_48px,
-            R.drawable.ic_menu_manage};
-    private String mTextViewArray[] = {"Calendar", "Meeting", "Settings"};
+    private Class fragmentArray[] = {CalendarFragment.class, MeetingFragment.class, null, SettingsFragment.class};
+    //private int mImageViewArray[] = {R.drawable.ic_date_range_white_24dp, R.drawable.ic_group_work_white_24dp, R.drawable.ic_email_white_24dp,
+    //        R.drawable.ic_settings_white_24dp};
+    private int mImageViewArray[] = {R.drawable.ic_date_range_black_48px, R.drawable.ic_group_work_black_48px, R.drawable.ic_email_black_48px,
+        R.drawable.ic_menu_manage};
+    private String mTextViewArray[] = {"Calendar", "Meeting", "Email", "Settings"};
     private LayoutInflater layoutInflater;
 
     @Override

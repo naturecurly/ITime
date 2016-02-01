@@ -20,6 +20,8 @@ import com.itime.team.itime.activities.R;
 import com.itime.team.itime.listener.OnDateSelectedListener;
 import com.itime.team.itime.utils.DateUtil;
 
+import java.util.Calendar;
+
 public class CalendarView extends View {
 
     private static final String TAG = "CalendarView";
@@ -53,7 +55,10 @@ public class CalendarView extends View {
     float downY = 0;
     float upX = 0;
     float upY = 0;
+    int dateX = 0;
+    int dateY = 0;
     private OnDateSelectedListener listener;
+    private boolean isInitialed = false;
 
     public CalendarView(Context context, AttributeSet attrs, int defStyle) {
         super(context, attrs, defStyle);
@@ -78,6 +83,16 @@ public class CalendarView extends View {
         init(context);
     }
 
+    public CalendarView(Context context, int year, int month, int day) {
+        super(context);
+        this.mShowYear = year;
+        this.mShowMonth = month;
+        this.mShowDay = day;
+        isInitialed = true;
+        init(context);
+
+    }
+
     @Override
     protected void onDraw(Canvas canvas) {
         super.onDraw(canvas);
@@ -87,10 +102,11 @@ public class CalendarView extends View {
                 rows[i].drawCells(canvas, i);
         }
         if (isDateSelected == 1) {
-            int dateX = DateUtil.analysePosition(upX, mCellSpace);
-            int dateY = DateUtil.analysePosition(upY, mCellSpace);
+            dateX = DateUtil.analysePosition(upX, mCellSpace);
+            dateY = DateUtil.analysePosition(upY, mCellSpace);
             canvas.drawCircle(dateX * mCellSpace + mCellSpace / 2, dateY * mCellSpace + mCellSpace / 2, mCellSpace / 3, mSelectedCirclePaint);
-            mShowDay = 2;
+            //mShowDay = 2;
+            isDateSelected = 0;
         }
     }
 
@@ -113,8 +129,8 @@ public class CalendarView extends View {
         mLinePaint = new Paint((Paint.ANTI_ALIAS_FLAG));
         mLinePaint.setColor(Color.GRAY);
         this.context = context;
-
-        initDate();
+        if (isInitialed == false)
+            initDate();
 
     }
 
@@ -170,10 +186,10 @@ public class CalendarView extends View {
         return super.onTouchEvent(event);
     }
 
-//    public int analysePosition(float x) {
-//        int dateX = (int) Math.floor(x / mCellSpace);
-//        return dateX;
-//    }
+    public int analysePosition(float x) {
+        int dateX = (int) Math.floor(x / mCellSpace);
+        return dateX;
+    }
 
 
     public class Row {
@@ -266,7 +282,7 @@ public class CalendarView extends View {
         int currentMonthDays = DateUtil.getMonthDays(mShowYear, mShowMonth);
 //        rows[1] = new Row();
 //        rows[0] = new Row();
-        for (int week = 0; week < 3; week++) {
+        for (int week = 0; week < 1; week++) {
             rows[week] = new Row();
             if (mShowDay + WEEK - 1 > currentMonthDays) {
                 mShowMonth += 1;
@@ -329,10 +345,18 @@ public class CalendarView extends View {
         this.mShowMonth = month;
         this.mShowYear = year;
         this.mShowDay = day;
-
+        fillDate();
         invalidate();
     }
 
+    public void update(Calendar calendar) {
+        calendar.add(Calendar.DATE, -calendar.get(Calendar.DAY_OF_WEEK));
+        this.mShowMonth = calendar.get(Calendar.MONTH) + 1;
+        this.mShowYear = calendar.get(Calendar.YEAR);
+        this.mShowDay = calendar.get(Calendar.DATE);
+        fillDate();
+        invalidate();
+    }
 
     @Override
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
@@ -342,7 +366,7 @@ public class CalendarView extends View {
         mCellSpace = (float) width / TOTAL_COL;
         //Log.i("TTTT", mCellSpace + " " + width + " " + height);
         mTextPaint.setTextSize(mCellSpace / 3);
-        setMeasuredDimension(width, (int) mCellSpace * 3);
+        setMeasuredDimension(width, (int) mCellSpace);
     }
 
     protected int measure(int measureSpec) {
@@ -369,6 +393,11 @@ public class CalendarView extends View {
             views[i] = new CalendarView(context, CalendarView.MONTH_STYLE);
         }
         return views;
+    }
+
+    public void removeSelectedDate() {
+        isDateSelected = 0;
+        invalidate();
     }
 
     public int getmShowYear() {

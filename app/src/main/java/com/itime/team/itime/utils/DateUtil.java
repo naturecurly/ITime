@@ -18,7 +18,7 @@ public class DateUtil {
     public static String[] weekName = {"Sun", "Mon", "Tue", "Wed", "Thu", "Fri",
             "Sat"};
 
-    public static String[] month = {"Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"};
+    public static String[] month = {"Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"};
 
     public static int getMonthDays(int year, int month) {
         if (month > 12) {
@@ -52,6 +52,12 @@ public class DateUtil {
         return Calendar.getInstance().get(Calendar.MONTH) + 1;
     }
 
+    public static int getDay() {
+        return Calendar.getInstance().get(Calendar.DAY_OF_MONTH);
+    }
+
+    ;
+
     public static int getCurrentMonthDays() {
         return Calendar.getInstance().get(Calendar.DAY_OF_MONTH);
     }
@@ -63,9 +69,9 @@ public class DateUtil {
     public static int[] getPerviousWeekSunday() {
         int[] time = new int[3];
         Calendar c = Calendar.getInstance();
-        c.add(Calendar.DATE, -getWeekDay() - 7);
+        c.add(Calendar.DATE, -getWeekDay());
         time[0] = c.get(Calendar.YEAR);
-        time[1] = c.get(Calendar.MONTH)+1;
+        time[1] = c.get(Calendar.MONTH) + 1;
         time[2] = c.get(Calendar.DAY_OF_MONTH);
         return time;
     }
@@ -117,42 +123,42 @@ public class DateUtil {
         return null;
     }
 
-    public static int getDateOfWeek(int year, int month, int day){
+    public static int getDateOfWeek(int year, int month, int day) {
         Calendar cal = Calendar.getInstance();
         cal.set(year, month - 1, day);
         return cal.get(Calendar.DAY_OF_WEEK);
     }
 
     //Return the number of days between two specific days
-    public static int diffDate(int oldYear, int oldMonth, int oldDay, int year, int month, int day){
+    public static int diffDate(int oldYear, int oldMonth, int oldDay, int year, int month, int day) {
         Calendar cal1 = Calendar.getInstance();
         cal1.set(oldYear, oldMonth - 1, oldDay);
         Calendar cal2 = Calendar.getInstance();
         cal2.set(year, month - 1, day);
         long result = Math.abs((cal1.getTimeInMillis() - cal2.getTimeInMillis()) / (1000 * 60 * 60 * 24));
-        return (int)result + 1;
+        return (int) result + 1;
     }
 
     // Return the date after adding by "step"
-    public static int[] addDaysBasedOnCalendar(int year, int month, int day, int step){
-        if(step >= 28)
+    public static int[] addDaysBasedOnCalendar(int year, int month, int day, int step) {
+        if (step >= 28)
             return null;
         int[] date = new int[3];
         date[0] = year;
         date[1] = month;
         date[2] = day;
         date[2] += step;
-        if(date[2] > getMonthDays(year,month)){
-            date[1] ++;
-            date[2] -= getMonthDays(year,month);
-            if(date[1] > 12){
-                date[0] ++;
+        if (date[2] > getMonthDays(year, month)) {
+            date[1]++;
+            date[2] -= getMonthDays(year, month);
+            if (date[1] > 12) {
+                date[0]++;
                 date[1] = 1;
                 return date;
-            }else{
+            } else {
                 return date;
             }
-        }else{
+        } else {
             return date;
         }
 

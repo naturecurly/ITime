@@ -15,6 +15,8 @@ import com.itime.team.itime.listener.OnDateSelectedListener;
 import com.itime.team.itime.utils.DateUtil;
 import com.itime.team.itime.views.CalendarView;
 
+import java.util.Date;
+
 /**
  * Created by leveyleonhardt on 12/17/15.
  */
@@ -23,11 +25,24 @@ public class CalendarBodyFragment extends Fragment {
     private ViewPager viewPager;
     private CalendarView calendarView;
     private TextView textView;
+    private int year;
+    private int month;
+    private int day;
+
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        year = getArguments() != null ? getArguments().getInt("year") : DateUtil.getYear();
+        month = getArguments() != null ? getArguments().getInt("month") : DateUtil.getMonth();
+        day = getArguments() != null ? getArguments().getInt("day") : DateUtil.getDay();
+    }
 
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_calendar_body, container, false);
+        calendarView = (CalendarView) view.findViewById(R.id.calendar_view);
+        calendarView.update(year, month, day);
 //        viewPager = (ViewPager) container;
 //        calendarView = (CalendarView) view.findViewById(R.id.calendar_view);
 //        calendarView.setOnDateSelectedListener(new OnDateSelectedListener() {
@@ -62,6 +77,17 @@ public class CalendarBodyFragment extends Fragment {
         //CalendarBodyFragment cbf = (CalendarBodyFragment) viewPager.getAdapter().instantiateItem(container, 0);
 
         return view;
+    }
+
+
+    public static CalendarBodyFragment newInstance(int year, int month, int day) {
+        CalendarBodyFragment cbf = new CalendarBodyFragment();
+        Bundle args = new Bundle();
+        args.putInt("year", year);
+        args.putInt("month", month);
+        args.putInt("day", day);
+        cbf.setArguments(args);
+        return cbf;
     }
 
 

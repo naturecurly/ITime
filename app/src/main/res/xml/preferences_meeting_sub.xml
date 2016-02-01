@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+    <Preference
+        android:key="starts"
+        android:title="Starts">
+        <extra
+            android:name="resid"
+            android:value="startTime">
+        </extra>
+    </Preference>
+
+    <Preference
+        android:key="ends"
+        android:title="Ends">
+        <extra
+            android:name="resid"
+            android:value="endTime">
+        </extra>
+    </Preference>
+    <ListPreference
+        android:title="Repeats"
+        android:entries="@array/repeat_options"
+        android:entryValues="@array/repeat_values">
+        <extra
+            android:name="resid"
+            android:value="repeat">
+        </extra>
+    </ListPreference>
+    <Preference
+        android:key="type"
+        android:title="Types" >
+        <extra
+            android:name="resid"
+            android:value="type">
+        </extra>
+    </Preference>
+</PreferenceScreen>

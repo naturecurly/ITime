@@ -6,6 +6,10 @@ import java.util.Date;
  * Created by mac on 16/1/14.
  */
 public class Preference {
+    private String preferenceId;
+    private boolean deleted;
+    private boolean useRepeat;
+    private Date settingDate;
     private String preference_type;
     private Date starts_time;
     private Date ends_time;
@@ -142,5 +146,37 @@ public class Preference {
 
     public String getUserID() {
         return userID;
+    }
+
+    public String getPreferenceId() {
+        return preferenceId;
+    }
+
+    public void setPreferenceId(String preferenceId) {
+        this.preferenceId = preferenceId;
+    }
+
+    public boolean isDeleted() {
+        return deleted;
+    }
+
+    public void setDeleted(boolean deleted) {
+        this.deleted = deleted;
+    }
+
+    public boolean isUseRepeat() {
+        return useRepeat;
+    }
+
+    public void setUseRepeat(boolean useRepeat) {
+        this.useRepeat = useRepeat;
+    }
+
+    public Date getSettingDate() {
+        return settingDate;
+    }
+
+    public void setSettingDate(Date settingDate) {
+        this.settingDate = settingDate;
     }
 }

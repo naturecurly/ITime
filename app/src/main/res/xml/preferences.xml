@@ -1,0 +1,136 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:title="Setting">
+
+
+        <!-- This PreferenceScreen tag serves as a screen break (similar to page break
+             in word processing). Like for other preference types, we assign a key
+             here so it is able to save and restore its instance state. -->
+        <PreferenceScreen
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:icon="@drawable/ic_profile"
+            android:key="proflie_settings"
+            android:title="Xuhui Chen"
+            android:summary="ID: yorkfine">
+
+            <!-- You can place more preferences here that will be shown on the next screen. -->
+            <PreferenceScreen
+                android:widgetLayout="@layout/preference_widget_image"
+                android:key="profile"
+                android:title="Profile Photo">
+                <!-- TODO: intent -->
+            </PreferenceScreen>
+            <EditTextPreference
+                android:key="name"
+                android:title="Name"
+                android:defaultValue="Xuhui">
+            </EditTextPreference>
+
+            <EditTextPreference
+                android:key="iTime_id"
+                android:title="iTime ID"
+                android:defaultValue="Xuhui"
+                android:inputType="text"
+                android:singleLine="true">
+            </EditTextPreference>
+
+            <EditTextPreference
+                android:key="qrcode"
+                android:title="My QR Code">
+            </EditTextPreference>
+
+            <EditTextPreference
+                android:key="email"
+                android:title="Email">
+            </EditTextPreference>
+
+            <EditTextPreference
+                android:key="phone"
+                android:title="Phone Number">
+            </EditTextPreference>
+
+        </PreferenceScreen>
+
+        <PreferenceScreen
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:icon="@drawable/ic_calendar_circle"
+            android:key="Meeting Preferences"
+            android:title="Meeting Preferences">
+
+            <PreferenceScreen
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:key="Reject"
+                android:title="Reject"
+                android:summary="From:xxx\nWeekly\nxxx-xxx">
+
+                <EditTextPreference
+                    android:key="start_data"
+                    android:summary="xxxx">>
+                </EditTextPreference>
+
+                <PreferenceCategory>
+                    <Preference
+                        android:key="starts"
+                        android:title="Starts" >
+                    </Preference>
+
+                    <Preference
+                        android:key="ends"
+                        android:title="Ends">
+                    </Preference>
+                    <ListPreference
+                        android:key="repeats"
+                        android:title="Repeats"
+                        android:entries="@array/repeat_options"
+                        android:entryValues="@array/repeat_values">
+                    </ListPreference>
+                    <Preference
+                        android:key="meeting_pref_type"
+                        android:title="Types" >
+                    </Preference>
+                </PreferenceCategory>
+
+
+
+            </PreferenceScreen>
+
+
+        </PreferenceScreen>
+
+        <PreferenceScreen
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:icon="@drawable/ic_calendar_circle"
+            android:key="Import Calendars"
+            android:title="Import Calendars">
+
+        </PreferenceScreen>
+
+        <ListPreference
+            android:key="default_alert_time"
+            android:title="Default Alert Time"
+            android:entries="@array/entry_default_alert_time"
+            android:defaultValue="30 minutes before"
+            android:entryValues="@array/entry_values_default_alert_time">
+
+        </ListPreference>
+
+
+    <PreferenceCategory android:title="">
+        <Preference
+            android:key="Logout"
+            android:title="Logout">
+
+        </Preference>
+
+    </PreferenceCategory>
+
+
+
+
+</PreferenceScreen>

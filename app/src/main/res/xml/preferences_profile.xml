@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+    <PreferenceScreen
+        android:widgetLayout="@layout/preference_widget_image"
+        android:key="profile"
+        android:title="Profile Photo">
+        <!-- TODO: intent -->
+    </PreferenceScreen>
+    <EditTextPreference
+        android:key="name"
+        android:title="Name"
+        android:defaultValue="Xuhui">
+    </EditTextPreference>
+
+    <EditTextPreference
+        android:key="iTime_id"
+        android:title="iTime ID"
+        android:defaultValue="Xuhui"
+        android:inputType="text"
+        android:singleLine="true">
+    </EditTextPreference>
+
+    <EditTextPreference
+        android:key="qrcode"
+        android:title="My QR Code">
+    </EditTextPreference>
+
+    <EditTextPreference
+        android:key="email"
+        android:title="Email">
+    </EditTextPreference>
+
+    <EditTextPreference
+        android:key="phone"
+        android:title="Phone Number">
+    </EditTextPreference>
+</PreferenceScreen>

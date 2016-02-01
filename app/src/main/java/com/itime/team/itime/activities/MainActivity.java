@@ -1,6 +1,5 @@
 package com.itime.team.itime.activities;
 
-import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.FragmentTabHost;
 import android.support.v4.app.FragmentTransaction;
@@ -31,10 +30,10 @@ public class MainActivity extends AppCompatActivity implements
     private PagerAdapter mAdapter;
     private FragmentTabHost tabHost;
     private Class fragmentArray[] = {CalendarFragment.class, MeetingFragment.class, null, SettingsFragment.class};
-    //private int mImageViewArray[] = {R.drawable.ic_date_range_white_24dp, R.drawable.ic_group_work_white_24dp, R.drawable.ic_email_white_24dp,
-    //        R.drawable.ic_settings_white_24dp};
-    private int mImageViewArray[] = {R.drawable.ic_date_range_black_48px, R.drawable.ic_group_work_black_48px, R.drawable.ic_email_black_48px,
-        R.drawable.ic_menu_manage};
+    private int mImageViewArray[] = {R.drawable.ic_date_range_white_24dp, R.drawable.ic_group_work_white_24dp, R.drawable.ic_email_white_24dp,
+            R.drawable.ic_settings_white_24dp};
+//    private int mImageViewArray[] = {R.drawable.ic_date_range_black_48px, R.drawable.ic_group_work_black_48px, R.drawable.ic_email_black_48px,
+//        R.drawable.ic_menu_manage};
     private String mTextViewArray[] = {"Calendar", "Meeting", "Email", "Settings"};
     private LayoutInflater layoutInflater;
 

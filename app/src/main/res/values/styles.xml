@@ -21,6 +21,9 @@
     <style name="SettingTheme" parent="AppTheme">
     </style>
 
+    <style name="MeetingSettingTheme" parent="@style/Theme.AppCompat.Light.DarkActionBar">
+    </style>
+
     <style name="AppTheme.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar" />
 
     <style name="AppTheme.PopupOverlay" parent="ThemeOverlay.AppCompat.Light" />

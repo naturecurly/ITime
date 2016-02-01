@@ -24,6 +24,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.itime.team.itime.activities.MeetingPreferenceActivity;
 import com.itime.team.itime.activities.R;
 import com.itime.team.itime.activities.SettingsActivity;
 
@@ -58,17 +59,24 @@ public class SettingsFragment extends Fragment implements View.OnClickListener {
 
     @Override
     public void onClick(View v) {
+        Intent intent = new Intent(getActivity(), SettingsActivity.class);
+
         switch (v.getId()) {
             case SETTINGS_PROFILE_ID:
-                Intent intent = new Intent(getActivity(), SettingsActivity.class);
                 intent.putExtra(SETTINGS, PROFILE_SETTINGS);
                 startActivity(intent);
                 break;
 
             case SETTINGS_MEETING_ID:
+                Intent intent1 = new Intent(getActivity(), MeetingPreferenceActivity.class);
+                intent1.putExtra(SETTINGS, MEETING_SETTINGS);
+                startActivity(intent1);
                 break;
 
+
             case SETTINGS_IMPORT_ID:
+                intent.putExtra(SETTINGS, IMPORT_SETTINGS);
+                startActivity(intent);
                 break;
 
             default:

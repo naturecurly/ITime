@@ -21,6 +21,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 
+import com.itime.team.itime.fragments.MeetingPreferenceFragment;
 import com.itime.team.itime.fragments.ProfileFragment;
 
 /**
@@ -51,6 +52,9 @@ public class SettingsActivity extends AppCompatActivity {
                     break;
 
                 case MEETING_SETTINGS:
+                    getFragmentManager().beginTransaction()
+                            .add(R.id.setting_content, new MeetingPreferenceFragment())
+                            .commit();
                     break;
 
                 case IMPORT_SETTINGS:

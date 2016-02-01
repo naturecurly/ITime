@@ -43,6 +43,12 @@
             android:theme="@style/SettingTheme">
         </activity>
 
+        <activity
+            android:name=".MeetingPreferenceActivity"
+            android:parentActivityName=".MainActivity"
+            android:theme="@style/SettingTheme">
+        </activity>
+
     </application>
 
 </manifest>

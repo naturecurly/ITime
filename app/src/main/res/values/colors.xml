@@ -7,4 +7,9 @@
     <color name="date_1">#F24949</color>
     <color name="date_2">#40000000</color>
     <color name="bottom_bar">#000000</color>
+    <color name="green_level1">#99FF99</color>
+    <color name="green_level2">#66FF66</color>
+    <color name="green_level3">#00CC33</color>
+    <color name="green_level4">#009933</color>
+    <color name="green_level5">#336600</color>
 </resources>

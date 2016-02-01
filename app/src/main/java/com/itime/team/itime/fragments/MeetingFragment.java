@@ -41,7 +41,9 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * Created by mac on 15/12/11.
+ * Created by CAI on 15/12/11.
+ * Besides loading and presenting the User's friends, this fragment also handle friends' preference
+ * information so that reduce the computing work load of MeetingSelection Fragment.
  */
 public class MeetingFragment extends Fragment implements View.OnClickListener,SearchView.OnQueryTextListener,
         AdapterView.OnItemLongClickListener, DataRequest{
@@ -125,14 +127,14 @@ public class MeetingFragment extends Fragment implements View.OnClickListener,Se
         mStartYear = mCalendar.get(Calendar.YEAR);
         mStartMonth = mCalendar.get(Calendar.MONTH);
         mStartDay = mCalendar.get(Calendar.DAY_OF_MONTH);
-        mStartDate.setText(dateFormat(mStartYear, mStartMonth, mStartDay));
+        mStartDate.setText(dateFormat(mStartDay, mStartMonth, mStartYear));
 
         mEndDate = (Button) mmeeting.findViewById(R.id.meeting_end_date);
         mEndDate.setOnClickListener(this);
         mEndYear = mCalendar.get(Calendar.YEAR);
         mEndMonth = mCalendar.get(Calendar.MONTH);
         mEndDay = mCalendar.get(Calendar.DAY_OF_MONTH);
-        mEndDate.setText(dateFormat(mEndYear,mEndMonth,mEndDay));
+        mEndDate.setText(dateFormat(mStartDay, mStartMonth, mStartYear));
 
         add = (Button) mmeeting.findViewById(R.id.meeting_add);
         invite = (Button) mmeeting.findViewById(R.id.meeting_invitebutton);
@@ -147,7 +149,6 @@ public class MeetingFragment extends Fragment implements View.OnClickListener,Se
         invite.setOnClickListener(this);
         mIsFeasible = true;
         mJsonManager = new JsonManager();
-//        test();
     }
 
     private void initListView(){
@@ -173,7 +174,7 @@ public class MeetingFragment extends Fragment implements View.OnClickListener,Se
                 String url = null;
                 if(jsonObject.get("user_profile_picture") != null &&
                         !jsonObject.get("user_profile_picture").equals("")) {
-                    url = "http://www.kooyear.com/iTIME_Server/static/user_profiles/" +
+                    url = URLs.PROFILE_PICTURE +
                             jsonObject.get("user_id") + "/profile_picture.png";
                 }
                 map.put("url",url);
@@ -191,7 +192,6 @@ public class MeetingFragment extends Fragment implements View.OnClickListener,Se
 
         //Make a long click to delete a friend
         listView.setOnItemLongClickListener(this);
-//        listView.setOnClickListener(this);
     }
 
     private void searchListView(String query){
@@ -209,6 +209,7 @@ public class MeetingFragment extends Fragment implements View.OnClickListener,Se
         //reset height
         setListViewHeightBasedOnChildren(listView);
     }
+
 
     // Since the content of listview cannot be completely represented, it is necessary to use this
     //method to calculated the height of the listview
@@ -385,6 +386,7 @@ public class MeetingFragment extends Fragment implements View.OnClickListener,Se
                             if((jsonArray = (JSONArray) map.get("load_friends")) != null){
                                 doInitListView(jsonArray);
                             }
+
                         }
                     }
                 }

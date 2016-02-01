@@ -63,14 +63,20 @@ public class MeetingSelectionCentralFragment extends Fragment implements ScrollV
     //store the number of people who are available in the specific period of time (24 * 60)
     private JSONArray mAvailability;
     private Preference[] mPreference;
+    private int[][][] mPreferenceTable;
+
     //This variable is virtual pointer which points to a sorted array (which is a jsonArray and sorted
     // by time).When satisfying a condition, the pointer moves forward.
     private int checkDatePointer;
     private boolean mIsAvailable;
     private Date mEachEndDate;
 
+    private boolean isGetPreferenceDone = false;
+    private boolean isMatchTimeDone = false;
+
     private ArrayList<String> mFriendIDS;
     private JsonManager mJsonManager;
+
 
     //The total days of meeting period.
     private int DAYS;
@@ -101,7 +107,7 @@ public class MeetingSelectionCentralFragment extends Fragment implements ScrollV
 
     private String COLOROFTOPLINE = "#87CEFA";
     private String COLOROFLINE = "#87CEFA";
-    private String COLOROFTABLE = "#7CFC00";
+    private int COLOROFTABLE;
 
     @Nullable
     @Override
@@ -111,7 +117,7 @@ public class MeetingSelectionCentralFragment extends Fragment implements ScrollV
         mTopView = getActivity().getLayoutInflater().inflate(R.layout.meeting_selection_top_fragment, null);
         init();
         initLeftView();
-//        getPreference();
+        getPreference();
         getAvailability();
         return mParent;
     }
@@ -138,6 +144,8 @@ public class MeetingSelectionCentralFragment extends Fragment implements ScrollV
         WIDTHFOREACH = WIDTHOFCOLORSQUARE +  PADDDINGOFSQAURE + WEIGHTOFLINE;
         checkDatePointer = 0;
         mIsAvailable = false;
+        mPreferenceTable = new int[DAYS][24][6];
+        COLOROFTABLE = getResources().getColor(R.color.green_level1);
     }
 
     public void init(){
@@ -223,7 +231,9 @@ public class MeetingSelectionCentralFragment extends Fragment implements ScrollV
                             DURATION >= 60 ? TOTALHEIGHT / 24 * unMatchedNumber :
                                     unMatchedNumber * (2 * PADDDINGOFSQAURE + size));
                     defaultView.setLayoutParams(mDefaultImagePara);
-                    imageView.setBackgroundColor(Color.parseColor(COLOROFTABLE));
+
+                    imageView.setBackgroundColor(getCOLOROFTABLE(i,hour,min));
+
                     imageView.setLayoutParams(mImagepara);
                     mColors[i].add(imageView);
 
@@ -247,6 +257,51 @@ public class MeetingSelectionCentralFragment extends Fragment implements ScrollV
         mColorsContainer.addView(mLines[i]);
         if(isInit == false) {
             mInitDays++;
+        }
+    }
+
+    private int getCOLOROFTABLE(int day, int hour,int min){
+        int endHour = hour;
+        int endMin = min;
+        int availability = Integer.MAX_VALUE;
+        if(DURATION >= 60){
+            endHour += (DURATION / 60);
+            if(endHour > 23){
+                endHour = 23;
+                endMin = 50;
+            }
+        }else{
+            if((DURATION % 60 + min) >= 60){
+                endMin = (DURATION % 60 + min - 60);
+                endHour = hour + 1;
+                if(endHour > 23){
+                    endHour = 23;
+                    endMin = 50;
+                }
+            }else {
+                endMin = DURATION % 60 + min;
+            }
+        }
+
+        for(int i = hour; i <= endHour; i ++){
+            for(int j = (i == hour ? min/10 : 0); j <= (i == endHour ? endMin/10 : 5); j ++){
+                if(availability > mPreferenceTable[day][i][j]){
+                    availability = mPreferenceTable[day][i][j];
+                }
+            }
+        }
+
+        float preferenceRate = availability / mFriendIDS.size();
+        if(preferenceRate < 0.2 || preferenceRate > 1){
+            return getResources().getColor(R.color.green_level1);
+        } else if(preferenceRate >= 0.2 && preferenceRate < 0.4){
+            return getResources().getColor(R.color.green_level2);
+        } else if(preferenceRate >= 0.4 && preferenceRate < 0/6){
+            return getResources().getColor(R.color.green_level3);
+        } else if(preferenceRate >= 0.6 && preferenceRate < 0.8){
+            return getResources().getColor(R.color.green_level4);
+        } else {
+            return getResources().getColor(R.color.green_level5);
         }
     }
 
@@ -346,20 +401,182 @@ public class MeetingSelectionCentralFragment extends Fragment implements ScrollV
         }
     }
 
+
     private void doGetPreference(JSONArray jsonArray){
         mPreference = new Preference[jsonArray.length()];
         try {
+            //Read friends' preferences from jsonArray, and store them into "mPreference"
             for(int i = 0; i < jsonArray.length(); i ++){
                 JSONObject jsonObject = (JSONObject) jsonArray.get(i);
                 mPreference[i] = new Preference();
                 mPreference[i].setStarts_time(DateUtil.getLocalTime(jsonObject.get("starts_time").toString()));
                 mPreference[i].setEnds_time(DateUtil.getLocalTime(jsonObject.get("ends_time").toString()));
                 mPreference[i].setRepeat_type(jsonObject.get("repeat_type").toString());
+                Date startDate = mPreference[i].getStarts_time();
+                Date endDate = mPreference[i].getEnds_time();
+                mPreference[i].setStartYear(startDate.getYear() + 1900);
+                mPreference[i].setStartMonth(startDate.getMonth() + 1);
+                mPreference[i].setStartDay(startDate.getDate());
+                mPreference[i].setStartHour(startDate.getHours());
+                mPreference[i].setStartMin(startDate.getMinutes());
+
+                mPreference[i].setEndYear(endDate.getYear() + 1900);
+                mPreference[i].setEndMonth(endDate.getMonth() + 1);
+                mPreference[i].setEndDay(endDate.getDate());
+                mPreference[i].setEndHour(endDate.getHours());
+                mPreference[i].setEndMin(endDate.getMinutes());
+            }
+            for(int i = 0; i < mPreference.length; i ++){
+                addPreference(mPreference[i]);
             }
         }catch (JSONException e) {
             e.printStackTrace();
         }
     }
+
+    private void addPreference(Preference preference){
+        String type = preference.getRepeat_type();
+        int startHour = preference.getStartHour();
+        int startMin = preference.getStartMin();
+        int endHour = preference.getEndHour();
+        int endMin = preference.getEndMin();
+        int startDay = preference.getStartDay();
+        int endDay = preference.getEndDay();
+        int startYear = preference.getStartYear();
+        int startMonth = preference.getStartMonth();
+        int[] date = {mStartYear,mStartMonth,mStartDay};
+        int dayOfweek = DateUtil.getDateOfWeek(mStartYear,mStartMonth,mStartDay);
+        boolean interDay = false;
+        if(startDay != endDay){
+            interDay = true;
+        }
+
+
+        for(int i = 0; i < DAYS;){
+            if (type.equals("Daily")) {
+                addColorValueForPreferenceTable(i,startHour,endHour,startMin,endMin,startDay,
+                        endDay, startMonth, startYear, date, interDay);
+                date = DateUtil.addDaysBasedOnCalendar(date[0],date[1],date[2],1);
+                i ++;
+            } else if(type.equals("One-time event")){
+                addColorValueForPreferenceTable(i,startHour,endHour,startMin,endMin,startDay,
+                        endDay, startMonth, startYear, date, interDay);
+                break;
+            } else if(type.equals("Every weekday (Mon - Fri)")){
+                //If 1 means Sunday, 7 means Saturday
+                if(dayOfweek == 1){
+                    i ++;
+                    dayOfweek += 1;
+                    date = DateUtil.addDaysBasedOnCalendar(date[0],date[1],date[2],1);
+                }else if(dayOfweek == 7){
+                    i += 2;
+                    dayOfweek = 2;
+                    date = DateUtil.addDaysBasedOnCalendar(date[0],date[1],date[2],2);
+                }else{
+                    addColorValueForPreferenceTable(i,startHour,endHour,startMin,endMin,startDay,
+                            endDay, startMonth, startYear, date, interDay);
+                    i ++;
+                    dayOfweek ++;
+                    date = DateUtil.addDaysBasedOnCalendar(date[0],date[1],date[2],1);
+                }
+            } else if(type.equals("Weekly")){
+                addColorValueForPreferenceTable(i,startHour,endHour,startMin,endMin,startDay,
+                        endDay, startMonth, startYear, date, interDay);
+                i += 7;
+                date = DateUtil.addDaysBasedOnCalendar(date[0],date[1],date[2],7);
+            } else if(type.equals("Bi-Weekly")){
+                addColorValueForPreferenceTable(i,startHour,endHour,startMin,endMin,startDay,
+                        endDay, startMonth, startYear, date, interDay);
+                i += 14;
+                date = DateUtil.addDaysBasedOnCalendar(date[0],date[1],date[2],14);
+            } else if(type.equals("Monthly")){
+                addColorValueForPreferenceTable(i,startHour,endHour,startMin,endMin,startDay,
+                        endDay, startMonth, startYear, date, interDay);
+                int currentDayOfMonth = DateUtil.getMonthDays(date[0],date[1]);
+                i += currentDayOfMonth;
+                date[1] ++;
+                if(date[1] > 12){
+                    date[1] = 1;
+                    date[0] ++;
+                }
+            } else if(type.equals("Yearly")){
+                addColorValueForPreferenceTable(i,startHour,endHour,startMin,endMin,startDay,
+                        endDay, startMonth, startYear, date, interDay);
+                if ((date[0] % 4 == 0 && date[0] % 100 != 0) || date[0] % 400 == 0) {
+                    i += 366;
+                }else{
+                    i += 365;
+                }
+                date[0] ++;
+            } else{
+                Log.i("Wrong Repeat Type", type);
+            }
+        }
+    }
+
+    private void addColorValueForPreferenceTable(int day, int startHour, int endHour,
+                                                 int startMin, int endMin, int startDay, int endDay,
+                                                 int startMonth, int startYear,int[] currentDay,
+                                                 boolean interDay){
+        Log.i("Start vs end",startHour + " : " + startMin + "  vs  " + endHour + " : " + endMin);
+        //If the startMin has "extra" minutes, then rounding up
+        //If the endMin has "extra" minutes, then rounding down
+        int roundStartMin = startMin % 10 == 0 ? startMin / 10 : startMin / 10 + 1;
+        int roundEndMin = endMin / 10;
+        boolean isExecuted = compareTwoDays(currentDay[0], currentDay[1], currentDay[2],startYear, startMonth, startDay);
+        if(isExecuted == false)
+            return;
+        if(interDay == false) {
+            if (startHour == endHour) {
+                for (int k = roundStartMin; k <= roundEndMin; k++) {
+                    mPreferenceTable[day][startHour][k] += 1;
+                }
+            } else {
+                for (int j = startHour; j <= endHour; j++) {
+                    for (int k = (j == startHour ? roundStartMin : 0); k < (j == endHour ? roundEndMin : 6); k++) {
+                        mPreferenceTable[day][j][k] += 1;
+                    }
+                }
+            }
+        } else {
+            //Handle the first day's data
+            for(int j = startHour; j < 24; j ++){
+                for(int k = (j == startHour ? roundStartMin : 0); k < 6; k ++){
+                    mPreferenceTable[day][j][k] += 1;
+                }
+
+            }
+            //Handle the second day's data
+            if(day + 1 < DAYS) {
+                for (int j = 0; j <= endHour; j++) {
+                    for (int k = 0; k < (j == endHour ? roundEndMin : 6); k++) {
+                        mPreferenceTable[day + 1][j][k] += 1;
+                    }
+                }
+            }
+        }
+    }
+    // ture means 1 latter or equal 2, false means 1 earlier than 2
+    private boolean compareTwoDays(int year1, int month1, int day1, int year2, int month2, int day2){
+        if(year1 > year2){
+            return true;
+        } else if(year1 < year2){
+            return false;
+        } else{
+            if(month1 > month2){
+                return true;
+            }else if(month1 < month2){
+                return false;
+            }else{
+                if(day1 >= day2){
+                    return true;
+                } else{
+                    return false;
+                }
+            }
+        }
+    }
+
     private void getAvailability(){
         try {
             JSONArray friendID = new JSONArray();
@@ -426,14 +643,18 @@ public class MeetingSelectionCentralFragment extends Fragment implements ScrollV
                         JSONObject jsonObject;
                         JSONArray jsonArray;
                         HashMap map;
+
                         while ((map = mJsonManager.getJsonQueue().poll()) != null) {
                             if ((jsonArray = (JSONArray) map.get("load_frds_prefer_preferences")) != null) {
                                 doGetPreference(jsonArray);
+                                isGetPreferenceDone = true;
                             }
                             if ((jsonArray = (JSONArray) map.get("match_time_with_friends")) != null) {
                                 mAvailability = jsonArray;
+                                isMatchTimeDone = true;
+                            }
+                            if(isGetPreferenceDone && isMatchTimeDone){
                                 initTable();
-                                Log.i("json",jsonArray.toString());
                             }
                         }
                     }

@@ -3,6 +3,14 @@
 
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
     <Preference
+        android:key="start_date"
+        android:title="Starts_Date">
+        <extra
+            android:name="resid"
+            android:value="start_date">
+        </extra>
+    </Preference>
+    <Preference
         android:key="starts"
         android:title="Starts">
         <extra

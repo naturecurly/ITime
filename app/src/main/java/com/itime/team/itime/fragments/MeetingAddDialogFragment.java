@@ -12,6 +12,7 @@ import android.widget.ListView;
 import android.widget.SimpleAdapter;
 
 import com.itime.team.itime.activities.R;
+import com.itime.team.itime.activities.SearchFriendActivity;
 import com.itime.team.itime.bean.URLs;
 import com.itime.team.itime.bean.User;
 import com.itime.team.itime.interfaces.DataRequest;
@@ -86,7 +87,8 @@ public class MeetingAddDialogFragment extends DialogFragment implements DataRequ
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 Log.i("TestClick", String.valueOf(position));
                 if(position == 0){
-
+                    Intent intent = new Intent(getActivity(), SearchFriendActivity.class);
+                    startActivity(intent);
                 }else if (position == 1){
 
                 }else if (position == 2){

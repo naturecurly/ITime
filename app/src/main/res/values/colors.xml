@@ -12,4 +12,5 @@
     <color name="green_level3">#00CC33</color>
     <color name="green_level4">#009933</color>
     <color name="green_level5">#336600</color>
+    <color name="grey">#CCCCCC</color>
 </resources>

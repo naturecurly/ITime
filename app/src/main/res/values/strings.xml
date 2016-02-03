@@ -21,6 +21,8 @@
     <string name="meeting_date_button">Date</string>
     <string name="meeting_send_invitation_name">Name</string>
     <string name="meeting_send_invitation_venue">Venue</string>
+    <string name="meeting_search_friend_title">Search Friend</string>
+
 
     <string name="inline_preferences">inline_preference</string>
     <string name="summary_checkbox_preference">summary_checkbox_preference</string>

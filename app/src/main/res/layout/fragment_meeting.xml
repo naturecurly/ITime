@@ -1,51 +1,64 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:orientation="vertical" android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:id="@+id/meeting_view">
+    android:layout_height="match_parent">
         <LinearLayout
             xmlns:android="http://schemas.android.com/apk/res/android"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:orientation="vertical">
+            android:orientation="horizontal">
+            <Button
+                style="?android:attr/buttonStyleSmall"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="+"
+                android:background="#00000000"
+                android:id="@+id/meeting_add"/>
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Meeting"/>
+            <Button
+                style="?android:attr/buttonStyleSmall"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="invite"
+                android:background="#00000000"
+                android:id="@+id/meeting_invitebutton"/>
+        </LinearLayout>
 
+        <android.support.v7.widget.SearchView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/meeting_search"
+            android:queryHint="@string/meeting_searchbar"/>
+        <HorizontalScrollView
+            android:layout_width="wrap_content"
+            android:layout_height="@dimen/meeting_search_picture"
+            android:scrollbars="none">
             <LinearLayout
-                xmlns:android="http://schemas.android.com/apk/res/android"
-                android:layout_width="match_parent"
+                android:layout_width="wrap_content"
                 android:layout_height="match_parent"
+                android:id="@+id/meeting_invited_friend"
                 android:orientation="horizontal">
-                <Button
-                    style="?android:attr/buttonStyleSmall"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="+"
-                    android:background="#00000000"
-                    android:id="@+id/meeting_add"/>
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Meeting"/>
-                <Button
-                    style="?android:attr/buttonStyleSmall"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="invite"
-                    android:background="#00000000"
-                    android:id="@+id/meeting_invitebutton"/>
+
             </LinearLayout>
 
-            <android.support.v7.widget.SearchView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:id="@+id/meeting_search" />
-
+        </HorizontalScrollView>
+    <ScrollView
+        android:orientation="vertical" android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/meeting_view">
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="@string/meeting_setting"/>
 
             <LinearLayout
-                xmlns:android="http://schemas.android.com/apk/res/android"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal">
@@ -105,5 +118,7 @@
                 android:id="@+id/meeting_listview">
             </ListView>
         </LinearLayout>
+    </ScrollView>
+</LinearLayout>
 
-</ScrollView>
+

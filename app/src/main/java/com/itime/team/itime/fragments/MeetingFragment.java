@@ -14,6 +14,7 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.DatePicker;
+import android.widget.LinearLayout;
 import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.TimePicker;
@@ -60,6 +61,7 @@ public class MeetingFragment extends Fragment implements View.OnClickListener,Se
     private Button mEndDate;
     private Calendar mCalendar;
     private SearchView mSearch;
+    private LinearLayout mInvitedFriend;
 
     private ListView listView;
     //This variable stores users' friends, and it will be not changed after initialization
@@ -105,6 +107,8 @@ public class MeetingFragment extends Fragment implements View.OnClickListener,Se
         listItem = new ArrayList<HashMap<String, Object>>();
         listItemForPresent = new ArrayList<HashMap<String, Object>>();
         initListView();
+
+        mInvitedFriend = (LinearLayout) mmeeting.findViewById(R.id.meeting_invited_friend);
         return mmeeting;
     }
 
@@ -185,7 +189,8 @@ public class MeetingFragment extends Fragment implements View.OnClickListener,Se
         } catch (JSONException e) {
             e.printStackTrace();
         }
-        DynamicListViewAdapter listItemAdapter = new DynamicListViewAdapter(getActivity(),listItemForPresent);
+        DynamicListViewAdapter listItemAdapter = new DynamicListViewAdapter(getActivity(),
+                listItemForPresent,mInvitedFriend,getResources());
         listView.setAdapter(listItemAdapter);
         //reset height
         setListViewHeightBasedOnChildren(listView);
@@ -203,7 +208,8 @@ public class MeetingFragment extends Fragment implements View.OnClickListener,Se
                 listItemForPresent.add(map);
             }
         }
-        DynamicListViewAdapter listItemAdapter = new DynamicListViewAdapter(getActivity(),listItemForPresent);
+        DynamicListViewAdapter listItemAdapter = new DynamicListViewAdapter(getActivity(),
+                listItemForPresent,mInvitedFriend, getResources());
         listView.setAdapter(listItemAdapter);
 
         //reset height
@@ -339,6 +345,7 @@ public class MeetingFragment extends Fragment implements View.OnClickListener,Se
         }else if(v.getId() == R.id.meeting_listview){
 
         }
+
     }
 
     @Override
@@ -382,8 +389,8 @@ public class MeetingFragment extends Fragment implements View.OnClickListener,Se
                         JSONObject jsonObject;
                         JSONArray jsonArray;
                         HashMap map;
-                        while((map = mJsonManager.getJsonQueue().poll()) != null) {
-                            if((jsonArray = (JSONArray) map.get("load_friends")) != null){
+                        while ((map = mJsonManager.getJsonQueue().poll()) != null) {
+                            if ((jsonArray = (JSONArray) map.get("load_friends")) != null) {
                                 doInitListView(jsonArray);
                             }
 
@@ -395,12 +402,11 @@ public class MeetingFragment extends Fragment implements View.OnClickListener,Se
 
     @Override
     public void requestJSONObject(JsonManager manager,JSONObject jsonObject, String url, String tag) {
-        manager.postForJsonObject(url,jsonObject,getActivity(),tag);
+        manager.postForJsonObject(url, jsonObject, getActivity(), tag);
     }
 
     @Override
     public void requestJSONArray(JsonManager manager,JSONObject jsonObject, String url, String tag) {
-        manager.postForJsonArray(url, jsonObject, getActivity(),tag);
+        manager.postForJsonArray(url, jsonObject, getActivity(), tag);
     }
-
 }

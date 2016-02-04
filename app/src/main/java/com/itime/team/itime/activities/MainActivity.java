@@ -9,6 +9,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.preference.PreferenceFragmentCompat;
 import android.support.v7.preference.PreferenceScreen;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -36,6 +37,8 @@ public class MainActivity extends AppCompatActivity implements
 //        R.drawable.ic_menu_manage};
     private String mTextViewArray[] = {"Calendar", "Meeting", "Email", "Settings"};
     private LayoutInflater layoutInflater;
+
+    private int mIndex;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -67,7 +70,14 @@ public class MainActivity extends AppCompatActivity implements
         TextView textView = (TextView) view.findViewById(R.id.tab_text_view);
         textView.setText(mTextViewArray[index]);
 
+
         return view;
+    }
+
+    @Override
+    public boolean onPrepareOptionsMenu(Menu menu) {
+        Log.i("index," , String.valueOf(mIndex));
+        return super.onPrepareOptionsMenu(menu);
     }
 
     @Override

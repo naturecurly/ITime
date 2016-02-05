@@ -7,6 +7,7 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AbsoluteLayout;
@@ -101,7 +102,7 @@ public class MeetingSelectionCentralFragment extends Fragment implements ScrollV
     private int TOTALHEIGHT;
     private int WIDTHFOREACH;
 
-    public static int WIDTHOFCENTERLAYOUT = 800;
+    public static int WIDTHOFCENTERLAYOUT;
 
     private int DURATION;
 
@@ -135,6 +136,7 @@ public class MeetingSelectionCentralFragment extends Fragment implements ScrollV
         //When the total days are less than 6, then we averagely separate the width to make screen full
         if(DAYS < 6 && DAYS > 0){
             WIDTHOFCOLORSQUARE = WIDTHOFCENTERLAYOUT / DAYS;
+
         }
         //The values of duration might be one of 10,15,30,60,120,360
         double parts = 60.0 / DURATION;
@@ -154,7 +156,17 @@ public class MeetingSelectionCentralFragment extends Fragment implements ScrollV
         mMainLayout = (AbsoluteLayout) mParent.findViewById(R.id.meeting_selection_center_absolute);
         mColorsContainer = (LinearLayout) mParent.findViewById(R.id.meeting_selection_center_date);
         mScrollView = (MeetingSelectionScrollView) mParent.findViewById(R.id.meeting_selection_center_scroll);
-        mScrollView.setOnScrollViewListener(this);
+        if(DAYS < 6 && DAYS > 0){
+            //ban the roll of ScrollView
+            mScrollView.setOnTouchListener(new View.OnTouchListener() {
+                @Override
+                public boolean onTouch(View v, MotionEvent event) {
+                    return true;
+                }
+            });
+        }else{
+            mScrollView.setOnScrollViewListener(this);
+        }
     }
 
     public void initLeftView(){
@@ -263,7 +275,7 @@ public class MeetingSelectionCentralFragment extends Fragment implements ScrollV
     private int getCOLOROFTABLE(int day, int hour,int min){
         int endHour = hour;
         int endMin = min;
-        int availability = Integer.MAX_VALUE;
+        float availability = Float.MAX_VALUE;
         if(DURATION >= 60){
             endHour += (DURATION / 60);
             if(endHour > 23){
@@ -290,7 +302,6 @@ public class MeetingSelectionCentralFragment extends Fragment implements ScrollV
                 }
             }
         }
-
         float preferenceRate = availability / mFriendIDS.size();
         if(preferenceRate < 0.2 || preferenceRate > 1){
             return getResources().getColor(R.color.green_level1);
@@ -364,9 +375,6 @@ public class MeetingSelectionCentralFragment extends Fragment implements ScrollV
                         targetEndTime.getTime() >= currentEndTime.getTime()){
                     mEachEndDate = targetEndTime;
                     mIsAvailable = true;
-//                    Log.i("FOrmat", mEachEndDate.toString());
-                    Log.i("mEachEndDate",mEachEndDate.getYear() + " " + mEachEndDate.getMonth() + " " +
-                    mEachEndDate.getDate() + " - " + mEachEndDate.getHours() + " : " + mEachEndDate.getMinutes());
                     return true;
                 }else{
                     if(currentStartTime.getTime() > targetEndTime.getTime()){
@@ -611,13 +619,6 @@ public class MeetingSelectionCentralFragment extends Fragment implements ScrollV
         } catch (JSONException e) {
             e.printStackTrace();
         }
-    }
-
-    private String getColor(){
-        String color = null;
-
-        return color;
-
     }
 
     public static void setPosition(int x, int y){

@@ -2,6 +2,7 @@ package com.itime.team.itime.fragments;
 
 import android.app.Fragment;
 import android.os.Bundle;
+import android.util.DisplayMetrics;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -28,6 +29,7 @@ public class MeetingSelectionTopFragment extends Fragment implements ScrollViewL
 
     private int DATE;
     private int WIDTH = 141;
+    private int WIDTHOFMONTHVIEW = 100;
 
     private int STARTYEAR;
     private int STARTMONTH;
@@ -63,11 +65,14 @@ public class MeetingSelectionTopFragment extends Fragment implements ScrollViewL
     private void init(){
         mCentralScrollView = (MeetingSelectionScrollView) mCentralFragment.findViewById(R.id.meeting_selection_center_scroll);
         mChild = (LinearLayout) mParent.findViewById(R.id.meeting_selection_top_scroll_child);
+        DisplayMetrics dm = new DisplayMetrics();
+        getActivity().getWindowManager().getDefaultDisplay().getMetrics(dm);
+        MeetingSelectionCentralFragment.WIDTHOFCENTERLAYOUT = dm.widthPixels - WIDTHOFMONTHVIEW - 150;
         if(DATE < 6 && DATE > 0){
-            WIDTH = MeetingSelectionCentralFragment.WIDTHOFCENTERLAYOUT / DATE;
+            WIDTH = MeetingSelectionCentralFragment.WIDTHOFCENTERLAYOUT / DATE + 10;
         }
         mMonth = (TextView) mParent.findViewById(R.id.meeting_selection_top_textview);
-        mMonth.setWidth(100);
+        mMonth.setWidth(WIDTHOFMONTHVIEW);
         mMonth.setText(DateUtil.month[STARTMONTH - 1]);
         mDates = new TextView[DATE];
         currentDay = new int[3];

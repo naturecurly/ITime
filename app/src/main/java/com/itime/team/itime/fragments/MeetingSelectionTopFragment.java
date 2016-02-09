@@ -11,6 +11,7 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.itime.team.itime.activities.R;
+import com.itime.team.itime.bean.TopAndCenterMeetingFragmentScrollViews;
 import com.itime.team.itime.listener.ScrollViewListener;
 import com.itime.team.itime.utils.DateUtil;
 import com.itime.team.itime.views.MeetingSelectionScrollView;
@@ -23,9 +24,9 @@ public class MeetingSelectionTopFragment extends Fragment implements ScrollViewL
     private View mParent;
     private TextView mMonth;
     private TextView[] mDates;
-    private static MeetingSelectionScrollView mScrollView;
     private MeetingSelectionScrollView mCentralScrollView;
     private View mCentralFragment;
+    private TopAndCenterMeetingFragmentScrollViews mScrollView;
 
     private int DATE;
     private int WIDTH = 141;
@@ -41,6 +42,10 @@ public class MeetingSelectionTopFragment extends Fragment implements ScrollViewL
 
     private int mInitDays;
     private int[] currentDay;
+
+    public MeetingSelectionTopFragment(TopAndCenterMeetingFragmentScrollViews scrollViews){
+        this.mScrollView = scrollViews;
+    }
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         getParameters(savedInstanceState);
@@ -76,8 +81,8 @@ public class MeetingSelectionTopFragment extends Fragment implements ScrollViewL
         mMonth.setText(DateUtil.month[STARTMONTH - 1]);
         mDates = new TextView[DATE];
         currentDay = new int[3];
-        mScrollView = (MeetingSelectionScrollView) mParent.findViewById(R.id.meeting_selection_top_scroll);
-        mScrollView.setOnScrollViewListener(this);
+        mScrollView.setTopScollView((MeetingSelectionScrollView) mParent.findViewById(R.id.meeting_selection_top_scroll));
+        mScrollView.getTopScollView().setOnScrollViewListener(this);
     }
 
     private void initTopScrollView(){
@@ -111,18 +116,15 @@ public class MeetingSelectionTopFragment extends Fragment implements ScrollViewL
         mInitDays ++;
     }
 
-    public static void setPosition(int x, int y){
-        mScrollView.scrollTo(x, y);
-    }
 
     @Override
     public void onScrollChanged(MeetingSelectionScrollView scrollView, int x, int y, int oldx, int oldy) {
-        if (scrollView == mScrollView) {
+        if (scrollView == mScrollView.getTopScollView()) {
             if(mInitDays * WIDTH <= x + (12 * WIDTH) && mInitDays < DATE){
                 addView();
             }
             mMonth.setText(DateUtil.month[DateUtil.plusDay(STARTYEAR,STARTMONTH, STARTDAY,x / WIDTH).getMonth()]);
-            MeetingSelectionCentralFragment.setPosition(x,y);
+            mScrollView.setCenterScollViewPosition(x,y);
         }
     }
 }

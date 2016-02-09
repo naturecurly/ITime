@@ -3,7 +3,6 @@ package com.itime.team.itime.fragments;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.DialogFragment;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -11,6 +10,7 @@ import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.SimpleAdapter;
 
+import com.itime.team.itime.activities.PhoneContactActivity;
 import com.itime.team.itime.activities.R;
 import com.itime.team.itime.activities.SearchFriendActivity;
 import com.itime.team.itime.bean.URLs;
@@ -85,12 +85,12 @@ public class MeetingAddDialogFragment extends DialogFragment implements DataRequ
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                Log.i("TestClick", String.valueOf(position));
                 if(position == 0){
                     Intent intent = new Intent(getActivity(), SearchFriendActivity.class);
                     startActivity(intent);
                 }else if (position == 1){
-
+                    Intent intent = new Intent(getActivity(), PhoneContactActivity.class);
+                    startActivity(intent);
                 }else if (position == 2){
                     Intent intent = new Intent(getActivity(), CaptureActivity.class);
                     startActivityForResult(intent, 0);

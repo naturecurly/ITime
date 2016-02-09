@@ -20,6 +20,7 @@ import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.itime.team.itime.activities.R;
 import com.itime.team.itime.bean.Preference;
+import com.itime.team.itime.bean.TopAndCenterMeetingFragmentScrollViews;
 import com.itime.team.itime.bean.URLs;
 import com.itime.team.itime.bean.User;
 import com.itime.team.itime.interfaces.DataRequest;
@@ -59,7 +60,8 @@ public class MeetingSelectionCentralFragment extends Fragment implements ScrollV
     private LinearLayout[] mColumn;
     private View[] mLines;
     private ArrayList<ImageView>[] mColors;
-    private static MeetingSelectionScrollView mScrollView;
+    //private static MeetingSelectionScrollView mScrollView;
+    private TopAndCenterMeetingFragmentScrollViews mScrollView;
     private MeetingSelectionTopFragment topFragment;
     //store the number of people who are available in the specific period of time (24 * 60)
     private JSONArray mAvailability;
@@ -110,6 +112,10 @@ public class MeetingSelectionCentralFragment extends Fragment implements ScrollV
     private String COLOROFLINE = "#87CEFA";
     private int COLOROFTABLE;
 
+    public MeetingSelectionCentralFragment(TopAndCenterMeetingFragmentScrollViews scrollViews){
+        this.mScrollView = scrollViews;
+    }
+
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -155,17 +161,17 @@ public class MeetingSelectionCentralFragment extends Fragment implements ScrollV
         mLeftView = (LinearLayout) mParent.findViewById(R.id.meeting_selection_left);
         mMainLayout = (AbsoluteLayout) mParent.findViewById(R.id.meeting_selection_center_absolute);
         mColorsContainer = (LinearLayout) mParent.findViewById(R.id.meeting_selection_center_date);
-        mScrollView = (MeetingSelectionScrollView) mParent.findViewById(R.id.meeting_selection_center_scroll);
+        mScrollView.setCenterScollView((MeetingSelectionScrollView) mParent.findViewById(R.id.meeting_selection_center_scroll));
         if(DAYS < 6 && DAYS > 0){
             //ban the roll of ScrollView
-            mScrollView.setOnTouchListener(new View.OnTouchListener() {
+            mScrollView.getCenterScollView().setOnTouchListener(new View.OnTouchListener() {
                 @Override
                 public boolean onTouch(View v, MotionEvent event) {
                     return true;
                 }
             });
         }else{
-            mScrollView.setOnScrollViewListener(this);
+            mScrollView.getCenterScollView().setOnScrollViewListener(this);
         }
     }
 
@@ -621,17 +627,14 @@ public class MeetingSelectionCentralFragment extends Fragment implements ScrollV
         }
     }
 
-    public static void setPosition(int x, int y){
-        mScrollView.scrollTo(x,y);
-    }
 
     @Override
     public void onScrollChanged(MeetingSelectionScrollView scrollView, int x, int y, int oldx, int oldy) {
-        if (scrollView == mScrollView) {
+        if (scrollView == mScrollView.getCenterScollView()) {
             if(mInitDays * WIDTHFOREACH <= x + (12 * WIDTHFOREACH) && mInitDays < DAYS){
                 addView(0,false);
             }
-            topFragment.setPosition(x,y);
+            mScrollView.setTopScollViewPosition(x,y);
         }
     }
 

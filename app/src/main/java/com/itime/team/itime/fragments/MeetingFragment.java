@@ -1,9 +1,7 @@
 package com.itime.team.itime.fragments;
 
-import android.app.AlertDialog;
 import android.app.DatePickerDialog;
 import android.app.TimePickerDialog;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -11,7 +9,6 @@ import android.support.v7.widget.SearchView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.LinearLayout;
@@ -47,7 +44,7 @@ import java.util.Map;
  * information so that reduce the computing work load of MeetingSelection Fragment.
  */
 public class MeetingFragment extends Fragment implements View.OnClickListener,SearchView.OnQueryTextListener,
-        AdapterView.OnItemLongClickListener, DataRequest{
+         DataRequest{
 //    private List<TextView> parent;
     private Map<Integer, View> map;
     private View mmeeting;
@@ -194,9 +191,6 @@ public class MeetingFragment extends Fragment implements View.OnClickListener,Se
         listView.setAdapter(listItemAdapter);
         //reset height
         setListViewHeightBasedOnChildren(listView);
-
-        //Make a long click to delete a friend
-        listView.setOnItemLongClickListener(this);
     }
 
     private void searchListView(String query){
@@ -359,26 +353,6 @@ public class MeetingFragment extends Fragment implements View.OnClickListener,Se
         return true;
     }
 
-
-    @Override
-    public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
-        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-        builder.setMessage("Do you want to delete " + listItemForPresent.get(position).get("ItemID"));
-        builder.setIcon(R.mipmap.ic_launcher);
-        builder.setTitle("Warning");
-        builder.setNegativeButton("No", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-            }
-        });
-        builder.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-            }
-        });
-        builder.show();
-        return false;
-    }
 
     @Override
     public void handleJSON(JsonManager manager) {

@@ -1,7 +1,10 @@
 package com.itime.team.itime.views.adapters;
 
 import android.app.Activity;
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.res.Resources;
+import android.graphics.drawable.Drawable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -28,6 +31,7 @@ public class DynamicListViewAdapter extends BaseAdapter {
     private LinearLayout mLinearLayout;
     private ImageView[] invitedFriends;
     private Resources resources;
+    private Drawable mBackgroud;
     public DynamicListViewAdapter(Activity context, ArrayList<HashMap<String, Object>> listItem,
                                   LinearLayout linearLayout, Resources resources){
         list = listItem;
@@ -56,30 +60,61 @@ public class DynamicListViewAdapter extends BaseAdapter {
     public View getView(final int position, View convertView, ViewGroup parent) {
         final JsonManager jsonManager = new JsonManager();
         LayoutInflater inflater = context.getLayoutInflater();
-        View itemView = inflater.inflate(R.layout.fragment_meeting_listview, null);
+        final View itemView = inflater.inflate(R.layout.fragment_meeting_listview, null);
         final ImageView imageView = (ImageView) itemView.findViewById(R.id.meeting_profile);
         final CheckBox checkBox = (CheckBox) itemView.findViewById(R.id.meeting_invite);
         TextView ID = (TextView) itemView.findViewById(R.id.meeting_id);
         TextView name = (TextView) itemView.findViewById(R.id.meeting_name);
-
+        mBackgroud = itemView.getBackground();
 
         if(list.get(position).get("url") != null) {
             jsonManager.postForImage(list.get(position).get("url").toString(), imageView, context);
         }
         String textID = (String) list.get(position).get("ItemID");
         ID.setText(textID);
-        String textName = (String) list.get(position).get("ItemName");
+        final String textName = (String) list.get(position).get("ItemName");
         name.setText(textName);
         checkBox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                 if (isChecked) {
-                    list.get(position).put("CheckBox",true);
+                    list.get(position).put("CheckBox", true);
                     addFriendToScrollView(position, jsonManager, checkBox);
                 } else {
-                    list.get(position).put("CheckBox",false);
+                    list.get(position).put("CheckBox", false);
                     deleteFriendFromScrollView(invitedFriends[position]);
                 }
+            }
+        });
+        itemView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (checkBox.isChecked()) {
+                    checkBox.setChecked(false);
+                } else {
+                    checkBox.setChecked(true);
+                }
+            }
+        });
+        itemView.setOnLongClickListener(new View.OnLongClickListener() {
+            @Override
+            public boolean onLongClick(View v) {
+                AlertDialog.Builder builder = new AlertDialog.Builder(context);
+                builder.setMessage("Do you want to delete " + textName);
+                builder.setIcon(R.mipmap.ic_launcher);
+                builder.setTitle("Warning");
+                builder.setNegativeButton("No", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                    }
+                });
+                builder.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                    }
+                });
+                builder.show();
+                return false;
             }
         });
         return itemView;

@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 
+import com.itime.team.itime.bean.TopAndCenterMeetingFragmentScrollViews;
 import com.itime.team.itime.fragments.MeetingSelectionCentralFragment;
 import com.itime.team.itime.fragments.MeetingSelectionTopFragment;
 import com.itime.team.itime.utils.DateUtil;
@@ -21,6 +22,7 @@ public class DateSelectionActivity extends AppCompatActivity {
     private MeetingSelectionCentralFragment centralFragment;
     private MeetingSelectionTopFragment topFragment;
 
+
     private int STARTYEAR;
     private int STARTMONTH;
     private int STARTDAY;
@@ -36,6 +38,7 @@ public class DateSelectionActivity extends AppCompatActivity {
 
     public int DURATION = 60;
 
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -46,7 +49,8 @@ public class DateSelectionActivity extends AppCompatActivity {
     }
 
     private void init(){
-        centralFragment =  new MeetingSelectionCentralFragment();
+        TopAndCenterMeetingFragmentScrollViews scrollViews = new TopAndCenterMeetingFragmentScrollViews();
+        centralFragment =  new MeetingSelectionCentralFragment(scrollViews);
         Bundle centralMSG = new Bundle();
         centralMSG.putInt("totaldays",
                 DateUtil.diffDate(STARTYEAR, STARTMONTH, STARTDAY, ENDYEAR, ENDMONTH, ENDDAY));
@@ -58,7 +62,8 @@ public class DateSelectionActivity extends AppCompatActivity {
         centralMSG.putInt("startmonth", STARTMONTH);
         centralMSG.putInt("startday", STARTDAY);
         centralFragment.setArguments(centralMSG);
-        topFragment = new MeetingSelectionTopFragment();
+
+        topFragment = new MeetingSelectionTopFragment(scrollViews);
         Bundle topMSG = new Bundle();
         topMSG.putInt("startyear",STARTYEAR);
         topMSG.putInt("startmonth",STARTMONTH);

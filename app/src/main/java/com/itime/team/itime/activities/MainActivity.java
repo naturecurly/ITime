@@ -9,7 +9,6 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.preference.PreferenceFragmentCompat;
 import android.support.v7.preference.PreferenceScreen;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -39,6 +38,7 @@ public class MainActivity extends AppCompatActivity implements
     private LayoutInflater layoutInflater;
 
     private int mIndex;
+    private Menu mMenu;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -52,12 +52,14 @@ public class MainActivity extends AppCompatActivity implements
         for (int i = 0; i < fragmentArray.length; i++) {
             TabHost.TabSpec tabSpec = tabHost.newTabSpec(mTextViewArray[i]).setIndicator(getTabItemView(i));
             tabHost.addTab(tabSpec, fragmentArray[i], null);
+
         }
 //        FragmentManager fm = getSupportFragmentManager();
 //        fm.beginTransaction().add(R.id.app_body, new CalendarFragment()).commit();
 //        fm.beginTransaction().add(R.id.app_foot, new MenuFragment()).commit();
 
     }
+
 
 
 
@@ -71,12 +73,13 @@ public class MainActivity extends AppCompatActivity implements
         textView.setText(mTextViewArray[index]);
 
 
+
         return view;
     }
 
     @Override
     public boolean onPrepareOptionsMenu(Menu menu) {
-        Log.i("index," , String.valueOf(mIndex));
+        mMenu = menu;
         return super.onPrepareOptionsMenu(menu);
     }
 
@@ -93,13 +96,6 @@ public class MainActivity extends AppCompatActivity implements
         // automatically handle clicks on the Home/Up button, so long
         // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
-
-        //noinspection SimplifiableIfStatement
-//        if (id == R.id.action_settings) {
-//            startActivity(new Intent(this, SettingsActivity.class));
-//            return true;
-//        }
-
         return super.onOptionsItemSelected(item);
     }
 

@@ -79,7 +79,6 @@ public class PhoneContactActivity extends AppCompatActivity implements AdapterVi
             String name = cursor.getString(nameIndex);
             contact.setName(name);
 
-
             /*
              * Search phone information of contacts
              */
@@ -148,19 +147,6 @@ public class PhoneContactActivity extends AppCompatActivity implements AdapterVi
     }
 
     private void selectAll(){
-//        View convertView = null;
-//        for(int i = 0; i < mIsChecked.length; i ++) {
-//            mListView.getAdapter().getView(i, convertView, null);
-//            CheckBox checkBox = (CheckBox) convertView.findViewById(R.id.phone_contact_check);
-//            TextView t = (TextView) convertView.findViewById(R.id.phone_contact_name);
-//            t.setText("aaa");
-//            Log.i("Name", (String) t.getText());
-//            checkBox.toggle();
-//
-//        }
-//        for(int i = 0;i < mIsChecked.length; i ++){
-//            mIsChecked[i] = true;
-//        }
         mListViewAdapter.invert();
         mListViewAdapter.notifyDataSetChanged();
     }

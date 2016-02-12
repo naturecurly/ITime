@@ -70,7 +70,6 @@ public class MeetingFragment extends Fragment implements View.OnClickListener,Se
     private ArrayList<HashMap<String, Object>> listItemForPresent;
     private Button duration;
 
-
     private int mStartYear;
     private int mStartMonth;
     private int mStartDay;
@@ -110,8 +109,6 @@ public class MeetingFragment extends Fragment implements View.OnClickListener,Se
         initListView();
 
         mInvitedFriend = (LinearLayout) mmeeting.findViewById(R.id.meeting_invited_friend);
-
-
 
         return mmeeting;
     }

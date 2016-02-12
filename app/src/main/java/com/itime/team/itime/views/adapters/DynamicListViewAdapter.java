@@ -8,6 +8,8 @@ import android.graphics.drawable.Drawable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import android.widget.BaseAdapter;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
@@ -32,6 +34,11 @@ public class DynamicListViewAdapter extends BaseAdapter {
     private ImageView[] invitedFriends;
     private Resources resources;
     private Drawable mBackgroud;
+    private Animation mScale;
+    private Animation mScaleRemove;
+
+
+
     public DynamicListViewAdapter(Activity context, ArrayList<HashMap<String, Object>> listItem,
                                   LinearLayout linearLayout, Resources resources){
         list = listItem;
@@ -40,6 +47,8 @@ public class DynamicListViewAdapter extends BaseAdapter {
         invitedFriends = new ImageView[listItem.size()];
         this.resources = resources;
         this.checkbox = checkbox;
+        mScale = AnimationUtils.loadAnimation(context, R.anim.meeting_scale);
+        mScaleRemove = AnimationUtils.loadAnimation(context, R.anim.meeting_scale_remove);
     }
     @Override
     public int getCount() {
@@ -130,7 +139,9 @@ public class DynamicListViewAdapter extends BaseAdapter {
         }else{
             imageView.setImageResource(R.drawable.default_profile_image);
         }
+        imageView.startAnimation(mScale);
         mLinearLayout.addView(imageView);
+
         imageView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

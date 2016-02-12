@@ -5,9 +5,7 @@ import android.support.v4.app.DialogFragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AbsListView;
 import android.widget.Button;
-import android.widget.NumberPicker;
 
 import com.itime.team.itime.activities.R;
 
@@ -15,7 +13,7 @@ import com.itime.team.itime.activities.R;
 /**
  * Created by mac on 15/12/18.
  */
-public class MeetingDurationDialogFragment extends DialogFragment implements NumberPicker.OnValueChangeListener,AbsListView.OnScrollListener, View.OnClickListener {
+public class MeetingDurationDialogFragment extends DialogFragment implements View.OnClickListener {
     private View durationDialog;
 
     private Button mTenMins;
@@ -52,25 +50,6 @@ public class MeetingDurationDialogFragment extends DialogFragment implements Num
         mSixHours.setOnClickListener(this);
     }
 
-
-
-
-    public void onValueChange(NumberPicker picker, int oldVal, int newVal) {
-//        Toast.makeText(
-//                getActivity(),
-//                "原来的值 " + oldVal + "--新值: "
-//                        + newVal, Toast.LENGTH_SHORT).show();
-    }
-
-    @Override
-    public void onScrollStateChanged(AbsListView view, int scrollState) {
-
-    }
-
-    @Override
-    public void onScroll(AbsListView view, int firstVisibleItem, int visibleItemCount, int totalItemCount) {
-
-    }
 
     @Override
     public void onClick(View v) {

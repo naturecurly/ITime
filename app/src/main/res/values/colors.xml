@@ -1,8 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="colorPrimary">#e20000</color>
-    <color name="colorPrimaryDark">#b90000</color>
+    <color name="colorPrimary">#3F51B5</color>
+    <color name="colorPrimaryDark">#303F9F</color>
     <color name="colorAccent">#FF4081</color>
+
+
     <color name="focus_circle_bg">#F24949</color>
     <color name="date_1">#F24949</color>
     <color name="date_2">#40000000</color>
@@ -13,4 +15,9 @@
     <color name="green_level4">#009933</color>
     <color name="green_level5">#336600</color>
     <color name="grey">#CCCCCC</color>
+    <color name="white">#FFFFFF</color>
+
+    <color name="skyblue">#0099FF</color>
+    <color name="darkblue">#003399</color>
+    <color name="lightblue">#99CCFF</color>
 </resources>

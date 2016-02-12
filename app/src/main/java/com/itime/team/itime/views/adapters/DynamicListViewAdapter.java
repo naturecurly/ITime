@@ -37,8 +37,6 @@ public class DynamicListViewAdapter extends BaseAdapter {
     private Animation mScale;
     private Animation mScaleRemove;
 
-
-
     public DynamicListViewAdapter(Activity context, ArrayList<HashMap<String, Object>> listItem,
                                   LinearLayout linearLayout, Resources resources){
         list = listItem;

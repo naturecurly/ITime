@@ -5,7 +5,10 @@ import android.support.v4.app.DialogFragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.Window;
 import android.widget.Button;
+import android.widget.RadioButton;
+import android.widget.RadioGroup;
 
 import com.itime.team.itime.activities.R;
 
@@ -13,15 +16,11 @@ import com.itime.team.itime.activities.R;
 /**
  * Created by mac on 15/12/18.
  */
-public class MeetingDurationDialogFragment extends DialogFragment implements View.OnClickListener {
+public class MeetingDurationDialogFragment extends DialogFragment implements RadioGroup.OnCheckedChangeListener {
     private View durationDialog;
+    private RadioGroup mTime;
+    private RadioButton mTenMins, mThirtyMins, mFifteenMins, mOneHour, mTwoHours, mSixHours;
 
-    private Button mTenMins;
-    private Button mFifteenMins;
-    private Button mThirtyMins;
-    private Button mOneHour;
-    private Button mTwoHours;
-    private Button mSixHours;
     private Button duration;
 
     public MeetingDurationDialogFragment(Button duration) {
@@ -31,48 +30,58 @@ public class MeetingDurationDialogFragment extends DialogFragment implements Vie
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         durationDialog = inflater.inflate(R.layout.fragment_meeting_duration_dialog_button, null);
-        initVerTwo();
+        mTime = (RadioGroup) durationDialog.findViewById(R.id.meeting_duration_parent);
+        mTenMins = (RadioButton) durationDialog.findViewById(R.id.meeting_duration_tenmins);
+        mFifteenMins = (RadioButton) durationDialog.findViewById(R.id.meeting_duration_fifteenmins);
+        mThirtyMins = (RadioButton) durationDialog.findViewById(R.id.meeting_duration_thirtymins);
+        mOneHour = (RadioButton) durationDialog.findViewById(R.id.meeting_duration_onehour);
+        mTwoHours = (RadioButton) durationDialog.findViewById(R.id.meeting_duration_twohours);
+        mSixHours = (RadioButton) durationDialog.findViewById(R.id.meeting_duration_sixhours);
+        init();
+        //getDialog().setTitle(R.string.meeting_duraiton_dialog_title);
+        getDialog().requestWindowFeature(Window.FEATURE_NO_TITLE);
+        mTime.setOnCheckedChangeListener(this);
         return durationDialog;
     }
 
-    private void initVerTwo(){
-        mTenMins = (Button) durationDialog.findViewById(R.id.meeting_duration_tenmins);
-        mFifteenMins = (Button) durationDialog.findViewById(R.id.meeting_duration_fifteenmins);
-        mThirtyMins = (Button) durationDialog.findViewById(R.id.meeting_duration_thirtymins);
-        mOneHour = (Button) durationDialog.findViewById(R.id.meeting_duration_onehour);
-        mTwoHours = (Button) durationDialog.findViewById(R.id.meeting_duration_twohours);
-        mSixHours = (Button) durationDialog.findViewById(R.id.meeting_duration_sixhours);
-        mTenMins.setOnClickListener(this);
-        mFifteenMins.setOnClickListener(this);
-        mThirtyMins.setOnClickListener(this);
-        mOneHour.setOnClickListener(this);
-        mTwoHours.setOnClickListener(this);
-        mSixHours.setOnClickListener(this);
+
+    private void init(){
+        if (MeetingFragment.mDuration == 10){
+            mTenMins.setChecked(true);
+        } else if(MeetingFragment.mDuration == 15){
+            mFifteenMins.setChecked(true);
+        } else if(MeetingFragment.mDuration == 30){
+            mThirtyMins.setChecked(true);
+        } else if(MeetingFragment.mDuration == 60){
+            mOneHour.setChecked(true);
+        } else if(MeetingFragment.mDuration == 120){
+            mTwoHours.setChecked(true);
+        } else if(MeetingFragment.mDuration == 360){
+            mSixHours.setChecked(true);
+        }
     }
 
-
     @Override
-    public void onClick(View v) {
-        if(v.getId() == R.id.meeting_duration_tenmins){
+    public void onCheckedChanged(RadioGroup group, int checkedId) {
+        if(checkedId == mTenMins.getId()){
             MeetingFragment.mDuration = 10;
             duration.setText("10 mins");
-        }else if(v.getId() == R.id.meeting_duration_fifteenmins){
+        } else if(checkedId == mFifteenMins.getId()){
             MeetingFragment.mDuration = 15;
             duration.setText("15 mins");
-        }else if(v.getId() == R.id.meeting_duration_thirtymins){
+        } else if(checkedId == mThirtyMins.getId()){
             MeetingFragment.mDuration = 30;
             duration.setText("30 mins");
-        }else if(v.getId() == R.id.meeting_duration_onehour){
+        } else if(checkedId == mOneHour.getId()){
             MeetingFragment.mDuration = 60;
             duration.setText("1 hour");
-        }else if(v.getId() == R.id.meeting_duration_twohours){
+        } else if(checkedId == mTwoHours.getId()){
             MeetingFragment.mDuration = 120;
             duration.setText("2 hours");
-        }else if(v.getId() == R.id.meeting_duration_sixhours){
+        } else if(checkedId == mSixHours.getId()){
             MeetingFragment.mDuration = 360;
             duration.setText("6 hours");
         }
         MeetingDurationDialogFragment.this.dismiss();
     }
-
 }

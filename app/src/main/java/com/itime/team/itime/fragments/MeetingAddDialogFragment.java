@@ -6,6 +6,7 @@ import android.support.v4.app.DialogFragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.Window;
 import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.SimpleAdapter;
@@ -39,7 +40,8 @@ public class MeetingAddDialogFragment extends DialogFragment implements DataRequ
         listView = (ListView) addDialog.findViewById(R.id.meeting_add_listview);
         listItem = new ArrayList<HashMap<String, Object>>();
         mJsonManager = new JsonManager();
-        getDialog().setTitle("Search");
+//        getDialog().setTitle("Search");
+        getDialog().requestWindowFeature(Window.FEATURE_NO_TITLE);
         return addDialog;
     }
 

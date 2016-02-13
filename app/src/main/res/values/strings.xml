@@ -24,6 +24,9 @@
     <string name="meeting_send_invitation_venue">Venue</string>
     <string name="meeting_search_friend_title">Search Friend</string>
     <string name="meeting_searchbar">Search your friend</string>
+    <string name="meeting_duraiton_dialog_title">Duration</string>
+
+
 
     <string name="phone_contact_title">Search Contacts</string>
 

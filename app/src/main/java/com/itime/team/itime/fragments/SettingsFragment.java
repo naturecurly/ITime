@@ -18,11 +18,13 @@ package com.itime.team.itime.fragments;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
 
 import com.itime.team.itime.activities.MeetingPreferenceActivity;
 import com.itime.team.itime.activities.R;
@@ -36,11 +38,15 @@ public class SettingsFragment extends Fragment implements View.OnClickListener {
     private static final int SETTINGS_PROFILE_ID = R.id.setting_profile;
     private static final int SETTINGS_MEETING_ID = R.id.setting_meeting;
     private static final int SETTINGS_IMPORT_ID = R.id.setting_import;
+    private static final int SETTINGS_ALERT_TIME_ID = R.id.setting_dft_alert_time;
 
     private static final String SETTINGS = "Settings";
     private static final int PROFILE_SETTINGS = 1;
     private static final int MEETING_SETTINGS = 2;
     private static final int IMPORT_SETTINGS = 3;
+    private static final int ALERT_TIME_SETTINGS = 4;
+
+    View mAlertTimeView;
 
     @Nullable
     @Override
@@ -53,6 +59,8 @@ public class SettingsFragment extends Fragment implements View.OnClickListener {
         v2.setOnClickListener(this);
         View v3 = view.findViewById(SETTINGS_IMPORT_ID);
         v3.setOnClickListener(this);
+        mAlertTimeView = view.findViewById(SETTINGS_ALERT_TIME_ID);
+        mAlertTimeView.setOnClickListener(this);
 
         return view;
     }
@@ -79,8 +87,21 @@ public class SettingsFragment extends Fragment implements View.OnClickListener {
                 startActivity(intent);
                 break;
 
+            case SETTINGS_ALERT_TIME_ID:
+                intent.putExtra(SETTINGS, ALERT_TIME_SETTINGS);
+                startActivityForResult(intent, ALERT_TIME_SETTINGS);
+
             default:
                 break;
+        }
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (requestCode == ALERT_TIME_SETTINGS) {
+            String text = PreferenceManager.getDefaultSharedPreferences(getActivity()).getString("default_alert_time", "10mins");
+            TextView textView = (TextView) mAlertTimeView.findViewById(R.id.setting_dft_alert_time_text);
+            textView.setText(text);
         }
     }
 }

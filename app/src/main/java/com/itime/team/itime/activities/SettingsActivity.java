@@ -21,6 +21,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 
+import com.itime.team.itime.fragments.AlertTimePreferenceFragment;
 import com.itime.team.itime.fragments.MeetingPreferenceFragment;
 import com.itime.team.itime.fragments.ProfileFragment;
 
@@ -35,6 +36,8 @@ public class SettingsActivity extends AppCompatActivity {
     private static final int PROFILE_SETTINGS = 1;
     private static final int MEETING_SETTINGS = 2;
     private static final int IMPORT_SETTINGS = 3;
+    private static final int ALERT_TIME_SETTINGS = 4;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -60,13 +63,15 @@ public class SettingsActivity extends AppCompatActivity {
                 case IMPORT_SETTINGS:
                     break;
 
+                case ALERT_TIME_SETTINGS:
+                    getFragmentManager().beginTransaction()
+                            .add(R.id.setting_content, new AlertTimePreferenceFragment())
+                            .commit();
                 default:
                     Log.e(LOG_TAG, "Unknows setting item");
             }
 
         }
     }
-
-
 
 }

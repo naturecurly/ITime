@@ -125,10 +125,11 @@ public class MeetingPreferenceActivity extends AppCompatPreferenceActivity {
         Header header = new Header();
         header.fragment = MEETING_SUB_PREFERENCE_CLASS;
         header.title = sp.getString(id+"_type", "Reject");
-        String startTime = sp.getString(id+"_startTime", "00:00");
-        String endTime = sp.getString(id+"_endTime", "08:00");
-        String repeat = sp.getString(id+"_repeat", "Daily");
-        header.summary = String.format("%s~%s\t%s", startTime, endTime, repeat);
+        String startDate = sp.getString(id+"_startDate", "");
+        String startTime = sp.getString(id+"_startTime", "");
+        String endTime = sp.getString(id+"_endTime", "");
+        String repeat = sp.getString(id+"_repeat", "");
+        header.summary = String.format("%s\t%s~%s\t%s", startDate, startTime, endTime, repeat);
         if (header.fragmentArguments == null) {
             header.fragmentArguments = new Bundle();
         }

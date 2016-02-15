@@ -16,6 +16,7 @@
 
 package com.itime.team.itime.fragments;
 
+import android.app.DatePickerDialog;
 import android.app.TimePickerDialog;
 import android.content.SharedPreferences;
 import android.os.Bundle;
@@ -36,6 +37,7 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.DatePicker;
 import android.widget.TimePicker;
 
 import com.itime.team.itime.activities.MeetingPreferenceActivity;
@@ -60,6 +62,7 @@ public class MeetingSubPreferenceFragment extends PreferenceFragment
     private boolean mIsNewPreferences = false;
     private int mCurPrefercenIndex = -1;
     private boolean isReject;
+    private String preferenceId;
 
     public MeetingSubPreferenceFragment() {
         super();
@@ -74,9 +77,23 @@ public class MeetingSubPreferenceFragment extends PreferenceFragment
         if (args != null && args.getBoolean("AddMeetingPreference")) {
             mIsNewPreferences = true;
         }
+        if (args != null && !mIsNewPreferences) {
+            preferenceId = args.getString("preference_id");
+            String pref_id = preferenceId;
+            SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(getActivity());
+            findPreference("start_date").setSummary(sp.getString(pref_id+"_startDate", ""));
+            findPreference("starts").setSummary(sp.getString(pref_id+"_startTime", ""));
+            findPreference("ends").setSummary(sp.getString(pref_id+"_endTime", ""));
+            getPreferenceScreen().getPreference(3).setSummary(sp.getString(pref_id+"_repeat", ""));
+            //findPreference("type").setSummary(sp.getString(pref_id+"_type", ""));
+            if (sp.getString(pref_id+"_type", "").equalsIgnoreCase("reject")) {
+                isReject = true;
+            }
+        }
+        findPreference("start_date").setOnPreferenceClickListener(this);
         findPreference("starts").setOnPreferenceClickListener(this);
         findPreference("ends").setOnPreferenceClickListener(this);
-        getPreferenceScreen().getPreference(2).setOnPreferenceChangeListener(this);
+        getPreferenceScreen().getPreference(3).setOnPreferenceChangeListener(this);
         findPreference("type").setOnPreferenceClickListener(this);
         Preference type = findPreference("type");
         String summary = isReject ? "Reject" : "Accept";
@@ -117,25 +134,24 @@ public class MeetingSubPreferenceFragment extends PreferenceFragment
                 final Preference preference = preferenceScreen.getPreference(index);
                 final String resid = preference.getExtras().getString("resid");
                 switch (resid) {
+                    case "start_date": {
+                        preference.getEditor().putString("preference_id_"+count + "_startDate", preference.getSummary().toString()).commit();
+                    } break;
                     case "startTime": {
-                        preference.setKey("startTime_" + count);
                         preference.getEditor().putString("preference_id_"+count + "_startTime", preference.getSummary().toString()).commit();
                     } break;
 
                     case "endTime": {
-                        preference.setKey("endTime_" + count);
                         preference.getEditor().putString("preference_id_"+count + "_endTime", preference.getSummary().toString()).commit();
 
                     } break;
 
                     case "repeat": {
-                        preference.setKey("repeat_" + count);
                         preference.getEditor().putString("preference_id_"+count + "_repeat", preference.getSummary().toString()).commit();
 
                     } break;
 
                     case "type": {
-                        preference.setKey("type_" + count);
                         preference.getEditor().putString("preference_id_"+count + "_type", preference.getSummary().toString()).commit();
                     }break;
 
@@ -148,6 +164,37 @@ public class MeetingSubPreferenceFragment extends PreferenceFragment
             pref_ids.add("preference_id_"+count);
             defaultSharedPreferences.edit().putStringSet("meeting_preferences_id_string_set", pref_ids).commit();
             defaultSharedPreferences.edit().putInt(MEETING_PREFERENCE_COUNT, count+1).commit();
+        } else {
+            for (int index = 0; index < preferenceScreen.getPreferenceCount(); index++) {
+                final Preference preference = preferenceScreen.getPreference(index);
+                final String resid = preference.getExtras().getString("resid");
+                switch (resid) {
+                    case "start_date": {
+                        preference.getEditor().putString(preferenceId + "_startDate", preference.getSummary().toString()).commit();
+                    } break;
+                    case "startTime": {
+                        preference.getEditor().putString(preferenceId +  "_startTime", preference.getSummary().toString()).commit();
+                    } break;
+
+                    case "endTime": {
+                        preference.getEditor().putString(preferenceId +  "_endTime", preference.getSummary().toString()).commit();
+
+                    } break;
+
+                    case "repeat": {
+                        preference.getEditor().putString(preferenceId +  "_repeat", preference.getSummary().toString()).commit();
+
+                    } break;
+
+                    case "type": {
+                        preference.getEditor().putString("preference_id_"+count + "_type", preference.getSummary().toString()).commit();
+                    }break;
+
+                    default:
+                        break;
+                }
+
+            }
         }
         // back to previous activity after saved
         getActivity().onBackPressed();
@@ -164,11 +211,22 @@ public class MeetingSubPreferenceFragment extends PreferenceFragment
             return false;
         }
         final String resid = extras.getString("resid");
+
+        if (resid.equalsIgnoreCase("start_date")) {
+            Calendar cal = Calendar.getInstance();
+            DatePickerDialog datePicker = new DatePickerDialog(preference.getContext(), new DatePickerDialog.OnDateSetListener() {
+                @Override
+                public void onDateSet(DatePicker view, int year, int monthOfYear, int dayOfMonth) {
+                    preference.setSummary(String.format("%d/%d/%d", dayOfMonth, monthOfYear, year));
+                }
+            }, cal.get(Calendar.YEAR), cal.get(Calendar.MONTH), cal.get(Calendar.DAY_OF_MONTH));
+            datePicker.show();
+        }
         if (resid.equalsIgnoreCase("startTime") || resid.equalsIgnoreCase("endTime")) {
             TimePickerDialog timePicker1 = new TimePickerDialog(preference.getContext(), new TimePickerDialog.OnTimeSetListener() {
                 @Override
                 public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
-                    preference.setSummary(hourOfDay + " : " + minute);
+                    preference.setSummary(hourOfDay + ":" + minute);
                 }
             }, Calendar.getInstance().get(Calendar.HOUR_OF_DAY), Calendar.getInstance().get(Calendar.MINUTE),false);
             timePicker1.show();

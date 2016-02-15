@@ -9,8 +9,10 @@ import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.CheckBox;
+import android.widget.ListAdapter;
 import android.widget.ListView;
 
 import com.itime.team.itime.bean.Contact;
@@ -36,6 +38,7 @@ public class PhoneContactActivity extends AppCompatActivity implements AdapterVi
         init();
         setContacts();
         setListView();
+
     }
 
     private void init(){
@@ -115,7 +118,7 @@ public class PhoneContactActivity extends AppCompatActivity implements AdapterVi
     }
 
     private void setListView(){
-        mListViewAdapter = new PhotoContactsAdapter(this,mContact,mIsChecked);
+        mListViewAdapter = new PhotoContactsAdapter(this,mContact, mIsChecked);
         mListView.setAdapter(mListViewAdapter);
     }
 
@@ -155,4 +158,7 @@ public class PhoneContactActivity extends AppCompatActivity implements AdapterVi
         CheckBox checkBox = (CheckBox) view.findViewById(R.id.phone_contact_check);
         checkBox.toggle();
     }
+
+
+
 }

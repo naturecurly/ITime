@@ -22,6 +22,7 @@ public class PhotoContactsAdapter extends BaseAdapter {
     private Activity mContext;
     private Boolean[] mIsChecked;
 
+
     public PhotoContactsAdapter(Activity mContext, ArrayList<Contact> contact, Boolean[] isChecked){
         this.mContact = contact;
         this.mContext = mContext;
@@ -61,34 +62,36 @@ public class PhotoContactsAdapter extends BaseAdapter {
     }
 
     @Override
-    public View getView(final int position, View convertView, ViewGroup parent) {
+    public View getView(int position, View convertView, ViewGroup parent) {
+        LayoutInflater inflater = mContext.getLayoutInflater();
+        final View itemView = inflater.inflate(R.layout.activity_phone_contact_listview, null);
+        final int index = position;
         ViewHolder viewHolder;
-        if(convertView == null){
-            convertView = LayoutInflater.from(mContext).inflate(R.layout.activity_phone_contact_listview, null);
-            viewHolder = new ViewHolder();
-            viewHolder.name = (TextView) convertView.findViewById(R.id.phone_contact_name);
-            viewHolder.phoneNumber = (TextView) convertView.findViewById(R.id.phone_contact_phone);
-            viewHolder.checkBox = (CheckBox) convertView.findViewById(R.id.phone_contact_check);
-            viewHolder.name.setText(mContact.get(position).getName());
-            convertView.setTag(viewHolder);
-        }else{
-            viewHolder = (ViewHolder) convertView.getTag();
-        }
-        String phoneNumber = mContact.get(position).getPhotoNumber().size() == 0 ? "" :
-                mContact.get(position).getPhotoNumber().get(0);
-        viewHolder.phoneNumber.setText(phoneNumber);
+
+        //itemView = LayoutInflater.from(mContext).inflate(R.layout.activity_phone_contact_listview, null);
+        viewHolder = new ViewHolder();
+        viewHolder.name = (TextView) itemView.findViewById(R.id.phone_contact_name);
+        viewHolder.phoneNumber = (TextView) itemView.findViewById(R.id.phone_contact_phone);
+        viewHolder.checkBox = (CheckBox) itemView.findViewById(R.id.phone_contact_check);
+
+        itemView.setTag(viewHolder);
+
         viewHolder.checkBox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                 if (isChecked) {
-                    mIsChecked[position] = true;
+                    mIsChecked[index] = true;
                 } else {
-                    mIsChecked[position] = false;
+                    mIsChecked[index] = false;
                 }
             }
         });
-        setCheckBox(viewHolder,position);
-        return convertView;
+        String phoneNumber = mContact.get(index).getPhotoNumber().size() == 0 ? "" :
+                mContact.get(index).getPhotoNumber().get(0);
+        viewHolder.phoneNumber.setText(phoneNumber);
+        setCheckBox(viewHolder,index);
+        viewHolder.name.setText(mContact.get(position).getName());
+        return itemView;
     }
 
     private class ViewHolder{

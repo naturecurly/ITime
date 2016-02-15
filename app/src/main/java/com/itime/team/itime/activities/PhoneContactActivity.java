@@ -1,6 +1,5 @@
 package com.itime.team.itime.activities;
 
-import android.content.Intent;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.provider.ContactsContract;
@@ -15,6 +14,7 @@ import android.widget.CheckBox;
 import android.widget.ListView;
 
 import com.itime.team.itime.bean.Contact;
+import com.itime.team.itime.fragments.PhoneContactAddWayDialogFragment;
 import com.itime.team.itime.views.adapters.PhotoContactsAdapter;
 
 import java.util.ArrayList;
@@ -26,7 +26,6 @@ public class PhoneContactActivity extends AppCompatActivity implements AdapterVi
     private ArrayList<Contact> mContact;
     private ListView mListView;
     private Boolean[] mIsChecked;
-    private StringBuffer mPhoneNumbers;
     private PhotoContactsAdapter mListViewAdapter;
 
     @Override
@@ -54,7 +53,6 @@ public class PhoneContactActivity extends AppCompatActivity implements AdapterVi
         if (actionBar != null) {
             actionBar.setDisplayHomeAsUpEnabled(true);
         }
-        mPhoneNumbers = new StringBuffer();
         mListView.setOnItemClickListener(this);
     }
 
@@ -138,7 +136,8 @@ public class PhoneContactActivity extends AppCompatActivity implements AdapterVi
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
         if (id == R.id.phone_search_add) {
-            addFriends();
+            PhoneContactAddWayDialogFragment dialogFragment = new PhoneContactAddWayDialogFragment(mIsChecked,mContact);
+            dialogFragment.show(getSupportFragmentManager(),"");
             return true;
         } else if (id == R.id.phone_search_all){
             selectAll();
@@ -150,28 +149,6 @@ public class PhoneContactActivity extends AppCompatActivity implements AdapterVi
         mListViewAdapter.invert();
         mListViewAdapter.notifyDataSetChanged();
     }
-
-    private void addFriends(){
-        String phone = "";
-        mPhoneNumbers.delete(0,mPhoneNumbers.length());
-        for(int i = 0; i < mIsChecked.length; i ++){
-            if(mIsChecked[i]){
-                phone = mContact.get(i).getPhotoNumber().size() == 0 ? "" :
-                        mContact.get(i).getPhotoNumber().get(0);
-                mPhoneNumbers.append(phone).append(";");
-            }
-        }
-        sendMSG();
-    }
-
-    private void sendMSG(){
-        Intent intent = new Intent(Intent.ACTION_VIEW);
-        intent.putExtra("address", mPhoneNumbers.toString());
-        intent.setType("vnd.android-dir/mms-sms");
-        intent.putExtra("sms_body","happy new year");
-        startActivity(intent);
-    }
-
 
     @Override
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {

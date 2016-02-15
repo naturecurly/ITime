@@ -259,8 +259,8 @@ public class MeetingFragment extends Fragment implements View.OnClickListener,Se
             mEndTime.setTextColor(getResources().getColor(R.color.bottom_bar));
         }else{
             mIsFeasible = false;
-            mEndDate.setTextColor(getResources().getColor(R.color.colorPrimary));
-            mEndTime.setTextColor(getResources().getColor(R.color.colorPrimary));
+            mEndDate.setTextColor(getResources().getColor(R.color.colorAccent));
+            mEndTime.setTextColor(getResources().getColor(R.color.colorAccent));
         }
     }
     @Override
@@ -316,7 +316,6 @@ public class MeetingFragment extends Fragment implements View.OnClickListener,Se
             MeetingDurationDialogFragment durationDialog = new MeetingDurationDialogFragment(duration);
             durationDialog.show(getFragmentManager(), "durationDialog");
         }else if(v.getId() == R.id.meeting_listview){
-
         }
     }
 

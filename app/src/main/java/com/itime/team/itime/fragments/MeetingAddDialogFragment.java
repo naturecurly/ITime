@@ -90,6 +90,7 @@ public class MeetingAddDialogFragment extends DialogFragment implements DataRequ
                 if(position == 0){
                     Intent intent = new Intent(getActivity(), SearchFriendActivity.class);
                     startActivity(intent);
+
                 }else if (position == 1){
                     Intent intent = new Intent(getActivity(), PhoneContactActivity.class);
                     startActivity(intent);
@@ -103,7 +104,7 @@ public class MeetingAddDialogFragment extends DialogFragment implements DataRequ
                 } else{
 
                 }
-
+                MeetingAddDialogFragment.this.dismiss();
             }
         });
     }

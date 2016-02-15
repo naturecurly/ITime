@@ -23,7 +23,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:id="@+id/phone_contact_search"
-        android:layout_marginBottom="100px"/>
+        android:layout_marginBottom="20dp"/>
 
     <ListView
         android:layout_width="match_parent"

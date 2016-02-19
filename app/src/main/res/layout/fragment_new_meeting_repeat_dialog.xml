@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+    <TextView
+        android:text="@string/new_meeting_repeat_dialog_title"
+        style="@style/DialogTitle"
+        />
+    <RadioGroup
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/new_meeting_repeat_group"
+        android:paddingLeft="10dp">
+        <RadioButton
+            android:text="One-time event"
+            android:id="@+id/new_meeting_repeat_onetime"
+            style="@style/DialogRadioButton"
+            />
+        <RadioButton
+            style="@style/DialogRadioButton"
+            android:text="Daily"
+            android:id="@+id/new_meeting_repeat_daily"
+            />
+        <RadioButton
+            style="@style/DialogRadioButton"
+            android:text="Every weekend(Sat-Sun)"
+            android:id="@+id/new_meeting_repeat_weekend"
+            />
+        <RadioButton
+            style="@style/DialogRadioButton"
+            android:text="Weekly(Every Sat)"
+            android:id="@+id/new_meeting_repeat_weekly"
+            />
+        <RadioButton
+            style="@style/DialogRadioButton"
+            android:text="Bi-Weekly"
+            android:id="@+id/new_meeting_repeat_biweekly"
+            />
+        <RadioButton
+            style="@style/DialogRadioButton"
+            android:text="Monthly"
+            android:id="@+id/new_meeting_repeat_monthly"
+            />
+        <RadioButton
+            style="@style/DialogRadioButton"
+            android:text="Yearly"
+            android:id="@+id/new_meeting_repeat_yearly"
+            />
+    </RadioGroup>
+
+</LinearLayout>

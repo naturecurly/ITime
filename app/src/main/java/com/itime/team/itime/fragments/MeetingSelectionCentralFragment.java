@@ -14,10 +14,10 @@ import android.widget.AbsoluteLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
+import com.itime.team.itime.activities.NewMeetingActivity;
 import com.itime.team.itime.activities.R;
 import com.itime.team.itime.bean.Preference;
 import com.itime.team.itime.bean.TopAndCenterMeetingFragmentScrollViews;
@@ -257,10 +257,20 @@ public class MeetingSelectionCentralFragment extends Fragment implements ScrollV
 
                     container.setPadding(0, PADDDINGOFSQAURE, 0, PADDDINGOFSQAURE);
                     container.addView(mColors[i].get(index++));
+                    final int finalI = i;
                     mColors[i].get(index - 1).setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View v) {
-                            Toast.makeText(getActivity(), hour + " :" + min, Toast.LENGTH_SHORT).show();
+                            //Toast.makeText(getActivity(), hour + " :" + min, Toast.LENGTH_SHORT).show();
+                            Intent intent = new Intent(getActivity(), NewMeetingActivity.class);
+                            intent.putExtra("hour",hour);
+                            intent.putExtra("min",min);
+                            intent.putExtra("duration", DURATION);
+                            intent.putExtra("currentDay", finalI);
+                            intent.putExtra("year",mStartYear);
+                            intent.putExtra("month", mStartMonth);
+                            intent.putExtra("day", mStartDay);
+                            startActivity(intent);
                         }
                     });
                     mColumn[i].addView(defaultView);

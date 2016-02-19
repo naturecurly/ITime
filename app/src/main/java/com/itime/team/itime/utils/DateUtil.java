@@ -5,6 +5,7 @@ package com.itime.team.itime.utils;
  */
 
 import android.annotation.SuppressLint;
+import android.util.Log;
 
 import java.text.DateFormat;
 import java.text.ParseException;
@@ -176,6 +177,28 @@ public class DateUtil {
         }
         return date;
     }
+
+    public static Date plusDay(int year, int month, int day, int hour, int min, long addDays){
+        SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm");
+        Date date = null;
+        try {
+            long days = 24*60*60*1000*addDays;
+            Date changeDate = formatter.parse(year + "-" + month + "-" + day + " " + hour + ":" + min);
+            Log.i("before",changeDate.toString());
+            date = new Date(changeDate.getTime() + days);
+            Log.i("after",date.toString());
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+        return date;
+    }
+
+    public static Date plusMinute(Date originalTime, int minutes){
+        long period = minutes * 60 * 1000;
+        Date returnTime = new Date(originalTime.getTime() + period);
+        return returnTime;
+    }
+
 
 //If the start time is easier than the end time, then the time is seemed feasible
     public static boolean isFeasible(int startYear, int startMonth, int startDay, int startHour, int startMin,

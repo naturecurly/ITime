@@ -32,6 +32,14 @@
     <string name="phone_contact_title">Search Contacts</string>
     <string name="phone_contact_addway_title">Add Method</string>
 
+    <string name="new_meeting_namehit">Name</string>
+    <string name="new_meeting_venuehit">Venue</string>
+    <string name="new_meeting_repeat">Repeats</string>
+    <string name="new_meeting_punctual">Punctual</string>
+    <string name="new_meeting_alert">Alert -- at time of Departure</string>
+    <string name="new_meeting_title">New Meeting</string>
+    <string name="new_meeting_repeat_dialog_title">Repeats</string>
+
     <string name="inline_preferences">inline_preference</string>
     <string name="summary_checkbox_preference">summary_checkbox_preference</string>
     <string name="title_checkbox_preference">title_checkbox_preference</string>

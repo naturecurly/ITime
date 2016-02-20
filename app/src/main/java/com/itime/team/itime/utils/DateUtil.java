@@ -184,9 +184,7 @@ public class DateUtil {
         try {
             long days = 24*60*60*1000*addDays;
             Date changeDate = formatter.parse(year + "-" + month + "-" + day + " " + hour + ":" + min);
-            Log.i("before",changeDate.toString());
             date = new Date(changeDate.getTime() + days);
-            Log.i("after",date.toString());
         } catch (ParseException e) {
             e.printStackTrace();
         }

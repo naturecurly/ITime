@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+    <TextView
+        android:text="@string/new_meeting_alert_dialog_title"
+        style="@style/DialogTitle"
+        />
+    <RadioGroup
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/new_meeting_alert_group"
+        android:paddingLeft="10dp">
+        <RadioButton
+            android:text="None"
+            android:id="@+id/new_meeting_alert_none"
+            style="@style/DialogRadioButton"
+            />
+        <RadioButton
+            style="@style/DialogRadioButton"
+            android:text="At time of Departure"
+            android:id="@+id/new_meeting_alert_departure"
+            />
+        <RadioButton
+            style="@style/DialogRadioButton"
+            android:text="5 minutes before"
+            android:id="@+id/new_meeting_alert_five"
+            />
+        <RadioButton
+            style="@style/DialogRadioButton"
+            android:text="10 minutes before"
+            android:id="@+id/new_meeting_alert_ten"
+            />
+        <RadioButton
+            style="@style/DialogRadioButton"
+            android:text="15 minutes before"
+            android:id="@+id/new_meeting_alert_fifteen"
+            />
+        <RadioButton
+            style="@style/DialogRadioButton"
+            android:text="30 minutes before"
+            android:id="@+id/new_meeting_alert_thirty"
+            />
+        <RadioButton
+            style="@style/DialogRadioButton"
+            android:text="1 hour before"
+            android:id="@+id/new_meeting_alert_sixty"
+            />
+    </RadioGroup>
+
+</LinearLayout>

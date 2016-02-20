@@ -39,6 +39,8 @@
     <string name="new_meeting_alert">Alert -- at time of Departure</string>
     <string name="new_meeting_title">New Meeting</string>
     <string name="new_meeting_repeat_dialog_title">Repeats</string>
+    <string name="new_meeting_alert_dialog_title">Alert Time</string>
+    <string name="new_meeting_alert_button">Alert -- </string>
 
     <string name="inline_preferences">inline_preference</string>
     <string name="summary_checkbox_preference">summary_checkbox_preference</string>

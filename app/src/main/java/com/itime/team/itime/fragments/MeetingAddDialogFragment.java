@@ -104,7 +104,6 @@ public class MeetingAddDialogFragment extends DialogFragment implements DataRequ
                 } else{
 
                 }
-                MeetingAddDialogFragment.this.dismiss();
             }
         });
     }
@@ -118,18 +117,20 @@ public class MeetingAddDialogFragment extends DialogFragment implements DataRequ
             JSONObject object = new JSONObject();
             try {
                 object.put("user_id", User.ID);
-                object.put("friend_id",result);
+                object.put("friend_id", result);
             } catch (JSONException e) {
                 e.printStackTrace();
             }
-            requestJSONObject(mJsonManager,object,url,"adding_friend_request");
-            dismiss();
+            requestJSONObject(mJsonManager, object, url, "adding_friend_request");
+            //dismiss();
+            MeetingAddDialogFragment.this.dismiss();
         }
 
     }
 
     @Override
     public void handleJSON(JsonManager manager) {
+
     }
 
     @Override

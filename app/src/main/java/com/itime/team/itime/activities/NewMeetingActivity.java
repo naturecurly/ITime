@@ -1,13 +1,16 @@
 package com.itime.team.itime.activities;
 
+import android.app.AlertDialog;
 import android.app.DatePickerDialog;
 import android.app.TimePickerDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Button;
@@ -18,6 +21,7 @@ import android.widget.EditText;
 import android.widget.ScrollView;
 import android.widget.TimePicker;
 
+import com.itime.team.itime.fragments.NewMeetingAlertDialogFragment;
 import com.itime.team.itime.fragments.NewMeetingRepeatDialogFragment;
 import com.itime.team.itime.utils.DateUtil;
 
@@ -57,6 +61,7 @@ public class NewMeetingActivity extends AppCompatActivity implements View.OnTouc
     private boolean mIsFeasible;
 
     private ArrayList<Integer> mRpeatValue;
+    private ArrayList<Integer> mAlertValue;
 
 
     @Override
@@ -64,6 +69,35 @@ public class NewMeetingActivity extends AppCompatActivity implements View.OnTouc
         super.onCreate(savedInstanceState);
         setContentView(R.layout.new_meeting_activity);
         init();
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.new_meeting, menu);
+        return true;
+    }
+
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        if(item.getItemId() == R.id.new_meeting_menu_send){
+            AlertDialog.Builder builder = new AlertDialog.Builder(this);
+            builder.setMessage("This part is being developed");
+            builder.setIcon(R.mipmap.ic_launcher);
+            builder.setTitle("Sorry");
+            builder.setNegativeButton("No", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                }
+            });
+            builder.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                }
+            });
+            builder.show();
+        }
+        return super.onOptionsItemSelected(item);
     }
 
     private void init(){
@@ -106,10 +140,12 @@ public class NewMeetingActivity extends AppCompatActivity implements View.OnTouc
         mStartTime.setText(timeFormat(mStartHour, mStartMin));
         mEndTime.setText(timeFormat(mEndHour, mEndMin));
         mStartDate.setText(dateFormat(mStartDay, mStartMonth, mStartYear));
-        mEndDate.setText(dateFormat(mStartDay, mStartMonth, mStartYear));
+        mEndDate.setText(dateFormat(mEndDay, mEndMonth, mEndYear));
 
         mRpeatValue = new ArrayList();
+        mAlertValue = new ArrayList();
         mRpeatValue.add(0);
+        mAlertValue.add(1);
     }
 
     private Date getCurrentDate(){
@@ -122,7 +158,6 @@ public class NewMeetingActivity extends AppCompatActivity implements View.OnTouc
         mStartHour = receiver.getIntExtra("hour",0);
         mStartMin = receiver.getIntExtra("min",0);
         int currentDay = receiver.getIntExtra("currentDay",0);
-        Log.i("Curent", String.valueOf(currentDay));
         date = DateUtil.plusDay(mStartYear, mStartMonth, mStartDay, mStartHour, mStartMin, currentDay);
         mStartYear = date.getYear() + 1900;
         mStartMonth = date.getMonth();
@@ -221,6 +256,9 @@ public class NewMeetingActivity extends AppCompatActivity implements View.OnTouc
         }else if(v.getId() == R.id.new_meeting_repeat){
             NewMeetingRepeatDialogFragment dialogFragment = new NewMeetingRepeatDialogFragment(mRepeat, mRpeatValue);
             dialogFragment.show(getSupportFragmentManager(),"newMeetingRepeat");
+        }else if(v.getId() == R.id.new_meeting_alert){
+            NewMeetingAlertDialogFragment dialogFragment = new NewMeetingAlertDialogFragment(mAlert, mAlertValue);
+            dialogFragment.show(getSupportFragmentManager(), "newMeetingAlert");
         }
     }
 

@@ -77,7 +77,7 @@
                 style="@style/MeetingBtnDate"
                 android:text="One-time event"
                 android:id="@+id/new_meeting_repeat"
-                android:background="@color/white"/>
+                android:background="@drawable/button_shadow"/>
             <TextView
                 style="@style/MeetingText"
                 android:text="@string/new_meeting_punctual"
@@ -102,7 +102,7 @@
         <Button
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:background="@color/white"
+            android:background="@drawable/button_shadow"
             android:id="@+id/new_meeting_alert"
             android:text="@string/new_meeting_alert"/>
     </LinearLayout>

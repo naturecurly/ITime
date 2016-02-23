@@ -9,11 +9,7 @@ import com.itime.team.itime.fragments.MeetingSelectionCentralFragment;
 import com.itime.team.itime.fragments.MeetingSelectionTopFragment;
 import com.itime.team.itime.utils.DateUtil;
 
-import java.text.DateFormat;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
 
 /**
  * Created by mac on 16/1/4.
@@ -56,8 +52,8 @@ public class DateSelectionActivity extends AppCompatActivity {
                 DateUtil.diffDate(STARTYEAR, STARTMONTH, STARTDAY, ENDYEAR, ENDMONTH, ENDDAY));
         centralMSG.putInt("duration", DURATION);
         centralMSG.putStringArrayList("friendIDs", mFriendIDs);
-        centralMSG.putString("startdate", getDateWithTimeZone(STARTYEAR, STARTMONTH, STARTDAY, STARTHOUR, STARTMIN));
-        centralMSG.putString("enddate", getDateWithTimeZone(ENDYEAR, ENDMONTH, ENDDAY, ENDHOUR, ENDMIN));
+        centralMSG.putString("startdate", DateUtil.getDateWithTimeZone(STARTYEAR, STARTMONTH, STARTDAY, STARTHOUR, STARTMIN));
+        centralMSG.putString("enddate", DateUtil.getDateWithTimeZone(ENDYEAR, ENDMONTH, ENDDAY, ENDHOUR, ENDMIN));
         centralMSG.putInt("startyear", STARTYEAR);
         centralMSG.putInt("startmonth", STARTMONTH);
         centralMSG.putInt("startday", STARTDAY);
@@ -96,19 +92,19 @@ public class DateSelectionActivity extends AppCompatActivity {
         mFriendIDs = intent.getStringArrayListExtra("friendIDs");
     }
 
-    private String getDateWithTimeZone(int year, int month, int day, int hour, int min){
-        Date date = new Date();
-        String timeZone = "+" + date.toString().split(" ")[4].split(":")[0].split("\\+")[1] +
-                 date.toString().split(" ")[4].split(":")[1];
-        String dateStr = year + "-" + month + "-" + day + " " + hour + ":" + min;
-        DateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm");
-        try {
-            date = formatter.parse(dateStr);
-        } catch (ParseException e) {
-            e.printStackTrace();
-        }
-        String dataForReturn = year + "-" + month + "-" + day + " " + date.toString().split(" ")[3]
-                + " " + timeZone;
-        return dataForReturn;
-    }
+//    private String getDateWithTimeZone(int year, int month, int day, int hour, int min){
+//        Date date = new Date();
+//        String timeZone = "+" + date.toString().split(" ")[4].split(":")[0].split("\\+")[1] +
+//                 date.toString().split(" ")[4].split(":")[1];
+//        String dateStr = year + "-" + month + "-" + day + " " + hour + ":" + min;
+//        DateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm");
+//        try {
+//            date = formatter.parse(dateStr);
+//        } catch (ParseException e) {
+//            e.printStackTrace();
+//        }
+//        String dataForReturn = year + "-" + month + "-" + day + " " + date.toString().split(" ")[3]
+//                + " " + timeZone;
+//        return dataForReturn;
+//    }
 }

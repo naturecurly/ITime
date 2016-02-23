@@ -75,7 +75,7 @@
                 android:layout_height="wrap_content"
                 android:text="@string/meeting_duration"
                 android:id="@+id/meeting_duration"
-                android:background="@color/white"
+                android:background="@drawable/button_shadow"
                />
 
             <TextView

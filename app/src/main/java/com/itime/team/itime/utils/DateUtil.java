@@ -5,7 +5,6 @@ package com.itime.team.itime.utils;
  */
 
 import android.annotation.SuppressLint;
-import android.util.Log;
 
 import java.text.DateFormat;
 import java.text.ParseException;
@@ -239,5 +238,20 @@ public class DateUtil {
         return dateForReturn;
     }
 
+    public static String getDateWithTimeZone(int year, int month, int day, int hour, int min){
+        Date date = new Date();
+        String timeZone = "+" + date.toString().split(" ")[4].split(":")[0].split("\\+")[1] +
+                date.toString().split(" ")[4].split(":")[1];
+        String dateStr = year + "-" + month + "-" + day + " " + hour + ":" + min;
+        DateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm");
+        try {
+            date = formatter.parse(dateStr);
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+        String dataForReturn = year + "-" + month + "-" + day + " " + date.toString().split(" ")[3]
+                + " " + timeZone;
+        return dataForReturn;
+    }
 
 }

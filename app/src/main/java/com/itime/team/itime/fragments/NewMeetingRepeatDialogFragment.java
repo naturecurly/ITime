@@ -23,9 +23,9 @@ public class NewMeetingRepeatDialogFragment extends DialogFragment implements Ra
     private RadioGroup mRadioGroup;
     private RadioButton mOneTime,mDaily,mWeekend,mWeekly,mBiWeekly,mMonthly,mYearly;
     private Button mRepeat;
-    private ArrayList<Integer> mRepeatValue;
+    private ArrayList<String> mRepeatValue;
 
-    public NewMeetingRepeatDialogFragment(Button mRepeat, ArrayList<Integer> mRepeatValue){
+    public NewMeetingRepeatDialogFragment(Button mRepeat, ArrayList<String> mRepeatValue){
         this.mRepeat = mRepeat;
         this.mRepeatValue = mRepeatValue;
     }
@@ -54,50 +54,50 @@ public class NewMeetingRepeatDialogFragment extends DialogFragment implements Ra
         if(checkedId == mOneTime.getId()){
             mRepeatValue.clear();
             mRepeat.setText("One-time event");
-            mRepeatValue.add(0);
+            mRepeatValue.add("One-time event");
         }else if(checkedId == mDaily.getId()){
             mRepeatValue.clear();
             mRepeat.setText("Daily");
-            mRepeatValue.add(1);
+            mRepeatValue.add("Daily");
         }else if(checkedId == mWeekend.getId()){
             mRepeatValue.clear();
-            mRepeat.setText("Every weekend");
-            mRepeatValue.add(2);
+            mRepeat.setText("Every weekday");
+            mRepeatValue.add("Every weekday (Mon - Fri)");
         }else if(checkedId == mWeekly.getId()){
             mRepeatValue.clear();
             mRepeat.setText("Weekly(Every Sat)");
-            mRepeatValue.add(3);
+            mRepeatValue.add("Weekly");
         }else if(checkedId == mBiWeekly.getId()){
             mRepeatValue.clear();
             mRepeat.setText("Bi-Weekly");
-            mRepeatValue.add(4);
+            mRepeatValue.add("Bi-Weekly");
         }else if(checkedId == mMonthly.getId()){
             mRepeatValue.clear();
             mRepeat.setText("Monthly");
-            mRepeatValue.add(5);
+            mRepeatValue.add("Monthly");
         }else if(checkedId == mYearly.getId()){
             mRepeatValue.clear();
             mRepeat.setText("Yearly");
-            mRepeatValue.add(6);
+            mRepeatValue.add("Yearly");
         }
 
         NewMeetingRepeatDialogFragment.this.dismiss();
     }
 
     private void setRadioButton(){
-        if(mRepeatValue.get(0) == 0){
+        if(mRepeatValue.get(0).equals("One-time event")){
             mOneTime.setChecked(true);
-        }else if(mRepeatValue.get(0) == 1){
+        }else if(mRepeatValue.get(0).equals("Daily")){
             mDaily.setChecked(true);
-        }else if(mRepeatValue.get(0) == 2){
+        }else if(mRepeatValue.get(0).equals("Every weekday (Mon - Fri)")){
             mWeekend.setChecked(true);
-        }else if(mRepeatValue.get(0) == 3){
+        }else if(mRepeatValue.get(0).equals("Weekly")){
             mWeekly.setChecked(true);
-        }else if(mRepeatValue.get(0) == 4){
+        }else if(mRepeatValue.get(0).equals("Bi-Weekly")){
             mBiWeekly.setChecked(true);
-        }else if(mRepeatValue.get(0) == 5){
+        }else if(mRepeatValue.get(0).equals("Monthly")){
             mMonthly.setChecked(true);
-        }else if(mRepeatValue.get(0) == 6){
+        }else if(mRepeatValue.get(0).equals("Yearly")){
             mYearly.setChecked(true);
         }
     }

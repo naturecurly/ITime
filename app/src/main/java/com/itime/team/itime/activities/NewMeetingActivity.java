@@ -9,6 +9,7 @@ import android.os.Bundle;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.MotionEvent;
@@ -21,12 +22,19 @@ import android.widget.EditText;
 import android.widget.ScrollView;
 import android.widget.TimePicker;
 
+import com.itime.team.itime.bean.User;
 import com.itime.team.itime.fragments.NewMeetingAlertDialogFragment;
 import com.itime.team.itime.fragments.NewMeetingRepeatDialogFragment;
 import com.itime.team.itime.utils.DateUtil;
+import com.itime.team.itime.utils.URLConnectionUtil;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.UUID;
 
 /**
  * Created by mac on 16/2/17.
@@ -50,6 +58,7 @@ public class NewMeetingActivity extends AppCompatActivity implements View.OnTouc
     private int mEndHour;
     private int mEndMin;
     private int mDuration;
+    private String[] mFriendIDs;
 
 
     private TimePickerDialog mTimePicker1;
@@ -60,7 +69,7 @@ public class NewMeetingActivity extends AppCompatActivity implements View.OnTouc
     private ScrollView mMain;
     private boolean mIsFeasible;
 
-    private ArrayList<Integer> mRpeatValue;
+    private ArrayList<String> mRpeatValue;
     private ArrayList<Integer> mAlertValue;
 
 
@@ -93,6 +102,7 @@ public class NewMeetingActivity extends AppCompatActivity implements View.OnTouc
             builder.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
                 @Override
                 public void onClick(DialogInterface dialog, int which) {
+                    postInformation();
                 }
             });
             builder.show();
@@ -144,7 +154,7 @@ public class NewMeetingActivity extends AppCompatActivity implements View.OnTouc
 
         mRpeatValue = new ArrayList();
         mAlertValue = new ArrayList();
-        mRpeatValue.add(0);
+        mRpeatValue.add("One-time event");
         mAlertValue.add(1);
     }
 
@@ -157,6 +167,7 @@ public class NewMeetingActivity extends AppCompatActivity implements View.OnTouc
         mDuration = receiver.getIntExtra("duration",0);
         mStartHour = receiver.getIntExtra("hour",0);
         mStartMin = receiver.getIntExtra("min",0);
+        mFriendIDs = receiver.getStringArrayExtra("friendids");
         int currentDay = receiver.getIntExtra("currentDay",0);
         date = DateUtil.plusDay(mStartYear, mStartMonth, mStartDay, mStartHour, mStartMin, currentDay);
         mStartYear = date.getYear() + 1900;
@@ -264,6 +275,53 @@ public class NewMeetingActivity extends AppCompatActivity implements View.OnTouc
 
     @Override
     public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+    }
 
+    private void postInformation(){
+        String startDateForPost = DateUtil.getDateWithTimeZone(mStartYear, mStartMonth + 1, mStartDay, mStartHour, mStartMin);
+        String endDateForPost = DateUtil.getDateWithTimeZone(mEndYear, mEndMonth + 1, mEndDay, mEndHour, mEndMin);
+        String comment = mMessage.getText().toString();
+        String name = mName.getText().toString();
+        String punctual = mPunctual.isChecked() ? "true" : "false";
+        String repeative = mRpeatValue.get(0);
+
+        String latitude = "";
+        String longitude = "";
+        String status = "NO CONFIRM NEW MEETING";
+        String location = "Melbourne";
+        String showLocation = "Melbourne";
+        String meetingID = UUID.randomUUID().toString();
+        String meetingToken = UUID.randomUUID().toString();
+
+        JSONArray friendID = new JSONArray();
+        for(String ids : mFriendIDs){
+            friendID.put(ids);
+        }
+        JSONObject json = new JSONObject();
+        try {
+            json.put("event_is_punctual",punctual);
+            json.put("event_starts_datetime", URLConnectionUtil.encode(startDateForPost));
+            json.put("event_ends_datetime", URLConnectionUtil.encode(endDateForPost));
+            json.put("event_comment",comment);
+            json.put("event_name",name);
+            json.put("friends_id",friendID);
+            json.put("event_repeats_type",repeative);
+            json.put("event_latitude",latitude);
+            json.put("event_longitude", longitude);
+            json.put("event_venue_location", location);
+            json.put("meeting_id",meetingID);
+            json.put("meeting_valid_token",meetingToken);
+            json.put("user_id", new User().getID());
+            json.put("meeting_status", status);
+            json.put("event_venue_show",showLocation);
+            Log.i("json",json.toString());
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+
+
+
+        Log.i("Date",startDateForPost);
     }
 }

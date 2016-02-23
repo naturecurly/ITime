@@ -270,6 +270,11 @@ public class MeetingSelectionCentralFragment extends Fragment implements ScrollV
                             intent.putExtra("year",mStartYear);
                             intent.putExtra("month", mStartMonth);
                             intent.putExtra("day", mStartDay);
+                            String[] ids = new String[mFriendIDS.size()];
+                            for(int i = 0; i < ids.length; i ++){
+                                ids[i] = mFriendIDS.get(i);
+                            }
+                            intent.putExtra("friendids",ids);
                             startActivity(intent);
                         }
                     });

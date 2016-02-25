@@ -42,6 +42,13 @@
     <string name="new_meeting_alert_dialog_title">Alert Time</string>
     <string name="new_meeting_alert_button">Alert -- </string>
 
+    <string name="login_username">Username</string>
+    <string name="login_password">Password</string>
+    <string name="login_remember">If remember?</string>
+    <string name="login_login">Login</string>
+    <string name="login_register">Register</string>
+
+
     <string name="inline_preferences">inline_preference</string>
     <string name="summary_checkbox_preference">summary_checkbox_preference</string>
     <string name="title_checkbox_preference">title_checkbox_preference</string>

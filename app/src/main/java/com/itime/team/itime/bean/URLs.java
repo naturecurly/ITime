@@ -11,4 +11,6 @@ public class URLs {
     public static String PROFILE_PICTURE = "http://54.200.31.237:8000/static/user_profiles/";
     public static String LOAD_FRDS_PREFER_PREFERENCE = "http://54.200.31.237:8000/load_frds_prefer_preferences";
     public static String SEARCH_FRIENDS = "http://54.200.31.237:8000/search_friends";
+    public static String REGISTER = "http://54.200.31.237:8000/sign_up";
+    public static String SIGN_IN = "http://54.200.31.237:8000/sign_in";
 }

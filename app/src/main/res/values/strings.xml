@@ -50,6 +50,7 @@
     <string name="login_warning_username">Please input your username</string>
     <string name="login_warning_password">Please input your password</string>
     <string name="login_warning_exist">Sorry, this username has been used</string>
+    <string name="login_warning_login_fail">Sorry, your username and password do not match</string>
 
 
     <string name="inline_preferences">inline_preference</string>

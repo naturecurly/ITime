@@ -123,5 +123,6 @@
         android:layout_height="wrap_content"
         android:text="@string/Logout"
         android:layout_marginTop="30dp"
+        android:id="@+id/settings_btn_logout"
         android:background="#FFF"/>
 </LinearLayout>

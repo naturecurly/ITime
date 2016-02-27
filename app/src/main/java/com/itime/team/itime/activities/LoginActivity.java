@@ -17,8 +17,11 @@ import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.itime.team.itime.bean.Device;
 import com.itime.team.itime.bean.URLs;
+import com.itime.team.itime.bean.User;
 import com.itime.team.itime.database.DeviceTableHelper;
+import com.itime.team.itime.database.UserTableHelper;
 import com.itime.team.itime.interfaces.DataRequest;
+import com.itime.team.itime.utils.DateUtil;
 import com.itime.team.itime.utils.JsonManager;
 import com.itime.team.itime.utils.MySingleton;
 import com.itime.team.itime.views.widget.ClearEditText;
@@ -38,9 +41,9 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
     private ClearEditText mUsername, mPassword;
     private Button mLogin, mRegister;
     private Switch mRemember;
-    private String mUsernameStr, mPasswordStr;
+    private String mUsernameStr, mPasswordStr, mLastLoginTime;
     private boolean mIsRemember;
-    private boolean mCanLogin;
+
 
     private JsonManager mJsonManager;
 
@@ -63,7 +66,20 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
 
         mLogin.setOnClickListener(this);
         mRegister.setOnClickListener(this);
+
+        Intent intent = getIntent();
+        mUsernameStr = intent.getStringExtra("username");
+        mPasswordStr = intent.getStringExtra("password");
+        mLastLoginTime = intent.getStringExtra("lastlogintime");
+        mIsRemember = intent.getBooleanExtra("remember", false);
+        setTexts();
     }
+
+    private void setTexts(){
+        Log.i("username", mUsernameStr);
+        mUsername.setText(mUsernameStr);
+    }
+
 
     /*
         If a device already has a device id in the database, then we just get the ID from the database,
@@ -74,7 +90,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         DeviceTableHelper dbHelper = new DeviceTableHelper(LoginActivity.this, "deviceidbase");
         SQLiteDatabase db = dbHelper.getReadableDatabase();
         Cursor cursor = db.query("device_id",
-                new String[]{"id","device_id"}, "id=?", new String[]{"1"}, null, null, null, null);
+                new String[]{"id", "device_id"}, "id=?", new String[]{"1"}, null, null, null, null);
         if(cursor.getCount() > 0){
             cursor.moveToNext();
             id = cursor.getString(cursor.getColumnIndex("device_id"));
@@ -87,6 +103,8 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         }
         Device.DeviceID = id;
         Log.i("deviceID", id);
+        dbHelper.close();
+        db.close();
         return id;
     }
 
@@ -94,19 +112,18 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         if(isTextNull()){
             return;
         }
-        String username = mUsername.getText().toString();
+        mUsernameStr = mUsername.getText().toString();
         String password = mPassword.getText().toString();
         JSONObject json = new JSONObject();
         try {
-            json.put("user_id",username);
+            json.put("user_id",mUsernameStr);
             json.put("password",password);
             json.put("connect_token","");
             json.put("dev_id", Device.DeviceID);
-            json.put("dev_token","");
+            json.put("dev_token", "");
             requestJSONObject(mJsonManager, json, URLs.REGISTER,
                     "register");
             handleJSON(mJsonManager);
-            Log.i("json",json.toString());
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -115,6 +132,12 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
     private void doRegister(JSONObject json){
         try {
             if(json.get("result").toString().equals("success")){
+                if(isFirstLogin()){
+                    insertUserTable();
+                }else {
+                    updateUserTable();
+                }
+                User.ID = mUsernameStr;
                 Intent intent = new Intent(this,MainActivity.class);
                 startActivity(intent);
             }else if(json.get("result").toString().equals("user_id_existed")){
@@ -128,40 +151,98 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         }
     }
 
-    private void getUserInfo(){
-        DeviceTableHelper dbHelper = new DeviceTableHelper(LoginActivity.this, "userbase");
+    /*
+        refresh item user table
+     */
+    private void updateUserTable(){
+        UserTableHelper dbHelper = new UserTableHelper(LoginActivity.this, "userbase1");
+        SQLiteDatabase db = dbHelper.getReadableDatabase();
+        ContentValues values = new ContentValues();
+        values.put("user_id", mUsername.getText().toString());
+        values.put("password", mPassword.getText().toString());
+        values.put("last_login_time", DateUtil.getCurrentTime("yyyy-MM-dd HH:mm:ss"));
+        values.put("remember", mRemember.isChecked());
+        db.update("itime_user", values, "id=?", new String[]{"1"});
+        dbHelper.close();
+        db.close();
+    }
+
+    private void insertUserTable(){
+        UserTableHelper dbHelper = new UserTableHelper(LoginActivity.this, "userbase1");
+        SQLiteDatabase db = dbHelper.getReadableDatabase();
+        ContentValues values = new ContentValues();
+        values.put("id",1);
+        values.put("user_id", mUsername.getText().toString());
+        values.put("password", mPassword.getText().toString());
+        values.put("last_login_time", DateUtil.getCurrentTime("yyyy-MM-dd HH:mm:ss"));
+        values.put("remember", mRemember.isChecked());
+        db.insert("itime_user", null, values);
+        dbHelper.close();
+        db.close();
+    }
+
+    private boolean isFirstLogin(){
+        UserTableHelper dbHelper = new UserTableHelper(LoginActivity.this, "userbase1");
         SQLiteDatabase db = dbHelper.getReadableDatabase();
         Cursor cursor = db.query("itime_user",
-                new String[]{"id","user_id","password","last_login_time","remember"}, "id=?",
-                new String[]{"1"}, null, null, null, null);
+                new String[]{"id","user_id"}, "id=?", new String[]{"1"}, null, null, null, null);
         if(cursor.getCount() > 0){
-            cursor.moveToNext();
-            mUsernameStr = cursor.getString(cursor.getColumnIndex("user_id"));
-            mPasswordStr = cursor.getString(cursor.getColumnIndex("password"));
-            String lastTime = cursor.getString(cursor.getColumnIndex("last_login_time"));
-            mIsRemember = Boolean.parseBoolean(cursor.getString(cursor.getColumnIndex("remember")));
-            Log.i("adsasd",mUsernameStr+" " + mPasswordStr +" " + lastTime + " " + mIsRemember);
-        }else{
-
+            dbHelper.close();
+            db.close();
+            return false;
+        }else {
+            dbHelper.close();
+            db.close();
+            return true;
         }
     }
 
-    private boolean isValidTime(String date){
 
-        return false;
-    }
 
-    private void postInfo(){
-        String username = mUsername.getText().toString();
+    private void login(){
+        if(isTextNull()){
+            return;
+        }
+        mUsernameStr = mUsername.getText().toString();
         String password = mPassword.getText().toString();
         JSONObject json = new JSONObject();
         try {
-            json.put("user_id",username);
+            json.put("user_id",mUsernameStr);
             json.put("password",password);
+            json.put("connect_token","");
+            json.put("dev_id", Device.DeviceID);
+            json.put("dev_token", "");
+            requestJSONObject(mJsonManager, json, URLs.SIGN_IN,
+                    "login");
+            handleJSON(mJsonManager);
         } catch (JSONException e) {
             e.printStackTrace();
         }
     }
+
+    private void doLogin(JSONObject json){
+        try {
+            if(json.get("result").toString().equals("success")){
+                if(isFirstLogin()){
+                    insertUserTable();
+                }else {
+                    updateUserTable();
+                }
+                Intent intent = new Intent(this, MainActivity.class);
+                User.ID = mUsernameStr;
+                startActivity(intent);
+            }else if(json.get("result").toString().equals("fail")){
+                showToast(getResources().getString(R.string.login_warning_login_fail));
+                mUsername.setShakeAnimation();
+                mPassword.setShakeAnimation();
+            } else{
+                Log.i("login_error",json.toString());
+            }
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+    }
+
 
     private boolean isTextNull(){
         if (TextUtils.isEmpty(mUsername.getText())) {
@@ -179,9 +260,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
     @Override
     public void onClick(View v) {
         if(v.getId() == R.id.login_login){
-            if(!isTextNull()){
-                postInfo();
-            }
+            login();
         }else if(v.getId() == R.id.login_register){
             register();
         }
@@ -209,6 +288,8 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                         while ((map = mJsonManager.getJsonQueue().poll()) != null) {
                             if ((jsonObject = (JSONObject) map.get("register")) != null) {
                                 doRegister(jsonObject);
+                            } else if ((jsonObject = (JSONObject) map.get("login")) != null) {
+                                doLogin(jsonObject);
                             }
                         }
                     }

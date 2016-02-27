@@ -311,7 +311,7 @@ public class NewMeetingActivity extends AppCompatActivity implements View.OnTouc
             json.put("event_venue_location", location);
             json.put("meeting_id",meetingID);
             json.put("meeting_valid_token",meetingToken);
-            json.put("user_id", new User().getID());
+            json.put("user_id", User.ID);
             json.put("meeting_status", status);
             json.put("event_venue_show",showLocation);
             Log.i("json",json.toString());

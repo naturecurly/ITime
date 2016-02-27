@@ -16,7 +16,9 @@
 
 package com.itime.team.itime.fragments;
 
+import android.content.ContentValues;
 import android.content.Intent;
+import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.annotation.Nullable;
@@ -26,9 +28,12 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import com.itime.team.itime.activities.LoginActivity;
 import com.itime.team.itime.activities.MeetingPreferenceActivity;
 import com.itime.team.itime.activities.R;
 import com.itime.team.itime.activities.SettingsActivity;
+import com.itime.team.itime.bean.User;
+import com.itime.team.itime.database.UserTableHelper;
 
 /**
  * Created by Xuhui Chen (yorkfine) on 10/01/16.
@@ -39,6 +44,7 @@ public class SettingsFragment extends Fragment implements View.OnClickListener {
     private static final int SETTINGS_MEETING_ID = R.id.setting_meeting;
     private static final int SETTINGS_IMPORT_ID = R.id.setting_import;
     private static final int SETTINGS_ALERT_TIME_ID = R.id.setting_dft_alert_time;
+    private static final int SETTING_LOGOUT_ID = R.id.settings_btn_logout;
 
     private static final String SETTINGS = "Settings";
     private static final int PROFILE_SETTINGS = 1;
@@ -61,6 +67,8 @@ public class SettingsFragment extends Fragment implements View.OnClickListener {
         v3.setOnClickListener(this);
         mAlertTimeView = view.findViewById(SETTINGS_ALERT_TIME_ID);
         mAlertTimeView.setOnClickListener(this);
+        View v4 = view.findViewById(SETTING_LOGOUT_ID);
+        v4.setOnClickListener(this);
 
         return view;
     }
@@ -91,9 +99,32 @@ public class SettingsFragment extends Fragment implements View.OnClickListener {
                 intent.putExtra(SETTINGS, ALERT_TIME_SETTINGS);
                 startActivityForResult(intent, ALERT_TIME_SETTINGS);
 
+            case SETTING_LOGOUT_ID:
+                getActivity().finish();
+                if(User.isRemembered) {
+                    Intent intent2 = new Intent(getActivity(), LoginActivity.class);
+                    intent2.putExtra("username", User.ID);
+                    updateUserTable();
+                    startActivity(intent2);
+                }
+                break;
+
             default:
                 break;
         }
+    }
+
+    /*
+        if a user logout, the person's account will not be remembered.
+     */
+    private void updateUserTable(){
+        UserTableHelper dbHelper = new UserTableHelper(getContext(), "userbase1");
+        SQLiteDatabase db = dbHelper.getReadableDatabase();
+        ContentValues values = new ContentValues();
+        values.put("remember", false);
+        db.update("itime_user", values, "id=?", new String[]{"1"});
+        dbHelper.close();
+        db.close();
     }
 
     @Override

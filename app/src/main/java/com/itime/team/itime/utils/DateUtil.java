@@ -139,6 +139,24 @@ public class DateUtil {
         return (int) result + 1;
     }
 
+    //Return the millisecond difference between the specific day and current time
+    public static long diffDate(String dateStr){
+        if (dateStr.equals("")){
+            return -1;
+        }
+        Date date = null;
+        Date currentDate = new Date();
+        DateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        long diff = 0;
+        try {
+            date = formatter.parse(dateStr);
+            diff = currentDate.getTime() - date.getTime();
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+        return diff;
+    }
+
     // Return the date after adding by "step"
     public static int[] addDaysBasedOnCalendar(int year, int month, int day, int step) {
         if (step >= 28)
@@ -252,6 +270,14 @@ public class DateUtil {
         String dataForReturn = year + "-" + month + "-" + day + " " + date.toString().split(" ")[3]
                 + " " + timeZone;
         return dataForReturn;
+    }
+
+    public static String getCurrentTime(String format){
+        long l = System.currentTimeMillis();
+        Date date = new Date(l);
+        SimpleDateFormat dateFormat = new SimpleDateFormat(format);
+        String str = dateFormat.format(date);
+        return str;
     }
 
 }

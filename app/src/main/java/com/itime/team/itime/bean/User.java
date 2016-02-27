@@ -5,21 +5,22 @@ package com.itime.team.itime.bean;
  */
 public class User {
     public static String ID = "cai";
-    private String profilePicture = "";
-
-    public void setID(String ID) {
-        this.ID = ID;
-    }
-
-    public void setProfilePicture(String profilePicture) {
-        this.profilePicture = profilePicture;
-    }
-
-    public String getID() {
-        return ID;
-    }
-
-    public String getProfilePicture() {
-        return profilePicture;
-    }
+    public static boolean isRemembered = false;
+//    private String profilePicture = "";
+//
+//    public void setID(String ID) {
+//        this.ID = ID;
+//    }
+//
+//    public void setProfilePicture(String profilePicture) {
+//        this.profilePicture = profilePicture;
+//    }
+//
+//    public String getID() {
+//        return ID;
+//    }
+//
+//    public String getProfilePicture() {
+//        return profilePicture;
+//    }
 }

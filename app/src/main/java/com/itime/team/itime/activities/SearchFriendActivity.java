@@ -69,7 +69,7 @@ public class SearchFriendActivity extends AppCompatActivity implements DataReque
         JSONObject jsonObject = new JSONObject();
         try {
             String url = URLs.SEARCH_FRIENDS;
-            jsonObject.put("user_id",new User().getID());
+            jsonObject.put("user_id",User.ID);
             jsonObject.put("name",name);
             requestJSONArray(mJsonManager, jsonObject, url, "search_friend");
             handleJSON(mJsonManager);

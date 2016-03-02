@@ -10,7 +10,7 @@
         android:orientation="horizontal">
         <android.support.v7.widget.SearchView
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_height="@dimen/meeting_search_picture"
             android:id="@+id/meeting_search"
             android:queryHint="@string/meeting_searchbar"
             android:maxWidth="150dp"

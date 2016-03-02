@@ -29,71 +29,95 @@
 
             <EditText
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
+                android:layout_height="35dp"
                 android:id="@+id/new_meeting_name"
+                android:background="@color/white"
+                android:layout_marginTop="10dp"
+                android:layout_marginBottom="1dp"
                 android:hint="@string/new_meeting_namehit"/>
             <EditText
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
+                android:layout_height="35dp"
                 android:hint="@string/new_meeting_venuehit"
+                android:background="@color/white"
                 android:layout_marginBottom="20dp"/>
             <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:layout_marginBottom="20dp">
+                style="@style/MeetingTimeLayout"
+                >
                 <TextView
                     style="@style/MeetingText"
                     android:text="@string/meeting_start_time"/>
-                <Button
-                    style="@style/MeetingBtnDate"
-                    android:id="@+id/new_meeting_start_date"
-                    />
-                <Button
-                    style="@style/MeetingBtnTime"
-                    android:id="@+id/new_meeting_start_time"/>
+                <LinearLayout
+                    style="@style/MeetingTimeLayout"
+                    android:gravity="right">
+                    <Button
+                        style="@style/MeetingBtn"
+                        android:id="@+id/new_meeting_start_date"
+                        />
+                    <Button
+                        style="@style/MeetingBtn"
+                        android:id="@+id/new_meeting_start_time"/>
+                </LinearLayout>
             </LinearLayout>
 
             <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:layout_marginBottom="20dp">
+                style="@style/MeetingTimeLayout">
                 <TextView
                     style="@style/MeetingText"
                     android:text="@string/meeting_end_time"/>
-                <Button
-                    style="@style/MeetingBtnDate"
-                    android:id="@+id/new_meeting_end_date"
-                    />
-                <Button
-                    style="@style/MeetingBtnTime"
-                    android:id="@+id/new_meeting_end_time"/>
+                <LinearLayout
+                    style="@style/MeetingTimeLayout"
+                    android:gravity="right">
+                    <Button
+                        style="@style/MeetingBtn"
+                        android:id="@+id/new_meeting_end_date"
+                        />
+                    <Button
+                        style="@style/MeetingBtn"
+                        android:id="@+id/new_meeting_end_time"/>
+                </LinearLayout>
             </LinearLayout>
+
             <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:layout_marginBottom="20dp">
+                style="@style/MeetingTimeLayout">
                 <TextView
                     style="@style/MeetingText"
                     android:text="@string/new_meeting_repeat" />
-                <Button
-                    style="@style/MeetingBtnDate"
-                    android:text="One-time event"
-                    android:id="@+id/new_meeting_repeat"
-                    android:background="@drawable/button_shadow"/>
-                <TextView
-                    style="@style/MeetingText"
-                    android:text="@string/new_meeting_punctual"
-                    android:layout_weight="2"/>
-                <CheckBox
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:id="@+id/new_meeting_punctual"
-                    android:layout_weight="1"/>
+                <LinearLayout
+                    style="@style/MeetingTimeLayout"
+                    android:gravity="right">
+                    <Button
+                        style="@style/MeetingBtn"
+                        android:text="One-time event"
+                        android:id="@+id/new_meeting_repeat"
+                        android:paddingRight="22dp"
+                        android:layout_width="match_parent"
+                        android:gravity="right|center_vertical"
+                        />
+                </LinearLayout>
             </LinearLayout>
 
+            <LinearLayout
+                style="@style/MeetingTimeLayout"
+                android:layout_marginBottom="20dp">
+                <TextView
+                    style="@style/MeetingText"
+                    android:text="@string/new_meeting_punctual" />
+                <LinearLayout
+                    style="@style/MeetingTimeLayout"
+                    android:gravity="right">
+                    <CheckBox
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:id="@+id/new_meeting_punctual"
+                        android:layout_marginRight="22dp"/>
+                </LinearLayout>
+            </LinearLayout>
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Notes:"/>
             <EditText
                 android:layout_width="match_parent"
                 android:layout_height="200dp"

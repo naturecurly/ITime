@@ -7,7 +7,8 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:id="@+id/meeting_search"
-        android:queryHint="@string/meeting_searchbar"/>
+        android:queryHint="@string/meeting_searchbar"
+        android:background="@color/white"/>
     <HorizontalScrollView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -17,12 +18,12 @@
             android:layout_height="match_parent"
             android:id="@+id/meeting_invited_friend"
             android:orientation="horizontal">
-
         </LinearLayout>
 
     </HorizontalScrollView>
     <ScrollView
-        android:orientation="vertical" android:layout_width="match_parent"
+        android:orientation="vertical"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:id="@+id/meeting_view">
         <LinearLayout
@@ -36,47 +37,62 @@
                 android:layout_marginBottom="13dp"/>
 
             <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:layout_marginBottom="20dp">
+                style="@style/MeetingTimeLayout">
                 <TextView
                     style="@style/MeetingText"
                     android:text="@string/meeting_start_time"
                     />
-                <Button
-                    android:id="@+id/meeting_start_date"
-                    style="@style/MeetingBtnDate"/>
-                <Button
-                    android:id="@+id/meeting_start_time"
-                    style="@style/MeetingBtnTime"/>
+                <LinearLayout
+                    style="@style/MeetingTimeLayout"
+                    android:gravity="right">
+                    <Button
+                        android:id="@+id/meeting_start_date"
+                        style="@style/MeetingBtn"/>
+                    <Button
+                        android:id="@+id/meeting_start_time"
+                        style="@style/MeetingBtn"/>
+                </LinearLayout>
             </LinearLayout>
 
             <LinearLayout
                 xmlns:android="http://schemas.android.com/apk/res/android"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:layout_marginBottom="20dp">
+                style="@style/MeetingTimeLayout">
                 <TextView
                     style="@style/MeetingText"
                     android:text="@string/meeting_end_time"/>
-                <Button
-                    android:id="@+id/meeting_end_date"
-                    style="@style/MeetingBtnDate"/>
-                <Button
-                    android:id="@+id/meeting_end_time"
-                    style="@style/MeetingBtnTime"/>
+                <LinearLayout
+                    style="@style/MeetingTimeLayout"
+                    android:gravity="right">
+                    <Button
+                        android:id="@+id/meeting_end_date"
+                        style="@style/MeetingBtn"/>
+                    <Button
+                        android:id="@+id/meeting_end_time"
+                        style="@style/MeetingBtn"/>
+                </LinearLayout>
             </LinearLayout>
 
 
-            <Button
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="@string/meeting_duration"
-                android:id="@+id/meeting_duration"
-                android:background="@drawable/button_shadow"
-               />
+            <LinearLayout
+                xmlns:android="http://schemas.android.com/apk/res/android"
+                style="@style/MeetingTimeLayout">
+                <TextView
+                    style="@style/MeetingText"
+                    android:text="@string/meeting_duration_textview"/>
+                <LinearLayout
+                    style="@style/MeetingTimeLayout"
+                    android:gravity="right">
+                    <Button
+                        android:text="@string/meeting_duration"
+                        android:id="@+id/meeting_duration"
+                        style="@style/MeetingBtn"
+                        android:layout_width="match_parent"
+                        android:gravity="right|center_vertical"
+                        android:paddingRight="22dp"
+                        />
+                </LinearLayout>
+            </LinearLayout>
+
 
             <TextView
                 android:layout_width="match_parent"

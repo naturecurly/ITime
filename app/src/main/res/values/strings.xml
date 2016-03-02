@@ -26,6 +26,7 @@
     <string name="meeting_searchbar">Search your friend</string>
     <string name="meeting_duraiton_dialog_title">Duration</string>
     <string name="meeting_add_dialog_title">Search</string>
+    <string name="meeting_duration_textview">Duration</string>
 
 
 
@@ -41,6 +42,7 @@
     <string name="new_meeting_repeat_dialog_title">Repeats</string>
     <string name="new_meeting_alert_dialog_title">Alert Time</string>
     <string name="new_meeting_alert_button">Alert -- </string>
+
 
     <string name="login_username">Username</string>
     <string name="login_password">Password</string>

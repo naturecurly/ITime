@@ -231,6 +231,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                 Intent intent = new Intent(this, MainActivity.class);
                 User.ID = mUsernameStr;
                 startActivity(intent);
+                finish();
             }else if(json.get("result").toString().equals("fail")){
                 showToast(getResources().getString(R.string.login_warning_login_fail));
                 mUsername.setShakeAnimation();

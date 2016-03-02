@@ -3,29 +3,37 @@
     android:orientation="vertical" android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <android.support.v7.widget.SearchView
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:id="@+id/meeting_search"
-        android:queryHint="@string/meeting_searchbar"
-        android:background="@color/white"/>
-    <HorizontalScrollView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:scrollbars="none">
-        <LinearLayout
+        android:background="@color/white"
+        android:orientation="horizontal">
+        <android.support.v7.widget.SearchView
             android:layout_width="wrap_content"
-            android:layout_height="match_parent"
-            android:id="@+id/meeting_invited_friend"
-            android:orientation="horizontal">
-        </LinearLayout>
+            android:layout_height="wrap_content"
+            android:id="@+id/meeting_search"
+            android:queryHint="@string/meeting_searchbar"
+            android:maxWidth="150dp"
+            android:background="@color/white"/>
+        <HorizontalScrollView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:scrollbars="none">
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:id="@+id/meeting_invited_friend"
+                android:orientation="horizontal">
+            </LinearLayout>
+        </HorizontalScrollView>
+    </LinearLayout>
 
-    </HorizontalScrollView>
     <ScrollView
         android:orientation="vertical"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:id="@+id/meeting_view">
+        android:id="@+id/meeting_view"
+        android:layout_marginTop="13dp">
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -34,7 +42,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="@string/meeting_setting"
-                android:layout_marginBottom="13dp"/>
+                />
 
             <LinearLayout
                 style="@style/MeetingTimeLayout">
@@ -75,7 +83,8 @@
 
             <LinearLayout
                 xmlns:android="http://schemas.android.com/apk/res/android"
-                style="@style/MeetingTimeLayout">
+                style="@style/MeetingTimeLayout"
+                android:layout_marginBottom="13dp">
                 <TextView
                     style="@style/MeetingText"
                     android:text="@string/meeting_duration_textview"/>
@@ -98,7 +107,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="@string/meeting_friend"
-                android:layout_marginBottom="13dp"/>
+               />
 
             <ListView
                 android:layout_width="match_parent"

@@ -30,9 +30,9 @@ public class MainActivity extends AppCompatActivity implements
     private PagerAdapter mAdapter;
     private FragmentTabHost tabHost;
     private Class fragmentArray[] = {CalendarFragment.class, MeetingFragment.class, null, SettingsFragment.class};
-    private int mImageViewArray[] = {R.drawable.ic_date_range_white_24dp, R.drawable.ic_group_work_white_24dp, R.drawable.ic_email_white_24dp,
-            R.drawable.ic_settings_white_24dp};
-//    private int mImageViewArray[] = {R.drawable.ic_date_range_black_48px, R.drawable.ic_group_work_black_48px, R.drawable.ic_email_black_48px,
+    private int mImageViewArray[] = {R.drawable.ic_date_range_s, R.drawable.ic_group_s, R.drawable.ic_email_black_s,
+            R.drawable.ic_setting_s};
+    //    private int mImageViewArray[] = {R.drawable.ic_date_range_black_48px, R.drawable.ic_group_work_black_48px, R.drawable.ic_email_black_48px,
 //        R.drawable.ic_menu_manage};
     private String mTextViewArray[] = {"Calendar", "Meeting", "Email", "Settings"};
     private LayoutInflater layoutInflater;
@@ -46,6 +46,7 @@ public class MainActivity extends AppCompatActivity implements
         setContentView(R.layout.activity_main);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+        getSupportActionBar().setDisplayShowTitleEnabled(false);
         layoutInflater = LayoutInflater.from(this);
         tabHost = (FragmentTabHost) findViewById(R.id.tab_host);
         tabHost.setup(this, getSupportFragmentManager(), R.id.realtab_content);
@@ -61,8 +62,6 @@ public class MainActivity extends AppCompatActivity implements
     }
 
 
-
-
     private View getTabItemView(int index) {
         View view = layoutInflater.inflate(R.layout.tab_item_view, null);
 
@@ -71,7 +70,6 @@ public class MainActivity extends AppCompatActivity implements
 
         TextView textView = (TextView) view.findViewById(R.id.tab_text_view);
         textView.setText(mTextViewArray[index]);
-
 
 
         return view;

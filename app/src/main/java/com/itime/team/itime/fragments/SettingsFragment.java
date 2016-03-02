@@ -59,6 +59,9 @@ public class SettingsFragment extends Fragment implements View.OnClickListener {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_settings, container, false);
 
+        TextView title = (TextView) getActivity().findViewById(R.id.toolbar_title);
+        title.setText("Setting");
+
         View v1 = view.findViewById(SETTINGS_PROFILE_ID);
         v1.setOnClickListener(this);
         View v2 = view.findViewById(SETTINGS_MEETING_ID);

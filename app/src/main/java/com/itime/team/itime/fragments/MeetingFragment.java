@@ -17,6 +17,7 @@ import android.widget.DatePicker;
 import android.widget.LinearLayout;
 import android.widget.ListAdapter;
 import android.widget.ListView;
+import android.widget.TextView;
 import android.widget.TimePicker;
 import android.widget.Toast;
 
@@ -95,7 +96,8 @@ public class MeetingFragment extends Fragment implements View.OnClickListener,Se
 
         mmeeting = inflater.inflate(R.layout.fragment_meeting,null);
         initData();
-
+        TextView title = (TextView) getActivity().findViewById(R.id.toolbar_title);
+        title.setText("Meeting");
         listView = (ListView) mmeeting.findViewById(R.id.meeting_listview);
         duration = (Button) mmeeting.findViewById(R.id.meeting_duration);
         duration.setText("1Hour");

@@ -102,6 +102,5 @@ public class ClearEditText extends EditText implements
    
     public void setShakeAnimation(){
         this.startAnimation(Animations.shakeAnimation(5));
-
     }
 }

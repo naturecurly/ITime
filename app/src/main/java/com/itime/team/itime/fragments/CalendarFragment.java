@@ -1,5 +1,6 @@
 package com.itime.team.itime.fragments;
 
+import android.animation.ValueAnimator;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
@@ -8,6 +9,8 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.LinearInterpolator;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -33,7 +36,7 @@ public class CalendarFragment extends Fragment {
     private RecyclerView recyclerView;
     private List<Map<String, Integer>> dates = new ArrayList<>();
     private int lastPosition = -1;
-
+    private int rowHeight;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -55,11 +58,16 @@ public class CalendarFragment extends Fragment {
         for (Map<String, Integer> calendar : dates) {
             Log.i("testest", calendar.get("day") + "");
         }
+
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_calendar, container, false);
+        //CalendarView calendarView = (CalendarView) view.findViewById(R.id.calendar_view);
+        //rowHeight = calendarView.getLayoutParams().height;
+        TextView title = (TextView) getActivity().findViewById(R.id.toolbar_title);
+        title.setText("Calendar");
         recyclerView = (RecyclerView) view.findViewById(R.id.recycler_view);
         recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
         recyclerView.setAdapter(new CalendarAdapter(dates));
@@ -85,12 +93,26 @@ public class CalendarFragment extends Fragment {
             }
 
             @Override
-            public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
+            public void onScrolled(final RecyclerView recyclerView, int dx, int dy) {
                 super.onScrolled(recyclerView, dx, dy);
+                ValueAnimator valueAnimator;
+                valueAnimator = ValueAnimator.ofInt(rowHeight, rowHeight * 6);
                 if (dy > 0) {
-                    ViewGroup.LayoutParams params = recyclerView.getLayoutParams();
-                    params.height = DensityUtil.dip2px(getActivity(),400);
-                    recyclerView.setLayoutParams(params);
+                    valueAnimator.setDuration(300);
+                    valueAnimator.setInterpolator(new LinearInterpolator());
+                    valueAnimator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
+                        @Override
+                        public void onAnimationUpdate(ValueAnimator animation) {
+                            ViewGroup.LayoutParams params = recyclerView.getLayoutParams();
+                            rowHeight = recyclerView.getChildAt(0).getHeight();
+                            recyclerView.getLayoutParams().height = rowHeight * 6;
+                            recyclerView.requestLayout();
+                            //params.height = rowHeight * 6;
+                            //recyclerView.setLayoutParams(params);
+
+                        }
+                    });
+                    valueAnimator.start();
                 }
             }
         });

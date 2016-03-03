@@ -10,70 +10,98 @@
     <TableLayout
         android:id="@+id/week_label"
         android:layout_width="match_parent"
-        android:layout_height="20dp"
+        android:layout_height="30dp"
         android:layout_marginBottom="2dp"
-        android:layout_marginTop="2dp">
+        android:background="@color/week_title">
 
-        <TableRow>
+        <TableRow
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
 
             <TextView
                 style="@style/dateStyle"
                 android:layout_width="0dp"
+                android:layout_height="30dp"
+                android:layout_gravity="center"
                 android:layout_weight="1"
                 android:text="Sun"
-                android:textColor="@color/date_1" />
+                android:textAlignment="center"
+                android:textColor="@color/weeks"
+                android:textStyle="bold" />
 
             <TextView
                 style="@style/dateStyle"
                 android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_gravity="center"
                 android:layout_weight="1"
                 android:text="Mon"
-                android:textColor="@color/date_2" />
+                android:textAlignment="center"
+                android:textColor="@color/weeks"
+                android:textStyle="bold" />
 
             <TextView
                 style="@style/dateStyle"
                 android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_gravity="center"
                 android:layout_weight="1"
                 android:text="Tue"
-                android:textColor="@color/date_2" />
+                android:textAlignment="center"
+                android:textColor="@color/weeks"
+                android:textStyle="bold" />
 
             <TextView
                 style="@style/dateStyle"
                 android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_gravity="center"
                 android:layout_weight="1"
                 android:text="Wed"
-                android:textColor="@color/date_2" />
+                android:textAlignment="center"
+                android:textColor="@color/weeks"
+                android:textStyle="bold" />
 
             <TextView
                 style="@style/dateStyle"
                 android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_gravity="center"
                 android:layout_weight="1"
                 android:text="Thu"
-                android:textColor="@color/date_2" />
+                android:textAlignment="center"
+                android:textColor="@color/weeks"
+                android:textStyle="bold" />
 
             <TextView
                 style="@style/dateStyle"
                 android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_gravity="center"
                 android:layout_weight="1"
                 android:text="Fri"
-                android:textColor="@color/date_2" />
+                android:textAlignment="center"
+                android:textColor="@color/weeks"
+                android:textStyle="bold" />
 
             <TextView
                 style="@style/dateStyle"
                 android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_gravity="center"
                 android:layout_weight="1"
                 android:text="Sat"
-                android:textColor="@color/date_1" />
+                android:textAlignment="center"
+                android:textColor="@color/weeks"
+                android:textStyle="bold" />
         </TableRow>
     </TableLayout>
-
 
 
     <android.support.v7.widget.RecyclerView
         android:id="@+id/recycler_view"
         android:layout_width="match_parent"
-        android:layout_height="200dp"
-         />
+        android:layout_height="200dp" />
 
     <TextView
         android:id="@+id/text_display"

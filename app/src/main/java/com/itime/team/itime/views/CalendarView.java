@@ -115,6 +115,7 @@ public class CalendarView extends View {
 
         mTextPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
         mTextPaint.setTextAlign(Paint.Align.CENTER);
+        mTextPaint.setColor(Color.BLACK);
         mCirclePaint = new Paint(Paint.ANTI_ALIAS_FLAG);
         mCirclePaint.setStyle(Paint.Style.FILL);
         // mCirclePaint.setColor(Color.parseColor("#FF559CFF"));
@@ -225,14 +226,14 @@ public class CalendarView extends View {
         public void drawSelf(Canvas canvas, int i, int j) {
             switch (state) {
                 case CURRENT_MONTH_DAY:
-                    mTextPaint.setColor(Color.parseColor("#80000000"));
+                    //mTextPaint.setColor(Color.parseColor("#80000000"));
                     break;
                 case NEXT_MONTH_DAY:
                 case PAST_MONTH_DAY:
-                    mTextPaint.setColor(Color.parseColor("#40000000"));
+                    //mTextPaint.setColor(Color.parseColor("#40000000"));
                     break;
                 case TODAY:
-                    mTextPaint.setColor(Color.parseColor("#80000000"));
+                    //mTextPaint.setColor(Color.parseColor("#80000000"));
 //                    canvas.drawCircle((float) (mCellSpace * (i + 0.45)),
 //                            (float) ((j + 0.8) * mCellSpace), mCellSpace / 2,
 //                            mCirclePaint);

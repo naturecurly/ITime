@@ -34,6 +34,11 @@ public class CalendarFragment extends Fragment {
     private List<Map<String, Integer>> dates = new ArrayList<>();
     private int lastPosition = -1;
     private int rowHeight;
+    private int previousTotal = 0;
+    private boolean loading = true;
+    private int visibleThreshold = 10;
+    private int firstVisibleItem, visibleItemCount, totalItemCount;
+    private LinearLayoutManager linearLayoutManager;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -66,7 +71,8 @@ public class CalendarFragment extends Fragment {
         TextView title = (TextView) getActivity().findViewById(R.id.toolbar_title);
         title.setText("Calendar");
         recyclerView = (RecyclerView) view.findViewById(R.id.recycler_view);
-        recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
+        linearLayoutManager = new LinearLayoutManager(getActivity());
+        recyclerView.setLayoutManager(linearLayoutManager);
         recyclerView.setAdapter(new CalendarAdapter(dates));
         recyclerView.addOnItemTouchListener(new RecyclerItemClickListener(getActivity(), new RecyclerItemClickListener.OnItemClickListener() {
             @Override
@@ -111,11 +117,49 @@ public class CalendarFragment extends Fragment {
                     });
                     valueAnimator.start();
                 }
+
+                visibleItemCount = linearLayoutManager.getChildCount();
+                Log.i("Vcount", visibleItemCount + "");
+                totalItemCount = linearLayoutManager.getItemCount();
+                Log.i("Tcount", totalItemCount + "");
+                firstVisibleItem = linearLayoutManager.findFirstVisibleItemPosition();
+                Log.i("Fcount", firstVisibleItem + "");
+                if (loading) {
+                    if (totalItemCount > previousTotal) {
+                        loading = false;
+                        previousTotal = totalItemCount;
+                    }
+                }
+                if (!loading && (totalItemCount - visibleItemCount)
+                        <= (firstVisibleItem + visibleThreshold)) {
+                    // End has been reached
+
+                    Log.i("...", "end called");
+                    addItem();
+
+                    recyclerView.getAdapter().notifyDataSetChanged();
+                    // Do something
+
+                    loading = true;
+                }
             }
         });
         return view;
     }
 
+
+    public void addItem() {
+        Map<String, Integer> map = dates.get(dates.size() - 1);
+        Calendar c = Calendar.getInstance();
+        c.set(map.get("year"), map.get("month") - 1, map.get("day"));
+        c.add(Calendar.DAY_OF_MONTH, 7);
+        Map<String, Integer> mapToInsert = new HashMap<>();
+        mapToInsert.put("year", c.get(Calendar.YEAR));
+        mapToInsert.put("month", c.get(Calendar.MONTH) + 1);
+        mapToInsert.put("day", c.get(Calendar.DAY_OF_MONTH));
+        dates.add(mapToInsert);
+
+    }
 
     private class CalendarAdapter extends RecyclerView.Adapter<CalendarViewHolder> {
 

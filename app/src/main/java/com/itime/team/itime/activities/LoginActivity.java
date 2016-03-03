@@ -15,6 +15,7 @@ import android.widget.Toast;
 
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
+import com.itime.team.itime.R;
 import com.itime.team.itime.bean.Device;
 import com.itime.team.itime.bean.URLs;
 import com.itime.team.itime.bean.User;

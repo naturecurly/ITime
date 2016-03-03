@@ -18,10 +18,9 @@ package com.itime.team.itime.fragments;
 
 import android.os.Bundle;
 import android.preference.PreferenceFragment;
-import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.Toolbar;
 
-import com.itime.team.itime.activities.R;
+import com.itime.team.itime.R;
+
 
 /**
  * Created by Xuhui Chen (yorkfine) on 19/01/16.

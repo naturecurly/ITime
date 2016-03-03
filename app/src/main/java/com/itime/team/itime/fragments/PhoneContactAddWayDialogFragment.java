@@ -11,7 +11,7 @@ import android.view.Window;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
 
-import com.itime.team.itime.activities.R;
+import com.itime.team.itime.R;
 import com.itime.team.itime.bean.Contact;
 
 import java.util.ArrayList;

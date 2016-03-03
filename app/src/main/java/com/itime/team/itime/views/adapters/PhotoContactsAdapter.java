@@ -9,7 +9,7 @@ import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.TextView;
 
-import com.itime.team.itime.activities.R;
+import com.itime.team.itime.R;
 import com.itime.team.itime.bean.Contact;
 
 import java.util.ArrayList;

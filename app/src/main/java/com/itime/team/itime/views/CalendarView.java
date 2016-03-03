@@ -16,7 +16,7 @@ import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 
-import com.itime.team.itime.activities.R;
+import com.itime.team.itime.R;
 import com.itime.team.itime.listener.OnDateSelectedListener;
 import com.itime.team.itime.utils.DateUtil;
 

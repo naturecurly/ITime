@@ -10,7 +10,7 @@ import com.android.volley.Request;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.ImageRequest;
-import com.itime.team.itime.activities.R;
+import com.itime.team.itime.R;
 
 import org.json.JSONArray;
 import org.json.JSONObject;

@@ -7,6 +7,6 @@
         app:showAsAction="always"/>
 
     <item android:id="@+id/meeting_menu_invite"
-        android:title="invite"
+        android:title="Invite"
         app:showAsAction="always"/>
 </menu>

@@ -24,7 +24,8 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.itime.team.itime.activities.R;
+import com.itime.team.itime.R;
+
 
 /**
  * Created by Xuhui Chen (yorkfine) on 27/01/16.

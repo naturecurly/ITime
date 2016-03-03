@@ -10,7 +10,7 @@ import android.view.View;
 import android.view.View.OnFocusChangeListener;
 import android.widget.EditText;
 
-import com.itime.team.itime.activities.R;
+import com.itime.team.itime.R;
 import com.itime.team.itime.utils.Animations;
 
 public class ClearEditText extends EditText implements  

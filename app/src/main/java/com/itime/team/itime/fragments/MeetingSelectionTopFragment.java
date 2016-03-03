@@ -10,11 +10,13 @@ import android.view.ViewGroup;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import com.itime.team.itime.activities.R;
+import com.itime.team.itime.R;
 import com.itime.team.itime.bean.TopAndCenterMeetingFragmentScrollViews;
 import com.itime.team.itime.listener.ScrollViewListener;
 import com.itime.team.itime.utils.DateUtil;
 import com.itime.team.itime.views.MeetingSelectionScrollView;
+
+//import com.itime.team.itime.activities.R;
 
 /**
  * Created by mac on 15/12/28.

@@ -10,15 +10,12 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.LinearInterpolator;
-import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.itime.team.itime.activities.R;
-
+import com.itime.team.itime.R;
 import com.itime.team.itime.listener.OnDateSelectedListener;
 import com.itime.team.itime.listener.RecyclerItemClickListener;
-import com.itime.team.itime.utils.DensityUtil;
 import com.itime.team.itime.views.CalendarView;
 
 import java.util.ArrayList;

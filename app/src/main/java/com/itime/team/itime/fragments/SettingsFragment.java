@@ -28,9 +28,9 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import com.itime.team.itime.R;
 import com.itime.team.itime.activities.LoginActivity;
 import com.itime.team.itime.activities.MeetingPreferenceActivity;
-import com.itime.team.itime.activities.R;
 import com.itime.team.itime.activities.SettingsActivity;
 import com.itime.team.itime.bean.User;
 import com.itime.team.itime.database.UserTableHelper;

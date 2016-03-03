@@ -21,6 +21,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 
+import com.itime.team.itime.R;
 import com.itime.team.itime.fragments.AlertTimePreferenceFragment;
 import com.itime.team.itime.fragments.MeetingPreferenceFragment;
 import com.itime.team.itime.fragments.ProfileFragment;

@@ -9,6 +9,7 @@ import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.LinearLayout;
 
+import com.itime.team.itime.R;
 import com.itime.team.itime.bean.User;
 import com.itime.team.itime.database.UserTableHelper;
 import com.itime.team.itime.utils.DateUtil;

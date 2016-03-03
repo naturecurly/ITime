@@ -23,20 +23,18 @@ import android.os.Bundle;
 import android.preference.PreferenceActivity;
 import android.preference.PreferenceManager;
 import android.support.annotation.LayoutRes;
-import android.support.v4.view.MenuItemCompat;
 import android.support.v7.app.ActionBar;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 
+import com.itime.team.itime.R;
 import com.itime.team.itime.activities.support.AppCompatPreferenceActivity;
 import com.itime.team.itime.fragments.MeetingSubPreferenceFragment;
 
-import java.util.Formatter;
 import java.util.List;
 import java.util.Set;
 

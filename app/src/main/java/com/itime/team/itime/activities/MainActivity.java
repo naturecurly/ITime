@@ -17,6 +17,7 @@ import android.widget.ImageView;
 import android.widget.TabHost;
 import android.widget.TextView;
 
+import com.itime.team.itime.R;
 import com.itime.team.itime.fragments.CalendarFragment;
 import com.itime.team.itime.fragments.MeetingFragment;
 import com.itime.team.itime.fragments.SettingsFragment;

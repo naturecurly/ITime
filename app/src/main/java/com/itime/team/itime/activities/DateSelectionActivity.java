@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 
+import com.itime.team.itime.R;
 import com.itime.team.itime.bean.TopAndCenterMeetingFragmentScrollViews;
 import com.itime.team.itime.fragments.MeetingSelectionCentralFragment;
 import com.itime.team.itime.fragments.MeetingSelectionTopFragment;

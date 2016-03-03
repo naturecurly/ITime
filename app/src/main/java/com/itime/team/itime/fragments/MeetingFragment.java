@@ -23,8 +23,8 @@ import android.widget.Toast;
 
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
+import com.itime.team.itime.R;
 import com.itime.team.itime.activities.DateSelectionActivity;
-import com.itime.team.itime.activities.R;
 import com.itime.team.itime.bean.URLs;
 import com.itime.team.itime.bean.User;
 import com.itime.team.itime.interfaces.DataRequest;

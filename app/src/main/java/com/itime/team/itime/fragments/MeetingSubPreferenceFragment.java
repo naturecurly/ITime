@@ -20,17 +20,11 @@ import android.app.DatePickerDialog;
 import android.app.TimePickerDialog;
 import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.preference.EditTextPreference;
 import android.preference.ListPreference;
 import android.preference.Preference;
 import android.preference.PreferenceFragment;
 import android.preference.PreferenceManager;
 import android.preference.PreferenceScreen;
-import android.support.v4.view.MenuItemCompat;
-import android.support.v7.view.menu.ActionMenuItem;
-import android.text.format.DateFormat;
-import android.util.Log;
-import android.view.ActionProvider;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -40,12 +34,9 @@ import android.view.ViewGroup;
 import android.widget.DatePicker;
 import android.widget.TimePicker;
 
-import com.itime.team.itime.activities.MeetingPreferenceActivity;
-import com.itime.team.itime.activities.R;
+import com.itime.team.itime.R;
 
-import java.text.ParseException;
 import java.util.Calendar;
-import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
 

@@ -22,6 +22,7 @@ import android.widget.EditText;
 import android.widget.ScrollView;
 import android.widget.TimePicker;
 
+import com.itime.team.itime.R;
 import com.itime.team.itime.bean.User;
 import com.itime.team.itime.fragments.NewMeetingAlertDialogFragment;
 import com.itime.team.itime.fragments.NewMeetingRepeatDialogFragment;

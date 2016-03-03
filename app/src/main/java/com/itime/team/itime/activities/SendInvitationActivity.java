@@ -3,6 +3,8 @@ package com.itime.team.itime.activities;
 import android.app.Activity;
 import android.os.Bundle;
 
+import com.itime.team.itime.R;
+
 /**
  * Created by mac on 16/1/8.
  */

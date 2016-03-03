@@ -11,8 +11,8 @@ import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.SimpleAdapter;
 
+import com.itime.team.itime.R;
 import com.itime.team.itime.activities.PhoneContactActivity;
-import com.itime.team.itime.activities.R;
 import com.itime.team.itime.activities.SearchFriendActivity;
 import com.itime.team.itime.bean.URLs;
 import com.itime.team.itime.bean.User;

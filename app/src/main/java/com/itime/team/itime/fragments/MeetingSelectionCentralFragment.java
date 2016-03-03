@@ -17,8 +17,8 @@ import android.widget.TextView;
 
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
+import com.itime.team.itime.R;
 import com.itime.team.itime.activities.NewMeetingActivity;
-import com.itime.team.itime.activities.R;
 import com.itime.team.itime.bean.Preference;
 import com.itime.team.itime.bean.TopAndCenterMeetingFragmentScrollViews;
 import com.itime.team.itime.bean.URLs;
@@ -41,6 +41,8 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
+
+//import com.itime.team.itime.activities.R;
 
 /**
  * The function of this fragment is to present the friends' preferences of meeting time.

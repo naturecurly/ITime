@@ -9,12 +9,11 @@ import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.CheckBox;
-import android.widget.ListAdapter;
 import android.widget.ListView;
 
+import com.itime.team.itime.R;
 import com.itime.team.itime.bean.Contact;
 import com.itime.team.itime.fragments.PhoneContactAddWayDialogFragment;
 import com.itime.team.itime.views.adapters.PhotoContactsAdapter;

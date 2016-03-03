@@ -1,15 +1,22 @@
 package com.itime.team.itime.fragments;
 
 import android.animation.ValueAnimator;
+import android.graphics.drawable.Drawable;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.LinearInterpolator;
+import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -39,6 +46,7 @@ public class CalendarFragment extends Fragment {
     private int visibleThreshold = 10;
     private int firstVisibleItem, visibleItemCount, totalItemCount;
     private LinearLayoutManager linearLayoutManager;
+    private ImageButton imageButton;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -70,6 +78,34 @@ public class CalendarFragment extends Fragment {
         //rowHeight = calendarView.getLayoutParams().height;
         TextView title = (TextView) getActivity().findViewById(R.id.toolbar_title);
         title.setText("Calendar");
+        imageButton = (ImageButton) getActivity().findViewById(R.id.event_list);
+        imageButton.setVisibility(View.VISIBLE);
+        imageButton.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                if (event.getAction() == MotionEvent.ACTION_DOWN) {
+                    ((ImageButton) v).setImageDrawable(ContextCompat.getDrawable(getActivity(), R.drawable.ic_calendar_list));
+
+                }
+                if (event.getAction() == MotionEvent.ACTION_UP) {
+                    ((ImageButton) v).setImageDrawable(ContextCompat.getDrawable(getActivity(), R.drawable.ic_calendar_list_white));
+                }
+                return false;
+            }
+        });
+        imageButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Fragment fragment = new EventListFragment();
+                FragmentTransaction ft = getFragmentManager().beginTransaction();
+                //ft.detach(getFragmentManager().findFragmentById(R.id.realtab_content)).add(fragment,"list");
+                ft.replace(R.id.realtab_content, fragment);
+
+                ft.addToBackStack(null);
+                ft.commit();
+            }
+        });
+
         recyclerView = (RecyclerView) view.findViewById(R.id.recycler_view);
         linearLayoutManager = new LinearLayoutManager(getActivity());
         recyclerView.setLayoutManager(linearLayoutManager);
@@ -135,8 +171,9 @@ public class CalendarFragment extends Fragment {
                     // End has been reached
 
                     Log.i("...", "end called");
-                    addItem();
-
+                    for (int i = 0; i < 5; i++) {
+                        addItem();
+                    }
                     recyclerView.getAdapter().notifyDataSetChanged();
                     // Do something
 

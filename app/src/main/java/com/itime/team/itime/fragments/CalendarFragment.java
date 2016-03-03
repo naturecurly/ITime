@@ -52,7 +52,7 @@ public class CalendarFragment extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         Calendar c = Calendar.getInstance();
-        c.add(Calendar.DAY_OF_MONTH, -14);
+        c.add(Calendar.DAY_OF_MONTH, -14 - 5 * 7);
         c.add(Calendar.DATE, -c.get(Calendar.DAY_OF_WEEK));
         for (int i = 0; i < 15; i++) {
             c.add(Calendar.DATE, 7);
@@ -108,6 +108,7 @@ public class CalendarFragment extends Fragment {
 
         recyclerView = (RecyclerView) view.findViewById(R.id.recycler_view);
         linearLayoutManager = new LinearLayoutManager(getActivity());
+        linearLayoutManager.scrollToPosition(6);
         recyclerView.setLayoutManager(linearLayoutManager);
         recyclerView.setAdapter(new CalendarAdapter(dates));
         recyclerView.addOnItemTouchListener(new RecyclerItemClickListener(getActivity(), new RecyclerItemClickListener.OnItemClickListener() {
@@ -136,23 +137,23 @@ public class CalendarFragment extends Fragment {
                 super.onScrolled(recyclerView, dx, dy);
                 ValueAnimator valueAnimator;
                 valueAnimator = ValueAnimator.ofInt(rowHeight, rowHeight * 6);
-                if (dy > 0) {
-                    valueAnimator.setDuration(300);
-                    valueAnimator.setInterpolator(new LinearInterpolator());
-                    valueAnimator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
-                        @Override
-                        public void onAnimationUpdate(ValueAnimator animation) {
-                            ViewGroup.LayoutParams params = recyclerView.getLayoutParams();
-                            rowHeight = recyclerView.getChildAt(0).getHeight();
-                            recyclerView.getLayoutParams().height = rowHeight * 6;
-                            recyclerView.requestLayout();
-                            //params.height = rowHeight * 6;
-                            //recyclerView.setLayoutParams(params);
+                // if (dy > 0) {
+                valueAnimator.setDuration(300);
+                valueAnimator.setInterpolator(new LinearInterpolator());
+                valueAnimator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
+                    @Override
+                    public void onAnimationUpdate(ValueAnimator animation) {
+                        ViewGroup.LayoutParams params = recyclerView.getLayoutParams();
+                        rowHeight = recyclerView.getChildAt(0).getHeight();
+                        recyclerView.getLayoutParams().height = rowHeight * 6;
+                        recyclerView.requestLayout();
+                        //params.height = rowHeight * 6;
+                        //recyclerView.setLayoutParams(params);
 
-                        }
-                    });
-                    valueAnimator.start();
-                }
+                    }
+                });
+                valueAnimator.start();
+                // }
 
                 visibleItemCount = linearLayoutManager.getChildCount();
                 Log.i("Vcount", visibleItemCount + "");
@@ -160,27 +161,50 @@ public class CalendarFragment extends Fragment {
                 Log.i("Tcount", totalItemCount + "");
                 firstVisibleItem = linearLayoutManager.findFirstVisibleItemPosition();
                 Log.i("Fcount", firstVisibleItem + "");
-                if (loading) {
-                    if (totalItemCount > previousTotal) {
-                        loading = false;
-                        previousTotal = totalItemCount;
+                if (dy > 0) {
+                    if (loading) {
+                        if (totalItemCount > previousTotal) {
+                            loading = false;
+                            previousTotal = totalItemCount;
+                        }
+                    }
+                    if (!loading && (totalItemCount - visibleItemCount)
+                            <= (firstVisibleItem + visibleThreshold)) {
+                        // End has been reached
+
+                        Log.i("...", "end called");
+                        for (int i = 0; i < 5; i++) {
+                            addItem();
+                        }
+                        recyclerView.getAdapter().notifyDataSetChanged();
+                        // Do something
+
+                        loading = true;
                     }
                 }
-                if (!loading && (totalItemCount - visibleItemCount)
-                        <= (firstVisibleItem + visibleThreshold)) {
-                    // End has been reached
-
-                    Log.i("...", "end called");
-                    for (int i = 0; i < 5; i++) {
-                        addItem();
+                //previousTotal = 0;
+                if (dy < 0) {
+                    if (loading) {
+                        if (totalItemCount > previousTotal) {
+                            loading = false;
+                            previousTotal = totalItemCount;
+                        }
                     }
-                    recyclerView.getAdapter().notifyDataSetChanged();
-                    // Do something
+                    if (!loading && (totalItemCount - 2 * visibleItemCount - firstVisibleItem) <= visibleThreshold) {
+                        Log.i("...", "first called");
+                        for (int i = 0; i < 5; i++) {
+                            insertItem();
+                            recyclerView.getAdapter().notifyItemInserted(0);
+                        }
+                        //recyclerView.smoothScrollToPosition(0);
 
-                    loading = true;
+                        //recyclerView.getAdapter().notifyDataSetChanged();
+                        loading = true;
+                    }
                 }
             }
         });
+
         return view;
     }
 
@@ -196,6 +220,18 @@ public class CalendarFragment extends Fragment {
         mapToInsert.put("day", c.get(Calendar.DAY_OF_MONTH));
         dates.add(mapToInsert);
 
+    }
+
+    public void insertItem() {
+        Map<String, Integer> map = dates.get(0);
+        Calendar c = Calendar.getInstance();
+        c.set(map.get("year"), map.get("month") - 1, map.get("day"));
+        c.add(Calendar.DAY_OF_MONTH, -7);
+        Map<String, Integer> mapToInsert = new HashMap<>();
+        mapToInsert.put("year", c.get(Calendar.YEAR));
+        mapToInsert.put("month", c.get(Calendar.MONTH) + 1);
+        mapToInsert.put("day", c.get(Calendar.DAY_OF_MONTH));
+        dates.add(0, mapToInsert);
     }
 
     private class CalendarAdapter extends RecyclerView.Adapter<CalendarViewHolder> {

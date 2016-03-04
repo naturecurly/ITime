@@ -20,6 +20,7 @@ import com.facebook.CallbackManager;
 import com.facebook.FacebookCallback;
 import com.facebook.FacebookException;
 import com.facebook.FacebookSdk;
+import com.facebook.Profile;
 import com.facebook.login.LoginResult;
 import com.facebook.login.widget.LoginButton;
 import com.itime.team.itime.R;
@@ -92,7 +93,6 @@ public class LoginActivity extends FragmentActivity implements View.OnClickListe
     }
 
     private void setTexts(){
-        Log.i("username", mUsernameStr);
         mUsername.setText(mUsernameStr);
     }
 
@@ -176,6 +176,19 @@ public class LoginActivity extends FragmentActivity implements View.OnClickListe
         ContentValues values = new ContentValues();
         values.put("user_id", mUsername.getText().toString());
         values.put("password", mPassword.getText().toString());
+        values.put("last_login_time", DateUtil.getCurrentTime("yyyy-MM-dd HH:mm:ss"));
+        values.put("remember", mRemember.isChecked());
+        db.update("itime_user", values, "id=?", new String[]{"1"});
+        dbHelper.close();
+        db.close();
+    }
+
+    private void updateUserTable(String username,String password){
+        UserTableHelper dbHelper = new UserTableHelper(LoginActivity.this, "userbase1");
+        SQLiteDatabase db = dbHelper.getReadableDatabase();
+        ContentValues values = new ContentValues();
+        values.put("user_id", username);
+        values.put("password", password);
         values.put("last_login_time", DateUtil.getCurrentTime("yyyy-MM-dd HH:mm:ss"));
         values.put("remember", mRemember.isChecked());
         db.update("itime_user", values, "id=?", new String[]{"1"});
@@ -348,8 +361,9 @@ public class LoginActivity extends FragmentActivity implements View.OnClickListe
         super.onActivityResult(requestCode, resultCode, data);
         callbackManager.onActivityResult(requestCode, resultCode, data);
         if(resultCode == Activity.RESULT_OK) {
-            User.ID = "cai";
-            User.isRemembered = true;
+            mUsernameStr = Profile.getCurrentProfile().getId();
+            User.ID = mUsernameStr;
+            updateUserTable(mUsernameStr,"");
             startActivity(mMainIntent);
             finish();
         }

@@ -53,7 +53,7 @@ public class CheckLoginActivity extends AppCompatActivity {
             public void run(){
                 if(canLogin()){
                     User.ID = mUsernameStr;
-                    User.isRemembered = true;
+                    //User.isRemembered = true;
                     startActivity(MainIntent);
                 }else{
                     LoginIntent.putExtra("username",mUsernameStr);

@@ -16,7 +16,6 @@
 
 package com.itime.team.itime.fragments;
 
-import android.app.Activity;
 import android.content.ContentValues;
 import android.content.Intent;
 import android.database.sqlite.SQLiteDatabase;
@@ -29,13 +28,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
-import com.facebook.CallbackManager;
-import com.facebook.FacebookCallback;
-import com.facebook.FacebookException;
-import com.facebook.FacebookSdk;
 import com.facebook.login.LoginManager;
-import com.facebook.login.LoginResult;
-import com.facebook.login.widget.LoginButton;
 import com.itime.team.itime.R;
 import com.itime.team.itime.activities.LoginActivity;
 import com.itime.team.itime.activities.MeetingPreferenceActivity;

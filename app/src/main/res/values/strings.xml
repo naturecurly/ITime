@@ -78,5 +78,6 @@
     <string name="title_intent_preference">title_intent_preference</string>
     <string name="summary_intent_preference">summary_intent_preference</string>
 
+    <string name="facebook_app_id">450185851844736</string>
 
 </resources>

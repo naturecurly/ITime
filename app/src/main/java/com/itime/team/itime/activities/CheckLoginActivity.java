@@ -9,6 +9,7 @@ import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.LinearLayout;
 
+import com.facebook.appevents.AppEventsLogger;
 import com.itime.team.itime.R;
 import com.itime.team.itime.bean.User;
 import com.itime.team.itime.database.UserTableHelper;
@@ -97,6 +98,22 @@ public class CheckLoginActivity extends AppCompatActivity {
         }else{
             return false;
         }
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+
+        // Logs 'install' and 'app activate' App Events.
+        AppEventsLogger.activateApp(this);
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+
+        // Logs 'app deactivate' App Event.
+        AppEventsLogger.deactivateApp(this);
     }
 
 }

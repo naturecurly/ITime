@@ -5,7 +5,7 @@ import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
-import android.support.v7.app.AppCompatActivity;
+import android.support.v4.app.FragmentActivity;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
@@ -15,6 +15,12 @@ import android.widget.Toast;
 
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
+import com.facebook.CallbackManager;
+import com.facebook.FacebookCallback;
+import com.facebook.FacebookException;
+import com.facebook.FacebookSdk;
+import com.facebook.login.LoginResult;
+import com.facebook.login.widget.LoginButton;
 import com.itime.team.itime.R;
 import com.itime.team.itime.bean.Device;
 import com.itime.team.itime.bean.URLs;
@@ -37,13 +43,15 @@ import java.util.UUID;
 /**
  * Created by mac on 16/2/24.
  */
-public class LoginActivity extends AppCompatActivity implements View.OnClickListener, DataRequest{
+public class LoginActivity extends FragmentActivity implements View.OnClickListener, DataRequest{
     private Toast mToast;
     private ClearEditText mUsername, mPassword;
     private Button mLogin, mRegister;
     private Switch mRemember;
     private String mUsernameStr, mPasswordStr, mLastLoginTime;
     private boolean mIsRemember;
+
+    private CallbackManager callbackManager;
 
 
     private JsonManager mJsonManager;
@@ -74,6 +82,8 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         mLastLoginTime = intent.getStringExtra("lastlogintime");
         mIsRemember = intent.getBooleanExtra("remember", false);
         setTexts();
+
+        linkFaceBook();
     }
 
     private void setTexts(){
@@ -308,4 +318,27 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
     public void requestJSONArray(JsonManager manager, JSONObject jsonObject, String url, String tag) {
         manager.postForJsonArray(url, jsonObject, this, tag);
     }
+
+    private void linkFaceBook(){
+        FacebookSdk.sdkInitialize(getApplicationContext());
+        callbackManager = CallbackManager.Factory.create();
+        LoginButton loginButton = (LoginButton) findViewById(R.id.login_button);
+        loginButton.registerCallback(callbackManager, new FacebookCallback<LoginResult>() {
+            @Override
+            public void onSuccess(LoginResult loginResult) {
+
+            }
+
+            @Override
+            public void onCancel() {
+
+            }
+
+            @Override
+            public void onError(FacebookException error) {
+
+            }
+        });
+    }
+
 }

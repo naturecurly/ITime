@@ -104,12 +104,10 @@ public class SettingsFragment extends Fragment implements View.OnClickListener {
 
             case SETTING_LOGOUT_ID:
                 getActivity().finish();
-                if(User.isRemembered) {
-                    Intent intent2 = new Intent(getActivity(), LoginActivity.class);
-                    intent2.putExtra("username", User.ID);
-                    updateUserTable();
-                    startActivity(intent2);
-                }
+                Intent intent2 = new Intent(getActivity(), LoginActivity.class);
+                intent2.putExtra("username", User.ID);
+                updateUserTable();
+                startActivity(intent2);
                 break;
 
             default:

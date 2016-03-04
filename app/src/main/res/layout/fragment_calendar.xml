@@ -27,7 +27,8 @@
                 android:text="Sun"
                 android:textAlignment="center"
                 android:textColor="@color/weeks"
-                android:textStyle="bold" />
+                android:textStyle="bold"
+                />
 
             <TextView
                 style="@style/dateStyle"

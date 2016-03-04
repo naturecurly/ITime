@@ -1,5 +1,6 @@
 package com.itime.team.itime.fragments;
 
+import android.animation.ObjectAnimator;
 import android.animation.ValueAnimator;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
@@ -17,6 +18,8 @@ import android.view.MenuInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.AccelerateDecelerateInterpolator;
+import android.view.animation.DecelerateInterpolator;
 import android.view.animation.LinearInterpolator;
 import android.widget.ImageButton;
 import android.widget.TextView;
@@ -129,33 +132,53 @@ public class CalendarFragment extends Fragment {
                 }
             }
         }));
+
         recyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
             @Override
-            public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
+            public void onScrollStateChanged(final RecyclerView recyclerView, int newState) {
                 super.onScrollStateChanged(recyclerView, newState);
+                if (newState == 1) {
+                    rowHeight = recyclerView.getChildAt(0).getHeight();
+                    ValueAnimator animator = ValueAnimator.ofInt(recyclerView.getMeasuredHeight(), rowHeight * 6);
+                    animator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
+                        @Override
+                        public void onAnimationUpdate(ValueAnimator animation) {
+                            int value = (int) animation.getAnimatedValue();
+                            ViewGroup.LayoutParams layoutParams = recyclerView.getLayoutParams();
+                            layoutParams.height = value;
+                            recyclerView.setLayoutParams(layoutParams);
+                        }
+                    });
+                    animator.setDuration(500);
+                    animator.setInterpolator(new DecelerateInterpolator());
+                    animator.start();
+                }
+
             }
 
             @Override
             public void onScrolled(final RecyclerView recyclerView, int dx, int dy) {
                 super.onScrolled(recyclerView, dx, dy);
-                ValueAnimator valueAnimator;
-                valueAnimator = ValueAnimator.ofInt(rowHeight, rowHeight * 6);
-                // if (dy > 0) {
-                valueAnimator.setDuration(300);
-                valueAnimator.setInterpolator(new LinearInterpolator());
-                valueAnimator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
-                    @Override
-                    public void onAnimationUpdate(ValueAnimator animation) {
-                        ViewGroup.LayoutParams params = recyclerView.getLayoutParams();
-                        rowHeight = recyclerView.getChildAt(0).getHeight();
-                        recyclerView.getLayoutParams().height = rowHeight * 6;
-                        recyclerView.requestLayout();
-                        //params.height = rowHeight * 6;
-                        //recyclerView.setLayoutParams(params);
 
-                    }
-                });
-                valueAnimator.start();
+
+                //valueAnimator = ValueAnimator.ofInt(rowHeight, rowHeight * 6);
+                // if (dy > 0) {
+
+
+                //valueAnimator.setInterpolator(new LinearInterpolator());
+//                valueAnimator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
+//                    @Override
+//                    public void onAnimationUpdate(ValueAnimator animation) {
+//                        ViewGroup.LayoutParams params = recyclerView.getLayoutParams();
+//                        rowHeight = recyclerView.getChildAt(0).getHeight();
+//                        recyclerView.getLayoutParams().height = rowHeight * 6;
+//                        recyclerView.requestLayout();
+//                        //params.height = rowHeight * 6;
+//                        //recyclerView.setLayoutParams(params);
+//
+//                    }
+//                });
+
                 // }
 
                 visibleItemCount = linearLayoutManager.getChildCount();
@@ -165,6 +188,8 @@ public class CalendarFragment extends Fragment {
                 firstVisibleItem = linearLayoutManager.findFirstVisibleItemPosition();
                 Log.i("Fcount", firstVisibleItem + "");
                 if (dy > 0) {
+
+
                     if (loading) {
                         if (totalItemCount > previousTotal) {
                             loading = false;

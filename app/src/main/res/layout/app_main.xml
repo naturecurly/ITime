@@ -28,6 +28,16 @@
                 android:layout_gravity="center"
                 android:text="Toolbar Title" />
 
+            <ImageButton
+                android:id="@+id/event_list"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@null"
+                android:gravity="left"
+                android:src="@drawable/ic_calendar_list_white"
+
+                />
+
         </android.support.v7.widget.Toolbar>
 
     </android.support.design.widget.AppBarLayout>

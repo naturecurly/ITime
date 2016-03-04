@@ -1,15 +1,27 @@
 package com.itime.team.itime.fragments;
 
+import android.animation.ObjectAnimator;
 import android.animation.ValueAnimator;
+import android.graphics.drawable.Drawable;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.AccelerateDecelerateInterpolator;
+import android.view.animation.DecelerateInterpolator;
 import android.view.animation.LinearInterpolator;
+import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -39,12 +51,14 @@ public class CalendarFragment extends Fragment {
     private int visibleThreshold = 10;
     private int firstVisibleItem, visibleItemCount, totalItemCount;
     private LinearLayoutManager linearLayoutManager;
+    private ImageButton imageButton;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        setHasOptionsMenu(true);
         Calendar c = Calendar.getInstance();
-        c.add(Calendar.DAY_OF_MONTH, -14);
+        c.add(Calendar.DAY_OF_MONTH, -14 - 5 * 7);
         c.add(Calendar.DATE, -c.get(Calendar.DAY_OF_WEEK));
         for (int i = 0; i < 15; i++) {
             c.add(Calendar.DATE, 7);
@@ -70,8 +84,37 @@ public class CalendarFragment extends Fragment {
         //rowHeight = calendarView.getLayoutParams().height;
         TextView title = (TextView) getActivity().findViewById(R.id.toolbar_title);
         title.setText("Calendar");
+        imageButton = (ImageButton) getActivity().findViewById(R.id.event_list);
+        imageButton.setVisibility(View.VISIBLE);
+        imageButton.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                if (event.getAction() == MotionEvent.ACTION_DOWN) {
+                    ((ImageButton) v).setImageDrawable(ContextCompat.getDrawable(getActivity(), R.drawable.ic_calendar_list));
+
+                }
+                if (event.getAction() == MotionEvent.ACTION_UP) {
+                    ((ImageButton) v).setImageDrawable(ContextCompat.getDrawable(getActivity(), R.drawable.ic_calendar_list_white));
+                }
+                return false;
+            }
+        });
+        imageButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Fragment fragment = new EventListFragment();
+                FragmentTransaction ft = getFragmentManager().beginTransaction();
+                //ft.detach(getFragmentManager().findFragmentById(R.id.realtab_content)).add(fragment,"list");
+                ft.replace(R.id.realtab_content, fragment);
+
+                ft.addToBackStack(null);
+                ft.commit();
+            }
+        });
+
         recyclerView = (RecyclerView) view.findViewById(R.id.recycler_view);
         linearLayoutManager = new LinearLayoutManager(getActivity());
+        linearLayoutManager.scrollToPosition(6);
         recyclerView.setLayoutManager(linearLayoutManager);
         recyclerView.setAdapter(new CalendarAdapter(dates));
         recyclerView.addOnItemTouchListener(new RecyclerItemClickListener(getActivity(), new RecyclerItemClickListener.OnItemClickListener() {
@@ -89,34 +132,54 @@ public class CalendarFragment extends Fragment {
                 }
             }
         }));
+
         recyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
             @Override
-            public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
+            public void onScrollStateChanged(final RecyclerView recyclerView, int newState) {
                 super.onScrollStateChanged(recyclerView, newState);
+                if (newState == 1) {
+                    rowHeight = recyclerView.getChildAt(0).getHeight();
+                    ValueAnimator animator = ValueAnimator.ofInt(recyclerView.getMeasuredHeight(), rowHeight * 6);
+                    animator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
+                        @Override
+                        public void onAnimationUpdate(ValueAnimator animation) {
+                            int value = (int) animation.getAnimatedValue();
+                            ViewGroup.LayoutParams layoutParams = recyclerView.getLayoutParams();
+                            layoutParams.height = value;
+                            recyclerView.setLayoutParams(layoutParams);
+                        }
+                    });
+                    animator.setDuration(500);
+                    animator.setInterpolator(new DecelerateInterpolator());
+                    animator.start();
+                }
+
             }
 
             @Override
             public void onScrolled(final RecyclerView recyclerView, int dx, int dy) {
                 super.onScrolled(recyclerView, dx, dy);
-                ValueAnimator valueAnimator;
-                valueAnimator = ValueAnimator.ofInt(rowHeight, rowHeight * 6);
-                if (dy > 0) {
-                    valueAnimator.setDuration(300);
-                    valueAnimator.setInterpolator(new LinearInterpolator());
-                    valueAnimator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
-                        @Override
-                        public void onAnimationUpdate(ValueAnimator animation) {
-                            ViewGroup.LayoutParams params = recyclerView.getLayoutParams();
-                            rowHeight = recyclerView.getChildAt(0).getHeight();
-                            recyclerView.getLayoutParams().height = rowHeight * 6;
-                            recyclerView.requestLayout();
-                            //params.height = rowHeight * 6;
-                            //recyclerView.setLayoutParams(params);
 
-                        }
-                    });
-                    valueAnimator.start();
-                }
+
+                //valueAnimator = ValueAnimator.ofInt(rowHeight, rowHeight * 6);
+                // if (dy > 0) {
+
+
+                //valueAnimator.setInterpolator(new LinearInterpolator());
+//                valueAnimator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
+//                    @Override
+//                    public void onAnimationUpdate(ValueAnimator animation) {
+//                        ViewGroup.LayoutParams params = recyclerView.getLayoutParams();
+//                        rowHeight = recyclerView.getChildAt(0).getHeight();
+//                        recyclerView.getLayoutParams().height = rowHeight * 6;
+//                        recyclerView.requestLayout();
+//                        //params.height = rowHeight * 6;
+//                        //recyclerView.setLayoutParams(params);
+//
+//                    }
+//                });
+
+                // }
 
                 visibleItemCount = linearLayoutManager.getChildCount();
                 Log.i("Vcount", visibleItemCount + "");
@@ -124,26 +187,53 @@ public class CalendarFragment extends Fragment {
                 Log.i("Tcount", totalItemCount + "");
                 firstVisibleItem = linearLayoutManager.findFirstVisibleItemPosition();
                 Log.i("Fcount", firstVisibleItem + "");
-                if (loading) {
-                    if (totalItemCount > previousTotal) {
-                        loading = false;
-                        previousTotal = totalItemCount;
+                if (dy > 0) {
+
+
+                    if (loading) {
+                        if (totalItemCount > previousTotal) {
+                            loading = false;
+                            previousTotal = totalItemCount;
+                        }
+                    }
+                    if (!loading && (totalItemCount - visibleItemCount)
+                            <= (firstVisibleItem + visibleThreshold)) {
+                        // End has been reached
+
+                        Log.i("...", "end called");
+                        for (int i = 0; i < 5; i++) {
+                            addItem();
+                        }
+                        recyclerView.getAdapter().notifyDataSetChanged();
+
+                        // Do something
+
+                        loading = true;
                     }
                 }
-                if (!loading && (totalItemCount - visibleItemCount)
-                        <= (firstVisibleItem + visibleThreshold)) {
-                    // End has been reached
+                //previousTotal = 0;
+                if (dy < 0) {
+                    if (loading) {
+                        if (totalItemCount > previousTotal) {
+                            loading = false;
+                            previousTotal = totalItemCount;
+                        }
+                    }
+                    if (!loading && firstVisibleItem <= visibleThreshold) {
+                        Log.i("...", "first called");
+                        for (int i = 0; i < 5; i++) {
+                            insertItem();
+                            recyclerView.getAdapter().notifyItemInserted(0);
+                        }
+                        //recyclerView.smoothScrollToPosition(0);
 
-                    Log.i("...", "end called");
-                    addItem();
-
-                    recyclerView.getAdapter().notifyDataSetChanged();
-                    // Do something
-
-                    loading = true;
+                        //recyclerView.getAdapter().notifyDataSetChanged();
+                        loading = true;
+                    }
                 }
             }
         });
+
         return view;
     }
 
@@ -159,6 +249,18 @@ public class CalendarFragment extends Fragment {
         mapToInsert.put("day", c.get(Calendar.DAY_OF_MONTH));
         dates.add(mapToInsert);
 
+    }
+
+    public void insertItem() {
+        Map<String, Integer> map = dates.get(0);
+        Calendar c = Calendar.getInstance();
+        c.set(map.get("year"), map.get("month") - 1, map.get("day"));
+        c.add(Calendar.DAY_OF_MONTH, -7);
+        Map<String, Integer> mapToInsert = new HashMap<>();
+        mapToInsert.put("year", c.get(Calendar.YEAR));
+        mapToInsert.put("month", c.get(Calendar.MONTH) + 1);
+        mapToInsert.put("day", c.get(Calendar.DAY_OF_MONTH));
+        dates.add(0, mapToInsert);
     }
 
     private class CalendarAdapter extends RecyclerView.Adapter<CalendarViewHolder> {
@@ -221,5 +323,11 @@ public class CalendarFragment extends Fragment {
     }
 
 
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        super.onCreateOptionsMenu(menu, inflater);
+        menu.clear();
+        inflater.inflate(R.menu.menu_calendar_option, menu);
+    }
 }
 

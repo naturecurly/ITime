@@ -12,6 +12,8 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
@@ -51,6 +53,7 @@ public class CalendarFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        setHasOptionsMenu(true);
         Calendar c = Calendar.getInstance();
         c.add(Calendar.DAY_OF_MONTH, -14 - 5 * 7);
         c.add(Calendar.DATE, -c.get(Calendar.DAY_OF_WEEK));
@@ -177,6 +180,7 @@ public class CalendarFragment extends Fragment {
                             addItem();
                         }
                         recyclerView.getAdapter().notifyDataSetChanged();
+
                         // Do something
 
                         loading = true;
@@ -190,7 +194,7 @@ public class CalendarFragment extends Fragment {
                             previousTotal = totalItemCount;
                         }
                     }
-                    if (!loading && (totalItemCount - 2 * visibleItemCount - firstVisibleItem) <= visibleThreshold) {
+                    if (!loading && firstVisibleItem <= visibleThreshold) {
                         Log.i("...", "first called");
                         for (int i = 0; i < 5; i++) {
                             insertItem();
@@ -294,5 +298,11 @@ public class CalendarFragment extends Fragment {
     }
 
 
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        super.onCreateOptionsMenu(menu, inflater);
+        menu.clear();
+        inflater.inflate(R.menu.menu_calendar_option, menu);
+    }
 }
 

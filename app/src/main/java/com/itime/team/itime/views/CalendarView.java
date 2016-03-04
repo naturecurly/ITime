@@ -39,6 +39,7 @@ public class CalendarView extends View {
     private Paint mTextPaint;
     private Paint mGridPaint;
     private Paint mLinePaint;
+    private Paint mMonthTextPaint;
     private int mViewWidth;
     private int mViewHight;
     private float mCellSpace;
@@ -112,6 +113,10 @@ public class CalendarView extends View {
 
     private void init(Context context) {
         bm = BitmapFactory.decodeResource(getResources(), R.drawable.ic_calendar_circle);
+        mMonthTextPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
+        mMonthTextPaint.setTextAlign(Paint.Align.CENTER);
+        mMonthTextPaint.setColor(Color.rgb(255, 165, 0));
+        mMonthTextPaint.setTextSize(dip2px(context, 10));
 
         mTextPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
         mTextPaint.setTextAlign(Paint.Align.CENTER);
@@ -212,11 +217,15 @@ public class CalendarView extends View {
     public class Cell {
         public String text;
         public State state;
+        public int month;
+        public int year;
 
-        public Cell(String text, State state) {
+        public Cell(String text, State state, int month, int year) {
             super();
             this.text = text;
             this.state = state;
+            this.month = month;
+            this.year = year;
         }
 
         public void setText(String text) {
@@ -249,12 +258,17 @@ public class CalendarView extends View {
                     canvas.drawBitmap(newbm, i * mCellSpace, j * mCellSpace, mCirclePaint);
                     break;
             }
+
             //canvas.drawRect(i * mCellSpace, j * mCellSpace, (i + 1) * mCellSpace, (j + 1) * mCellSpace, mGridPaint);
             Paint.FontMetrics fm = mTextPaint.getFontMetrics();
 
             canvas.drawText(text, i * mCellSpace + mCellSpace / 2,
                     (j + 1) * mCellSpace - mCellSpace / 2 - (fm.ascent - fm.descent) / 2 - dip2px(context, 2), mTextPaint);
             //canvas.drawLine(i * mCellSpace, j * mCellSpace, (i + 1) * mCellSpace, j * mCellSpace,mLinePaint );
+            if (text.equals(1 + "")) {
+                canvas.drawText(DateUtil.month[month - 1], i * mCellSpace + mCellSpace / 2, (j + 1) * mCellSpace - mCellSpace * 3 / 4, mMonthTextPaint);
+
+            }
         }
 
         public String getText() {
@@ -271,11 +285,12 @@ public class CalendarView extends View {
     }
 
     private void fillDate() {
-        if (defaultStyle == MONTH_STYLE) {
-            fillMonthDate();
-        } else {
-            fillWeekDate();
-        }
+//        if (defaultStyle == MONTH_STYLE) {
+//            fillMonthDate();
+//        } else {
+//            fillWeekDate();
+//        }
+        fillWeekDate();
     }
 
     private void fillWeekDate() {
@@ -285,62 +300,67 @@ public class CalendarView extends View {
 //        rows[0] = new Row();
         for (int week = 0; week < 1; week++) {
             rows[week] = new Row();
-            if (mShowDay + WEEK - 1 > currentMonthDays) {
-                mShowMonth += 1;
-            }
+//            if (mShowDay + WEEK - 1 > currentMonthDays) {
+//                mShowMonth += 1;
+//            }
             for (int i = 0; i < TOTAL_COL; i++) {
                 mShowDay += 1;
                 if (mShowDay > currentMonthDays) {
                     mShowDay = 1;
+                    mShowMonth += 1;
+                    if (mShowMonth > 12) {
+                        mShowMonth = 1;
+                        mShowYear += 1;
+                    }
                 }
                 if (mShowDay == DateUtil.getCurrentMonthDays() &&
                         mShowYear == DateUtil.getYear()
                         && mShowMonth == DateUtil.getMonth()) {
-                    rows[week].cells[i] = new Cell(mShowDay + "", State.TODAY);
+                    rows[week].cells[i] = new Cell(mShowDay + "", State.TODAY, mShowMonth, mShowYear);
                     continue;
                 }
-                rows[week].cells[i] = new Cell(mShowDay + "", State.CURRENT_MONTH_DAY);
+                rows[week].cells[i] = new Cell(mShowDay + "", State.CURRENT_MONTH_DAY, mShowMonth, mShowYear);
             }
         }
     }
 
-    private void fillMonthDate() {
-        int monthDay = DateUtil.getCurrentMonthDays();
-        int lastMonthDays = DateUtil.getMonthDays(mShowYear, mShowMonth - 1);
-        int currentMonthDays = DateUtil.getMonthDays(mShowYear, mShowMonth);
-        int firstDayWeek = DateUtil.getWeekDayFromDate(mShowYear, mShowMonth);
-        boolean isCurrentMonth = false;
-        if (mShowYear == DateUtil.getYear() && mShowMonth == DateUtil.getMonth()) {
-            isCurrentMonth = true;
-        }
-        int time = 0;
-        for (int j = 0; j < TOTAL_ROW; j++) {
-            rows[j] = new Row();
-            for (int i = 0; i < TOTAL_COL; i++) {
-                int postion = i + j * TOTAL_COL;
-                if (postion >= firstDayWeek
-                        && postion < firstDayWeek + currentMonthDays) {
-                    time++;
-                    if (isCurrentMonth && time == monthDay) {
-                        rows[j].cells[i] = new Cell(time + "", State.TODAY);
-                        continue;
-                    }
-                    rows[j].cells[i] = new Cell(time + "",
-                            State.CURRENT_MONTH_DAY);
-                    continue;
-                } else if (postion < firstDayWeek) {
-                    rows[j].cells[i] = new Cell((lastMonthDays - (firstDayWeek
-                            - postion - 1))
-                            + "", State.PAST_MONTH_DAY);
-                    continue;
-                } else if (postion >= firstDayWeek + currentMonthDays) {
-                    rows[j].cells[i] = new Cell((postion - firstDayWeek
-                            - currentMonthDays + 1)
-                            + "", State.NEXT_MONTH_DAY);
-                }
-            }
-        }
-    }
+//    private void fillMonthDate() {
+//        int monthDay = DateUtil.getCurrentMonthDays();
+//        int lastMonthDays = DateUtil.getMonthDays(mShowYear, mShowMonth - 1);
+//        int currentMonthDays = DateUtil.getMonthDays(mShowYear, mShowMonth);
+//        int firstDayWeek = DateUtil.getWeekDayFromDate(mShowYear, mShowMonth);
+//        boolean isCurrentMonth = false;
+//        if (mShowYear == DateUtil.getYear() && mShowMonth == DateUtil.getMonth()) {
+//            isCurrentMonth = true;
+//        }
+//        int time = 0;
+//        for (int j = 0; j < TOTAL_ROW; j++) {
+//            rows[j] = new Row();
+//            for (int i = 0; i < TOTAL_COL; i++) {
+//                int postion = i + j * TOTAL_COL;
+//                if (postion >= firstDayWeek
+//                        && postion < firstDayWeek + currentMonthDays) {
+//                    time++;
+//                    if (isCurrentMonth && time == monthDay) {
+//                        rows[j].cells[i] = new Cell(time + "", State.TODAY);
+//                        continue;
+//                    }
+//                    rows[j].cells[i] = new Cell(time + "",
+//                            State.CURRENT_MONTH_DAY);
+//                    continue;
+//                } else if (postion < firstDayWeek) {
+//                    rows[j].cells[i] = new Cell((lastMonthDays - (firstDayWeek
+//                            - postion - 1))
+//                            + "", State.PAST_MONTH_DAY);
+//                    continue;
+//                } else if (postion >= firstDayWeek + currentMonthDays) {
+//                    rows[j].cells[i] = new Cell((postion - firstDayWeek
+//                            - currentMonthDays + 1)
+//                            + "", State.NEXT_MONTH_DAY);
+//                }
+//            }
+//        }
+//    }
 
     public void update(int year, int month, int day) {
         this.mShowMonth = month;

@@ -1,5 +1,6 @@
 package com.itime.team.itime.activities;
 
+import android.app.Activity;
 import android.content.ContentValues;
 import android.content.Intent;
 import android.database.Cursor;
@@ -52,6 +53,7 @@ public class LoginActivity extends FragmentActivity implements View.OnClickListe
     private boolean mIsRemember;
 
     private CallbackManager callbackManager;
+    private Intent mMainIntent;
 
 
     private JsonManager mJsonManager;
@@ -81,6 +83,9 @@ public class LoginActivity extends FragmentActivity implements View.OnClickListe
         mPasswordStr = intent.getStringExtra("password");
         mLastLoginTime = intent.getStringExtra("lastlogintime");
         mIsRemember = intent.getBooleanExtra("remember", false);
+
+        mMainIntent = new Intent(this, MainActivity.class);
+
         setTexts();
 
         linkFaceBook();
@@ -326,19 +331,28 @@ public class LoginActivity extends FragmentActivity implements View.OnClickListe
         loginButton.registerCallback(callbackManager, new FacebookCallback<LoginResult>() {
             @Override
             public void onSuccess(LoginResult loginResult) {
-
             }
 
             @Override
             public void onCancel() {
-
             }
 
             @Override
             public void onError(FacebookException error) {
-
             }
         });
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        callbackManager.onActivityResult(requestCode, resultCode, data);
+        if(resultCode == Activity.RESULT_OK) {
+            User.ID = "cai";
+            User.isRemembered = true;
+            startActivity(mMainIntent);
+            finish();
+        }
     }
 
 }

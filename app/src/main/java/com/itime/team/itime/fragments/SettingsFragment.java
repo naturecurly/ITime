@@ -16,6 +16,7 @@
 
 package com.itime.team.itime.fragments;
 
+import android.app.Activity;
 import android.content.ContentValues;
 import android.content.Intent;
 import android.database.sqlite.SQLiteDatabase;
@@ -28,6 +29,13 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import com.facebook.CallbackManager;
+import com.facebook.FacebookCallback;
+import com.facebook.FacebookException;
+import com.facebook.FacebookSdk;
+import com.facebook.login.LoginManager;
+import com.facebook.login.LoginResult;
+import com.facebook.login.widget.LoginButton;
 import com.itime.team.itime.R;
 import com.itime.team.itime.activities.LoginActivity;
 import com.itime.team.itime.activities.MeetingPreferenceActivity;
@@ -108,6 +116,7 @@ public class SettingsFragment extends Fragment implements View.OnClickListener {
                 intent2.putExtra("username", User.ID);
                 updateUserTable();
                 startActivity(intent2);
+                LoginManager.getInstance().logOut();
                 break;
 
             default:
@@ -128,12 +137,16 @@ public class SettingsFragment extends Fragment implements View.OnClickListener {
         db.close();
     }
 
+
+
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == ALERT_TIME_SETTINGS) {
             String text = PreferenceManager.getDefaultSharedPreferences(getActivity()).getString("default_alert_time", "10mins");
             TextView textView = (TextView) mAlertTimeView.findViewById(R.id.setting_dft_alert_time_text);
             textView.setText(text);
         }
+
     }
 }

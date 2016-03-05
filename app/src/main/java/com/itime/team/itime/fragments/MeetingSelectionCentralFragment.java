@@ -93,6 +93,7 @@ public class MeetingSelectionCentralFragment extends Fragment implements ScrollV
     private int mStartDay;
     private int mInitDays;
 
+
     private LinearLayout.LayoutParams mImagepara = null;
     private LinearLayout.LayoutParams mDefaultImagePara = null;
     private LinearLayout.LayoutParams mLinepara = null;
@@ -175,6 +176,7 @@ public class MeetingSelectionCentralFragment extends Fragment implements ScrollV
         }else{
             mScrollView.getCenterScollView().setOnScrollViewListener(this);
         }
+
     }
 
     public void initLeftView(){
@@ -366,7 +368,7 @@ public class MeetingSelectionCentralFragment extends Fragment implements ScrollV
                     }else if(startHour > mEachEndDate.getHours()){
                         return false;
                     }else{
-                        if(startMin <= mEachEndDate.getMinutes()){
+                        if(startMin < mEachEndDate.getMinutes()){
                             return true;
                         }else{
                             return false;
@@ -396,7 +398,8 @@ public class MeetingSelectionCentralFragment extends Fragment implements ScrollV
                 Date targetEndTime = DateUtil.getLocalTime(object.get("ends_time").toString());
                 if(targetStartTime.getTime() <= currentStartTime.getTime() &&
                         targetEndTime.getTime() >= currentEndTime.getTime()){
-                    mEachEndDate = targetEndTime;
+//                    mEachEndDate = targetEndTime;
+                    mEachEndDate = currentEndTime;
                     mIsAvailable = true;
                     return true;
                 }else{
@@ -673,6 +676,7 @@ public class MeetingSelectionCentralFragment extends Fragment implements ScrollV
                             if ((jsonArray = (JSONArray) map.get("match_time_with_friends")) != null) {
                                 mAvailability = jsonArray;
                                 isMatchTimeDone = true;
+                                Log.i("match", jsonArray.toString());
                             }
                             if(isGetPreferenceDone && isMatchTimeDone){
                                 initTable();

@@ -189,10 +189,15 @@ public class NewMeetingActivity extends AppCompatActivity implements View.OnTouc
     }
 
     private String timeFormat(int hour, int min){
-        return hour + " : " + min;
+        String hourReturn = hour < 10 ? "0" + hour : String.valueOf(hour);
+        String minReturn = min < 10 ? "0" + min : String.valueOf(min);
+
+        return hourReturn + " : " + minReturn;
     }
     private String dateFormat(int day, int month, int year){
-        return  DateUtil.weekNameStandardTwo[DateUtil.getDateOfWeek(year,month,day) - 1] +  ", " + day + " " + DateUtil.month[month] + " " + year;
+        String dayReturn = day < 10 ? "0" + day : String.valueOf(day);
+        return  DateUtil.weekNameStandardTwo[DateUtil.getDateOfWeek(year,month,day) - 1] +
+                ", " + dayReturn + " " + DateUtil.month[month] + " " + year;
     }
     private void checkTime(){
         if(DateUtil.isFeasible(mStartYear,mStartMonth,mStartDay,mStartHour,mStartMin,mEndYear,mEndMonth,
@@ -223,7 +228,7 @@ public class NewMeetingActivity extends AppCompatActivity implements View.OnTouc
             mTimePicker1 = new TimePickerDialog(this,new TimePickerDialog.OnTimeSetListener() {
                 @Override
                 public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
-                    mStartTime.setText(hourOfDay + " : " + minute);
+                    mStartTime.setText(timeFormat(hourOfDay, minute));
                     mStartHour = hourOfDay;
                     mStartMin = minute;
                     checkTime();

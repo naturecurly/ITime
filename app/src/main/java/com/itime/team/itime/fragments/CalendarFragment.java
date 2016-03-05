@@ -1,12 +1,8 @@
 package com.itime.team.itime.fragments;
 
-import android.animation.ObjectAnimator;
 import android.animation.ValueAnimator;
-import android.graphics.drawable.Drawable;
-import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.LinearLayoutManager;
@@ -18,9 +14,7 @@ import android.view.MenuInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.animation.AccelerateDecelerateInterpolator;
 import android.view.animation.DecelerateInterpolator;
-import android.view.animation.LinearInterpolator;
 import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -56,7 +50,12 @@ public class CalendarFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
         setHasOptionsMenu(true);
+
+        ImageButton imageButton = (ImageButton) getActivity().findViewById(R.id.event_list);
+        imageButton.setImageResource(R.drawable.ic_calendar_list_white);
+
         Calendar c = Calendar.getInstance();
         c.add(Calendar.DAY_OF_MONTH, -14 - 5 * 7);
         c.add(Calendar.DATE, -c.get(Calendar.DAY_OF_WEEK));

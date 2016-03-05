@@ -33,8 +33,6 @@ public class MainActivity extends AppCompatActivity implements
     private Class fragmentArray[] = {CalendarFragment.class, MeetingFragment.class, null, SettingsFragment.class};
     private int mImageViewArray[] = {R.drawable.ic_date_range_s, R.drawable.ic_group_s, R.drawable.ic_email_black_s,
             R.drawable.ic_setting_s};
-    //    private int mImageViewArray[] = {R.drawable.ic_date_range_black_48px, R.drawable.ic_group_work_black_48px, R.drawable.ic_email_black_48px,
-//        R.drawable.ic_menu_manage};
     private String mTextViewArray[] = {"Calendar", "Meeting", "Email", "Settings"};
     private LayoutInflater layoutInflater;
 
@@ -56,9 +54,8 @@ public class MainActivity extends AppCompatActivity implements
             tabHost.addTab(tabSpec, fragmentArray[i], null);
 
         }
-//        FragmentManager fm = getSupportFragmentManager();
-//        fm.beginTransaction().add(R.id.app_body, new CalendarFragment()).commit();
-//        fm.beginTransaction().add(R.id.app_foot, new MenuFragment()).commit();
+
+
 
     }
 
@@ -86,6 +83,7 @@ public class MainActivity extends AppCompatActivity implements
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.main, menu);
+
         return true;
     }
 

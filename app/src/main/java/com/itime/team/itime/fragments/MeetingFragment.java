@@ -6,14 +6,17 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.SearchView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.DatePicker;
+import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.ListAdapter;
 import android.widget.ListView;
@@ -87,7 +90,7 @@ public class MeetingFragment extends Fragment implements View.OnClickListener,Se
     //If the value is true, it satisfies the condition of inviting people
     private boolean mIsFeasible;
 
-    public static int mDuration = 60;
+    public static int mDuration;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -112,6 +115,8 @@ public class MeetingFragment extends Fragment implements View.OnClickListener,Se
 
         mInvitedFriend = (LinearLayout) mmeeting.findViewById(R.id.meeting_invited_friend);
 
+        mDuration = 60;
+
         return mmeeting;
     }
 
@@ -121,14 +126,28 @@ public class MeetingFragment extends Fragment implements View.OnClickListener,Se
         mMenu = menu;
         mMenu.clear();
         getActivity().getMenuInflater().inflate(R.menu.meeting_main, mMenu);
+
+        final ImageButton imageButton = (ImageButton) getActivity().findViewById(R.id.event_list);
+        imageButton.setVisibility(View.VISIBLE);
+        imageButton.setImageResource(R.drawable.ic_add_white);
+        imageButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                MeetingAddDialogFragment searchDialog = new MeetingAddDialogFragment();
+                searchDialog.show(getFragmentManager(), "searchDialog");
+            }
+        });
+        imageButton.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                return false;
+            }
+        });
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        if(item.getItemId() == R.id.meeting_menu_add){
-            MeetingAddDialogFragment searchDialog = new MeetingAddDialogFragment();
-            searchDialog.show(getFragmentManager(), "searchDialog");
-        }else if(item.getItemId() == R.id.meeting_menu_invite){
+        if(item.getItemId() == R.id.meeting_menu_invite){
             inviteFriend();
         }
         return super.onOptionsItemSelected(item);
@@ -250,10 +269,15 @@ public class MeetingFragment extends Fragment implements View.OnClickListener,Se
     }
 
     private String timeFormat(int hour, int min){
-        return hour + " : " + min;
+        String hourReturn = hour < 10 ? "0" + hour : String.valueOf(hour);
+        String minReturn = min < 10 ? "0" + min : String.valueOf(min);
+
+        return hourReturn + " : " + minReturn;
     }
     private String dateFormat(int day, int month, int year){
-        return  DateUtil.weekNameStandardTwo[DateUtil.getDateOfWeek(year,month,day) - 1] +  ", " + day + " " + DateUtil.month[month] + " " + year;
+        String dayReturn = day < 10 ? "0" + day : String.valueOf(day);
+        return  DateUtil.weekNameStandardTwo[DateUtil.getDateOfWeek(year,month,day) - 1] +
+                ", " + dayReturn + " " + DateUtil.month[month] + " " + year;
     }
 
     private void checkTime(){
@@ -275,7 +299,7 @@ public class MeetingFragment extends Fragment implements View.OnClickListener,Se
             timePicker1 = new TimePickerDialog(getActivity(),new TimePickerDialog.OnTimeSetListener() {
                 @Override
                 public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
-                    mStartTime.setText(hourOfDay + " : " + minute);
+                    mStartTime.setText(timeFormat(hourOfDay, minute));
                     mStartHour = hourOfDay;
                     mStartMin = minute;
                     checkTime();

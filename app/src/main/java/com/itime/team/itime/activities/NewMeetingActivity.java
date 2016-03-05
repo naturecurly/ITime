@@ -192,7 +192,7 @@ public class NewMeetingActivity extends AppCompatActivity implements View.OnTouc
         return hour + " : " + min;
     }
     private String dateFormat(int day, int month, int year){
-        return day + " " + DateUtil.month[month] + " " + year;
+        return  DateUtil.weekNameStandardTwo[DateUtil.getDateOfWeek(year,month,day) - 1] +  ", " + day + " " + DateUtil.month[month] + " " + year;
     }
     private void checkTime(){
         if(DateUtil.isFeasible(mStartYear,mStartMonth,mStartDay,mStartHour,mStartMin,mEndYear,mEndMonth,
@@ -320,9 +320,5 @@ public class NewMeetingActivity extends AppCompatActivity implements View.OnTouc
             e.printStackTrace();
         }
 
-
-
-
-        Log.i("Date",startDateForPost);
     }
 }

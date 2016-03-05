@@ -18,6 +18,8 @@ public class DateUtil {
     public static String[] weekName = {"Sun", "Mon", "Tue", "Wed", "Thu", "Fri",
             "Sat"};
 
+    public static String[] weekNameStandardTwo = {"Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"};
+
     public static String[] month = {"Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"};
 
     public static int getMonthDays(int year, int month) {

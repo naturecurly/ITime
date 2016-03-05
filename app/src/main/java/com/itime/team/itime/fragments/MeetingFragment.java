@@ -145,7 +145,7 @@ public class MeetingFragment extends Fragment implements View.OnClickListener,Se
 
         mEndTime = (Button) mmeeting.findViewById(R.id.meeting_end_time);
         mEndTime.setOnClickListener(this);
-        mEndHour = mCalendar.get(Calendar.HOUR_OF_DAY) + 1;
+        mEndHour = mCalendar.get(Calendar.HOUR_OF_DAY);
         mEndMin = mCalendar.get(Calendar.MINUTE);
         mEndTime.setText(timeFormat(mEndHour, mEndMin));
 
@@ -156,12 +156,15 @@ public class MeetingFragment extends Fragment implements View.OnClickListener,Se
         mStartDay = mCalendar.get(Calendar.DAY_OF_MONTH);
         mStartDate.setText(dateFormat(mStartDay, mStartMonth, mStartYear));
 
+        //Default date : 7 days later
+        int[] laterDay = DateUtil.addDaysBasedOnCalendar(mStartYear, mStartMonth, mStartDay, 7);
+
         mEndDate = (Button) mmeeting.findViewById(R.id.meeting_end_date);
         mEndDate.setOnClickListener(this);
-        mEndYear = mCalendar.get(Calendar.YEAR);
-        mEndMonth = mCalendar.get(Calendar.MONTH);
-        mEndDay = mCalendar.get(Calendar.DAY_OF_MONTH);
-        mEndDate.setText(dateFormat(mStartDay, mStartMonth, mStartYear));
+        mEndYear = laterDay[0];
+        mEndMonth = laterDay[1];
+        mEndDay = laterDay[2];
+        mEndDate.setText(dateFormat(mEndDay, mEndMonth, mEndYear));
 
         mIsFeasible = true;
         mJsonManager = new JsonManager();
@@ -250,7 +253,7 @@ public class MeetingFragment extends Fragment implements View.OnClickListener,Se
         return hour + " : " + min;
     }
     private String dateFormat(int day, int month, int year){
-        return day + " " + DateUtil.month[month] + " " + year;
+        return  DateUtil.weekNameStandardTwo[DateUtil.getDateOfWeek(year,month,day) - 1] +  ", " + day + " " + DateUtil.month[month] + " " + year;
     }
 
     private void checkTime(){

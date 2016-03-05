@@ -2,6 +2,7 @@ package com.itime.team.itime.fragments;
 
 import android.app.Fragment;
 import android.os.Bundle;
+import android.text.TextPaint;
 import android.util.DisplayMetrics;
 import android.view.Gravity;
 import android.view.LayoutInflater;
@@ -100,6 +101,9 @@ public class MeetingSelectionTopFragment extends Fragment implements ScrollViewL
             mDates[i].setWidth(WIDTH);
             mDates[i].setText(show);
             mDates[i].setGravity(Gravity.CENTER_HORIZONTAL);
+            mDates[i].setTextColor(getResources().getColor(R.color.weeks));
+            TextPaint tp = mDates[i].getPaint();
+            tp.setFakeBoldText(true);
             mChild.addView(mDates[i]);
             currentDay = DateUtil.addDaysBasedOnCalendar(currentDay[0], currentDay[1], currentDay[2], 1);
         }

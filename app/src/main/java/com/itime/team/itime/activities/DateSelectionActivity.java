@@ -2,7 +2,10 @@ package com.itime.team.itime.activities;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
+import android.view.View;
 
 import com.itime.team.itime.R;
 import com.itime.team.itime.bean.TopAndCenterMeetingFragmentScrollViews;
@@ -40,6 +43,21 @@ public class DateSelectionActivity extends AppCompatActivity {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.meetingselection);
+
+        Toolbar toolbar = (Toolbar) findViewById(R.id.meeting_selection_bar);
+        setSupportActionBar(toolbar);
+        setTitle(R.string.meeting_select_title);
+        toolbar.setNavigationOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                onBackPressed();
+            }
+        });
+        ActionBar actionBar = getSupportActionBar();
+        if (actionBar != null) {
+            actionBar.setDisplayHomeAsUpEnabled(true);
+        }
+
         initParameters();
         init();
 

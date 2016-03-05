@@ -5,6 +5,7 @@ package com.itime.team.itime.views;
  */
 
 import android.content.Context;
+import android.content.res.TypedArray;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
@@ -69,6 +70,13 @@ public class CalendarView extends View {
 
     public CalendarView(Context context, AttributeSet attrs) {
         super(context, attrs);
+        TypedArray array = context.getTheme().obtainStyledAttributes(attrs, R.styleable.CustomedCalendarView, 0, 0);
+        try {
+
+            this.defaultStyle = array.getInteger(R.styleable.CustomedCalendarView_calendar_type, 1);
+        } finally {
+            array.recycle();
+        }
         init(context);
 
     }
@@ -116,7 +124,7 @@ public class CalendarView extends View {
         mMonthTextPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
         mMonthTextPaint.setTextAlign(Paint.Align.CENTER);
         mMonthTextPaint.setColor(Color.rgb(255, 165, 0));
-        mMonthTextPaint.setTextSize(dip2px(context, 10));
+        //mMonthTextPaint.setTextSize(dip2px(context, 10));
 
         mTextPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
         mTextPaint.setTextAlign(Paint.Align.CENTER);
@@ -165,32 +173,32 @@ public class CalendarView extends View {
 //    }
 
 
-    @Override
-    public boolean onTouchEvent(MotionEvent event) {
-        int action = event.getActionMasked();
-
-        switch (action) {
-            case MotionEvent.ACTION_DOWN:
-                downX = event.getX();
-                downY = event.getY();
-
-                return true;
-
-            case MotionEvent.ACTION_UP:
-                upX = event.getX();
-                upY = event.getY();
-                //Log.i("TTTT", x + "+" + y);
-                if ((Math.abs(upX - downX) < mCellSpace) && (Math.abs(upY - downY) < mCellSpace)) {
-                    Log.i("TTTT", upX + "+" + upY);
-                    isDateSelected = 1;
-                    listener.dateSelected(upX, upY);
-                    invalidate();
-                }
-
-                return true;
-        }
-        return super.onTouchEvent(event);
-    }
+//    @Override
+//    public boolean onTouchEvent(MotionEvent event) {
+//        int action = event.getActionMasked();
+//
+//        switch (action) {
+//            case MotionEvent.ACTION_DOWN:
+//                downX = event.getX();
+//                downY = event.getY();
+//
+//                return true;
+//
+//            case MotionEvent.ACTION_UP:
+//                upX = event.getX();
+//                upY = event.getY();
+//                //Log.i("TTTT", x + "+" + y);
+//                if ((Math.abs(upX - downX) < mCellSpace) && (Math.abs(upY - downY) < mCellSpace)) {
+//                    Log.i("TTTT", upX + "+" + upY);
+//                    isDateSelected = 1;
+//                    listener.dateSelected(upX, upY);
+//                    invalidate();
+//                }
+//
+//                return true;
+//        }
+//        return super.onTouchEvent(event);
+//    }
 
     public int analysePosition(float x) {
         int dateX = (int) Math.floor(x / mCellSpace);
@@ -285,12 +293,12 @@ public class CalendarView extends View {
     }
 
     private void fillDate() {
-//        if (defaultStyle == MONTH_STYLE) {
-//            fillMonthDate();
-//        } else {
-//            fillWeekDate();
-//        }
-        fillWeekDate();
+        if (defaultStyle == MONTH_STYLE) {
+            fillMonthDate();
+        } else {
+            fillWeekDate();
+        }
+        //fillWeekDate();
     }
 
     private void fillWeekDate() {
@@ -324,43 +332,49 @@ public class CalendarView extends View {
         }
     }
 
-//    private void fillMonthDate() {
-//        int monthDay = DateUtil.getCurrentMonthDays();
-//        int lastMonthDays = DateUtil.getMonthDays(mShowYear, mShowMonth - 1);
-//        int currentMonthDays = DateUtil.getMonthDays(mShowYear, mShowMonth);
-//        int firstDayWeek = DateUtil.getWeekDayFromDate(mShowYear, mShowMonth);
-//        boolean isCurrentMonth = false;
-//        if (mShowYear == DateUtil.getYear() && mShowMonth == DateUtil.getMonth()) {
-//            isCurrentMonth = true;
-//        }
-//        int time = 0;
-//        for (int j = 0; j < TOTAL_ROW; j++) {
-//            rows[j] = new Row();
-//            for (int i = 0; i < TOTAL_COL; i++) {
-//                int postion = i + j * TOTAL_COL;
-//                if (postion >= firstDayWeek
-//                        && postion < firstDayWeek + currentMonthDays) {
-//                    time++;
-//                    if (isCurrentMonth && time == monthDay) {
-//                        rows[j].cells[i] = new Cell(time + "", State.TODAY);
-//                        continue;
-//                    }
-//                    rows[j].cells[i] = new Cell(time + "",
-//                            State.CURRENT_MONTH_DAY);
-//                    continue;
-//                } else if (postion < firstDayWeek) {
-//                    rows[j].cells[i] = new Cell((lastMonthDays - (firstDayWeek
-//                            - postion - 1))
-//                            + "", State.PAST_MONTH_DAY);
-//                    continue;
-//                } else if (postion >= firstDayWeek + currentMonthDays) {
-//                    rows[j].cells[i] = new Cell((postion - firstDayWeek
-//                            - currentMonthDays + 1)
-//                            + "", State.NEXT_MONTH_DAY);
-//                }
-//            }
-//        }
-//    }
+    private void fillMonthDate() {
+        //Log.d("test", mShowDay + " " + mShowMonth + " " + mShowYear);
+        int monthDay = DateUtil.getCurrentMonthDays();
+        Log.d("test_monthDay", monthDay + "");
+        int lastMonthDays = DateUtil.getMonthDays(mShowYear, mShowMonth - 1);
+        Log.d("test_lastmonthDay", lastMonthDays + "");
+        int currentMonthDays = DateUtil.getMonthDays(mShowYear, mShowMonth);
+        Log.d("test_currentmonthDay", currentMonthDays + "");
+        int firstDayWeek = DateUtil.getWeekDayFromDate(mShowYear, mShowMonth);
+        Log.d("test_firstDayWeek", firstDayWeek + "");
+        boolean isCurrentMonth = false;
+        if (mShowYear == DateUtil.getYear() && mShowMonth == DateUtil.getMonth()) {
+            isCurrentMonth = true;
+        }
+        int time = 0;
+        for (int j = 0; j < TOTAL_ROW; j++) {
+            rows[j] = new Row();
+            for (int i = 0; i < TOTAL_COL; i++) {
+                int postion = i + j * TOTAL_COL + 1;
+                if (postion >= firstDayWeek
+                        && postion < firstDayWeek + currentMonthDays) {
+                    time++;
+                    if (isCurrentMonth && time == monthDay) {
+                        rows[j].cells[i] = new Cell(time + "", State.TODAY, mShowMonth, mShowYear);
+                        continue;
+                    }
+                    rows[j].cells[i] = new Cell(time + "",
+                            State.CURRENT_MONTH_DAY, mShowMonth, mShowYear);
+                    continue;
+                } else if (postion < firstDayWeek) {
+                    rows[j].cells[i] = new Cell((lastMonthDays - (firstDayWeek
+                            - 2) + postion - 1)
+                            + "", State.PAST_MONTH_DAY, mShowMonth - 1, mShowYear);
+                    continue;
+                } else if (postion >= firstDayWeek + currentMonthDays) {
+                    rows[j].cells[i] = new Cell((postion - firstDayWeek
+                            - currentMonthDays + 1)
+                            + "", State.NEXT_MONTH_DAY, mShowMonth + 1, mShowYear);
+                }
+            }
+        }
+    }
+
 
     public void update(int year, int month, int day) {
         this.mShowMonth = month;
@@ -387,7 +401,8 @@ public class CalendarView extends View {
         mCellSpace = (float) width / TOTAL_COL;
         //Log.i("TTTT", mCellSpace + " " + width + " " + height);
         mTextPaint.setTextSize(mCellSpace / 3);
-        setMeasuredDimension(width, (int) mCellSpace);
+        mMonthTextPaint.setTextSize(mCellSpace / 6);
+        setMeasuredDimension(width, (int) mCellSpace * (defaultStyle == MONTH_STYLE ? 6 : 1));
     }
 
     protected int measure(int measureSpec) {
@@ -445,4 +460,15 @@ public class CalendarView extends View {
         this.listener = listener;
     }
 
+//    public void setCalendarType(int type) {
+//        if (type == MONTH_STYLE) {
+//            this.defaultStyle = MONTH_STYLE;
+//            invalidate();
+//            requestLayout();
+//        } else {
+//            this.defaultStyle = WEEK_STYLE;
+//            invalidate();
+//            requestLayout();
+//        }
+//    }
 }

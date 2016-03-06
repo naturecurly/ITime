@@ -3,12 +3,19 @@ package com.itime.team.itime.fragments;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
 
 import com.itime.team.itime.R;
+import com.itime.team.itime.utils.DateUtil;
 import com.itime.team.itime.views.CalendarView;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created by leveyleonhardt on 3/5/16.
@@ -16,12 +23,72 @@ import com.itime.team.itime.views.CalendarView;
 public class YearViewFragment extends Fragment {
 
     private CalendarView calendarView;
+    private RecyclerView mYearRecyclerView;
+    private int[] yearViewId = new int[]{R.id.year_view_1, R.id.year_view_2, R.id.year_view_3, R.id.year_view_4, R.id.year_view_5, R.id.year_view_6, R.id.year_view_7, R.id.year_view_8, R.id.year_view_9, R.id.year_view_10, R.id.year_view_11, R.id.year_view_12};
+    private List<Integer> list = new ArrayList<>();
+
+
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        for (int i = 0; i < 5; i++) {
+            list.add(DateUtil.getYear() - 2 + i);
+        }
+    }
 
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        View v = inflater.inflate(R.layout.fragment_year_view_panel, container, false);
+        View v = inflater.inflate(R.layout.fragment_year_view, container, false);
         //calendarView = (CalendarView) v.findViewById(R.id.year_view);
+        mYearRecyclerView = (RecyclerView) v.findViewById(R.id.recycler_view_year_view);
+        mYearRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
+        mYearRecyclerView.setAdapter(new YearViewAdapter(list));
         return v;
+    }
+
+
+    public class YearViewAdapter extends RecyclerView.Adapter<YearViewHoder> {
+
+        private List<Integer> list;
+
+        public YearViewAdapter(List<Integer> list) {
+            this.list = list;
+        }
+
+        @Override
+        public YearViewHoder onCreateViewHolder(ViewGroup parent, int viewType) {
+            View v = LayoutInflater.from(getActivity()).inflate(R.layout.fragment_year_view_panel, parent, false);
+            return new YearViewHoder(v);
+
+        }
+
+        @Override
+        public void onBindViewHolder(YearViewHoder holder, int position) {
+            //TextView textView = (TextView) holder.itemView.findViewById(R.id.year_text_view);
+            //textView.setText(list.get(position));
+            holder.textView.setText(list.get(position) + "");
+            for (int i = 0; i < 12; i++) {
+                holder.views[i].update(list.get(position), i + 1, 1);
+            }
+        }
+
+        @Override
+        public int getItemCount() {
+            return list.size();
+        }
+    }
+
+    public class YearViewHoder extends RecyclerView.ViewHolder {
+        private CalendarView[] views = new CalendarView[12];
+        private TextView textView;
+
+        public YearViewHoder(View itemView) {
+            super(itemView);
+            for (int i = 0; i < views.length; i++) {
+                views[i] = (CalendarView) itemView.findViewById(yearViewId[i]);
+            }
+            textView = (TextView) itemView.findViewById(R.id.year_text_view);
+        }
     }
 }

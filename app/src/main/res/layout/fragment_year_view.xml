@@ -5,9 +5,9 @@
     android:layout_height="match_parent"
     android:orientation="vertical">
 
-    <com.itime.team.itime.views.CalendarView
-        android:id="@+id/year_view"
+
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/recycler_view_year_view"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        app:calendar_type="0" />
+        android:layout_height="wrap_content"></android.support.v7.widget.RecyclerView>
 </LinearLayout>

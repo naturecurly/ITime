@@ -41,6 +41,7 @@ public class CalendarView extends View {
     private Paint mGridPaint;
     private Paint mLinePaint;
     private Paint mMonthTextPaint;
+    private Paint mYearViewMonthTextPaint;
     private int mViewWidth;
     private int mViewHight;
     private float mCellSpace;
@@ -105,7 +106,9 @@ public class CalendarView extends View {
     @Override
     protected void onDraw(Canvas canvas) {
         super.onDraw(canvas);
-
+        if (defaultStyle == MONTH_STYLE) {
+            canvas.drawText(DateUtil.month[mShowMonth - 1], mCellSpace / 4, mCellSpace, mYearViewMonthTextPaint);
+        }
         for (int i = 0; i < TOTAL_ROW; i++) {
             if (rows[i] != null)
                 rows[i].drawCells(canvas, i);
@@ -125,6 +128,9 @@ public class CalendarView extends View {
         mMonthTextPaint.setTextAlign(Paint.Align.CENTER);
         mMonthTextPaint.setColor(Color.rgb(255, 165, 0));
         //mMonthTextPaint.setTextSize(dip2px(context, 10));
+
+        mYearViewMonthTextPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
+        mYearViewMonthTextPaint.setColor(Color.RED);
 
         mTextPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
         mTextPaint.setTextAlign(Paint.Align.CENTER);
@@ -263,7 +269,7 @@ public class CalendarView extends View {
                     int pic_height = bm.getHeight();
                     matrix.postScale(mCellSpace / pic_width, mCellSpace / pic_height);
                     Bitmap newbm = Bitmap.createBitmap(bm, 0, 0, pic_width, pic_height, matrix, true);
-                    canvas.drawBitmap(newbm, i * mCellSpace, j * mCellSpace, mCirclePaint);
+                    canvas.drawBitmap(newbm, i * mCellSpace, j * mCellSpace + (defaultStyle == MONTH_STYLE ? mCellSpace : 0), mCirclePaint);
                     break;
             }
 
@@ -271,10 +277,10 @@ public class CalendarView extends View {
             Paint.FontMetrics fm = mTextPaint.getFontMetrics();
 
             canvas.drawText(text, i * mCellSpace + mCellSpace / 2,
-                    (j + 1) * mCellSpace - mCellSpace / 2 - (fm.ascent - fm.descent) / 2 - dip2px(context, 2), mTextPaint);
+                    (j + 1) * mCellSpace - mCellSpace / 2 - (fm.ascent - fm.descent) / 2 - dip2px(context, 2) + (defaultStyle == MONTH_STYLE ? mCellSpace : 0), mTextPaint);
             //canvas.drawLine(i * mCellSpace, j * mCellSpace, (i + 1) * mCellSpace, j * mCellSpace,mLinePaint );
             if (text.equals(1 + "")) {
-                canvas.drawText(DateUtil.month[month - 1], i * mCellSpace + mCellSpace / 2, (j + 1) * mCellSpace - mCellSpace * 3 / 4, mMonthTextPaint);
+                canvas.drawText(DateUtil.month[month - 1], i * mCellSpace + mCellSpace / 2, (j + 1) * mCellSpace - mCellSpace * 3 / 4 + (defaultStyle == MONTH_STYLE ? mCellSpace : 0), mMonthTextPaint);
 
             }
         }
@@ -334,10 +340,10 @@ public class CalendarView extends View {
 
     private void fillMonthDate() {
         //Log.d("test", mShowDay + " " + mShowMonth + " " + mShowYear);
-        int monthDay = DateUtil.getCurrentMonthDays();
-        Log.d("test_monthDay", monthDay + "");
-        int lastMonthDays = DateUtil.getMonthDays(mShowYear, mShowMonth - 1);
-        Log.d("test_lastmonthDay", lastMonthDays + "");
+//        int monthDay = DateUtil.getCurrentMonthDays();
+//        Log.d("test_monthDay", monthDay + "");
+       // int lastMonthDays = DateUtil.getMonthDays(mShowYear, mShowMonth - 1);
+       // Log.d("test_lastmonthDay", lastMonthDays + "");
         int currentMonthDays = DateUtil.getMonthDays(mShowYear, mShowMonth);
         Log.d("test_currentmonthDay", currentMonthDays + "");
         int firstDayWeek = DateUtil.getWeekDayFromDate(mShowYear, mShowMonth);
@@ -354,23 +360,26 @@ public class CalendarView extends View {
                 if (postion >= firstDayWeek
                         && postion < firstDayWeek + currentMonthDays) {
                     time++;
-                    if (isCurrentMonth && time == monthDay) {
-                        rows[j].cells[i] = new Cell(time + "", State.TODAY, mShowMonth, mShowYear);
-                        continue;
-                    }
+//                    if (isCurrentMonth && time == monthDay) {
+//                        rows[j].cells[i] = new Cell(time + "", State.TODAY, mShowMonth, mShowYear);
+//                        continue;
+//                    }
                     rows[j].cells[i] = new Cell(time + "",
                             State.CURRENT_MONTH_DAY, mShowMonth, mShowYear);
                     continue;
-                } else if (postion < firstDayWeek) {
-                    rows[j].cells[i] = new Cell((lastMonthDays - (firstDayWeek
-                            - 2) + postion - 1)
-                            + "", State.PAST_MONTH_DAY, mShowMonth - 1, mShowYear);
-                    continue;
-                } else if (postion >= firstDayWeek + currentMonthDays) {
-                    rows[j].cells[i] = new Cell((postion - firstDayWeek
-                            - currentMonthDays + 1)
-                            + "", State.NEXT_MONTH_DAY, mShowMonth + 1, mShowYear);
+                } else {
+                    rows[j].cells[i] = new Cell("", State.CURRENT_MONTH_DAY, mShowMonth, mShowYear);
                 }
+//                } else if (postion < firstDayWeek) {
+//                    rows[j].cells[i] = new Cell((lastMonthDays - (firstDayWeek
+//                            - 2) + postion - 1)
+//                            + "", State.PAST_MONTH_DAY, mShowMonth - 1, mShowYear);
+//                    continue;
+//                } else if (postion >= firstDayWeek + currentMonthDays) {
+//                    rows[j].cells[i] = new Cell((postion - firstDayWeek
+//                            - currentMonthDays + 1)
+//                            + "", State.NEXT_MONTH_DAY, mShowMonth + 1, mShowYear);
+//                }
             }
         }
     }
@@ -402,6 +411,7 @@ public class CalendarView extends View {
         //Log.i("TTTT", mCellSpace + " " + width + " " + height);
         mTextPaint.setTextSize(mCellSpace / 3);
         mMonthTextPaint.setTextSize(mCellSpace / 6);
+        mYearViewMonthTextPaint.setTextSize(mCellSpace);
         setMeasuredDimension(width, (int) mCellSpace * (defaultStyle == MONTH_STYLE ? 6 : 1));
     }
 

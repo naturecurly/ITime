@@ -22,11 +22,19 @@ import android.widget.EditText;
 import android.widget.ScrollView;
 import android.widget.TimePicker;
 
+import com.android.volley.Request;
+import com.android.volley.RequestQueue;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.JsonObjectRequest;
 import com.itime.team.itime.R;
 import com.itime.team.itime.bean.User;
 import com.itime.team.itime.fragments.NewMeetingAlertDialogFragment;
 import com.itime.team.itime.fragments.NewMeetingRepeatDialogFragment;
+import com.itime.team.itime.interfaces.DataRequest;
 import com.itime.team.itime.utils.DateUtil;
+import com.itime.team.itime.utils.JsonManager;
+import com.itime.team.itime.utils.MySingleton;
 import com.itime.team.itime.utils.URLConnectionUtil;
 
 import org.json.JSONArray;
@@ -35,18 +43,19 @@ import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.UUID;
 
 /**
  * Created by mac on 16/2/17.
  */
-public class NewMeetingActivity extends AppCompatActivity implements View.OnTouchListener, View.OnClickListener, CompoundButton.OnCheckedChangeListener {
+public class NewMeetingActivity extends AppCompatActivity implements View.OnTouchListener, View.OnClickListener, CompoundButton.OnCheckedChangeListener, DataRequest{
     private EditText mMessage;
     private Button mStartDate, mStartTime, mEndDate, mEndTime;
     private Button mRepeat;
     private CheckBox mPunctual;
     private Button mAlert;
-    private EditText mName;
+    private EditText mName, mVeune;
 
     private int mStartYear;
     private int mStartMonth;
@@ -72,6 +81,8 @@ public class NewMeetingActivity extends AppCompatActivity implements View.OnTouc
 
     private ArrayList<String> mRpeatValue;
     private ArrayList<Integer> mAlertValue;
+
+    private JsonManager mJsonManager;
 
 
     @Override
@@ -139,6 +150,7 @@ public class NewMeetingActivity extends AppCompatActivity implements View.OnTouc
         mPunctual = (CheckBox) findViewById(R.id.new_meeting_punctual);
         mName = (EditText) findViewById(R.id.new_meeting_name);
         mMain = (ScrollView) findViewById(R.id.new_meeting_main_layout);
+        mVeune = (EditText) findViewById(R.id.new_meeting_venue);
         mStartDate.setOnClickListener(this);
         mEndDate.setOnClickListener(this);
         mStartTime.setOnClickListener(this);
@@ -147,6 +159,7 @@ public class NewMeetingActivity extends AppCompatActivity implements View.OnTouc
         mPunctual.setOnCheckedChangeListener(this);
         mMain.setOnTouchListener(this);
         mAlert.setOnClickListener(this);
+        mVeune.setOnClickListener(this);
 
         mStartTime.setText(timeFormat(mStartHour, mStartMin));
         mEndTime.setText(timeFormat(mEndHour, mEndMin));
@@ -157,6 +170,10 @@ public class NewMeetingActivity extends AppCompatActivity implements View.OnTouc
         mAlertValue = new ArrayList();
         mRpeatValue.add("One-time event");
         mAlertValue.add(1);
+
+        mJsonManager = new JsonManager();
+
+        //simpleRequest();
     }
 
     private Date getCurrentDate(){
@@ -276,6 +293,19 @@ public class NewMeetingActivity extends AppCompatActivity implements View.OnTouc
         }else if(v.getId() == R.id.new_meeting_alert){
             NewMeetingAlertDialogFragment dialogFragment = new NewMeetingAlertDialogFragment(mAlert, mAlertValue);
             dialogFragment.show(getSupportFragmentManager(), "newMeetingAlert");
+        }else if(v.getId() == R.id.new_meeting_venue){
+            Intent intent = new Intent(this,GooglePlacesAutocompleteActivity.class);
+            startActivityForResult(intent, 1);
+        }
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (requestCode == 1){
+            if(resultCode == RESULT_OK){
+                mVeune.setText(data.getStringExtra("address"));
+                mVeune.setTextSize(12);
+            }
         }
     }
 
@@ -325,5 +355,56 @@ public class NewMeetingActivity extends AppCompatActivity implements View.OnTouc
             e.printStackTrace();
         }
 
+    }
+
+    @Override
+    public void handleJSON(JsonManager manager) {
+        MySingleton.getInstance(this).getRequestQueue().addRequestFinishedListener(
+                new RequestQueue.RequestFinishedListener<String>() {
+                    @Override
+                    public void onRequestFinished(Request<String> request) {
+                        JSONObject jsonObject;
+                        JSONArray jsonArray;
+                        HashMap map;
+                        while ((map = mJsonManager.getJsonQueue().poll()) != null) {
+
+                        }
+                    }
+                }
+        );
+    }
+
+    @Override
+    public void requestJSONObject(JsonManager manager, JSONObject jsonObject, String url, String tag) {
+        manager.postForJsonObject(url, jsonObject, this, tag);
+    }
+
+    @Override
+    public void requestJSONArray(JsonManager manager, JSONObject jsonObject, String url, String tag) {
+        manager.postForJsonArray(url, jsonObject, this, tag);
+    }
+
+    private void simpleRequest(){
+//        String url = "https://maps.googleapis.com/maps/api/geocode/json?addressountain+View,+CA&key=AIzaSyBC4zDmkarugKY0Njs_n2TtEUVEyeESn0c";
+        String url = "https://maps.googleapis.com/maps/api/geocode/json?address=1A+Campbell+Coburg+Melbourne&key=AIzaSyBC4zDmkarugKY0Njs_n2TtEUVEyeESn0c";
+        Log.i("re","asdqwref");
+        JsonObjectRequest jsObjRequest = new JsonObjectRequest
+                (url, null, new Response.Listener<JSONObject>() {
+                    @Override
+                    public void onResponse(JSONObject response) {
+                        Log.i("re",response.toString());
+                    }
+                }, new Response.ErrorListener() {
+
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        // TODO Auto-generated method stub
+                        Log.i("rerror",error.toString());
+
+                    }
+                });
+
+// Access the RequestQueue through your singleton class.
+        MySingleton.getInstance(this).addToRequestQueue(jsObjRequest);
     }
 }

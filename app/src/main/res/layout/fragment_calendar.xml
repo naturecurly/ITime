@@ -27,8 +27,7 @@
                 android:text="Sun"
                 android:textAlignment="center"
                 android:textColor="@color/weeks"
-                android:textStyle="bold"
-                />
+                android:textStyle="bold" />
 
             <TextView
                 style="@style/dateStyle"
@@ -102,7 +101,8 @@
     <android.support.v7.widget.RecyclerView
         android:id="@+id/recycler_view"
         android:layout_width="match_parent"
-        android:layout_height="200dp" />
+        android:layout_height="200dp"
+        android:splitMotionEvents="false" />
 
     <TextView
         android:id="@+id/text_display"

@@ -3,8 +3,13 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <item
+        android:id="@+id/item_year_view"
+        android:title="Year"
+        app:showAsAction="always"></item>
+
+    <item
         android:id="@+id/add_event"
         android:icon="@drawable/ic_add_white"
-        app:showAsAction="always"
-        android:title="Add"></item>
+        android:title="Add"
+        app:showAsAction="always"></item>
 </menu>

@@ -92,14 +92,21 @@ public class DateUtil {
 
     }
 
+//    public static int getWeekDayFromDate(int year, int month) {
+//        Calendar cal = Calendar.getInstance();
+//        cal.setTime(getDateFromString(year, month));
+//        int week_index = cal.get(Calendar.DAY_OF_WEEK) - 1;
+//        if (week_index < 0) {
+//            week_index = 0;
+//        }
+//        return week_index;
+//    }
+
     public static int getWeekDayFromDate(int year, int month) {
-        Calendar cal = Calendar.getInstance();
-        cal.setTime(getDateFromString(year, month));
-        int week_index = cal.get(Calendar.DAY_OF_WEEK) - 1;
-        if (week_index < 0) {
-            week_index = 0;
-        }
-        return week_index;
+        Calendar c = Calendar.getInstance();
+        c.set(year, month - 1, 1);
+        int firstWeekDay = c.get(Calendar.DAY_OF_WEEK);
+        return firstWeekDay;
     }
 
     @SuppressLint("SimpleDateFormat")
@@ -142,8 +149,8 @@ public class DateUtil {
     }
 
     //Return the millisecond difference between the specific day and current time
-    public static long diffDate(String dateStr){
-        if (dateStr.equals("")){
+    public static long diffDate(String dateStr) {
+        if (dateStr.equals("")) {
             return -1;
         }
         Date date = null;
@@ -184,11 +191,11 @@ public class DateUtil {
 
     }
 
-    public static Date plusDay(int year, int month, int day, long addDays){
+    public static Date plusDay(int year, int month, int day, long addDays) {
         SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         Date date = null;
         try {
-            long days = 24*60*60*1000*addDays;
+            long days = 24 * 60 * 60 * 1000 * addDays;
             Date changeDate = formatter.parse(year + "-" + month + "-" + day + " 10:00:00");
             date = new Date(changeDate.getTime() + days);
         } catch (ParseException e) {
@@ -197,11 +204,11 @@ public class DateUtil {
         return date;
     }
 
-    public static Date plusDay(int year, int month, int day, int hour, int min, long addDays){
+    public static Date plusDay(int year, int month, int day, int hour, int min, long addDays) {
         SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm");
         Date date = null;
         try {
-            long days = 24*60*60*1000*addDays;
+            long days = 24 * 60 * 60 * 1000 * addDays;
             Date changeDate = formatter.parse(year + "-" + month + "-" + day + " " + hour + ":" + min);
             date = new Date(changeDate.getTime() + days);
         } catch (ParseException e) {
@@ -210,35 +217,35 @@ public class DateUtil {
         return date;
     }
 
-    public static Date plusMinute(Date originalTime, int minutes){
+    public static Date plusMinute(Date originalTime, int minutes) {
         long period = minutes * 60 * 1000;
         Date returnTime = new Date(originalTime.getTime() + period);
         return returnTime;
     }
 
 
-//If the start time is easier than the end time, then the time is seemed feasible
+    //If the start time is easier than the end time, then the time is seemed feasible
     public static boolean isFeasible(int startYear, int startMonth, int startDay, int startHour, int startMin,
-                                   int endYear, int endMonth, int endDay, int endHour, int endMin){
+                                     int endYear, int endMonth, int endDay, int endHour, int endMin) {
         Calendar start = Calendar.getInstance();
-        start.set(startYear,startMonth,startDay,startHour,startMin);
+        start.set(startYear, startMonth, startDay, startHour, startMin);
         Calendar end = Calendar.getInstance();
-        end.set(endYear,endMonth,endDay,endHour,endMin);
-        if(start.compareTo(end) >= 0){
+        end.set(endYear, endMonth, endDay, endHour, endMin);
+        if (start.compareTo(end) >= 0) {
             return false;
-        }else {
+        } else {
             return true;
         }
     }
 
-//Change Time Zone
+    //Change Time Zone
     private static String dateTransformBetweenTimeZone(Date sourceDate, DateFormat formatter,
-                                                  TimeZone sourceTimeZone, TimeZone targetTimeZone) {
+                                                       TimeZone sourceTimeZone, TimeZone targetTimeZone) {
         Long targetTime = sourceDate.getTime() - sourceTimeZone.getRawOffset() + targetTimeZone.getRawOffset();
         return formatter.format(new Date(targetTime));
     }
 
-    public static Date getLocalTime(String data){
+    public static Date getLocalTime(String data) {
         Date dateForReturn = null;
         try {
             String[] dataOfJson = data.split(" ");
@@ -246,9 +253,9 @@ public class DateUtil {
             String timeOfJson = dataOfJson[1];
             String timezoneOfJson = dataOfJson[2];
             DateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-            Date date = formatter.parse(dateOfJson + " "  + timeOfJson);
-            String scrTimeZoneFormat = "GMT" + timezoneOfJson.substring(0,3) + ":" +
-                    timezoneOfJson.substring(3,timezoneOfJson.length());
+            Date date = formatter.parse(dateOfJson + " " + timeOfJson);
+            String scrTimeZoneFormat = "GMT" + timezoneOfJson.substring(0, 3) + ":" +
+                    timezoneOfJson.substring(3, timezoneOfJson.length());
             TimeZone srcTimeZone = TimeZone.getTimeZone(scrTimeZoneFormat);
             TimeZone destTimeZone = TimeZone.getTimeZone(date.toString().split(" ")[4]);
             dateForReturn = formatter.parse(dateTransformBetweenTimeZone(date, formatter, srcTimeZone, destTimeZone));
@@ -258,7 +265,7 @@ public class DateUtil {
         return dateForReturn;
     }
 
-    public static String getDateWithTimeZone(int year, int month, int day, int hour, int min){
+    public static String getDateWithTimeZone(int year, int month, int day, int hour, int min) {
         Date date = new Date();
         String timeZone = "+" + date.toString().split(" ")[4].split(":")[0].split("\\+")[1] +
                 date.toString().split(" ")[4].split(":")[1];
@@ -274,7 +281,7 @@ public class DateUtil {
         return dataForReturn;
     }
 
-    public static String getCurrentTime(String format){
+    public static String getCurrentTime(String format) {
         long l = System.currentTimeMillis();
         Date date = new Date(l);
         SimpleDateFormat dateFormat = new SimpleDateFormat(format);

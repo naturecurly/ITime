@@ -1,6 +1,8 @@
 package com.itime.team.itime.activities;
 
 import android.os.Bundle;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTabHost;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.PagerAdapter;
@@ -14,8 +16,11 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageView;
+import android.widget.RadioButton;
+import android.widget.RadioGroup;
 import android.widget.TabHost;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.itime.team.itime.R;
 import com.itime.team.itime.fragments.CalendarFragment;
@@ -27,17 +32,22 @@ public class MainActivity extends AppCompatActivity implements
         PreferenceFragmentCompat.OnPreferenceStartScreenCallback {
 
 
-    private ViewPager mPager;
-    private PagerAdapter mAdapter;
-    private FragmentTabHost tabHost;
-    private Class fragmentArray[] = {CalendarFragment.class, MeetingFragment.class, null, SettingsFragment.class};
-    private int mImageViewArray[] = {R.drawable.ic_date_range_s, R.drawable.ic_group_s, R.drawable.ic_email_black_s,
-            R.drawable.ic_setting_s};
-    private String mTextViewArray[] = {"Calendar", "Meeting", "Email", "Settings"};
+    //    private ViewPager mPager;
+//    private PagerAdapter mAdapter;
+//    private FragmentTabHost tabHost;
+//    private Class fragmentArray[] = {CalendarFragment.class, MeetingFragment.class, null, SettingsFragment.class};
+//    private int mImageViewArray[] = {R.drawable.ic_date_range_s, R.drawable.ic_group_s, R.drawable.ic_email_black_s,
+//            R.drawable.ic_setting_s};
+//    private String mTextViewArray[] = {"Calendar", "Meeting", "Email", "Settings"};
     private LayoutInflater layoutInflater;
-
+    private RadioGroup mRadioGroup;
     private int mIndex;
     private Menu mMenu;
+    private CalendarFragment calendarFragment;
+    private MeetingFragment meetingFragment;
+    private SettingsFragment settingsFragment;
+    private RadioButton calendarButton;
+    private FragmentManager fragmentManager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -46,32 +56,70 @@ public class MainActivity extends AppCompatActivity implements
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayShowTitleEnabled(false);
+        fragmentManager = getSupportFragmentManager();
+        getSupportFragmentManager();
         layoutInflater = LayoutInflater.from(this);
-        tabHost = (FragmentTabHost) findViewById(R.id.tab_host);
-        tabHost.setup(this, getSupportFragmentManager(), R.id.realtab_content);
-        for (int i = 0; i < fragmentArray.length; i++) {
-            TabHost.TabSpec tabSpec = tabHost.newTabSpec(mTextViewArray[i]).setIndicator(getTabItemView(i));
-            tabHost.addTab(tabSpec, fragmentArray[i], null);
+        calendarFragment = new CalendarFragment();
+        meetingFragment = new MeetingFragment();
+        settingsFragment = new SettingsFragment();
+        calendarButton = (RadioButton) findViewById(R.id.button_calendar);
+        calendarButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (fragmentManager.findFragmentById(R.id.realtab_content) != calendarFragment) {
+                    fragmentManager.beginTransaction().replace(R.id.realtab_content, calendarFragment).commit();
+                }
+            }
+        });
+        getSupportFragmentManager().beginTransaction().replace(R.id.realtab_content, calendarFragment).commit();
+        mRadioGroup = (RadioGroup) findViewById(R.id.tab_menu);
+        mRadioGroup.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(RadioGroup group, int checkedId) {
+                switch (checkedId) {
+                    case R.id.button_calendar:
+                        calendarFragment = new CalendarFragment();
+                        fragmentManager.beginTransaction().replace(R.id.realtab_content, calendarFragment).commit();
+                        Toast.makeText(getApplication(), "test", Toast.LENGTH_SHORT).show();
+                        //getSupportFragmentManager().beginTransaction().remove(getSupportFragmentManager().findFragmentById(R.id.realtab_content)).add(calendarFragment).commit();
+                        break;
+                    case R.id.button_meeting:
+                        meetingFragment = new MeetingFragment();
+                        fragmentManager.beginTransaction().replace(R.id.realtab_content, meetingFragment).commit();
+                        break;
+                    case R.id.button_setting:
+                        settingsFragment = new SettingsFragment();
+                        fragmentManager.beginTransaction().replace(R.id.realtab_content, settingsFragment).commit();
+                        break;
+                }
+            }
+        });
 
-        }
 
+//        tabHost = (FragmentTabHost) findViewById(R.id.tab_host);
+//        tabHost.setup(this, getSupportFragmentManager(), R.id.realtab_content);
+//        for (int i = 0; i < fragmentArray.length; i++) {
+//            TabHost.TabSpec tabSpec = tabHost.newTabSpec(mTextViewArray[i]).setIndicator(getTabItemView(i));
+//            tabHost.addTab(tabSpec, fragmentArray[i], null);
+//
+//        }
 
 
     }
 
 
-    private View getTabItemView(int index) {
-        View view = layoutInflater.inflate(R.layout.tab_item_view, null);
-
-        ImageView imageView = (ImageView) view.findViewById(R.id.tab_image_view);
-        imageView.setImageResource(mImageViewArray[index]);
-
-        TextView textView = (TextView) view.findViewById(R.id.tab_text_view);
-        textView.setText(mTextViewArray[index]);
-
-
-        return view;
-    }
+//    private View getTabItemView(int index) {
+//        View view = layoutInflater.inflate(R.layout.tab_item_view, null);
+//
+//        ImageView imageView = (ImageView) view.findViewById(R.id.tab_image_view);
+//        imageView.setImageResource(mImageViewArray[index]);
+//
+//        TextView textView = (TextView) view.findViewById(R.id.tab_text_view);
+//        textView.setText(mTextViewArray[index]);
+//
+//
+//        return view;
+//    }
 
     @Override
     public boolean onPrepareOptionsMenu(Menu menu) {

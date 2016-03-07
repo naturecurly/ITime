@@ -33,8 +33,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:background="@null"
-                android:gravity="left"
-                />
+                android:gravity="left" />
 
         </android.support.v7.widget.Toolbar>
 
@@ -53,17 +52,89 @@
             android:layout_weight="1"
             android:orientation="vertical" />
 
-        <android.support.v4.app.FragmentTabHost
-            android:id="@+id/tab_host"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content">
 
-            <LinearLayout
-                android:id="@+id/tab_content"
+        <RadioGroup
+            android:id="@+id/tab_menu"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="bottom"
+            android:background="@color/cardview_dark_background"
+            android:orientation="horizontal">
+
+            <RadioButton
+                android:id="@+id/button_calendar"
                 android:layout_width="0dp"
-                android:layout_height="0dp"
-                android:orientation="vertical" />
-        </android.support.v4.app.FragmentTabHost>
+                android:layout_height="wrap_content"
+                android:layout_gravity="bottom"
+                android:layout_weight="1"
+                android:background="@color/cardview_dark_background"
+                android:button="@null"
+                android:checked="true"
+                android:drawableTint="@color/color_radiobutton"
+                android:drawableTop="@drawable/ic_date_range_s"
+                android:gravity="center_horizontal|bottom"
+                android:paddingTop="2dp"
+                android:text="Calendar"
+                android:textColor="@color/color_radiobutton" />
+
+            <RadioButton
+                android:id="@+id/button_meeting"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_gravity="bottom"
+                android:layout_weight="1"
+                android:background="@color/cardview_dark_background"
+                android:button="@null"
+                android:drawableTint="@color/color_radiobutton"
+                android:drawableTop="@drawable/ic_group_s"
+                android:gravity="center_horizontal|bottom"
+                android:paddingTop="2dp"
+                android:text="Meeting"
+                android:textColor="@color/color_radiobutton" />
+
+            <RadioButton
+                android:id="@+id/button_inbox"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_gravity="bottom"
+                android:layout_weight="1"
+                android:background="@color/cardview_dark_background"
+                android:button="@null"
+                android:drawableTint="@color/color_radiobutton"
+                android:drawableTop="@drawable/ic_email_black_s"
+                android:gravity="center_horizontal|bottom"
+                android:paddingTop="2dp"
+                android:text="Inbox"
+                android:textColor="@color/color_radiobutton" />
+
+            <RadioButton
+                android:id="@+id/button_setting"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_gravity="bottom"
+                android:layout_weight="1"
+                android:background="@color/cardview_dark_background"
+                android:button="@null"
+                android:drawableTint="@color/color_radiobutton"
+                android:drawableTop="@drawable/ic_setting_s"
+                android:gravity="center_horizontal|bottom"
+                android:paddingTop="2dp"
+                android:text="Setting"
+                android:textColor="@color/color_radiobutton" />
+        </RadioGroup>
+
+        <!--<android.support.v4.app.FragmentTabHost-->
+        <!--android:id="@+id/tab_host"-->
+        <!--android:layout_width="match_parent"-->
+        <!--android:layout_height="wrap_content"-->
+        <!--android:visibility="gone">-->
+
+        <!--<LinearLayout-->
+        <!--android:id="@+id/tab_content"-->
+        <!--android:layout_width="0dp"-->
+        <!--android:layout_height="0dp"-->
+        <!--android:orientation="vertical" />-->
+        <!--</android.support.v4.app.FragmentTabHost>-->
     </LinearLayout>
     <!--  <LinearLayout
           android:layout_width="match_parent"

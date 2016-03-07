@@ -279,7 +279,7 @@ public class MeetingSelectionCentralFragment extends Fragment implements ScrollV
                                 ids[i] = mFriendIDS.get(i);
                             }
                             intent.putExtra("friendids",ids);
-                            startActivity(intent);
+                            getActivity().startActivityForResult(intent,1);
                         }
                     });
                     mColumn[i].addView(defaultView);
@@ -296,6 +296,8 @@ public class MeetingSelectionCentralFragment extends Fragment implements ScrollV
             mInitDays++;
         }
     }
+
+
 
     private int getCOLOROFTABLE(int day, int hour,int min){
         int endHour = hour;

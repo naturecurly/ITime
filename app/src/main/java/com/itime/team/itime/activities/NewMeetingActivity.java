@@ -28,6 +28,7 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.itime.team.itime.R;
+import com.itime.team.itime.bean.URLs;
 import com.itime.team.itime.bean.User;
 import com.itime.team.itime.fragments.NewMeetingAlertDialogFragment;
 import com.itime.team.itime.fragments.NewMeetingRepeatDialogFragment;
@@ -75,6 +76,8 @@ public class NewMeetingActivity extends AppCompatActivity implements View.OnTouc
     private TimePickerDialog mTimePicker2;
     private DatePickerDialog mDatePicker1;
     private DatePickerDialog mDatePicker2;
+    private String mLat = "";
+    private String mLng = "";
 
     private ScrollView mMain;
     private boolean mIsFeasible;
@@ -303,8 +306,11 @@ public class NewMeetingActivity extends AppCompatActivity implements View.OnTouc
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (requestCode == 1){
             if(resultCode == RESULT_OK){
-                mVeune.setText(data.getStringExtra("address"));
+                String address = "";
+                address = data.getStringExtra("address");
+                mVeune.setText(address);
                 mVeune.setTextSize(12);
+                getCoordinate(address);
             }
         }
     }
@@ -321,8 +327,6 @@ public class NewMeetingActivity extends AppCompatActivity implements View.OnTouc
         String punctual = mPunctual.isChecked() ? "true" : "false";
         String repeative = mRpeatValue.get(0);
 
-        String latitude = "";
-        String longitude = "";
         String status = "NO CONFIRM NEW MEETING";
         String location = "Melbourne";
         String showLocation = "Melbourne";
@@ -342,15 +346,18 @@ public class NewMeetingActivity extends AppCompatActivity implements View.OnTouc
             json.put("event_name",name);
             json.put("friends_id",friendID);
             json.put("event_repeats_type",repeative);
-            json.put("event_latitude",latitude);
-            json.put("event_longitude", longitude);
+            json.put("event_latitude",mLat);
+            json.put("event_longitude", mLng);
             json.put("event_venue_location", location);
             json.put("meeting_id",meetingID);
             json.put("meeting_valid_token",meetingToken);
             json.put("user_id", User.ID);
             json.put("meeting_status", status);
             json.put("event_venue_show",showLocation);
-            Log.i("json",json.toString());
+            Log.i("resu",json.toString());
+            requestJSONObject(mJsonManager, json, URLs.MEETING_INVITATION,
+                    "invitation");
+            handleJSON(mJsonManager);
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -367,7 +374,16 @@ public class NewMeetingActivity extends AppCompatActivity implements View.OnTouc
                         JSONArray jsonArray;
                         HashMap map;
                         while ((map = mJsonManager.getJsonQueue().poll()) != null) {
-
+                            if ((jsonObject = (JSONObject) map.get("invitation")) != null) {
+                                try {
+                                    if(jsonObject.getString("result").equals("success")){
+                                        setResult(RESULT_OK);
+                                        finish();
+                                    }
+                                } catch (JSONException e) {
+                                    e.printStackTrace();
+                                }
+                            }
                         }
                     }
                 }
@@ -384,15 +400,28 @@ public class NewMeetingActivity extends AppCompatActivity implements View.OnTouc
         manager.postForJsonArray(url, jsonObject, this, tag);
     }
 
-    private void simpleRequest(){
-//        String url = "https://maps.googleapis.com/maps/api/geocode/json?addressountain+View,+CA&key=AIzaSyBC4zDmkarugKY0Njs_n2TtEUVEyeESn0c";
-        String url = "https://maps.googleapis.com/maps/api/geocode/json?address=1A+Campbell+Coburg+Melbourne&key=AIzaSyBC4zDmkarugKY0Njs_n2TtEUVEyeESn0c";
-        Log.i("re","asdqwref");
+    private void getCoordinate(String address){
+        StringBuffer buffer = new StringBuffer();
+        buffer.append("https://maps.googleapis.com/maps/api/geocode/json?address=");
+        String words = address.replaceAll(",","");
+        words = words.replaceAll(" ","+");
+        buffer.append(words).append(getResources().getString(R.string.google_web_id));
+        String url = buffer.toString();
+
         JsonObjectRequest jsObjRequest = new JsonObjectRequest
                 (url, null, new Response.Listener<JSONObject>() {
                     @Override
                     public void onResponse(JSONObject response) {
-                        Log.i("re",response.toString());
+                        try {
+                            JSONArray result = response.getJSONArray("results");
+                            JSONObject object = (JSONObject) result.get(0);
+                            JSONObject geometry = (JSONObject) object.get("geometry");
+                            JSONObject localtion = (JSONObject) geometry.get("location");
+                            mLat = localtion.getString("lat");
+                            mLng = localtion.getString("lng");
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
                     }
                 }, new Response.ErrorListener() {
 

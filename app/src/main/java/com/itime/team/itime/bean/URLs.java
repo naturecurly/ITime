@@ -13,4 +13,5 @@ public class URLs {
     public static String SEARCH_FRIENDS = "http://54.200.31.237:8000/search_friends";
     public static String REGISTER = "http://54.200.31.237:8000/sign_up";
     public static String SIGN_IN = "http://54.200.31.237:8000/sign_in";
+    public static String MEETING_INVITATION = "http://54.200.31.237:8000/meeting_invitation";
 }

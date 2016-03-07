@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.View;
 
 import com.itime.team.itime.R;
@@ -109,6 +110,15 @@ public class DateSelectionActivity extends AppCompatActivity {
 
         DURATION = intent.getIntExtra("duration",60);
         mFriendIDs = intent.getStringArrayListExtra("friendIDs");
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (requestCode == 1){
+            if(resultCode == RESULT_OK){
+                finish();
+            }
+        }
     }
 
 //    private String getDateWithTimeZone(int year, int month, int day, int hour, int min){

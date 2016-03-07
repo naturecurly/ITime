@@ -5,6 +5,7 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -26,7 +27,11 @@ public class YearViewFragment extends Fragment {
     private RecyclerView mYearRecyclerView;
     private int[] yearViewId = new int[]{R.id.year_view_1, R.id.year_view_2, R.id.year_view_3, R.id.year_view_4, R.id.year_view_5, R.id.year_view_6, R.id.year_view_7, R.id.year_view_8, R.id.year_view_9, R.id.year_view_10, R.id.year_view_11, R.id.year_view_12};
     private List<Integer> list = new ArrayList<>();
-
+    private int previousTotal = 0;
+    private boolean loading = true;
+    private int visibleThreshold = 2;
+    private int firstVisibleItem, visibleItemCount, totalItemCount;
+    private LinearLayoutManager linearLayoutManager;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -42,9 +47,74 @@ public class YearViewFragment extends Fragment {
         View v = inflater.inflate(R.layout.fragment_year_view, container, false);
         //calendarView = (CalendarView) v.findViewById(R.id.year_view);
         mYearRecyclerView = (RecyclerView) v.findViewById(R.id.recycler_view_year_view);
-        mYearRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
+        linearLayoutManager = new LinearLayoutManager(getActivity());
+        mYearRecyclerView.setLayoutManager(linearLayoutManager);
         mYearRecyclerView.setAdapter(new YearViewAdapter(list));
+        linearLayoutManager.scrollToPosition(2);
+        mYearRecyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
+            @Override
+            public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
+                super.onScrolled(recyclerView, dx, dy);
+                visibleItemCount = linearLayoutManager.getChildCount();
+                //Log.i("Vcount", visibleItemCount + "");
+                totalItemCount = linearLayoutManager.getItemCount();
+                //Log.i("Tcount", totalItemCount + "");
+                firstVisibleItem = linearLayoutManager.findFirstVisibleItemPosition();
+                //Log.i("Fcount", firstVisibleItem + "");
+
+                if (dy > 0) {
+
+
+                    if (loading) {
+                        if (totalItemCount > previousTotal) {
+                            loading = false;
+                            previousTotal = totalItemCount;
+                        }
+                    }
+                    if (!loading && (totalItemCount - visibleItemCount)
+                            <= (firstVisibleItem + visibleThreshold)) {
+
+                        Log.i("...", "end called");
+                        for (int i = 0; i < 5; i++) {
+                            addItem();
+                        }
+                        recyclerView.getAdapter().notifyDataSetChanged();
+
+
+                        loading = true;
+                    }
+                }
+                if (dy < 0) {
+                    if (loading) {
+                        if (totalItemCount > previousTotal) {
+                            loading = false;
+                            previousTotal = totalItemCount;
+                        }
+                    }
+                    if (!loading && firstVisibleItem <= visibleThreshold) {
+                        Log.i("...", "first called");
+                        for (int i = 0; i < 5; i++) {
+                            insertItem();
+                            recyclerView.getAdapter().notifyItemInserted(0);
+                        }
+                        loading = true;
+                    }
+                }
+
+            }
+        });
+
         return v;
+    }
+
+    private void insertItem() {
+        int year = list.get(0);
+        list.add(0, year - 1);
+    }
+
+    private void addItem() {
+        int year = list.get(list.size() - 1);
+        list.add(year + 1);
     }
 
 

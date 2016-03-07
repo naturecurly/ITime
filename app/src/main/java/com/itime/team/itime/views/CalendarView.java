@@ -342,8 +342,8 @@ public class CalendarView extends View {
         //Log.d("test", mShowDay + " " + mShowMonth + " " + mShowYear);
 //        int monthDay = DateUtil.getCurrentMonthDays();
 //        Log.d("test_monthDay", monthDay + "");
-       // int lastMonthDays = DateUtil.getMonthDays(mShowYear, mShowMonth - 1);
-       // Log.d("test_lastmonthDay", lastMonthDays + "");
+        // int lastMonthDays = DateUtil.getMonthDays(mShowYear, mShowMonth - 1);
+        // Log.d("test_lastmonthDay", lastMonthDays + "");
         int currentMonthDays = DateUtil.getMonthDays(mShowYear, mShowMonth);
         Log.d("test_currentmonthDay", currentMonthDays + "");
         int firstDayWeek = DateUtil.getWeekDayFromDate(mShowYear, mShowMonth);
@@ -411,8 +411,8 @@ public class CalendarView extends View {
         //Log.i("TTTT", mCellSpace + " " + width + " " + height);
         mTextPaint.setTextSize(mCellSpace / 3);
         mMonthTextPaint.setTextSize(mCellSpace / 6);
-        mYearViewMonthTextPaint.setTextSize(mCellSpace);
-        setMeasuredDimension(width, (int) mCellSpace * (defaultStyle == MONTH_STYLE ? 6 : 1));
+        mYearViewMonthTextPaint.setTextSize(mCellSpace * 2 / 3);
+        setMeasuredDimension(width, (int) mCellSpace * (defaultStyle == MONTH_STYLE ? 7 : 1));
     }
 
     protected int measure(int measureSpec) {

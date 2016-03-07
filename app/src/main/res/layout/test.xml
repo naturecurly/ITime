@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <RadioGroup
+        android:id="@+id/tab_menu"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/cardview_dark_background"
+        android:orientation="horizontal">
+
+        <RadioButton
+            android:id="@+id/button_calendar"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_gravity="bottom"
+            android:layout_weight="1"
+            android:background="@color/cardview_dark_background"
+            android:button="@null"
+            android:checked="true"
+            android:drawableTop="@drawable/ic_date_range_s"
+            android:gravity="center_horizontal|bottom"
+            android:paddingTop="2dp"
+            android:text="Calendar"
+            android:textColor="@color/white" />
+
+        <RadioButton
+            android:id="@+id/button_meeting"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_gravity="bottom"
+            android:layout_weight="1"
+            android:background="@color/cardview_dark_background"
+            android:button="@null"
+            android:drawableTop="@drawable/ic_group_s"
+            android:gravity="center_horizontal|bottom"
+            android:paddingTop="2dp"
+            android:text="Meeting"
+            android:textColor="@color/white" />
+
+        <RadioButton
+            android:id="@+id/button_inbox"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:background="@color/cardview_dark_background"
+            android:button="@null"
+            android:drawableTop="@drawable/ic_email_black_s"
+            android:gravity="center_horizontal|bottom"
+            android:paddingTop="2dp"
+            android:text="Inbox"
+            android:textColor="@color/white" />
+
+        <RadioButton
+            android:id="@+id/button_setting"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_gravity="bottom"
+            android:layout_weight="1"
+            android:background="@color/cardview_dark_background"
+            android:button="@null"
+            android:drawableTop="@drawable/ic_setting_s"
+            android:gravity="center_horizontal|bottom"
+            android:paddingTop="2dp"
+            android:text="Setting"
+            android:textColor="@color/white" />
+    </RadioGroup>
+</LinearLayout>

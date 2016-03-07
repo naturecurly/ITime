@@ -1,6 +1,7 @@
 package com.itime.team.itime.activities;
 
 import android.os.Bundle;
+import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
@@ -10,36 +11,27 @@ import android.support.v7.widget.Toolbar;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
+import android.widget.TextView;
 
 import com.itime.team.itime.R;
 import com.itime.team.itime.fragments.CalendarFragment;
 import com.itime.team.itime.fragments.MeetingFragment;
 import com.itime.team.itime.fragments.SettingsFragment;
-//import com.itime.team.itime.fragments.MenuFragment;
 
 public class MainActivity extends AppCompatActivity implements
         PreferenceFragmentCompat.OnPreferenceStartScreenCallback {
 
-
-    //    private ViewPager mPager;
-//    private PagerAdapter mAdapter;
-//    private FragmentTabHost tabHost;
-//    private Class fragmentArray[] = {CalendarFragment.class, MeetingFragment.class, null, SettingsFragment.class};
-//    private int mImageViewArray[] = {R.drawable.ic_date_range_s, R.drawable.ic_group_s, R.drawable.ic_email_black_s,
-//            R.drawable.ic_setting_s};
-//    private String mTextViewArray[] = {"Calendar", "Meeting", "Email", "Settings"};
     private LayoutInflater layoutInflater;
     private RadioGroup mRadioGroup;
-    private int mIndex;
     private Menu mMenu;
     private CalendarFragment calendarFragment;
     private MeetingFragment meetingFragment;
     private SettingsFragment settingsFragment;
     private RadioButton calendarButton;
     private FragmentManager fragmentManager;
+    private TextView title;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -51,63 +43,56 @@ public class MainActivity extends AppCompatActivity implements
         fragmentManager = getSupportFragmentManager();
         getSupportFragmentManager();
         layoutInflater = LayoutInflater.from(this);
-        calendarFragment = new CalendarFragment();
-        meetingFragment = new MeetingFragment();
-        settingsFragment = new SettingsFragment();
-        calendarButton = (RadioButton) findViewById(R.id.button_calendar);
-        calendarButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (fragmentManager.findFragmentById(R.id.realtab_content) != calendarFragment) {
-                    fragmentManager.beginTransaction().replace(R.id.realtab_content, calendarFragment).commit();
-                }
-            }
-        });
-        getSupportFragmentManager().beginTransaction().replace(R.id.realtab_content, calendarFragment).commit();
+        title = (TextView) findViewById(R.id.toolbar_title);
+
+        setFragments();
+
         mRadioGroup = (RadioGroup) findViewById(R.id.tab_menu);
         mRadioGroup.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(RadioGroup group, int checkedId) {
                 switch (checkedId) {
                     case R.id.button_calendar:
-                        fragmentManager.beginTransaction().replace(R.id.realtab_content, calendarFragment).commit();
-                        //getSupportFragmentManager().beginTransaction().remove(getSupportFragmentManager().findFragmentById(R.id.realtab_content)).add(calendarFragment).commit();
+                        showFragment(calendarFragment);
                         break;
                     case R.id.button_meeting:
-                        fragmentManager.beginTransaction().replace(R.id.realtab_content, meetingFragment).commit();
+                        showFragment(meetingFragment);
                         break;
                     case R.id.button_setting:
-                        fragmentManager.beginTransaction().replace(R.id.realtab_content, settingsFragment).commit();
+                        showFragment(settingsFragment);
                         break;
                 }
             }
         });
-
-
-//        tabHost = (FragmentTabHost) findViewById(R.id.tab_host);
-//        tabHost.setup(this, getSupportFragmentManager(), R.id.realtab_content);
-//        for (int i = 0; i < fragmentArray.length; i++) {
-//            TabHost.TabSpec tabSpec = tabHost.newTabSpec(mTextViewArray[i]).setIndicator(getTabItemView(i));
-//            tabHost.addTab(tabSpec, fragmentArray[i], null);
-//
-//        }
-
-
     }
 
+    private void setFragments(){
+        calendarFragment = new CalendarFragment();
+        meetingFragment = new MeetingFragment();
+        settingsFragment = new SettingsFragment();
 
-//    private View getTabItemView(int index) {
-//        View view = layoutInflater.inflate(R.layout.tab_item_view, null);
-//
-//        ImageView imageView = (ImageView) view.findViewById(R.id.tab_image_view);
-//        imageView.setImageResource(mImageViewArray[index]);
-//
-//        TextView textView = (TextView) view.findViewById(R.id.tab_text_view);
-//        textView.setText(mTextViewArray[index]);
-//
-//
-//        return view;
-//    }
+        getSupportFragmentManager().beginTransaction().add(R.id.realtab_content, calendarFragment).commit();
+        getSupportFragmentManager().beginTransaction().add(R.id.realtab_content, meetingFragment).commit();
+        getSupportFragmentManager().beginTransaction().add(R.id.realtab_content, settingsFragment).commit();
+    }
+
+    private void showFragment(Fragment me) {
+        for(Fragment fragment : fragmentManager.getFragments()){
+            if(fragment == me){
+                fragmentManager.beginTransaction().show(fragment).commit();
+            }else{
+                fragmentManager.beginTransaction().hide(fragment).commit();
+            }
+        }
+
+        if(me == meetingFragment){
+            title.setText(getResources().getString(R.string.meeting_title));
+        }else if(me == calendarFragment){
+            title.setText(getResources().getString(R.string.calendar_title));
+        }else if(me == settingsFragment){
+            title.setText(getResources().getString(R.string.setting_title));
+        }
+    }
 
     @Override
     public boolean onPrepareOptionsMenu(Menu menu) {
@@ -135,7 +120,6 @@ public class MainActivity extends AppCompatActivity implements
     @Override
     protected void onPause() {
         super.onPause();
-        //Log.i("Pause","oooqqqqqqqq");
     }
 
     @Override

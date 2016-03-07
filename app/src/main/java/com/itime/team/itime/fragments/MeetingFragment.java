@@ -1,12 +1,13 @@
 package com.itime.team.itime.fragments;
 
+import android.annotation.TargetApi;
 import android.app.DatePickerDialog;
 import android.app.TimePickerDialog;
 import android.content.Intent;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.SearchView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -20,7 +21,7 @@ import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.ListAdapter;
 import android.widget.ListView;
-import android.widget.TextView;
+import android.widget.ScrollView;
 import android.widget.TimePicker;
 import android.widget.Toast;
 
@@ -86,6 +87,7 @@ public class MeetingFragment extends Fragment implements View.OnClickListener,Se
     private int mEndMin;
 
     private JsonManager mJsonManager;
+    private ScrollView mScrollView;
 
     //If the value is true, it satisfies the condition of inviting people
     private boolean mIsFeasible;
@@ -99,8 +101,6 @@ public class MeetingFragment extends Fragment implements View.OnClickListener,Se
 
         mmeeting = inflater.inflate(R.layout.fragment_meeting,null);
         initData();
-        TextView title = (TextView) getActivity().findViewById(R.id.toolbar_title);
-        title.setText("Meeting");
         listView = (ListView) mmeeting.findViewById(R.id.meeting_listview);
         duration = (Button) mmeeting.findViewById(R.id.meeting_duration);
         duration.setText("1Hour");
@@ -153,8 +153,20 @@ public class MeetingFragment extends Fragment implements View.OnClickListener,Se
         return super.onOptionsItemSelected(item);
     }
 
-
+    @TargetApi(Build.VERSION_CODES.M)
     private void initData(){
+        mScrollView = (ScrollView) mmeeting.findViewById(R.id.meeting_view);
+        mScrollView.setOnScrollChangeListener(new View.OnScrollChangeListener() {
+            @Override
+            public void onScrollChange(View v, int scrollX, int scrollY, int oldScrollX, int oldScrollY) {
+                //Log.i("postion",scrollX + "," + scrollY);
+                if(scrollY == 600){
+                    mScrollView.scrollTo(0,oldScrollY);
+                }
+
+            }
+        });
+
         mCalendar = Calendar.getInstance();
         mStartTime = (Button) mmeeting.findViewById(R.id.meeting_start_time);
         mStartTime.setOnClickListener(this);

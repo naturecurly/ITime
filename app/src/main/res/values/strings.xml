@@ -16,6 +16,12 @@
     <string name="settings_import_calendar">Import Calendars</string>
     <string name="settings_default_alert_time">Default Alert Time</string>
     <string name="profile_photo">Profile Photo</string>
+
+    <string name="calendar_title">Calendar</string>
+    <string name="meeting_title">Meeting</string>
+    <string name="inbox_title">Inbox</string>
+    <string name="setting_title">Setting</string>
+
     <string name="meeting_start_time">Starts</string>
     <string name="meeting_end_time">Ends</string>
     <string name="meeting_time_button">Time</string>
@@ -27,7 +33,6 @@
     <string name="meeting_duraiton_dialog_title">Duration</string>
     <string name="meeting_add_dialog_title">Search</string>
     <string name="meeting_duration_textview">Duration</string>
-
     <string name="meeting_select_title">Meeting Time Select</string>
 
 

@@ -1,12 +1,8 @@
 package com.itime.team.itime.activities;
 
 import android.os.Bundle;
-import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentTabHost;
 import android.support.v4.app.FragmentTransaction;
-import android.support.v4.view.PagerAdapter;
-import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.preference.PreferenceFragmentCompat;
 import android.support.v7.preference.PreferenceScreen;
@@ -15,12 +11,8 @@ import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.ImageView;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
-import android.widget.TabHost;
-import android.widget.TextView;
-import android.widget.Toast;
 
 import com.itime.team.itime.R;
 import com.itime.team.itime.fragments.CalendarFragment;
@@ -78,17 +70,13 @@ public class MainActivity extends AppCompatActivity implements
             public void onCheckedChanged(RadioGroup group, int checkedId) {
                 switch (checkedId) {
                     case R.id.button_calendar:
-                        calendarFragment = new CalendarFragment();
                         fragmentManager.beginTransaction().replace(R.id.realtab_content, calendarFragment).commit();
-                        Toast.makeText(getApplication(), "test", Toast.LENGTH_SHORT).show();
                         //getSupportFragmentManager().beginTransaction().remove(getSupportFragmentManager().findFragmentById(R.id.realtab_content)).add(calendarFragment).commit();
                         break;
                     case R.id.button_meeting:
-                        meetingFragment = new MeetingFragment();
                         fragmentManager.beginTransaction().replace(R.id.realtab_content, meetingFragment).commit();
                         break;
                     case R.id.button_setting:
-                        settingsFragment = new SettingsFragment();
                         fragmentManager.beginTransaction().replace(R.id.realtab_content, settingsFragment).commit();
                         break;
                 }

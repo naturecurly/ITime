@@ -87,6 +87,7 @@ public class MainActivity extends AppCompatActivity implements
 
         if(me == meetingFragment){
             title.setText(getResources().getString(R.string.meeting_title));
+            meetingFragment.setPosition();
         }else if(me == calendarFragment){
             title.setText(getResources().getString(R.string.calendar_title));
         }else if(me == settingsFragment){

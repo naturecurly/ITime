@@ -1,13 +1,12 @@
 package com.itime.team.itime.fragments;
 
-import android.annotation.TargetApi;
 import android.app.DatePickerDialog;
 import android.app.TimePickerDialog;
 import android.content.Intent;
-import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.SearchView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -16,12 +15,13 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.CheckBox;
+import android.widget.CompoundButton;
 import android.widget.DatePicker;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.ListAdapter;
 import android.widget.ListView;
-import android.widget.ScrollView;
 import android.widget.TimePicker;
 import android.widget.Toast;
 
@@ -32,9 +32,11 @@ import com.itime.team.itime.activities.DateSelectionActivity;
 import com.itime.team.itime.bean.URLs;
 import com.itime.team.itime.bean.User;
 import com.itime.team.itime.interfaces.DataRequest;
+import com.itime.team.itime.listener.ScrollMeetingViewListener;
 import com.itime.team.itime.utils.DateUtil;
 import com.itime.team.itime.utils.JsonManager;
 import com.itime.team.itime.utils.MySingleton;
+import com.itime.team.itime.views.MeetingScrollView;
 import com.itime.team.itime.views.adapters.DynamicListViewAdapter;
 
 import org.json.JSONArray;
@@ -52,7 +54,7 @@ import java.util.Map;
  * information so that reduce the computing work load of MeetingSelection Fragment.
  */
 public class MeetingFragment extends Fragment implements View.OnClickListener,SearchView.OnQueryTextListener,
-         DataRequest{
+         DataRequest, ScrollMeetingViewListener{
 //    private List<TextView> parent;
     private Map<Integer, View> map;
     private View mmeeting;
@@ -87,7 +89,9 @@ public class MeetingFragment extends Fragment implements View.OnClickListener,Se
     private int mEndMin;
 
     private JsonManager mJsonManager;
-    private ScrollView mScrollView;
+    private MeetingScrollView mScrollView;
+    private boolean canChange;
+    private CheckBox mChange;
 
     //If the value is true, it satisfies the condition of inviting people
     private boolean mIsFeasible;
@@ -114,8 +118,15 @@ public class MeetingFragment extends Fragment implements View.OnClickListener,Se
         initListView();
 
         mInvitedFriend = (LinearLayout) mmeeting.findViewById(R.id.meeting_invited_friend);
-
         mDuration = 60;
+        canChange = false;
+        mChange = (CheckBox) mmeeting.findViewById(R.id.change);
+        mChange.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                mScrollView.scrollTo(0,0);
+            }
+        });
 
         return mmeeting;
     }
@@ -153,19 +164,9 @@ public class MeetingFragment extends Fragment implements View.OnClickListener,Se
         return super.onOptionsItemSelected(item);
     }
 
-    @TargetApi(Build.VERSION_CODES.M)
     private void initData(){
-        mScrollView = (ScrollView) mmeeting.findViewById(R.id.meeting_view);
-        mScrollView.setOnScrollChangeListener(new View.OnScrollChangeListener() {
-            @Override
-            public void onScrollChange(View v, int scrollX, int scrollY, int oldScrollX, int oldScrollY) {
-                //Log.i("postion",scrollX + "," + scrollY);
-                if(scrollY == 600){
-                    mScrollView.scrollTo(0,oldScrollY);
-                }
-
-            }
-        });
+        mScrollView = (MeetingScrollView) mmeeting.findViewById(R.id.meeting_view);
+        mScrollView.setOnScrollViewListener(this);
 
         mCalendar = Calendar.getInstance();
         mStartTime = (Button) mmeeting.findViewById(R.id.meeting_start_time);
@@ -436,5 +437,17 @@ public class MeetingFragment extends Fragment implements View.OnClickListener,Se
     @Override
     public void requestJSONArray(JsonManager manager,JSONObject jsonObject, String url, String tag) {
         manager.postForJsonArray(url, jsonObject, getActivity(), tag);
+    }
+
+    @Override
+    public void onScrollChanged(MeetingScrollView scrollView, int x, int y, int oldx, int oldy) {
+        index ++;
+        if(index == 1){
+            mScrollView.scrollTo(0,oldy);
+        }
+    }
+    private int index = 0;
+    public void setPosition(){
+        index = 0;
     }
 }

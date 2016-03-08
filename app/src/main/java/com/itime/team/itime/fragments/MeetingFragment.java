@@ -6,7 +6,6 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.SearchView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -15,8 +14,6 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.CheckBox;
-import android.widget.CompoundButton;
 import android.widget.DatePicker;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
@@ -90,8 +87,8 @@ public class MeetingFragment extends Fragment implements View.OnClickListener,Se
 
     private JsonManager mJsonManager;
     private MeetingScrollView mScrollView;
-    private boolean canChange;
-    private CheckBox mChange;
+
+    private ImageButton mAddFriend;
 
     //If the value is true, it satisfies the condition of inviting people
     private boolean mIsFeasible;
@@ -110,6 +107,8 @@ public class MeetingFragment extends Fragment implements View.OnClickListener,Se
         duration.setText("1Hour");
         duration.setOnClickListener(this);
 
+        mAddFriend = (ImageButton) getActivity().findViewById(R.id.event_list);
+
         mSearch = (SearchView) mmeeting.findViewById(R.id.meeting_search);
         mSearch.setOnQueryTextListener(this);
 
@@ -119,14 +118,6 @@ public class MeetingFragment extends Fragment implements View.OnClickListener,Se
 
         mInvitedFriend = (LinearLayout) mmeeting.findViewById(R.id.meeting_invited_friend);
         mDuration = 60;
-        canChange = false;
-        mChange = (CheckBox) mmeeting.findViewById(R.id.change);
-        mChange.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                mScrollView.scrollTo(0,0);
-            }
-        });
 
         return mmeeting;
     }
@@ -137,24 +128,22 @@ public class MeetingFragment extends Fragment implements View.OnClickListener,Se
         mMenu = menu;
         mMenu.clear();
         getActivity().getMenuInflater().inflate(R.menu.meeting_main, mMenu);
-
-        final ImageButton imageButton = (ImageButton) getActivity().findViewById(R.id.event_list);
-        imageButton.setVisibility(View.VISIBLE);
-        imageButton.setImageResource(R.drawable.ic_add_white);
-        imageButton.setOnClickListener(new View.OnClickListener() {
+        mAddFriend.setImageResource(R.drawable.ic_add_white);
+        mAddFriend.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 MeetingAddDialogFragment searchDialog = new MeetingAddDialogFragment();
                 searchDialog.show(getFragmentManager(), "searchDialog");
             }
         });
-        imageButton.setOnTouchListener(new View.OnTouchListener() {
+        mAddFriend.setOnTouchListener(new View.OnTouchListener() {
             @Override
             public boolean onTouch(View v, MotionEvent event) {
                 return false;
             }
         });
     }
+
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {

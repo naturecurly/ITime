@@ -85,6 +85,7 @@ public class CalendarFragment extends Fragment {
         TextView title = (TextView) getActivity().findViewById(R.id.toolbar_title);
         title.setText("Calendar");
         imageButton = (ImageButton) getActivity().findViewById(R.id.event_list);
+
         imageButton.setVisibility(View.VISIBLE);
         imageButton.setOnTouchListener(new View.OnTouchListener() {
             @Override
@@ -111,6 +112,7 @@ public class CalendarFragment extends Fragment {
                 ft.commit();
             }
         });
+
 
         recyclerView = (RecyclerView) view.findViewById(R.id.recycler_view);
         linearLayoutManager = new LinearLayoutManager(getActivity());

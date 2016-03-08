@@ -72,24 +72,27 @@ public class MainActivity extends AppCompatActivity implements
         settingsFragment = new SettingsFragment();
 
         getSupportFragmentManager().beginTransaction().add(R.id.realtab_content, calendarFragment).commit();
-        getSupportFragmentManager().beginTransaction().add(R.id.realtab_content, meetingFragment).commit();
-        getSupportFragmentManager().beginTransaction().add(R.id.realtab_content, settingsFragment).commit();
     }
 
     private void showFragment(Fragment me) {
-        for(Fragment fragment : fragmentManager.getFragments()){
+        if(!me.isAdded()) {
+            getSupportFragmentManager().beginTransaction().add(R.id.realtab_content, me).commit();
+        }
+
+        for(Fragment fragment : fragmentManager.getFragments()) {
             if(fragment == me){
-                fragmentManager.beginTransaction().show(fragment).commit();
+                getSupportFragmentManager().beginTransaction().show(fragment).commit();
             }else{
                 fragmentManager.beginTransaction().hide(fragment).commit();
             }
         }
-
         if(me == meetingFragment){
             title.setText(getResources().getString(R.string.meeting_title));
             meetingFragment.setPosition();
+            //meetingFragment.reSetMenuOnClickListener();
         }else if(me == calendarFragment){
             title.setText(getResources().getString(R.string.calendar_title));
+            //calendarFragment.reSetOnClickListener();
         }else if(me == settingsFragment){
             title.setText(getResources().getString(R.string.setting_title));
         }

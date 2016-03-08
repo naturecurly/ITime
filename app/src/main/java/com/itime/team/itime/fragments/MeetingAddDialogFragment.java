@@ -104,6 +104,7 @@ public class MeetingAddDialogFragment extends DialogFragment implements DataRequ
                 } else{
 
                 }
+                MeetingAddDialogFragment.this.dismiss();
             }
         });
     }

@@ -25,6 +25,7 @@
 
     <!-- Name -->
     <RelativeLayout
+        android:id="@+id/setting_profile_name"
         style="@style/ProfileListLayout">
 
         <TextView
@@ -33,6 +34,7 @@
             android:text="Name"/>
 
         <TextView
+            android:id="@+id/setting_profile_name_text"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="null"
@@ -42,6 +44,7 @@
 
     <!-- ITIME ID -->
     <RelativeLayout
+        android:id="@+id/setting_profile_id"
         style="@style/ProfileListLayout">
 
         <TextView
@@ -50,6 +53,7 @@
             android:text="ITIME ID"/>
 
         <TextView
+            android:id="@+id/setting_profile_id_text"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="null"
@@ -59,6 +63,7 @@
 
     <!-- My QR Code -->
     <RelativeLayout
+        android:id="@+id/setting_profile_qrcode"
         style="@style/ProfileListLayout">
 
         <TextView
@@ -77,9 +82,11 @@
 
     <!-- Email -->
     <RelativeLayout
+        android:id="@+id/setting_profile_email"
         style="@style/ProfileListLayout">
 
         <TextView
+            android:id="@+id/setting_profile_email_text"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Email"/>
@@ -88,9 +95,11 @@
 
     <!-- Phone Number -->
     <RelativeLayout
+        android:id="@+id/setting_profile_phone_number"
         style="@style/ProfileListLayout">
 
         <TextView
+            android:id="@+id/setting_profile_phone_number_text"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Phone Number"/>

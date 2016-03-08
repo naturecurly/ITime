@@ -11,6 +11,7 @@ import android.support.v7.widget.Toolbar;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.RadioButton;
@@ -21,6 +22,7 @@ import com.itime.team.itime.R;
 import com.itime.team.itime.fragments.CalendarFragment;
 import com.itime.team.itime.fragments.MeetingFragment;
 import com.itime.team.itime.fragments.SettingsFragment;
+import com.itime.team.itime.fragments.YearViewFragment;
 
 public class MainActivity extends AppCompatActivity implements
         PreferenceFragmentCompat.OnPreferenceStartScreenCallback {
@@ -31,6 +33,7 @@ public class MainActivity extends AppCompatActivity implements
     private CalendarFragment calendarFragment;
     private MeetingFragment meetingFragment;
     private SettingsFragment settingsFragment;
+    private YearViewFragment yearViewFragment;
     private RadioButton calendarButton;
     private FragmentManager fragmentManager;
     private TextView title;
@@ -74,44 +77,60 @@ public class MainActivity extends AppCompatActivity implements
         });
     }
 
-    private void setFragments(){
+    private void setFragments() {
         calendarFragment = new CalendarFragment();
+
         meetingFragment = new MeetingFragment();
         settingsFragment = new SettingsFragment();
-
+        yearViewFragment = new YearViewFragment();
+        calendarFragment.setCurrentFragment(calendarFragment, yearViewFragment);
+        yearViewFragment.setCalendarFragment(calendarFragment,yearViewFragment);
         getSupportFragmentManager().beginTransaction().add(R.id.realtab_content, calendarFragment).commit();
     }
 
     private void showFragment(Fragment me) {
-        if(!me.isAdded()) {
+        if (!me.isAdded()) {
             getSupportFragmentManager().beginTransaction().add(R.id.realtab_content, me).commit();
         }
 
-        if(me == calendarFragment){
+        if (me == calendarFragment) {
             fragmentManager.beginTransaction().hide(meetingFragment).commit();
             fragmentManager.beginTransaction().hide(settingsFragment).commit();
+            fragmentManager.beginTransaction().hide(yearViewFragment).commit();
             fragmentManager.beginTransaction().show(calendarFragment).commit();
-        }else if(me == meetingFragment){
+        } else if (me == meetingFragment) {
             fragmentManager.beginTransaction().hide(calendarFragment).commit();
             fragmentManager.beginTransaction().hide(settingsFragment).commit();
+            fragmentManager.beginTransaction().hide(yearViewFragment).commit();
             fragmentManager.beginTransaction().show(meetingFragment).commit();
-        }else if(me == settingsFragment){
+        } else if (me == settingsFragment) {
             fragmentManager.beginTransaction().hide(calendarFragment).commit();
             fragmentManager.beginTransaction().hide(meetingFragment).commit();
+            fragmentManager.beginTransaction().hide(yearViewFragment).commit();
             fragmentManager.beginTransaction().show(settingsFragment).commit();
         }
 
-        if(me == meetingFragment){
+        if (me == meetingFragment) {
             title.setText(getResources().getString(R.string.meeting_title));
             meetingFragment.setPosition();
-            meetingFragment.handleConflict(mEventList,mToday);
-        }else if(me == calendarFragment){
+            meetingFragment.handleConflict(mEventList, mToday);
+        } else if (me == calendarFragment) {
             title.setText(getResources().getString(R.string.calendar_title));
             calendarFragment.reSetMenuOnClickListener(mEventList);
-        }else if(me == settingsFragment){
+        } else if (me == settingsFragment) {
             title.setText(getResources().getString(R.string.setting_title));
             settingsFragment.handleConfilct(mEventList, mToday);
         }
+
+        calendarButton = (RadioButton) findViewById(R.id.button_calendar);
+        calendarButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+//                if (fragmentManager.findFragmentById(R.id.realtab_content) != calendarFragment && fragmentManager.findFragmentById(R.id.realtab_content) != meetingFragment && fragmentManager.findFragmentById(R.id.realtab_content) != settingsFragment)
+//                    fragmentManager.beginTransaction().replace(R.id.realtab_content, calendarFragment).commit();
+            }
+        });
+
     }
 
     @Override

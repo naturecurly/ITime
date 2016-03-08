@@ -18,6 +18,7 @@ import com.itime.team.itime.utils.DateUtil;
 import com.itime.team.itime.views.CalendarView;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.List;
 
 /**
@@ -34,6 +35,8 @@ public class YearViewFragment extends Fragment {
     private int visibleThreshold = 2;
     private int firstVisibleItem, visibleItemCount, totalItemCount;
     private LinearLayoutManager linearLayoutManager;
+    private Fragment fragment;
+    private Fragment yearFragment;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -171,7 +174,14 @@ public class YearViewFragment extends Fragment {
                         Bundle bundle = new Bundle();
                         bundle.putInt("year", year);
                         bundle.putInt("month", month);
-                        fragmentTransaction.replace(R.id.realtab_content, CalendarFragment.newInstance(bundle));
+                        //fragmentTransaction.replace(R.id.realtab_content, CalendarFragment.newInstance(bundle));
+                        Calendar calendar = Calendar.getInstance();
+                        calendar.set(year, month, 1);
+                        ((CalendarFragment) fragment).getList().clear();
+                        ((CalendarFragment) fragment).fillData(calendar);
+                        ((CalendarFragment) fragment).getRecyclerView().getAdapter().notifyDataSetChanged();
+                        fragmentTransaction.hide(yearFragment);
+                        fragmentTransaction.show(fragment);
                         fragmentTransaction.addToBackStack(null);
                         fragmentTransaction.commit();
                     }
@@ -180,5 +190,11 @@ public class YearViewFragment extends Fragment {
 
             textView = (TextView) itemView.findViewById(R.id.year_text_view);
         }
+    }
+
+
+    public void setCalendarFragment(Fragment fragment, Fragment yearFragment) {
+        this.fragment = fragment;
+        this.yearFragment = yearFragment;
     }
 }

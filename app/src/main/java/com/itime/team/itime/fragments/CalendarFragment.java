@@ -50,7 +50,8 @@ public class CalendarFragment extends Fragment {
     private ImageButton imageButton;
     private Button mTodayButton;
     private int todayIndex;
-
+    private Fragment currentFragment;
+    private Fragment yearFragment;
 
     public static CalendarFragment newInstance(Bundle bundle) {
 
@@ -321,8 +322,13 @@ public class CalendarFragment extends Fragment {
                 Fragment fragment = new YearViewFragment();
                 FragmentTransaction ft = getFragmentManager().beginTransaction();
                 //ft.detach(getFragmentManager().findFragmentById(R.id.realtab_content)).add(fragment,"list");
-                ft.replace(R.id.realtab_content, fragment);
-
+//                ft.replace(R.id.realtab_content, fragment);
+                ft.hide(currentFragment);
+                if (!yearFragment.isAdded()) {
+                    ft.add(R.id.realtab_content, yearFragment);
+                } else {
+                    ft.show(yearFragment);
+                }
                 ft.addToBackStack(null);
                 ft.commit();
         }
@@ -352,7 +358,13 @@ public class CalendarFragment extends Fragment {
                 Fragment fragment = new EventListFragment();
                 FragmentTransaction ft = getFragmentManager().beginTransaction();
                 //ft.detach(getFragmentManager().findFragmentById(R.id.realtab_content)).add(fragment,"list");
-                ft.replace(R.id.realtab_content, fragment);
+                ft.hide(currentFragment);
+                if (!fragment.isAdded()) {
+                    ft.add(R.id.realtab_content, fragment);
+                } else {
+                    ft.show(fragment);
+                }
+                //ft.replace(R.id.realtab_content, fragment);
 
                 ft.addToBackStack(null);
                 ft.commit();
@@ -361,5 +373,19 @@ public class CalendarFragment extends Fragment {
 
         mTodayButton.setVisibility(View.VISIBLE);
     }
+
+    public void setCurrentFragment(Fragment fragment, Fragment yearFragment) {
+        currentFragment = fragment;
+        this.yearFragment = yearFragment;
+    }
+
+    public RecyclerView getRecyclerView(){
+        return recyclerView;
+    }
+
+    public List<Map<String, Integer>> getList(){
+        return dates;
+    }
+
 }
 

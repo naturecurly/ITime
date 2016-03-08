@@ -3,6 +3,7 @@ package com.itime.team.itime.fragments;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -10,6 +11,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.itime.team.itime.R;
 import com.itime.team.itime.utils.DateUtil;
@@ -157,7 +159,25 @@ public class YearViewFragment extends Fragment {
             super(itemView);
             for (int i = 0; i < views.length; i++) {
                 views[i] = (CalendarView) itemView.findViewById(yearViewId[i]);
+                views[i].setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        //Toast.makeText(getActivity(), "test", Toast.LENGTH_SHORT).show();
+                        CalendarView c = (CalendarView) v;
+                        Toast.makeText(getActivity(), ((CalendarView) v).getmShowMonth() + "", Toast.LENGTH_SHORT).show();
+                        int year = c.getmShowYear();
+                        int month = c.getmShowMonth();
+                        FragmentTransaction fragmentTransaction = getFragmentManager().beginTransaction();
+                        Bundle bundle = new Bundle();
+                        bundle.putInt("year", year);
+                        bundle.putInt("month", month);
+                        fragmentTransaction.replace(R.id.realtab_content, CalendarFragment.newInstance(bundle));
+                        fragmentTransaction.addToBackStack(null);
+                        fragmentTransaction.commit();
+                    }
+                });
             }
+
             textView = (TextView) itemView.findViewById(R.id.year_text_view);
         }
     }

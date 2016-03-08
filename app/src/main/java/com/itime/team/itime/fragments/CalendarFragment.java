@@ -51,15 +51,17 @@ public class CalendarFragment extends Fragment {
     private Button mTodayButton;
     private int todayIndex;
 
-    @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
 
-        setHasOptionsMenu(true);
+    public static CalendarFragment newInstance(Bundle bundle) {
 
-        imageButton = (ImageButton) getActivity().findViewById(R.id.event_list);
+        Bundle args = bundle;
+        CalendarFragment fragment = new CalendarFragment();
+        fragment.setArguments(args);
+        return fragment;
+    }
 
-        Calendar c = Calendar.getInstance();
+    public void fillData(Calendar c) {
+        //Calendar c = Calendar.getInstance();
         c.add(Calendar.DAY_OF_MONTH, -14 - 7 * 7);
         c.add(Calendar.DATE, -c.get(Calendar.DAY_OF_WEEK));
         todayIndex = 8;
@@ -70,16 +72,27 @@ public class CalendarFragment extends Fragment {
             map.put("month", c.get(Calendar.MONTH) + 1);
             map.put("day", c.get(Calendar.DAY_OF_MONTH));
             dates.add(map);
-
-            //c.add(Calendar.DATE, 21);
-            //Log.i("testtest",c.get(Calendar.DAY_OF_MONTH)+"");
         }
 
-//        for (Map<String, Integer> calendar : dates) {
-//            //Log.i("testest", calendar.get("day") + "");
-//        }
+    }
 
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
 
+        setHasOptionsMenu(true);
+
+        imageButton = (ImageButton) getActivity().findViewById(R.id.event_list);
+        if (getArguments() != null) {
+            int month = getArguments().getInt("month");
+            int year = getArguments().getInt("year");
+            Calendar c = Calendar.getInstance();
+            c.set(year, month - 1, 1);
+            fillData(c);
+
+        } else {
+            fillData(Calendar.getInstance());
+        }
     }
 
     @Override
@@ -97,7 +110,10 @@ public class CalendarFragment extends Fragment {
             public void onClick(View v) {
 //                recyclerView.scrollToPosition(todayIndex);
                 //  recyclerView.getLayoutManager().scrollToPosition(todayIndex);
-                ((LinearLayoutManager) recyclerView.getLayoutManager()).scrollToPositionWithOffset(todayIndex-1, 0);
+                ((LinearLayoutManager) recyclerView.getLayoutManager()).scrollToPositionWithOffset(todayIndex - 1, 0);
+                dates.clear();
+                fillData(Calendar.getInstance());
+                recyclerView.getAdapter().notifyDataSetChanged();
             }
         });
         recyclerView = (RecyclerView) view.findViewById(R.id.recycler_view);
@@ -313,7 +329,7 @@ public class CalendarFragment extends Fragment {
         return super.onOptionsItemSelected(item);
     }
 
-    public void reSetMenuOnClickListener(ImageButton imageButton){
+    public void reSetMenuOnClickListener(ImageButton imageButton) {
         imageButton.setImageResource(R.drawable.ic_calendar_list_white);
         imageButton.setVisibility(View.VISIBLE);
         imageButton.setOnTouchListener(new View.OnTouchListener() {

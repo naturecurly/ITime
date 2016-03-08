@@ -69,6 +69,7 @@ public class CalendarView extends View {
 
     }
 
+
     public CalendarView(Context context, AttributeSet attrs) {
         super(context, attrs);
         TypedArray array = context.getTheme().obtainStyledAttributes(attrs, R.styleable.CustomedCalendarView, 0, 0);

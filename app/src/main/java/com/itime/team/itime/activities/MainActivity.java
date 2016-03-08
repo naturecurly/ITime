@@ -8,6 +8,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.preference.PreferenceFragmentCompat;
 import android.support.v7.preference.PreferenceScreen;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -75,6 +76,7 @@ public class MainActivity extends AppCompatActivity implements
     }
 
     private void showFragment(Fragment me) {
+        Log.i("show",me.getClass().getName());
         if(!me.isAdded()) {
             getSupportFragmentManager().beginTransaction().add(R.id.realtab_content, me).commit();
         }
@@ -86,6 +88,15 @@ public class MainActivity extends AppCompatActivity implements
                 fragmentManager.beginTransaction().hide(fragment).commit();
             }
         }
+//        if(me == calendarFragment){
+//            fragmentManager.beginTransaction().hide(meetingFragment).commit();
+//            fragmentManager.beginTransaction().show(calendarFragment).commit();
+//        }else if(me == meetingFragment){
+//            fragmentManager.beginTransaction().hide(calendarFragment).commit();
+//            fragmentManager.beginTransaction().show(meetingFragment).commit();
+//        }
+
+
         if(me == meetingFragment){
             title.setText(getResources().getString(R.string.meeting_title));
             meetingFragment.setPosition();

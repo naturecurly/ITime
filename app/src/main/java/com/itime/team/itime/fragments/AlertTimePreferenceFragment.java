@@ -42,15 +42,17 @@ public class AlertTimePreferenceFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         alertTimeView = inflater.inflate(R.layout.fragment_preference_alert_time, null);
-        return alertTimeView;
-    }
 
-    @Override
-    public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
-        mAlertTimeList = (ListView) getActivity().findViewById(R.id.setting_dft_alert_time_list);
+        mAlertTimeList = (ListView) alertTimeView.findViewById(R.id.setting_dft_alert_time_list);
         String data[] = getResources().getStringArray(R.array.entry_default_alert_time);
         AlertTimeListAdapter alertTimeListAdapter = new AlertTimeListAdapter(getActivity(), R.layout.view_setting_list, data);
         mAlertTimeList.setAdapter(alertTimeListAdapter);
+
+        TextView title = (TextView) getActivity().findViewById(R.id.setting_toolbar_title);
+        title.setText("Default Alert Time");
+        setHasOptionsMenu(true);
+
+        return alertTimeView;
     }
 
     private class AlertTimeListAdapter extends ArrayAdapter<String> {

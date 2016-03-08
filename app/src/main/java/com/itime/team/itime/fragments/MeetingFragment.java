@@ -88,8 +88,6 @@ public class MeetingFragment extends Fragment implements View.OnClickListener,Se
     private JsonManager mJsonManager;
     private MeetingScrollView mScrollView;
 
-    private ImageButton mAddFriend;
-
     //If the value is true, it satisfies the condition of inviting people
     private boolean mIsFeasible;
 
@@ -106,8 +104,6 @@ public class MeetingFragment extends Fragment implements View.OnClickListener,Se
         duration = (Button) mmeeting.findViewById(R.id.meeting_duration);
         duration.setText("1Hour");
         duration.setOnClickListener(this);
-
-        mAddFriend = (ImageButton) getActivity().findViewById(R.id.event_list);
 
         mSearch = (SearchView) mmeeting.findViewById(R.id.meeting_search);
         mSearch.setOnQueryTextListener(this);
@@ -128,6 +124,11 @@ public class MeetingFragment extends Fragment implements View.OnClickListener,Se
         mMenu = menu;
         mMenu.clear();
         getActivity().getMenuInflater().inflate(R.menu.meeting_main, mMenu);
+
+    }
+
+    private void reSetMenuOnClickListener(ImageButton mAddFriend){
+        mAddFriend.setVisibility(View.VISIBLE);
         mAddFriend.setImageResource(R.drawable.ic_add_white);
         mAddFriend.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -142,6 +143,16 @@ public class MeetingFragment extends Fragment implements View.OnClickListener,Se
                 return false;
             }
         });
+
+    }
+
+    private void hideYear(Button year){
+        year.setVisibility(View.GONE);
+    }
+
+    public void handleConflict(ImageButton addFriend, Button year){
+        reSetMenuOnClickListener(addFriend);
+        hideYear(year);
     }
 
 

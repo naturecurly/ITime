@@ -24,14 +24,17 @@ import android.preference.PreferenceManager;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.TextView;
 
 import com.facebook.login.LoginManager;
 import com.itime.team.itime.R;
 import com.itime.team.itime.activities.LoginActivity;
-import com.itime.team.itime.activities.MeetingPreferenceActivity;
 import com.itime.team.itime.activities.SettingsActivity;
 import com.itime.team.itime.bean.User;
 import com.itime.team.itime.database.UserTableHelper;
@@ -118,6 +121,11 @@ public class SettingsFragment extends Fragment implements View.OnClickListener {
         }
     }
 
+    public void handleConfilct(ImageButton eventList, Button today){
+        eventList.setVisibility(View.GONE);
+        today.setVisibility(View.GONE);
+    }
+
     /*
         if a user logout, the person's account will not be remembered.
      */
@@ -141,6 +149,5 @@ public class SettingsFragment extends Fragment implements View.OnClickListener {
             TextView textView = (TextView) mAlertTimeView.findViewById(R.id.setting_dft_alert_time_text);
             textView.setText(text);
         }
-
     }
 }

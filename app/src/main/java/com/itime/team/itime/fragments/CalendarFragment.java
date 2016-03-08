@@ -57,8 +57,7 @@ public class CalendarFragment extends Fragment {
 
         setHasOptionsMenu(true);
 
-//        ImageButton imageButton = (ImageButton) getActivity().findViewById(R.id.event_list);
-//        imageButton.setImageResource(R.drawable.ic_calendar_list_white);
+        imageButton = (ImageButton) getActivity().findViewById(R.id.event_list);
 
         Calendar c = Calendar.getInstance();
         c.add(Calendar.DAY_OF_MONTH, -14 - 7 * 7);
@@ -80,6 +79,7 @@ public class CalendarFragment extends Fragment {
 //            //Log.i("testest", calendar.get("day") + "");
 //        }
 
+
     }
 
     @Override
@@ -89,35 +89,7 @@ public class CalendarFragment extends Fragment {
         //rowHeight = calendarView.getLayoutParams().height;
         TextView title = (TextView) getActivity().findViewById(R.id.toolbar_title);
         title.setText("Calendar");
-        imageButton = (ImageButton) getActivity().findViewById(R.id.event_list);
-        imageButton.setImageResource(R.drawable.ic_calendar_list_white);
-        imageButton.setVisibility(View.VISIBLE);
-        imageButton.setOnTouchListener(new View.OnTouchListener() {
-            @Override
-            public boolean onTouch(View v, MotionEvent event) {
-                if (event.getAction() == MotionEvent.ACTION_DOWN) {
-                    ((ImageButton) v).setImageDrawable(ContextCompat.getDrawable(getActivity(), R.drawable.ic_calendar_list));
 
-                }
-                if (event.getAction() == MotionEvent.ACTION_UP) {
-                    ((ImageButton) v).setImageDrawable(ContextCompat.getDrawable(getActivity(), R.drawable.ic_calendar_list_white));
-                }
-
-                return false;
-            }
-        });
-        imageButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Fragment fragment = new EventListFragment();
-                FragmentTransaction ft = getFragmentManager().beginTransaction();
-                //ft.detach(getFragmentManager().findFragmentById(R.id.realtab_content)).add(fragment,"list");
-                ft.replace(R.id.realtab_content, fragment);
-
-                ft.addToBackStack(null);
-                ft.commit();
-            }
-        });
 
         mTodayButton = (Button) getActivity().findViewById(R.id.button_today);
         mTodayButton.setOnClickListener(new View.OnClickListener() {
@@ -133,6 +105,8 @@ public class CalendarFragment extends Fragment {
         linearLayoutManager.scrollToPosition(6);
         recyclerView.setLayoutManager(linearLayoutManager);
         recyclerView.setAdapter(new CalendarAdapter(dates));
+
+        reSetMenuOnClickListener(imageButton);
 
 
         recyclerView.addOnItemTouchListener(new RecyclerItemClickListener(getActivity(), new RecyclerItemClickListener.OnItemClickListener() {
@@ -337,6 +311,39 @@ public class CalendarFragment extends Fragment {
                 ft.commit();
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    public void reSetMenuOnClickListener(ImageButton imageButton){
+        imageButton.setImageResource(R.drawable.ic_calendar_list_white);
+        imageButton.setVisibility(View.VISIBLE);
+        imageButton.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                if (event.getAction() == MotionEvent.ACTION_DOWN) {
+                    ((ImageButton) v).setImageDrawable(ContextCompat.getDrawable(getActivity(), R.drawable.ic_calendar_list));
+
+                }
+                if (event.getAction() == MotionEvent.ACTION_UP) {
+                    ((ImageButton) v).setImageDrawable(ContextCompat.getDrawable(getActivity(), R.drawable.ic_calendar_list_white));
+                }
+
+                return false;
+            }
+        });
+        imageButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Fragment fragment = new EventListFragment();
+                FragmentTransaction ft = getFragmentManager().beginTransaction();
+                //ft.detach(getFragmentManager().findFragmentById(R.id.realtab_content)).add(fragment,"list");
+                ft.replace(R.id.realtab_content, fragment);
+
+                ft.addToBackStack(null);
+                ft.commit();
+            }
+        });
+
+        mTodayButton.setVisibility(View.VISIBLE);
     }
 }
 

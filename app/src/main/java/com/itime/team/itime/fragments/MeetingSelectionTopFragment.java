@@ -116,6 +116,7 @@ public class MeetingSelectionTopFragment extends Fragment implements ScrollViewL
                     currentDay[1], currentDay[2]) - 1] + "\n" + currentDay[2]);
             mDates[mInitDays].setWidth(WIDTH);
             mDates[mInitDays].setGravity(Gravity.CENTER_HORIZONTAL);
+
             mChild.addView(mDates[mInitDays]);
             currentDay = DateUtil.addDaysBasedOnCalendar(currentDay[0], currentDay[1], currentDay[2], 1);
         }

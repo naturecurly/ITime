@@ -88,9 +88,9 @@ public class SettingsFragment extends Fragment implements View.OnClickListener {
                 break;
 
             case SETTINGS_MEETING_ID:
-                Intent intent1 = new Intent(getActivity(), MeetingPreferenceActivity.class);
-                intent1.putExtra(SETTINGS, MEETING_SETTINGS);
-                startActivity(intent1);
+                //Intent intent1 = new Intent(getActivity(), MeetingPreferenceActivity.class);
+                intent.putExtra(SETTINGS, MEETING_SETTINGS);
+                startActivity(intent);
                 break;
 
 
@@ -102,6 +102,7 @@ public class SettingsFragment extends Fragment implements View.OnClickListener {
             case SETTINGS_ALERT_TIME_ID:
                 intent.putExtra(SETTINGS, ALERT_TIME_SETTINGS);
                 startActivityForResult(intent, ALERT_TIME_SETTINGS);
+                break;
 
             case SETTING_LOGOUT_ID:
                 getActivity().finish();

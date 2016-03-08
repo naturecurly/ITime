@@ -1,42 +1,100 @@
 <?xml version="1.0" encoding="utf-8"?>
+<!-- Profile fragment: A List of Profile preference.-->
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:orientation="vertical" android:layout_width="match_parent"
     android:layout_height="match_parent">
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal">
-        <Button
-            android:layout_width="100dp"
-            android:layout_height="50dp"
-            android:id="@+id/profile_back"
-            android:text="BackBackBackBackBackBackBackBackBackBackBackBackBackBackBackBackBackBack"/>
+
+    <!-- Profile Photo-->
+    <RelativeLayout
+        style="@style/ProfileListLayout">
+
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginLeft="100px"
-            android:text="Profile"/>
+            android:text="Profile Photo"
+            android:layout_centerVertical="true"/>
 
         <ImageView
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:layout_alignParentRight="true"
+            android:src="@drawable/ic_profile" />
+
+
+    </RelativeLayout>
+
+    <!-- Name -->
+    <RelativeLayout
+        style="@style/ProfileListLayout">
+
+        <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:id="@+id/test_imageview"/>
+            android:text="Name"/>
+
         <TextView
-            android:layout_width="40dp"
-            android:layout_height="80dp"
-            android:text="hh"
-            android:gravity="center_vertical"
-            android:background="@color/colorPrimary"
-            android:id="@+id/oo"
-            android:lines="3"
-            android:ellipsize="end"/>
-    </LinearLayout>
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="null"
+            android:layout_alignParentRight="true" />
 
-    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-        android:orientation="vertical" android:layout_width="match_parent"
-        android:layout_height="100px"
-        android:id="@+id/profile_photo">
-    </LinearLayout>
+    </RelativeLayout>
 
+    <!-- ITIME ID -->
+    <RelativeLayout
+        style="@style/ProfileListLayout">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="ITIME ID"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="null"
+            android:layout_alignParentRight="true" />
+
+    </RelativeLayout>
+
+    <!-- My QR Code -->
+    <RelativeLayout
+        style="@style/ProfileListLayout">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="My QR Code"/>
+
+        <ImageView
+            android:layout_width="20dp"
+            android:layout_height="20dp"
+            android:layout_alignParentRight="true"
+            android:src="@drawable/qrcode" />
+
+
+    </RelativeLayout>
+
+    <!-- Email -->
+    <RelativeLayout
+        style="@style/ProfileListLayout">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Email"/>
+
+    </RelativeLayout>
+
+    <!-- Phone Number -->
+    <RelativeLayout
+        style="@style/ProfileListLayout">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Phone Number"/>
+
+    </RelativeLayout>
 
 </LinearLayout>

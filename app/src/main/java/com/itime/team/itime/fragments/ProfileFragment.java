@@ -18,6 +18,12 @@ package com.itime.team.itime.fragments;
 
 import android.os.Bundle;
 import android.preference.PreferenceFragment;
+import android.support.annotation.Nullable;
+import android.support.v4.app.Fragment;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.TextView;
 
 import com.itime.team.itime.R;
 
@@ -25,12 +31,17 @@ import com.itime.team.itime.R;
 /**
  * Created by Xuhui Chen (yorkfine) on 19/01/16.
  */
-public class ProfileFragment extends PreferenceFragment {
+public class ProfileFragment extends Fragment {
+    private View mProfileView;
 
+    @Nullable
     @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        mProfileView = inflater.inflate(R.layout.fragment_profile, null);
+        TextView title = (TextView) getActivity().findViewById(R.id.setting_toolbar_title);
+        title.setText("Profile");
+        setHasOptionsMenu(true);
 
-        addPreferencesFromResource(R.xml.preferences_profile);
+        return mProfileView;
     }
 }

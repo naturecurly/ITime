@@ -289,4 +289,22 @@ public class DateUtil {
         return str;
     }
 
+    /**
+     * @param data a date in String format "yyyy-MM-dd HH:mm:ss Z"
+     * @return a Date Object
+     */
+    public static Date getLocalDateObject(String data) {
+        Date date = null;
+        // formater.getDateInstance can be more efficient
+        DateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss Z");
+        formatter.setTimeZone(TimeZone.getDefault());
+        try {
+            date = formatter.parse(data);
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+        return date;
+    }
+
+
 }

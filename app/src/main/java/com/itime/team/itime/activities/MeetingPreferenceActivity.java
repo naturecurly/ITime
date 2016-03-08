@@ -58,7 +58,7 @@ public class MeetingPreferenceActivity extends AppCompatPreferenceActivity {
         super.onCreate(savedInstanceState);
         // layoutResId is activity_settings layout which does not contain any list with id list
         //setContentView(R.layout.activity_settings);
-        final Toolbar toolbar = (Toolbar) findViewById(R.id.setting_profile_toolbar);
+        final Toolbar toolbar = (Toolbar) findViewById(R.id.setting_toolbar);
         setSupportActionBar(toolbar);
 
         toolbar.setNavigationOnClickListener(new View.OnClickListener() {

@@ -25,6 +25,7 @@ import android.preference.Preference;
 import android.preference.PreferenceFragment;
 import android.preference.PreferenceManager;
 import android.preference.PreferenceScreen;
+import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -32,6 +33,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.DatePicker;
+import android.widget.TextView;
 import android.widget.TimePicker;
 
 import com.itime.team.itime.R;
@@ -45,11 +47,12 @@ import java.util.Set;
  *
  * TODO: Singleton class is preferable?
  */
-public class MeetingSubPreferenceFragment extends PreferenceFragment
+public class MeetingSubPreferenceFragment extends Fragment
         implements Preference.OnPreferenceClickListener, Preference.OnPreferenceChangeListener {
 
     private static final String MEETING_PREFERENCE_COUNT = "meeting_preference_count";
 
+    private View mMeetingSubPrefView;
     private boolean mIsNewPreferences = false;
     private int mCurPrefercenIndex = -1;
     private boolean isReject;
@@ -62,34 +65,19 @@ public class MeetingSubPreferenceFragment extends PreferenceFragment
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        addPreferencesFromResource(R.xml.preferences_meeting_sub);
+        mMeetingSubPrefView = inflater.inflate(R.layout.fragment_sub_preference_meeting, null);
+        TextView title = (TextView) getActivity().findViewById(R.id.setting_toolbar_title);
+        title.setText("Edit Preference");
         Bundle args = getArguments();
         // TODO: new preference does nothing, but indexed preference fetch the values
         if (args != null && args.getBoolean("AddMeetingPreference")) {
             mIsNewPreferences = true;
         }
         if (args != null && !mIsNewPreferences) {
-            preferenceId = args.getString("preference_id");
-            String pref_id = preferenceId;
-            SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(getActivity());
-            findPreference("start_date").setSummary(sp.getString(pref_id+"_startDate", ""));
-            findPreference("starts").setSummary(sp.getString(pref_id+"_startTime", ""));
-            findPreference("ends").setSummary(sp.getString(pref_id+"_endTime", ""));
-            getPreferenceScreen().getPreference(3).setSummary(sp.getString(pref_id+"_repeat", ""));
-            //findPreference("type").setSummary(sp.getString(pref_id+"_type", ""));
-            if (sp.getString(pref_id+"_type", "").equalsIgnoreCase("reject")) {
-                isReject = true;
-            }
+            // TODO: set preferences from last fragment
         }
-        findPreference("start_date").setOnPreferenceClickListener(this);
-        findPreference("starts").setOnPreferenceClickListener(this);
-        findPreference("ends").setOnPreferenceClickListener(this);
-        getPreferenceScreen().getPreference(3).setOnPreferenceChangeListener(this);
-        findPreference("type").setOnPreferenceClickListener(this);
-        Preference type = findPreference("type");
-        String summary = isReject ? "Reject" : "Accept";
-        type.setSummary(summary);
-        return super.onCreateView(inflater, container, savedInstanceState);
+        return mMeetingSubPrefView;
+        //return super.onCreateView(inflater, container, savedInstanceState);
     }
 
     @Override
@@ -104,12 +92,13 @@ public class MeetingSubPreferenceFragment extends PreferenceFragment
         int id = item.getItemId();
         if (id == R.id.action_save) {
             // TODO: Save preference to sharePref and update server
-            saveMeetingPreferences();
+            //saveMeetingPreferences();
             return true;
         }
         return super.onOptionsItemSelected(item);
     }
 
+    /*
     private void saveMeetingPreferences() {
         final SharedPreferences defaultSharedPreferences = PreferenceManager.getDefaultSharedPreferences(getActivity());
         int count = defaultSharedPreferences.getInt(MEETING_PREFERENCE_COUNT, 0);
@@ -190,6 +179,7 @@ public class MeetingSubPreferenceFragment extends PreferenceFragment
         // back to previous activity after saved
         getActivity().onBackPressed();
     }
+    */
 
     private void savePreference() {
 

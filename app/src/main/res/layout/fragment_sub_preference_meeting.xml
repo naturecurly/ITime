@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  ~ Created by Xuhui Chen (yorkfine) on 08/03/16
+  ~ New meeting preference fragment: create/update a new meeting preference
+  -->
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical" android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+  <!-- Start Date-->
+  <RelativeLayout
+      style="@style/MeetingSubPrefListLayout"
+      android:layout_marginBottom="30dp">
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Starts Date"
+        android:layout_centerVertical="true"/>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="null"
+        android:layout_alignParentRight="true" />
+
+  </RelativeLayout>
+
+  <!-- Starts -->
+  <RelativeLayout
+      style="@style/MeetingSubPrefListLayout">
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Starts"/>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="null"
+        android:layout_alignParentRight="true" />
+
+  </RelativeLayout>
+
+  <!-- Ends -->
+  <RelativeLayout
+      style="@style/MeetingSubPrefListLayout">
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Ends"/>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="null"
+        android:layout_alignParentRight="true" />
+
+  </RelativeLayout>
+
+  <!-- Repeats -->
+  <RelativeLayout
+      style="@style/MeetingSubPrefListLayout">
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Repeats"/>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="null"
+        android:layout_alignParentRight="true" />
+
+
+  </RelativeLayout>
+
+  <!-- Type -->
+  <RelativeLayout
+      style="@style/MeetingSubPrefListLayout">
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Type"/>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="null"
+        android:layout_alignParentRight="true" />
+
+  </RelativeLayout>
+
+
+</LinearLayout>

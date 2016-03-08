@@ -35,6 +35,12 @@
                 android:background="@null"
                 android:gravity="left" />
 
+            <Button
+                android:id="@+id/button_today"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="#00000000"
+                android:text="Today" />
         </android.support.v7.widget.Toolbar>
 
     </android.support.design.widget.AppBarLayout>

@@ -16,6 +16,7 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.DecelerateInterpolator;
+import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -47,6 +48,8 @@ public class CalendarFragment extends Fragment {
     private int firstVisibleItem, visibleItemCount, totalItemCount;
     private LinearLayoutManager linearLayoutManager;
     private ImageButton imageButton;
+    private Button mTodayButton;
+    private int todayIndex;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -54,12 +57,13 @@ public class CalendarFragment extends Fragment {
 
         setHasOptionsMenu(true);
 
-        ImageButton imageButton = (ImageButton) getActivity().findViewById(R.id.event_list);
-        imageButton.setImageResource(R.drawable.ic_calendar_list_white);
+//        ImageButton imageButton = (ImageButton) getActivity().findViewById(R.id.event_list);
+//        imageButton.setImageResource(R.drawable.ic_calendar_list_white);
 
         Calendar c = Calendar.getInstance();
         c.add(Calendar.DAY_OF_MONTH, -14 - 7 * 7);
         c.add(Calendar.DATE, -c.get(Calendar.DAY_OF_WEEK));
+        todayIndex = 8;
         for (int i = 0; i < 15; i++) {
             c.add(Calendar.DATE, 7);
             Map<String, Integer> map = new HashMap<>();
@@ -67,13 +71,14 @@ public class CalendarFragment extends Fragment {
             map.put("month", c.get(Calendar.MONTH) + 1);
             map.put("day", c.get(Calendar.DAY_OF_MONTH));
             dates.add(map);
+
             //c.add(Calendar.DATE, 21);
             //Log.i("testtest",c.get(Calendar.DAY_OF_MONTH)+"");
         }
 
-        for (Map<String, Integer> calendar : dates) {
-            Log.i("testest", calendar.get("day") + "");
-        }
+//        for (Map<String, Integer> calendar : dates) {
+//            //Log.i("testest", calendar.get("day") + "");
+//        }
 
     }
 
@@ -85,7 +90,7 @@ public class CalendarFragment extends Fragment {
         TextView title = (TextView) getActivity().findViewById(R.id.toolbar_title);
         title.setText("Calendar");
         imageButton = (ImageButton) getActivity().findViewById(R.id.event_list);
-
+        imageButton.setImageResource(R.drawable.ic_calendar_list_white);
         imageButton.setVisibility(View.VISIBLE);
         imageButton.setOnTouchListener(new View.OnTouchListener() {
             @Override
@@ -97,6 +102,7 @@ public class CalendarFragment extends Fragment {
                 if (event.getAction() == MotionEvent.ACTION_UP) {
                     ((ImageButton) v).setImageDrawable(ContextCompat.getDrawable(getActivity(), R.drawable.ic_calendar_list_white));
                 }
+
                 return false;
             }
         });
@@ -113,7 +119,15 @@ public class CalendarFragment extends Fragment {
             }
         });
 
-
+        mTodayButton = (Button) getActivity().findViewById(R.id.button_today);
+        mTodayButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+//                recyclerView.scrollToPosition(todayIndex);
+                //  recyclerView.getLayoutManager().scrollToPosition(todayIndex);
+                ((LinearLayoutManager) recyclerView.getLayoutManager()).scrollToPositionWithOffset(todayIndex-1, 0);
+            }
+        });
         recyclerView = (RecyclerView) view.findViewById(R.id.recycler_view);
         linearLayoutManager = new LinearLayoutManager(getActivity());
         linearLayoutManager.scrollToPosition(6);
@@ -166,11 +180,11 @@ public class CalendarFragment extends Fragment {
 
 
                 visibleItemCount = linearLayoutManager.getChildCount();
-                Log.i("Vcount", visibleItemCount + "");
+                //Log.i("Vcount", visibleItemCount + "");
                 totalItemCount = linearLayoutManager.getItemCount();
-                Log.i("Tcount", totalItemCount + "");
+                //Log.i("Tcount", totalItemCount + "");
                 firstVisibleItem = linearLayoutManager.findFirstVisibleItemPosition();
-                Log.i("Fcount", firstVisibleItem + "");
+                //Log.i("Fcount", firstVisibleItem + "");
                 if (dy > 0) {
 
 
@@ -204,8 +218,10 @@ public class CalendarFragment extends Fragment {
                         Log.i("...", "first called");
                         for (int i = 0; i < 5; i++) {
                             insertItem();
+                            todayIndex++;
                             recyclerView.getAdapter().notifyItemInserted(0);
                         }
+
                         loading = true;
                     }
                 }

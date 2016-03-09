@@ -24,8 +24,6 @@ import android.preference.PreferenceManager;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
-import android.view.Menu;
-import android.view.MenuInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
@@ -77,7 +75,7 @@ public class SettingsFragment extends Fragment implements View.OnClickListener {
         View v4 = view.findViewById(SETTING_LOGOUT_ID);
         v4.setOnClickListener(this);
 
-        return view;
+         return view;
     }
 
     @Override

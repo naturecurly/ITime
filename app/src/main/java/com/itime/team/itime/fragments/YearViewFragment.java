@@ -176,13 +176,17 @@ public class YearViewFragment extends Fragment {
                         bundle.putInt("month", month);
                         //fragmentTransaction.replace(R.id.realtab_content, CalendarFragment.newInstance(bundle));
                         Calendar calendar = Calendar.getInstance();
-                        calendar.set(year, month, 1);
+                        calendar.set(year, month - 1, 1);
                         ((CalendarFragment) fragment).getList().clear();
                         ((CalendarFragment) fragment).fillData(calendar);
+                        ((CalendarFragment) fragment).loading = true;
+                        ((CalendarFragment) fragment).previousTotal = 0;
+                        ((CalendarFragment) fragment).getLinearLayoutManager().scrollToPositionWithOffset(5, 0);
                         ((CalendarFragment) fragment).getRecyclerView().getAdapter().notifyDataSetChanged();
+
                         fragmentTransaction.hide(yearFragment);
                         fragmentTransaction.show(fragment);
-                        fragmentTransaction.addToBackStack(null);
+                        //fragmentTransaction.addToBackStack(null);
                         fragmentTransaction.commit();
                     }
                 });

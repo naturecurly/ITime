@@ -42,10 +42,15 @@ public class CalendarFragment extends Fragment {
     private List<Map<String, Integer>> dates = new ArrayList<>();
     private int lastPosition = -1;
     private int rowHeight;
-    private int previousTotal = 0;
-    private boolean loading = true;
+    public int previousTotal = 0;
+    public boolean loading = true;
     private int visibleThreshold = 5;
     private int firstVisibleItem, visibleItemCount, totalItemCount;
+
+    public LinearLayoutManager getLinearLayoutManager() {
+        return linearLayoutManager;
+    }
+
     private LinearLayoutManager linearLayoutManager;
     private ImageButton imageButton;
     private Button mTodayButton;
@@ -63,9 +68,9 @@ public class CalendarFragment extends Fragment {
 
     public void fillData(Calendar c) {
         //Calendar c = Calendar.getInstance();
-        c.add(Calendar.DAY_OF_MONTH, -14 - 7 * 7);
+        c.add(Calendar.DAY_OF_MONTH, -7 * 7);
         c.add(Calendar.DATE, -c.get(Calendar.DAY_OF_WEEK));
-        todayIndex = 8;
+        todayIndex = 7;
         for (int i = 0; i < 15; i++) {
             c.add(Calendar.DATE, 7);
             Map<String, Integer> map = new HashMap<>();
@@ -84,16 +89,16 @@ public class CalendarFragment extends Fragment {
         setHasOptionsMenu(true);
 
         imageButton = (ImageButton) getActivity().findViewById(R.id.event_list);
-        if (getArguments() != null) {
-            int month = getArguments().getInt("month");
-            int year = getArguments().getInt("year");
-            Calendar c = Calendar.getInstance();
-            c.set(year, month - 1, 1);
-            fillData(c);
+//        if (getArguments() != null) {
+//            int month = getArguments().getInt("month");
+//            int year = getArguments().getInt("year");
+//            Calendar c = Calendar.getInstance();
+//            c.set(year, month - 1, 1);
+//            fillData(c);
 
-        } else {
-            fillData(Calendar.getInstance());
-        }
+//        } else {
+        fillData(Calendar.getInstance());
+//        }
     }
 
     @Override
@@ -111,7 +116,7 @@ public class CalendarFragment extends Fragment {
             public void onClick(View v) {
 //                recyclerView.scrollToPosition(todayIndex);
                 //  recyclerView.getLayoutManager().scrollToPosition(todayIndex);
-                ((LinearLayoutManager) recyclerView.getLayoutManager()).scrollToPositionWithOffset(todayIndex - 1, 0);
+                ((LinearLayoutManager) recyclerView.getLayoutManager()).scrollToPositionWithOffset(todayIndex - 2, 0);
                 dates.clear();
                 fillData(Calendar.getInstance());
                 recyclerView.getAdapter().notifyDataSetChanged();
@@ -119,7 +124,7 @@ public class CalendarFragment extends Fragment {
         });
         recyclerView = (RecyclerView) view.findViewById(R.id.recycler_view);
         linearLayoutManager = new LinearLayoutManager(getActivity());
-        linearLayoutManager.scrollToPosition(6);
+        linearLayoutManager.scrollToPositionWithOffset(5, 0);
         recyclerView.setLayoutManager(linearLayoutManager);
         recyclerView.setAdapter(new CalendarAdapter(dates));
 
@@ -329,7 +334,7 @@ public class CalendarFragment extends Fragment {
                 } else {
                     ft.show(yearFragment);
                 }
-                ft.addToBackStack(null);
+                //ft.addToBackStack(null);
                 ft.commit();
         }
         return super.onOptionsItemSelected(item);
@@ -366,7 +371,7 @@ public class CalendarFragment extends Fragment {
                 }
                 //ft.replace(R.id.realtab_content, fragment);
 
-                ft.addToBackStack(null);
+                //ft.addToBackStack(null);
                 ft.commit();
             }
         });
@@ -379,11 +384,11 @@ public class CalendarFragment extends Fragment {
         this.yearFragment = yearFragment;
     }
 
-    public RecyclerView getRecyclerView(){
+    public RecyclerView getRecyclerView() {
         return recyclerView;
     }
 
-    public List<Map<String, Integer>> getList(){
+    public List<Map<String, Integer>> getList() {
         return dates;
     }
 

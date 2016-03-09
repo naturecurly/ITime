@@ -17,7 +17,7 @@
             android:layout_height="fill_parent"
             android:orientation="horizontal"
             android:id="@+id/meeting_selection_center_scroll">
-            <AbsoluteLayout
+            <FrameLayout
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
@@ -29,7 +29,7 @@
                     android:orientation="horizontal"
                     android:id="@+id/meeting_selection_center_date">
                 </LinearLayout>
-            </AbsoluteLayout>
+            </FrameLayout>
         </com.itime.team.itime.views.MeetingSelectionScrollView>
     </LinearLayout>
 

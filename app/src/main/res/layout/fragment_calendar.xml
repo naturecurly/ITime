@@ -104,10 +104,20 @@
         android:layout_height="200dp"
         android:splitMotionEvents="false" />
 
-    <TextView
-        android:id="@+id/text_display"
+    <com.itime.team.itime.views.MeetingScrollView
+        android:id="@+id/lower_scroll_view"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:gravity="center"
-        android:text="test" />
+        android:scrollbars="none">
+
+
+        <RelativeLayout
+            android:id="@+id/lower_relative_layout"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+
+        </RelativeLayout>
+    </com.itime.team.itime.views.MeetingScrollView>
+
 </LinearLayout>

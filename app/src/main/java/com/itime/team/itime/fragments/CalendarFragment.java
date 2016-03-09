@@ -16,15 +16,22 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.DecelerateInterpolator;
+import android.widget.AbsListView;
 import android.widget.Button;
+import android.widget.FrameLayout;
 import android.widget.ImageButton;
+import android.widget.ListView;
+import android.widget.RelativeLayout;
+import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.itime.team.itime.R;
 import com.itime.team.itime.listener.OnDateSelectedListener;
 import com.itime.team.itime.listener.RecyclerItemClickListener;
+import com.itime.team.itime.listener.ScrollMeetingViewListener;
 import com.itime.team.itime.views.CalendarView;
+import com.itime.team.itime.views.MeetingScrollView;
 
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -46,6 +53,8 @@ public class CalendarFragment extends Fragment {
     public boolean loading = true;
     private int visibleThreshold = 5;
     private int firstVisibleItem, visibleItemCount, totalItemCount;
+    private MeetingScrollView mScrollView;
+    private boolean isExpended = false;
 
     public LinearLayoutManager getLinearLayoutManager() {
         return linearLayoutManager;
@@ -57,6 +66,7 @@ public class CalendarFragment extends Fragment {
     private int todayIndex;
     private Fragment currentFragment;
     private Fragment yearFragment;
+    private RelativeLayout relativeLayout;
 
     public static CalendarFragment newInstance(Bundle bundle) {
 
@@ -119,6 +129,9 @@ public class CalendarFragment extends Fragment {
                 ((LinearLayoutManager) recyclerView.getLayoutManager()).scrollToPositionWithOffset(todayIndex - 2, 0);
                 dates.clear();
                 fillData(Calendar.getInstance());
+                loading = true;
+                previousTotal = 0;
+                linearLayoutManager.scrollToPositionWithOffset(5, 0);
                 recyclerView.getAdapter().notifyDataSetChanged();
             }
         });
@@ -127,7 +140,67 @@ public class CalendarFragment extends Fragment {
         linearLayoutManager.scrollToPositionWithOffset(5, 0);
         recyclerView.setLayoutManager(linearLayoutManager);
         recyclerView.setAdapter(new CalendarAdapter(dates));
+        relativeLayout = (RelativeLayout) view.findViewById(R.id.lower_relative_layout);
 
+        //TextView timeTextView = new TextView(getActivity());
+        //timeTextView.setText("00:00");
+
+//        int id = View.generateViewId();
+//        timeTextView.setId(id);
+//        relativeLayout.addView(timeTextView, param);
+
+        for (int i = 0; i < 24; i++) {
+            TextView timeTextView = new TextView(getActivity());
+            timeTextView.setText((i < 10 ? "0" + i : i + "") + ":00");
+            timeTextView.setId(i + 1);
+            RelativeLayout.LayoutParams param = new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+            if (i != 0) {
+                param.addRule(RelativeLayout.BELOW, i);
+                relativeLayout.addView(timeTextView, param);
+            }
+            if (i == 0) {
+                param.addRule(RelativeLayout.ALIGN_PARENT_LEFT);
+                relativeLayout.addView(timeTextView);
+            }
+
+        }
+
+
+//        TextView timeTextView1 = new TextView(getActivity());
+//        TextView timeTextView2 = new TextView(getActivity());
+//        timeTextView1.setId(0);
+//        RelativeLayout.LayoutParams param = new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+//        param.addRule(RelativeLayout.BELOW, 0);
+//        relativeLayout.addView(timeTextView1);
+
+//        relativeLayout.addView(timeTextView1);
+//        relativeLayout.addView(timeTextView2, param);
+
+
+        mScrollView = (MeetingScrollView) view.findViewById(R.id.lower_scroll_view);
+        mScrollView.setOnScrollViewListener(new ScrollMeetingViewListener() {
+            @Override
+            public void onScrollChanged(MeetingScrollView scrollView, int x, int y, int oldx, int oldy) {
+                //Toast.makeText(getActivity(), "scrolled", Toast.LENGTH_SHORT).show();
+                if (isExpended) {
+                    isExpended = false;
+                    rowHeight = recyclerView.getChildAt(0).getHeight();
+                    ValueAnimator animator = ValueAnimator.ofInt(recyclerView.getMeasuredHeight(), rowHeight * 3);
+                    animator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
+                        @Override
+                        public void onAnimationUpdate(ValueAnimator animation) {
+                            int value = (int) animation.getAnimatedValue();
+                            ViewGroup.LayoutParams layoutParams = recyclerView.getLayoutParams();
+                            layoutParams.height = value;
+                            recyclerView.setLayoutParams(layoutParams);
+                        }
+                    });
+                    animator.setDuration(500);
+                    animator.setInterpolator(new DecelerateInterpolator());
+                    animator.start();
+                }
+            }
+        });
         reSetMenuOnClickListener(imageButton);
 
 
@@ -166,6 +239,7 @@ public class CalendarFragment extends Fragment {
                     animator.setDuration(500);
                     animator.setInterpolator(new DecelerateInterpolator());
                     animator.start();
+                    isExpended = true;
                 }
 
             }
@@ -223,6 +297,7 @@ public class CalendarFragment extends Fragment {
                 }
             }
         });
+
 
         return view;
     }

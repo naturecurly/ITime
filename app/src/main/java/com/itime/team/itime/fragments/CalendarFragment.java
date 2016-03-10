@@ -1,12 +1,14 @@
 package com.itime.team.itime.fragments;
 
 import android.animation.ValueAnimator;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -20,6 +22,7 @@ import android.widget.AbsListView;
 import android.widget.Button;
 import android.widget.FrameLayout;
 import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.RelativeLayout;
 import android.widget.ScrollView;
@@ -30,6 +33,7 @@ import com.itime.team.itime.R;
 import com.itime.team.itime.listener.OnDateSelectedListener;
 import com.itime.team.itime.listener.RecyclerItemClickListener;
 import com.itime.team.itime.listener.ScrollMeetingViewListener;
+import com.itime.team.itime.utils.DensityUtil;
 import com.itime.team.itime.views.CalendarView;
 import com.itime.team.itime.views.MeetingScrollView;
 
@@ -140,43 +144,49 @@ public class CalendarFragment extends Fragment {
         linearLayoutManager.scrollToPositionWithOffset(5, 0);
         recyclerView.setLayoutManager(linearLayoutManager);
         recyclerView.setAdapter(new CalendarAdapter(dates));
+        //rowHeight =
+        DisplayMetrics dm = getResources().getDisplayMetrics();
+        int screenWidth = dm.widthPixels;
+        rowHeight = screenWidth / 7;
+        ViewGroup.LayoutParams recycler_layoutParams = recyclerView.getLayoutParams();
+        recycler_layoutParams.height = rowHeight * 3;
+        recyclerView.setLayoutParams(recycler_layoutParams);
+        //recyclerView.setHorizontalFadingEdgeEnabled(true);
+        //recyclerView.setLayoutParams(new ViewGroup.LayoutParams(recycler_layoutParams));
         relativeLayout = (RelativeLayout) view.findViewById(R.id.lower_relative_layout);
 
-        //TextView timeTextView = new TextView(getActivity());
-        //timeTextView.setText("00:00");
-
-//        int id = View.generateViewId();
-//        timeTextView.setId(id);
-//        relativeLayout.addView(timeTextView, param);
-
+        //add views to relativeLayout
         for (int i = 0; i < 24; i++) {
             TextView timeTextView = new TextView(getActivity());
             timeTextView.setText((i < 10 ? "0" + i : i + "") + ":00");
             timeTextView.setId(i + 1);
+            //timeTextView.(DensityUtil.dip2px(getActivity(),6),DensityUtil.dip2px(getActivity(),6),DensityUtil.dip2px(getActivity(),6),DensityUtil.dip2px(getActivity(),25));
             RelativeLayout.LayoutParams param = new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
             if (i != 0) {
                 param.addRule(RelativeLayout.BELOW, i);
+                param.setMargins(DensityUtil.dip2px(getActivity(), 6), DensityUtil.dip2px(getActivity(), 6), DensityUtil.dip2px(getActivity(), 6), DensityUtil.dip2px(getActivity(), 30));
                 relativeLayout.addView(timeTextView, param);
             }
             if (i == 0) {
-                param.addRule(RelativeLayout.ALIGN_PARENT_LEFT);
-                relativeLayout.addView(timeTextView);
+                //param.addRule(RelativeLayout.ALIGN_PARENT_LEFT);
+                param.setMargins(DensityUtil.dip2px(getActivity(), 6), DensityUtil.dip2px(getActivity(), 2), DensityUtil.dip2px(getActivity(), 6), DensityUtil.dip2px(getActivity(), 30));
+
+                relativeLayout.addView(timeTextView, param);
             }
+
+            View lineView = new View(getActivity());
+            RelativeLayout.LayoutParams line_param = new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+            lineView.setBackgroundColor(Color.GRAY);
+            line_param.height = DensityUtil.dip2px(getActivity(), 1);
+            line_param.addRule(RelativeLayout.END_OF, i + 1);
+            line_param.addRule(RelativeLayout.ALIGN_TOP, i + 1);
+            line_param.setMargins(DensityUtil.dip2px(getActivity(), 6), DensityUtil.dip2px(getActivity(), 11), DensityUtil.dip2px(getActivity(), 0), DensityUtil.dip2px(getActivity(), 30));
+            relativeLayout.addView(lineView, line_param);
+
 
         }
 
-
-//        TextView timeTextView1 = new TextView(getActivity());
-//        TextView timeTextView2 = new TextView(getActivity());
-//        timeTextView1.setId(0);
-//        RelativeLayout.LayoutParams param = new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
-//        param.addRule(RelativeLayout.BELOW, 0);
-//        relativeLayout.addView(timeTextView1);
-
-//        relativeLayout.addView(timeTextView1);
-//        relativeLayout.addView(timeTextView2, param);
-
-
+        //scrollView transaction
         mScrollView = (MeetingScrollView) view.findViewById(R.id.lower_scroll_view);
         mScrollView.setOnScrollViewListener(new ScrollMeetingViewListener() {
             @Override
@@ -184,7 +194,7 @@ public class CalendarFragment extends Fragment {
                 //Toast.makeText(getActivity(), "scrolled", Toast.LENGTH_SHORT).show();
                 if (isExpended) {
                     isExpended = false;
-                    rowHeight = recyclerView.getChildAt(0).getHeight();
+
                     ValueAnimator animator = ValueAnimator.ofInt(recyclerView.getMeasuredHeight(), rowHeight * 3);
                     animator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
                         @Override
@@ -224,7 +234,8 @@ public class CalendarFragment extends Fragment {
             @Override
             public void onScrollStateChanged(final RecyclerView recyclerView, int newState) {
                 super.onScrollStateChanged(recyclerView, newState);
-                if (newState == 1) {
+                if (newState == 1 && isExpended == false) {
+                    isExpended = true;
                     rowHeight = recyclerView.getChildAt(0).getHeight();
                     ValueAnimator animator = ValueAnimator.ofInt(recyclerView.getMeasuredHeight(), rowHeight * 6);
                     animator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
@@ -239,7 +250,7 @@ public class CalendarFragment extends Fragment {
                     animator.setDuration(500);
                     animator.setInterpolator(new DecelerateInterpolator());
                     animator.start();
-                    isExpended = true;
+
                 }
 
             }

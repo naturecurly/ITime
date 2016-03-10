@@ -4,8 +4,7 @@
     android:id="@+id/calendar_view"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
-    app:layout_behavior="@string/appbar_scrolling_view_behavior">
+    android:orientation="vertical">
 
     <TableLayout
         android:id="@+id/week_label"
@@ -102,12 +101,16 @@
         android:id="@+id/recycler_view"
         android:layout_width="match_parent"
         android:layout_height="200dp"
+        android:fadingEdge="horizontal"
+        android:fadingEdgeLength="5dp"
         android:splitMotionEvents="false" />
 
     <com.itime.team.itime.views.MeetingScrollView
         android:id="@+id/lower_scroll_view"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:fadingEdge="horizontal"
+        android:fadingEdgeLength="20dp"
         android:scrollbars="none">
 
 

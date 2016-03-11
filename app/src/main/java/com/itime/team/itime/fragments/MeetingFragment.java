@@ -133,7 +133,7 @@ public class MeetingFragment extends Fragment implements View.OnClickListener,Se
         mAddFriend.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                MeetingAddDialogFragment searchDialog = new MeetingAddDialogFragment();
+                MeetingAddDialogFragment searchDialog = new MeetingAddDialogFragment(listItem);
                 searchDialog.show(getFragmentManager(), "searchDialog");
             }
         });

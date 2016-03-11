@@ -10,7 +10,7 @@ import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AbsoluteLayout;
+import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -57,7 +57,7 @@ public class MeetingSelectionCentralFragment extends Fragment implements ScrollV
     private View mParent;
     private View mTopView;
     private LinearLayout mLeftView;
-    private AbsoluteLayout mMainLayout;
+    private FrameLayout mMainLayout;
     private LinearLayout mColorsContainer;
     private LinearLayout[] mColumn;
     private View[] mLines;
@@ -162,7 +162,7 @@ public class MeetingSelectionCentralFragment extends Fragment implements ScrollV
     public void init(){
         mJsonManager = new JsonManager();
         mLeftView = (LinearLayout) mParent.findViewById(R.id.meeting_selection_left);
-        mMainLayout = (AbsoluteLayout) mParent.findViewById(R.id.meeting_selection_center_absolute);
+        mMainLayout = (FrameLayout) mParent.findViewById(R.id.meeting_selection_center_absolute);
         mColorsContainer = (LinearLayout) mParent.findViewById(R.id.meeting_selection_center_date);
         mScrollView.setCenterScollView((MeetingSelectionScrollView) mParent.findViewById(R.id.meeting_selection_center_scroll));
         if(DAYS < 6 && DAYS > 0){

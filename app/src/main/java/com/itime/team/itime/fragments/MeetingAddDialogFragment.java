@@ -34,13 +34,18 @@ public class MeetingAddDialogFragment extends DialogFragment implements DataRequ
     private ArrayList<HashMap<String, Object>> listItem;
     private View addDialog;
     private JsonManager mJsonManager;
+    private ArrayList<HashMap<String, Object>> mUserInfo;
+
+    public MeetingAddDialogFragment(ArrayList<HashMap<String, Object>> mUserInfo){
+        this.mUserInfo = mUserInfo;
+    }
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         addDialog = inflater.inflate(R.layout.fragment_meeting_adddialog,container);
         listView = (ListView) addDialog.findViewById(R.id.meeting_add_listview);
         listItem = new ArrayList<HashMap<String, Object>>();
         mJsonManager = new JsonManager();
-//        getDialog().setTitle("Search");
         getDialog().requestWindowFeature(Window.FEATURE_NO_TITLE);
         return addDialog;
     }
@@ -89,8 +94,8 @@ public class MeetingAddDialogFragment extends DialogFragment implements DataRequ
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 if(position == 0){
                     Intent intent = new Intent(getActivity(), SearchFriendActivity.class);
+                    intent.putStringArrayListExtra("friendIDs",getFriendIDs());
                     startActivity(intent);
-
                 }else if (position == 1){
                     Intent intent = new Intent(getActivity(), PhoneContactActivity.class);
                     startActivity(intent);
@@ -127,6 +132,15 @@ public class MeetingAddDialogFragment extends DialogFragment implements DataRequ
             MeetingAddDialogFragment.this.dismiss();
         }
 
+    }
+
+    private ArrayList<String> getFriendIDs(){
+        ArrayList<String> ids = new ArrayList<>();
+        for(HashMap<String, Object> info : mUserInfo){
+            String id = (String) info.get("ItemID");
+            ids.add(id);
+        }
+        return ids;
     }
 
     @Override

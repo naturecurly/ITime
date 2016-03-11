@@ -5,7 +5,6 @@ import android.os.Bundle;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.View;
 
 import com.itime.team.itime.R;
@@ -44,7 +43,6 @@ public class DateSelectionActivity extends AppCompatActivity {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.meetingselection);
-
         Toolbar toolbar = (Toolbar) findViewById(R.id.meeting_selection_bar);
         setSupportActionBar(toolbar);
         setTitle(R.string.meeting_select_title);
@@ -65,8 +63,11 @@ public class DateSelectionActivity extends AppCompatActivity {
     }
 
     private void init(){
+
         TopAndCenterMeetingFragmentScrollViews scrollViews = new TopAndCenterMeetingFragmentScrollViews();
+
         centralFragment =  new MeetingSelectionCentralFragment(scrollViews);
+
         Bundle centralMSG = new Bundle();
         centralMSG.putInt("totaldays",
                 DateUtil.diffDate(STARTYEAR, STARTMONTH, STARTDAY, ENDYEAR, ENDMONTH, ENDDAY));
@@ -80,14 +81,17 @@ public class DateSelectionActivity extends AppCompatActivity {
         centralFragment.setArguments(centralMSG);
 
         topFragment = new MeetingSelectionTopFragment(scrollViews);
+
+
         Bundle topMSG = new Bundle();
         topMSG.putInt("startyear",STARTYEAR);
         topMSG.putInt("startmonth",STARTMONTH);
         topMSG.putInt("startday",STARTDAY);
         topMSG.putInt("endyear",ENDYEAR);
         topMSG.putInt("endmonth", ENDMONTH);
-        topMSG.putInt("endday",ENDDAY);
+        topMSG.putInt("endday", ENDDAY);
         topFragment.setArguments(topMSG);
+
         getFragmentManager().beginTransaction().add(R.id.meeting_selection_top,
                 topFragment).commit();
         getFragmentManager().beginTransaction().add(R.id.meeting_selection_scroll,

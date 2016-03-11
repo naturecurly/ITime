@@ -1,7 +1,10 @@
 package com.itime.team.itime.activities;
 
+import android.app.ProgressDialog;
 import android.database.Cursor;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
 import android.provider.ContactsContract;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
@@ -28,6 +31,7 @@ public class PhoneContactActivity extends AppCompatActivity implements AdapterVi
     private ListView mListView;
     private Boolean[] mIsChecked;
     private PhotoContactsAdapter mListViewAdapter;
+    private ProgressDialog dialog;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -35,9 +39,7 @@ public class PhoneContactActivity extends AppCompatActivity implements AdapterVi
         setContentView(R.layout.activity_phone_contact);
         mListView = (ListView) findViewById(R.id.phone_contact_listview);
         init();
-        setContacts();
-        setListView();
-
+        new LoadingThread(this).start();
     }
 
     private void init(){
@@ -56,6 +58,7 @@ public class PhoneContactActivity extends AppCompatActivity implements AdapterVi
             actionBar.setDisplayHomeAsUpEnabled(true);
         }
         mListView.setOnItemClickListener(this);
+        dialog = ProgressDialog.show(this, null, "Loading", true, false);
     }
 
     public void setContacts() {
@@ -158,6 +161,29 @@ public class PhoneContactActivity extends AppCompatActivity implements AdapterVi
         checkBox.toggle();
     }
 
+
+    private class LoadingThread extends Thread {
+
+        private PhoneContactActivity activity;
+
+        public LoadingThread(PhoneContactActivity act) {
+            activity = act;
+        }
+        public void run() {
+            setContacts();
+            activity.mHandler.sendEmptyMessage(0);
+        }
+    }
+
+    private Handler mHandler = new Handler() {
+        @Override
+        public void handleMessage(Message msg) {
+            // TODO Auto-generated method stub
+            setListView();
+            if (dialog.isShowing())
+                dialog.dismiss();
+        }
+    };
 
 
 }

@@ -10,6 +10,7 @@ import android.support.v7.widget.Toolbar;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ListView;
+import android.widget.Toast;
 
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
@@ -36,7 +37,7 @@ public class SearchFriendActivity extends AppCompatActivity implements DataReque
     private ListView mListView;
     private JsonManager mJsonManager;
     private ArrayList<HashMap<String, Object>> mListItem;
-
+    private ArrayList<String> mFriendIDs;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -64,6 +65,7 @@ public class SearchFriendActivity extends AppCompatActivity implements DataReque
         mSearch.setOnQueryTextListener(this);
         mListItem = new ArrayList<>();
         mListView.setOnItemClickListener(this);
+        mFriendIDs = getIntent().getStringArrayListExtra("friendIDs");
     }
 
     private void searchFriend(String name){
@@ -145,7 +147,15 @@ public class SearchFriendActivity extends AppCompatActivity implements DataReque
     }
 
     @Override
-    public void onItemClick(AdapterView<?> parent, View view, final int position, long id) {
+    public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+        if(isCurrentFriend((String) mListItem.get(position).get("ItemID"))){
+            notAllowedSendRequest(position);
+        }else {
+            allowSendReuqest(position);
+        }
+    }
+
+    private void allowSendReuqest(final int position){
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setMessage("Do you want to add '" + mListItem.get(position).get("ItemID") + "' as your " +
                 "new iTIME friend?");
@@ -163,14 +173,48 @@ public class SearchFriendActivity extends AppCompatActivity implements DataReque
                 JSONObject object = new JSONObject();
                 try {
                     object.put("user_id", User.ID);
-                    object.put("friend_id",mListItem.get(position).get("ItemID"));
+                    object.put("friend_id", mListItem.get(position).get("ItemID"));
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
-                requestJSONObject(mJsonManager,object,url,"adding_friend_request");
+                requestJSONObject(mJsonManager, object, url, "adding_friend_request");
+                Toast.makeText(getApplicationContext(),getResources().
+                        getString(R.string.search_friend_added_friend_info),Toast.LENGTH_SHORT).show();
+//                AlertDialog.Builder builder2 = new AlertDialog.Builder(SearchFriendActivity.this);
+//                builder2.setMessage(getResources().getString(R.string.search_friend_added_friend_info));
+//                builder2.setIcon(R.mipmap.ic_launcher);
+//                builder2.setTitle("Information");
+//                builder2.setPositiveButton("Yes", null);
+//                builder2.show();
             }
         });
         builder.show();
 
+
+
+    }
+
+    private void notAllowedSendRequest(final int position){
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setMessage("'" + mListItem.get(position).get("ItemID") + "' " +
+                "is already your friend");
+        builder.setIcon(R.mipmap.ic_launcher);
+        builder.setTitle("failed");
+
+        builder.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+            }
+        });
+        builder.show();
+    }
+
+    private boolean isCurrentFriend(String id){
+        for(String listID : mFriendIDs){
+            if(listID.equals(id)){
+                return true;
+            }
+        }
+        return false;
     }
 }

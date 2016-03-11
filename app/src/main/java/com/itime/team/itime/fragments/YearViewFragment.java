@@ -16,6 +16,7 @@ import android.widget.Toast;
 import com.itime.team.itime.R;
 import com.itime.team.itime.utils.DateUtil;
 import com.itime.team.itime.views.CalendarView;
+import com.itime.team.itime.views.MonthCalendarView;
 
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -26,7 +27,7 @@ import java.util.List;
  */
 public class YearViewFragment extends Fragment {
 
-    private CalendarView calendarView;
+    private MonthCalendarView calendarView;
     private RecyclerView mYearRecyclerView;
     private int[] yearViewId = new int[]{R.id.year_view_1, R.id.year_view_2, R.id.year_view_3, R.id.year_view_4, R.id.year_view_5, R.id.year_view_6, R.id.year_view_7, R.id.year_view_8, R.id.year_view_9, R.id.year_view_10, R.id.year_view_11, R.id.year_view_12};
     private List<Integer> list = new ArrayList<>();
@@ -155,19 +156,19 @@ public class YearViewFragment extends Fragment {
     }
 
     public class YearViewHoder extends RecyclerView.ViewHolder {
-        private CalendarView[] views = new CalendarView[12];
+        private MonthCalendarView[] views = new MonthCalendarView[12];
         private TextView textView;
 
         public YearViewHoder(View itemView) {
             super(itemView);
             for (int i = 0; i < views.length; i++) {
-                views[i] = (CalendarView) itemView.findViewById(yearViewId[i]);
+                views[i] = (MonthCalendarView) itemView.findViewById(yearViewId[i]);
                 views[i].setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
                         //Toast.makeText(getActivity(), "test", Toast.LENGTH_SHORT).show();
-                        CalendarView c = (CalendarView) v;
-                        Toast.makeText(getActivity(), ((CalendarView) v).getmShowMonth() + "", Toast.LENGTH_SHORT).show();
+                        MonthCalendarView c = (MonthCalendarView) v;
+                        Toast.makeText(getActivity(), ((MonthCalendarView) v).getmShowMonth() + "", Toast.LENGTH_SHORT).show();
                         int year = c.getmShowYear();
                         int month = c.getmShowMonth();
                         FragmentTransaction fragmentTransaction = getFragmentManager().beginTransaction();

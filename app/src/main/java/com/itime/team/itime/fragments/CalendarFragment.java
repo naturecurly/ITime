@@ -1,9 +1,11 @@
 package com.itime.team.itime.fragments;
 
 import android.animation.ValueAnimator;
+import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.LinearLayoutManager;
@@ -30,9 +32,11 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.itime.team.itime.R;
+import com.itime.team.itime.activities.WeeklyActivity;
 import com.itime.team.itime.listener.OnDateSelectedListener;
 import com.itime.team.itime.listener.RecyclerItemClickListener;
 import com.itime.team.itime.listener.ScrollMeetingViewListener;
+import com.itime.team.itime.utils.DateUtil;
 import com.itime.team.itime.utils.DensityUtil;
 import com.itime.team.itime.views.CalendarView;
 import com.itime.team.itime.views.MeetingScrollView;
@@ -71,6 +75,11 @@ public class CalendarFragment extends Fragment {
     private Fragment currentFragment;
     private Fragment yearFragment;
     private RelativeLayout relativeLayout;
+    private int clickedDay = 0;
+    private int clickedMonth = 0;
+    private int clickedYear = 0;
+    private FragmentManager fm;
+
 
     public static CalendarFragment newInstance(Bundle bundle) {
 
@@ -99,7 +108,7 @@ public class CalendarFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
+        fm = getFragmentManager();
         setHasOptionsMenu(true);
 
         imageButton = (ImageButton) getActivity().findViewById(R.id.event_list);
@@ -164,12 +173,12 @@ public class CalendarFragment extends Fragment {
             RelativeLayout.LayoutParams param = new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
             if (i != 0) {
                 param.addRule(RelativeLayout.BELOW, i);
-                param.setMargins(DensityUtil.dip2px(getActivity(), 6), DensityUtil.dip2px(getActivity(), 6), DensityUtil.dip2px(getActivity(), 6), DensityUtil.dip2px(getActivity(), 30));
+                param.setMargins(DensityUtil.dip2px(getActivity(), 6), DensityUtil.dip2px(getActivity(), 6), DensityUtil.dip2px(getActivity(), 6), DensityUtil.dip2px(getActivity(), 15));
                 relativeLayout.addView(timeTextView, param);
             }
             if (i == 0) {
                 //param.addRule(RelativeLayout.ALIGN_PARENT_LEFT);
-                param.setMargins(DensityUtil.dip2px(getActivity(), 6), DensityUtil.dip2px(getActivity(), 2), DensityUtil.dip2px(getActivity(), 6), DensityUtil.dip2px(getActivity(), 30));
+                param.setMargins(DensityUtil.dip2px(getActivity(), 6), DensityUtil.dip2px(getActivity(), 2), DensityUtil.dip2px(getActivity(), 6), DensityUtil.dip2px(getActivity(), 15));
 
                 relativeLayout.addView(timeTextView, param);
             }
@@ -385,7 +394,26 @@ public class CalendarFragment extends Fragment {
             calendarView.setOnDateSelectedListener(new OnDateSelectedListener() {
                 @Override
                 public void dateSelected(float x, float y) {
-                    Toast.makeText(getActivity(), x + " " + y, Toast.LENGTH_SHORT).show();
+                    CalendarView.Row row = calendarView.getRows()[0];
+                    int day = Integer.valueOf(row.getCells()[DateUtil.analysePosition(x, rowHeight)].text);
+                    int month = row.getCells()[DateUtil.analysePosition(x, rowHeight)].month;
+                    int year = row.getCells()[DateUtil.analysePosition(x, rowHeight)].year;
+                    if (day == clickedDay && month == clickedMonth && year == clickedYear) {
+                        //Toast.makeText(getActivity(), "double clicked", Toast.LENGTH_SHORT).show();
+//                        FragmentTransaction ft = fm.beginTransaction();
+//                        ft.replace(R.id.realtab_content, new WeeklyFragment());
+//                        ft.addToBackStack(null);
+//                        ft.commit();
+                        Intent intent = new Intent(getActivity(), WeeklyActivity.class);
+                        startActivity(intent);
+
+                    } else {
+                        clickedDay = day;
+                        clickedMonth = month;
+                        clickedYear = year;
+                    }
+                    Toast.makeText(getActivity(), clickedDay + " " + clickedMonth + " " + clickedYear, Toast.LENGTH_SHORT).show();
+
                 }
             });
             //textView = (TextView) itemView.findViewById(R.id.test_text);
@@ -411,7 +439,7 @@ public class CalendarFragment extends Fragment {
         switch (item.getItemId()) {
             case R.id.item_year_view:
                 Fragment fragment = new YearViewFragment();
-                FragmentTransaction ft = getFragmentManager().beginTransaction();
+                FragmentTransaction ft = fm.beginTransaction();
                 //ft.detach(getFragmentManager().findFragmentById(R.id.realtab_content)).add(fragment,"list");
 //                ft.replace(R.id.realtab_content, fragment);
                 ft.hide(currentFragment);
@@ -447,7 +475,7 @@ public class CalendarFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 Fragment fragment = new EventListFragment();
-                FragmentTransaction ft = getFragmentManager().beginTransaction();
+                FragmentTransaction ft = fm.beginTransaction();
                 //ft.detach(getFragmentManager().findFragmentById(R.id.realtab_content)).add(fragment,"list");
                 ft.hide(currentFragment);
                 if (!fragment.isAdded()) {

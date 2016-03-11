@@ -36,7 +36,6 @@
     <string name="meeting_select_title">Meeting Time Select</string>
 
 
-
     <string name="phone_contact_title">Search Contacts</string>
     <string name="phone_contact_addway_title">Add Method</string>
 
@@ -90,5 +89,12 @@
     <string name="facebook_app_id">450185851844736</string>
     <string name="google_app_id">AIzaSyDjDteQOjuWYV7ST_Wi7k34i36j2OngA88</string>
     <string name="google_web_id">AIzaSyBC4zDmkarugKY0Njs_n2TtEUVEyeESn0c</string>
+    <string name="action_today">Today</string>
+    <string name="action_day_view">Day view</string>
+    <string name="action_three_day_view">3 day view</string>
+    <string name="action_week_view">Week view</string>
+    <string name="title_activity_basic">Basic Example</string>
+    <string name="title_activity_asynchronous">Asynchronous Events</string>
+    <string name="async_error">Could not download events from the internet</string>
 
 </resources>

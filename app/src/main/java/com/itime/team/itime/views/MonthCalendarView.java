@@ -7,14 +7,11 @@ package com.itime.team.itime.views;
 import android.content.Context;
 import android.content.res.TypedArray;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Color;
-import android.graphics.Matrix;
 import android.graphics.Paint;
 import android.util.AttributeSet;
 import android.util.Log;
-import android.view.MotionEvent;
 import android.view.View;
 
 import com.itime.team.itime.R;
@@ -24,7 +21,7 @@ import com.itime.team.itime.utils.DensityUtil;
 
 import java.util.Calendar;
 
-public class CalendarView extends View {
+public class MonthCalendarView extends View {
 
     private static final String TAG = "CalendarView";
 
@@ -64,14 +61,14 @@ public class CalendarView extends View {
     private OnDateSelectedListener listener;
     private boolean isInitialed = false;
 
-    public CalendarView(Context context, AttributeSet attrs, int defStyle) {
+    public MonthCalendarView(Context context, AttributeSet attrs, int defStyle) {
         super(context, attrs, defStyle);
         init(context);
 
     }
 
 
-    public CalendarView(Context context, AttributeSet attrs) {
+    public MonthCalendarView(Context context, AttributeSet attrs) {
         super(context, attrs);
         TypedArray array = context.getTheme().obtainStyledAttributes(attrs, R.styleable.CustomedCalendarView, 0, 0);
         try {
@@ -84,18 +81,18 @@ public class CalendarView extends View {
 
     }
 
-    public CalendarView(Context context) {
+    public MonthCalendarView(Context context) {
         super(context);
         init(context);
     }
 
-    public CalendarView(Context context, int style) {
+    public MonthCalendarView(Context context, int style) {
         super(context);
         this.defaultStyle = style;
         init(context);
     }
 
-    public CalendarView(Context context, int year, int month, int day) {
+    public MonthCalendarView(Context context, int year, int month, int day) {
         super(context);
         this.mShowYear = year;
         this.mShowMonth = month;
@@ -187,36 +184,37 @@ public class CalendarView extends View {
 //    }
 
 
-    @Override
-    public boolean onTouchEvent(MotionEvent event) {
-        int action = event.getActionMasked();
-
-        switch (action) {
-            case MotionEvent.ACTION_DOWN:
-                downX = event.getX();
-                downY = event.getY();
-
-                return true;
-
-            case MotionEvent.ACTION_UP:
-                upX = event.getX();
-                upY = event.getY();
-                //Log.i("TTTT", x + "+" + y);
-                if ((Math.abs(upX - downX) < mCellSpace) && (Math.abs(upY - downY) < mCellSpace)) {
-                    Log.i("TTTT", upX + "+" + upY);
-//                        if (defaultStyle == WEEK_STYLE) {
-                    isDateSelected = 1;
-                    listener.dateSelected(upX, upY);
-                    invalidate();
-//                        }
-                }
-
-                return true;
-        }
-        return super.onTouchEvent(event);
-
-
-    }
+//    @Override
+//    public boolean onTouchEvent(MotionEvent event) {
+//        if (defaultStyle == WEEK_STYLE) {
+//            int action = event.getActionMasked();
+//
+//            switch (action) {
+//                case MotionEvent.ACTION_DOWN:
+//                    downX = event.getX();
+//                    downY = event.getY();
+//
+//                    return true;
+//
+//                case MotionEvent.ACTION_UP:
+//                    upX = event.getX();
+//                    upY = event.getY();
+//                    //Log.i("TTTT", x + "+" + y);
+//                    if ((Math.abs(upX - downX) < mCellSpace) && (Math.abs(upY - downY) < mCellSpace)) {
+//                        Log.i("TTTT", upX + "+" + upY);
+////                        if (defaultStyle == WEEK_STYLE) {
+//                        isDateSelected = 1;
+//                        listener.dateSelected(upX, upY);
+//                        invalidate();
+////                        }
+//                    }
+//
+//                    return true;
+//            }
+//            return super.onTouchEvent(event);
+//        }
+//        return false;
+//    }
 
     public int analysePosition(float x) {
         int dateX = (int) Math.floor(x / mCellSpace);
@@ -445,18 +443,18 @@ public class CalendarView extends View {
         return (dp * scale + 0.5f);
     }
 
-    public static CalendarView[] createCalendarViewsForPager(Context context, int count, int style) {
-        CalendarView[] views = new CalendarView[count];
+    public static MonthCalendarView[] createCalendarViewsForPager(Context context, int count, int style) {
+        MonthCalendarView[] views = new MonthCalendarView[count];
         for (int i = 0; i < count; i++) {
-            views[i] = new CalendarView(context, style);
+            views[i] = new MonthCalendarView(context, style);
         }
         return views;
     }
 
-    public static CalendarView[] createCalendarViewsForPager(Context context, int count) {
-        CalendarView[] views = new CalendarView[count];
+    public static MonthCalendarView[] createCalendarViewsForPager(Context context, int count) {
+        MonthCalendarView[] views = new MonthCalendarView[count];
         for (int i = 0; i < count; i++) {
-            views[i] = new CalendarView(context, CalendarView.MONTH_STYLE);
+            views[i] = new MonthCalendarView(context, MonthCalendarView.MONTH_STYLE);
         }
         return views;
     }

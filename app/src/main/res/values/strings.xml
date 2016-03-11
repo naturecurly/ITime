@@ -49,6 +49,7 @@
     <string name="new_meeting_repeat_dialog_title">Repeats</string>
     <string name="new_meeting_alert_dialog_title">Alert Time</string>
     <string name="new_meeting_alert_button">Alert -- </string>
+    <string name="new_meeting_send_invitation_successful">Meeting invitation has been sent successfully</string>
 
 
     <string name="login_username">Username</string>
@@ -60,6 +61,8 @@
     <string name="login_warning_password">Please input your password</string>
     <string name="login_warning_exist">Sorry, this username has been used</string>
     <string name="login_warning_login_fail">Sorry, your username and password do not match</string>
+
+    <string name="search_friend_added_friend_info">Please wait for your friend\'s reply</string>
 
     <string name="auto_titile">Search Venue</string>
 

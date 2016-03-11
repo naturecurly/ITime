@@ -21,6 +21,7 @@ import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.ScrollView;
 import android.widget.TimePicker;
+import android.widget.Toast;
 
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
@@ -378,6 +379,8 @@ public class NewMeetingActivity extends AppCompatActivity implements View.OnTouc
                                 try {
                                     if(jsonObject.getString("result").equals("success")){
                                         setResult(RESULT_OK);
+                                        Toast.makeText(getApplicationContext(),
+                                                getString(R.string.new_meeting_send_invitation_successful), Toast.LENGTH_SHORT).show();
                                         finish();
                                     }
                                 } catch (JSONException e) {

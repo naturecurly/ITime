@@ -146,6 +146,7 @@ public class SearchFriendActivity extends AppCompatActivity implements DataReque
 
     @Override
     public void onItemClick(AdapterView<?> parent, View view, final int position, long id) {
+
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setMessage("Do you want to add '" + mListItem.get(position).get("ItemID") + "' as your " +
                 "new iTIME friend?");

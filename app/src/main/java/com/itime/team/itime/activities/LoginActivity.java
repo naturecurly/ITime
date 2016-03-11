@@ -119,7 +119,6 @@ public class LoginActivity extends FragmentActivity implements View.OnClickListe
             db.insert("device_id", null, values);
         }
         Device.DeviceID = id;
-        Log.i("deviceID", id);
         dbHelper.close();
         db.close();
         return id;
@@ -131,18 +130,20 @@ public class LoginActivity extends FragmentActivity implements View.OnClickListe
         }
         mUsernameStr = mUsername.getText().toString();
         String password = mPassword.getText().toString();
-        JSONObject json = new JSONObject();
-        try {
-            json.put("user_id",mUsernameStr);
-            json.put("password",password);
-            json.put("connect_token","");
-            json.put("dev_id", Device.DeviceID);
-            json.put("dev_token", "");
-            requestJSONObject(mJsonManager, json, URLs.REGISTER,
-                    "register");
-            handleJSON(mJsonManager);
-        } catch (JSONException e) {
-            e.printStackTrace();
+        if(isUsernameLegal(mUsernameStr) && isPasswordLeagal(password)) {
+            JSONObject json = new JSONObject();
+            try {
+                json.put("user_id", mUsernameStr);
+                json.put("password", password);
+                json.put("connect_token", "");
+                json.put("dev_id", Device.DeviceID);
+                json.put("dev_token", "");
+                requestJSONObject(mJsonManager, json, URLs.REGISTER,
+                        "register");
+                handleJSON(mJsonManager);
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
         }
     }
 
@@ -286,6 +287,26 @@ public class LoginActivity extends FragmentActivity implements View.OnClickListe
             return false;
         }
         return true;
+    }
+
+    private boolean isUsernameLegal(String username){
+        if(username.matches("^\\s*\\w+(?:\\.{0,1}[\\w-]+)*@[a-zA-Z0-9]+(?:[-.][a-zA-Z0-9]+)*\\.[a-zA-Z]+\\s*$")){
+            return true;
+        }else{
+            mUsername.setShakeAnimation();
+            Toast.makeText(getApplicationContext(),getString(R.string.login_warning_username_illegal),Toast.LENGTH_LONG).show();
+            return false;
+        }
+    }
+
+    private boolean isPasswordLeagal(String password){
+        if(password.length() < 6){
+            Toast.makeText(getApplicationContext(),getString(R.string.login_warning_password_illegal),Toast.LENGTH_LONG).show();
+            mPassword.setShakeAnimation();
+            return false;
+        }else {
+            return true;
+        }
     }
 
     @Override

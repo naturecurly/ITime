@@ -30,32 +30,32 @@
         android:orientation="horizontal">
 
 
-        <com.itime.team.itime.views.CalendarView
+        <com.itime.team.itime.views.MonthCalendarView
             android:id="@+id/year_view_1"
             android:layout_width="0dp"
             android:layout_height="match_parent"
+            android:layout_gravity="center"
             android:layout_margin="10dp"
             android:layout_weight="1"
-            app:calendar_type="0"
-            android:layout_gravity="center" />
+            app:calendar_type="0" />
 
-        <com.itime.team.itime.views.CalendarView
+        <com.itime.team.itime.views.MonthCalendarView
             android:id="@+id/year_view_2"
             android:layout_width="0dp"
             android:layout_height="match_parent"
+            android:layout_gravity="center"
             android:layout_margin="10dp"
             android:layout_weight="1"
-            app:calendar_type="0"
-            android:layout_gravity="center" />
+            app:calendar_type="0" />
 
-        <com.itime.team.itime.views.CalendarView
+        <com.itime.team.itime.views.MonthCalendarView
             android:id="@+id/year_view_3"
             android:layout_width="0dp"
             android:layout_height="match_parent"
+            android:layout_gravity="center"
             android:layout_margin="10dp"
             android:layout_weight="1"
-            app:calendar_type="0"
-            android:layout_gravity="center" />
+            app:calendar_type="0" />
 
 
     </LinearLayout>
@@ -66,32 +66,32 @@
         android:layout_weight="1"
         android:orientation="horizontal">
 
-        <com.itime.team.itime.views.CalendarView
+        <com.itime.team.itime.views.MonthCalendarView
             android:id="@+id/year_view_4"
             android:layout_width="0dp"
             android:layout_height="match_parent"
+            android:layout_gravity="center"
             android:layout_margin="10dp"
             android:layout_weight="1"
-            app:calendar_type="0"
-            android:layout_gravity="center" />
+            app:calendar_type="0" />
 
-        <com.itime.team.itime.views.CalendarView
+        <com.itime.team.itime.views.MonthCalendarView
             android:id="@+id/year_view_5"
             android:layout_width="0dp"
             android:layout_height="match_parent"
+            android:layout_gravity="center"
             android:layout_margin="10dp"
             android:layout_weight="1"
-            app:calendar_type="0"
-            android:layout_gravity="center" />
+            app:calendar_type="0" />
 
-        <com.itime.team.itime.views.CalendarView
+        <com.itime.team.itime.views.MonthCalendarView
             android:id="@+id/year_view_6"
             android:layout_width="0dp"
             android:layout_height="match_parent"
+            android:layout_gravity="center"
             android:layout_margin="10dp"
             android:layout_weight="1"
-            app:calendar_type="0"
-            android:layout_gravity="center" />
+            app:calendar_type="0" />
 
     </LinearLayout>
 
@@ -101,32 +101,32 @@
         android:layout_weight="1"
         android:orientation="horizontal">
 
-        <com.itime.team.itime.views.CalendarView
+        <com.itime.team.itime.views.MonthCalendarView
             android:id="@+id/year_view_7"
             android:layout_width="0dp"
             android:layout_height="match_parent"
+            android:layout_gravity="center"
             android:layout_margin="10dp"
             android:layout_weight="1"
-            app:calendar_type="0"
-            android:layout_gravity="center" />
+            app:calendar_type="0" />
 
-        <com.itime.team.itime.views.CalendarView
+        <com.itime.team.itime.views.MonthCalendarView
             android:id="@+id/year_view_8"
             android:layout_width="0dp"
             android:layout_height="match_parent"
+            android:layout_gravity="center"
             android:layout_margin="10dp"
             android:layout_weight="1"
-            app:calendar_type="0"
-            android:layout_gravity="center" />
+            app:calendar_type="0" />
 
-        <com.itime.team.itime.views.CalendarView
+        <com.itime.team.itime.views.MonthCalendarView
             android:id="@+id/year_view_9"
             android:layout_width="0dp"
             android:layout_height="match_parent"
+            android:layout_gravity="center"
             android:layout_margin="10dp"
             android:layout_weight="1"
-            app:calendar_type="0"
-            android:layout_gravity="center" />
+            app:calendar_type="0" />
 
     </LinearLayout>
 
@@ -136,32 +136,32 @@
         android:layout_weight="1"
         android:orientation="horizontal">
 
-        <com.itime.team.itime.views.CalendarView
+        <com.itime.team.itime.views.MonthCalendarView
             android:id="@+id/year_view_10"
             android:layout_width="0dp"
             android:layout_height="match_parent"
+            android:layout_gravity="center"
             android:layout_margin="10dp"
             android:layout_weight="1"
-            app:calendar_type="0"
-            android:layout_gravity="center" />
+            app:calendar_type="0" />
 
-        <com.itime.team.itime.views.CalendarView
+        <com.itime.team.itime.views.MonthCalendarView
             android:id="@+id/year_view_11"
             android:layout_width="0dp"
             android:layout_height="match_parent"
+            android:layout_gravity="center"
             android:layout_margin="10dp"
             android:layout_weight="1"
-            app:calendar_type="0"
-            android:layout_gravity="center" />
+            app:calendar_type="0" />
 
-        <com.itime.team.itime.views.CalendarView
+        <com.itime.team.itime.views.MonthCalendarView
             android:id="@+id/year_view_12"
             android:layout_width="0dp"
             android:layout_height="match_parent"
+            android:layout_gravity="center"
             android:layout_margin="10dp"
             android:layout_weight="1"
-            app:calendar_type="0"
-            android:layout_gravity="center" />
+            app:calendar_type="0" />
 
     </LinearLayout>
 </LinearLayout>

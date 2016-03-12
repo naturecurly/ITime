@@ -25,10 +25,12 @@ import java.util.concurrent.ConcurrentLinkedQueue;
  */
 public class JsonManager {
     private Queue<HashMap> jsonQueue;
+    private Queue<HashMap> errorQueue;
     private JSONArray jsonArray;
     private JSONObject jsonObject;
     public JsonManager(){
         jsonQueue = new ConcurrentLinkedQueue<HashMap>();
+        errorQueue = new ConcurrentLinkedQueue<HashMap>();
     }
 
     public JSONArray getJsonArray() {
@@ -41,6 +43,9 @@ public class JsonManager {
 
     public Queue<HashMap> getJsonQueue(){
         return jsonQueue;
+    }
+    public Queue<HashMap> getErrorQueue(){
+        return errorQueue;
     }
     public void postForJsonObject(String url, JSONObject parameter, final Activity activity, final String tag){
         String param = turnJSONintoString(url, parameter);
@@ -55,7 +60,10 @@ public class JsonManager {
                 }, new Response.ErrorListener() {
                     @Override
                     public void onErrorResponse(VolleyError error) {
-                        Log.i("Error_Volley_getJsonObject",tag + " : " + error.toString());
+                        HashMap<String, VolleyError> map = new HashMap<>();
+                        map.put(tag, error);
+                        errorQueue.add(map);
+                        Log.i("Error_Volley_getJsonObject", tag + " : " + error.toString());
                     }
                 });
         jsonObjectRequest.setParameters(param);
@@ -77,6 +85,9 @@ public class JsonManager {
                 }, new Response.ErrorListener() {
                     @Override
                     public void onErrorResponse(VolleyError error) {
+                        HashMap<String, VolleyError> map = new HashMap<>();
+                        map.put(tag, error);
+                        errorQueue.add(map);
                         Log.i("Error_Volley_getJsonArray",tag + " : " + error.getLocalizedMessage());
                     }
                 });

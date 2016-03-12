@@ -12,6 +12,7 @@
     <string name="Save">Save</string>
     <string name="Cancel">Cancel</string>
     <string name="Logout">Log Out</string>
+    <string name="warning">Warning</string>
     <string name="settings_meeting_preference">Meeting Preferences</string>
     <string name="settings_import_calendar">Import Calendars</string>
     <string name="settings_default_alert_time">Default Alert Time</string>
@@ -63,6 +64,8 @@
     <string name="login_warning_login_fail">Sorry, your username and password do not match</string>
     <string name="login_warning_username_illegal">Sorry, please use real email address as your username</string>
     <string name="login_warning_password_illegal">Sorry, the length of your password should be more than 5</string>
+
+    <string name="check_login_timeout">Timeout, please check your internet</string>
 
     <string name="search_friend_added_friend_info">Please wait for your friend\'s reply</string>
 

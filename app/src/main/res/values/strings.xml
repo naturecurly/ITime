@@ -98,7 +98,7 @@
     <string name="google_app_id_me">AIzaSyDjDteQOjuWYV7ST_Wi7k34i36j2OngA88</string>
     <string name="google_web_id">AIzaSyBC4zDmkarugKY0Njs_n2TtEUVEyeESn0c</string>
     <string name="action_today">Today</string>
-    <string name="action_day_view">Day view</string>
+    <string name="action_day_view">Daily</string>
     <string name="action_three_day_view">3 day view</string>
     <string name="action_week_view">Week view</string>
     <string name="title_activity_basic">Basic Example</string>

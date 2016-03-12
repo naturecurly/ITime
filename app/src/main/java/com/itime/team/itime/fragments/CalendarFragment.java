@@ -404,6 +404,9 @@ public class CalendarFragment extends Fragment {
 //                        ft.replace(R.id.realtab_content, new WeeklyFragment());
 //                        ft.addToBackStack(null);
 //                        ft.commit();
+                        clickedDay = 0;
+                        clickedMonth = 0;
+                        clickedYear = 0;
                         Intent intent = new Intent(getActivity(), WeeklyActivity.class);
                         startActivity(intent);
 

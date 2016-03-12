@@ -15,6 +15,7 @@ import android.widget.Toast;
 
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
+import com.android.volley.VolleyError;
 import com.facebook.CallbackManager;
 import com.facebook.FacebookCallback;
 import com.facebook.FacebookException;
@@ -55,7 +56,6 @@ public class LoginActivity extends FragmentActivity implements View.OnClickListe
 
     private CallbackManager callbackManager;
     private Intent mMainIntent;
-
 
     private JsonManager mJsonManager;
 
@@ -327,6 +327,10 @@ public class LoginActivity extends FragmentActivity implements View.OnClickListe
         mToast.show();
     }
 
+    private void handleTimeout(){
+        Toast.makeText(getApplicationContext(),getString(R.string.check_login_timeout)
+                ,Toast.LENGTH_LONG).show();
+    }
 
     @Override
     public void handleJSON(JsonManager manager) {
@@ -337,11 +341,22 @@ public class LoginActivity extends FragmentActivity implements View.OnClickListe
                         JSONObject jsonObject;
                         JSONArray jsonArray;
                         HashMap map;
+                        VolleyError error;
                         while ((map = mJsonManager.getJsonQueue().poll()) != null) {
                             if ((jsonObject = (JSONObject) map.get("register")) != null) {
                                 doRegister(jsonObject);
-                            } else if ((jsonObject = (JSONObject) map.get("login")) != null) {
+                            }
+
+                            if ((jsonObject = (JSONObject) map.get("login")) != null) {
                                 doLogin(jsonObject);
+                            }
+                        }
+                        while ((map = mJsonManager.getErrorQueue().poll()) != null) {
+                            if((error = (VolleyError) map.get("login")) != null){
+                                handleTimeout();
+                            }
+                            if((error = (VolleyError) map.get("register")) != null){
+                                handleTimeout();
                             }
                         }
                     }

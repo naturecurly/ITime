@@ -1,5 +1,7 @@
 package com.itime.team.itime.activities;
 
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
@@ -12,6 +14,7 @@ import android.widget.Toast;
 
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
+import com.android.volley.VolleyError;
 import com.facebook.appevents.AppEventsLogger;
 import com.itime.team.itime.R;
 import com.itime.team.itime.bean.Device;
@@ -44,6 +47,7 @@ public class CheckLoginActivity extends AppCompatActivity implements DataRequest
     private boolean mIsRemember;
     private JsonManager mJsonManager;
     private Intent MainIntent;
+    private Intent LoginIntent;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -52,7 +56,7 @@ public class CheckLoginActivity extends AppCompatActivity implements DataRequest
         mIn = AnimationUtils.loadAnimation(this, R.anim.alpha_light);
         mMain = (LinearLayout) findViewById(R.id.checklogin_main);
         mMain.startAnimation(mIn);
-        final Intent LoginIntent = new Intent(this,LoginActivity.class);
+        LoginIntent = new Intent(this,LoginActivity.class);
         MainIntent = new Intent(this, MainActivity.class);
         mJsonManager = new JsonManager();
 
@@ -167,6 +171,20 @@ public class CheckLoginActivity extends AppCompatActivity implements DataRequest
         return id;
     }
 
+    private void handleTimeout(){
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setMessage(getString(R.string.check_login_timeout));
+        builder.setIcon(R.mipmap.ic_launcher);
+        builder.setTitle(R.string.warning);
+        builder.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                finish();
+            }
+        });
+        builder.show();
+    }
+
     @Override
     public void handleJSON(final JsonManager manager) {
         MySingleton.getInstance(this).getRequestQueue().addRequestFinishedListener(
@@ -176,6 +194,7 @@ public class CheckLoginActivity extends AppCompatActivity implements DataRequest
                         JSONObject jsonObject;
                         JSONArray jsonArray;
                         HashMap map;
+                        VolleyError error;
                         try {
                             while ((map = mJsonManager.getJsonQueue().poll()) != null) {
                                 if ((jsonObject = (JSONObject) map.get("login")) != null) {
@@ -189,6 +208,11 @@ public class CheckLoginActivity extends AppCompatActivity implements DataRequest
                                         Toast.makeText(getApplicationContext(),
                                                 getString(R.string.login_warning_login_fail),Toast.LENGTH_SHORT);
                                     }
+                                }
+                            }
+                            while ((map = mJsonManager.getErrorQueue().poll()) != null) {
+                                if((error = (VolleyError) map.get("login")) != null){
+                                    handleTimeout();
                                 }
                             }
                         } catch (JSONException e) {

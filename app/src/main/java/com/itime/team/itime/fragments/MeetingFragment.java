@@ -202,7 +202,9 @@ public class MeetingFragment extends Fragment implements View.OnClickListener,Se
         mJsonManager = new JsonManager();
     }
 
-    private void initListView(){
+    public void initListView(){
+        listItem.clear();
+        listItemForPresent.clear();
         JSONObject userID = new JSONObject();
         try {
             userID.put("user_id", User.ID);
@@ -237,7 +239,7 @@ public class MeetingFragment extends Fragment implements View.OnClickListener,Se
             e.printStackTrace();
         }
         DynamicListViewAdapter listItemAdapter = new DynamicListViewAdapter(getActivity(),
-                listItemForPresent,mInvitedFriend,getResources());
+                listItemForPresent,mInvitedFriend,getResources(),this);
         listView.setAdapter(listItemAdapter);
         //reset height
         setListViewHeightBasedOnChildren(listView);
@@ -253,7 +255,7 @@ public class MeetingFragment extends Fragment implements View.OnClickListener,Se
             }
         }
         DynamicListViewAdapter listItemAdapter = new DynamicListViewAdapter(getActivity(),
-                listItemForPresent,mInvitedFriend, getResources());
+                listItemForPresent,mInvitedFriend, getResources(),this);
         listView.setAdapter(listItemAdapter);
 
         //reset height

@@ -17,8 +17,19 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import com.android.volley.Request;
+import com.android.volley.RequestQueue;
 import com.itime.team.itime.R;
+import com.itime.team.itime.bean.URLs;
+import com.itime.team.itime.bean.User;
+import com.itime.team.itime.fragments.MeetingFragment;
+import com.itime.team.itime.interfaces.DataRequest;
 import com.itime.team.itime.utils.JsonManager;
+import com.itime.team.itime.utils.MySingleton;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -26,7 +37,7 @@ import java.util.HashMap;
 /**
  * Created by mac on 16/1/12.
  */
-public class DynamicListViewAdapter extends BaseAdapter {
+public class DynamicListViewAdapter extends BaseAdapter implements DataRequest{
     private ArrayList<HashMap<String, Object>> list;
     private Activity context;
     private Boolean[] checkbox;
@@ -36,9 +47,11 @@ public class DynamicListViewAdapter extends BaseAdapter {
     private Drawable mBackgroud;
     private Animation mScale;
     private Animation mScaleRemove;
+    private JsonManager mJsonManager;
+    private MeetingFragment mMeetingFragment;
 
     public DynamicListViewAdapter(Activity context, ArrayList<HashMap<String, Object>> listItem,
-                                  LinearLayout linearLayout, Resources resources){
+                                  LinearLayout linearLayout, Resources resources, MeetingFragment meetingFragment){
         list = listItem;
         this.context = context;
         mLinearLayout = linearLayout;
@@ -47,6 +60,8 @@ public class DynamicListViewAdapter extends BaseAdapter {
         this.checkbox = checkbox;
         mScale = AnimationUtils.loadAnimation(context, R.anim.meeting_scale);
         mScaleRemove = AnimationUtils.loadAnimation(context, R.anim.meeting_scale_remove);
+        mJsonManager = new JsonManager();
+        mMeetingFragment = meetingFragment;
     }
     @Override
     public int getCount() {
@@ -77,7 +92,7 @@ public class DynamicListViewAdapter extends BaseAdapter {
         if(list.get(position).get("url") != null) {
             jsonManager.postForImage(list.get(position).get("url").toString(), imageView, context);
         }
-        String textID = (String) list.get(position).get("ItemID");
+        final String textID = (String) list.get(position).get("ItemID");
         ID.setText(textID);
         final String textName = (String) list.get(position).get("ItemName");
         name.setText(textName);
@@ -118,6 +133,7 @@ public class DynamicListViewAdapter extends BaseAdapter {
                 builder.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
+                        deleteFriend(textID);
                     }
                 });
                 builder.show();
@@ -125,6 +141,19 @@ public class DynamicListViewAdapter extends BaseAdapter {
             }
         });
         return itemView;
+    }
+
+    private void deleteFriend(String friendID){
+        try {
+            JSONObject json = new JSONObject();
+            json.put("user_id", User.ID);
+            json.put("friend_id",friendID);
+            requestJSONObject(mJsonManager, json, URLs.DELETE_FRIEND,
+                    "delete_friend");
+            handleJSON(mJsonManager);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
     }
 
     private void addFriendToScrollView(int position, JsonManager jsonManager, final CheckBox checkBox){
@@ -153,4 +182,41 @@ public class DynamicListViewAdapter extends BaseAdapter {
     private void deleteFriendFromScrollView(ImageView imageView){
         mLinearLayout.removeView(imageView);
     }
+
+    @Override
+    public void handleJSON(JsonManager manager) {
+        MySingleton.getInstance(context).getRequestQueue().addRequestFinishedListener(
+                new RequestQueue.RequestFinishedListener<String>() {
+                    @Override
+                    public void onRequestFinished(Request<String> request) {
+                        JSONObject jsonObject;
+                        JSONArray jsonArray;
+                        HashMap map;
+                        while ((map = mJsonManager.getJsonQueue().poll()) != null) {
+                            if ((jsonObject = (JSONObject) map.get("delete_friend")) != null) {
+                                try {
+                                    if(jsonObject.get("result").toString().equals("success")){
+                                        mMeetingFragment.initListView();
+                                    }
+                                } catch (JSONException e) {
+                                    e.printStackTrace();
+                                }
+                            }
+
+                        }
+                    }
+                }
+        );
+    }
+
+    @Override
+    public void requestJSONObject(JsonManager manager,JSONObject jsonObject, String url, String tag) {
+        manager.postForJsonObject(url, jsonObject, context, tag);
+    }
+
+    @Override
+    public void requestJSONArray(JsonManager manager,JSONObject jsonObject, String url, String tag) {
+        manager.postForJsonArray(url, jsonObject, context, tag);
+    }
+
 }

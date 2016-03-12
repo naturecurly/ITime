@@ -56,7 +56,6 @@ public class LoginActivity extends FragmentActivity implements View.OnClickListe
     private CallbackManager callbackManager;
     private Intent mMainIntent;
 
-
     private JsonManager mJsonManager;
 
     @Override

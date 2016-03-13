@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.DialogFragment;
+import android.text.Html;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -70,7 +71,7 @@ public class PhoneContactAddWayDialogFragment extends DialogFragment implements 
         Intent intent = new Intent(Intent.ACTION_VIEW);
         intent.putExtra("address", mPhoneNumbers.toString());
         intent.setType("vnd.android-dir/mms-sms");
-        intent.putExtra("sms_body", "happy new year");
+        intent.putExtra("sms_body", "<a>");
         startActivity(intent);
     }
 
@@ -78,13 +79,13 @@ public class PhoneContactAddWayDialogFragment extends DialogFragment implements 
         String[] reciver = mFriendEmail.toString().split(";");
         String mySbuject = "Add Friend";
         String myCc = "cc";
-        String mybody = "Happy New Year";
+        String mybody = "<a href=\"scheme://host/\">Agree</a>";
         Intent myIntent = new Intent(android.content.Intent.ACTION_SEND);
         myIntent.setType("plain/text");
         myIntent.putExtra(android.content.Intent.EXTRA_EMAIL, reciver);
         myIntent.putExtra(android.content.Intent.EXTRA_CC, myCc);
         myIntent.putExtra(android.content.Intent.EXTRA_SUBJECT, mySbuject);
-        myIntent.putExtra(android.content.Intent.EXTRA_TEXT, mybody);
+        myIntent.putExtra(android.content.Intent.EXTRA_TEXT, Html.fromHtml(mybody));
         startActivity(Intent.createChooser(myIntent, "mail"));
     }
 

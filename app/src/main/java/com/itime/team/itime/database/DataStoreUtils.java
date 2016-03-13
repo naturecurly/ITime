@@ -17,6 +17,7 @@
 package com.itime.team.itime.database;
 
 import android.content.UriMatcher;
+import com.itime.team.itime.database.ITimeDataStore.*;
 
 /**
  * Created by Xuhui Chen (yorkfine) on 13/03/16.
@@ -24,10 +25,12 @@ import android.content.UriMatcher;
 public class DataStoreUtils {
     static final UriMatcher CONTENT_PROVIDER_URI_MATCHER = new UriMatcher(UriMatcher.NO_MATCH);
 
-    public static final int TABLE_USER = 1;
+    public static final int TABLE_ID_USER = 1;
+    public static final int TABLE_ID_USER_WITH_USERID = 2;
 
     static {
-        CONTENT_PROVIDER_URI_MATCHER.addURI(ITimeDataStore.AUTHORITY, ITimeDataStore.User.CONTENT_PATH, TABLE_USER);
+        CONTENT_PROVIDER_URI_MATCHER.addURI(ITimeDataStore.AUTHORITY, User.CONTENT_PATH, TABLE_ID_USER);
+        CONTENT_PROVIDER_URI_MATCHER.addURI(ITimeDataStore.AUTHORITY, User.CONTENT_PATH + "/*", TABLE_ID_USER_WITH_USERID);
     }
 
     // We had better put some specific database query methods here.

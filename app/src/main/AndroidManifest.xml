@@ -138,6 +138,11 @@
 
         <activity android:name=".activities.WeeklyActivity" />
 
+        <provider
+            android:authorities="itime"
+            android:name=".database.ITimeDataProivder"
+            android:exported="false" />
+
         <!--&lt;!&ndash; Required JPush&ndash;&gt;-->
         <!--<activity-->
         <!--android:name="cn.jpush.android.ui.PushActivity"-->

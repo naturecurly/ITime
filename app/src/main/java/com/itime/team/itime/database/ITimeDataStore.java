@@ -50,7 +50,10 @@ public interface ITimeDataStore {
 
         String PROFILE_IMAGE_URL = "profile_image_url";
         String EMAIL = "email";
-        String PHONE_NUMBER = "phone number";
+        String PHONE_NUMBER = "phone_number";
+
+        String [] COLUMNS = {_ID, USER_ID, USER_NAME, PROFILE_IMAGE_URL, EMAIL, PHONE_NUMBER};
+        String [] TYPES = {TYPE_PRIMARY_KEY, TYPE_TEXT_NOT_NULL, TYPE_TEXT_NOT_NULL, TYPE_TEXT, TYPE_TEXT, TYPE_TEXT};
     }
 
 }

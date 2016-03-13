@@ -19,6 +19,7 @@ package com.itime.team.itime.database;
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+import com.itime.team.itime.database.ITimeDataStore.User;
 
 /**
  * Created by Xuhui Chen (yorkfine) on 12/03/16.
@@ -37,6 +38,7 @@ public class ITimeDbHelper extends SQLiteOpenHelper {
     public void onCreate(SQLiteDatabase db) {
         db.beginTransaction();
         // execSQL
+        db.execSQL(createTable(User.TABLE_NAME, User.COLUMNS, User.TYPES));
         db.setTransactionSuccessful();
         db.endTransaction();
     }

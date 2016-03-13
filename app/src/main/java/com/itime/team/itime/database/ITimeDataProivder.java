@@ -17,7 +17,9 @@
 package com.itime.team.itime.database;
 
 import android.content.ContentProvider;
+import android.content.ContentResolver;
 import android.content.ContentValues;
+import android.content.Context;
 import android.database.Cursor;
 import android.net.Uri;
 import android.support.annotation.Nullable;
@@ -26,7 +28,10 @@ import android.support.annotation.Nullable;
  * Created by Xuhui Chen (yorkfine) on 13/03/16.
  */
 public class ITimeDataProivder extends ContentProvider {
+
     private ITimeDbHelper mOpenHelper;
+    private ContentResolver mContentResolver;
+
 
     @Override
     public boolean onCreate() {
@@ -37,7 +42,18 @@ public class ITimeDataProivder extends ContentProvider {
     @Nullable
     @Override
     public Cursor query(Uri uri, String[] projection, String selection, String[] selectionArgs, String sortOrder) {
-        return null;
+        final int tableId = DataStoreUtils.getTableId(uri);
+        final String table = DataStoreUtils.getTableNameById(tableId);
+        switch (tableId) {
+            case DataStoreUtils.TABLE_ID_USER_WITH_USERID:
+                // TODO: 13/03/16 query with user_id
+                return null;
+        }
+        if (table == null) return null;
+        final Cursor c = mOpenHelper.getReadableDatabase().query(table, projection, selection,
+                selectionArgs, null, null, sortOrder);
+        setNotificationUri(c, uri);
+        return c;
     }
 
     @Nullable
@@ -54,11 +70,34 @@ public class ITimeDataProivder extends ContentProvider {
 
     @Override
     public int delete(Uri uri, String selection, String[] selectionArgs) {
-        return 0;
+        final int tableId = DataStoreUtils.getTableId(uri);
+        final String table = DataStoreUtils.getTableNameById(tableId);
+        switch (tableId) {
+            //
+        }
+        if (table == null) return 0;
+        final int result = mOpenHelper.getWritableDatabase().delete(table, selection, selectionArgs);
+        if (result > 0) {
+            getContentResolver().notifyChange(uri, null);
+        }
+        return result;
     }
 
     @Override
     public int update(Uri uri, ContentValues values, String selection, String[] selectionArgs) {
         return 0;
+    }
+
+    private void setNotificationUri(final Cursor c, final Uri uri) {
+        final ContentResolver cr = getContentResolver();
+        if (cr == null || c == null || uri == null) return;
+        c.setNotificationUri(cr, uri);
+    }
+
+    private ContentResolver getContentResolver() {
+        if (mContentResolver != null) return mContentResolver;
+        final Context context = getContext();
+        assert context != null;
+        return mContentResolver = context.getContentResolver();
     }
 }

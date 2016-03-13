@@ -17,6 +17,8 @@
 package com.itime.team.itime.database;
 
 import android.content.UriMatcher;
+import android.net.Uri;
+
 import com.itime.team.itime.database.ITimeDataStore.*;
 
 /**
@@ -33,5 +35,21 @@ public class DataStoreUtils {
         CONTENT_PROVIDER_URI_MATCHER.addURI(ITimeDataStore.AUTHORITY, User.CONTENT_PATH + "/*", TABLE_ID_USER_WITH_USERID);
     }
 
-    // We had better put some specific database query methods here.
+    public static int getTableId(final Uri uri) {
+        if (uri == null) return -1;
+        return CONTENT_PROVIDER_URI_MATCHER.match(uri);
+    }
+
+    public static String getTableNameById(final int id) {
+        switch (id) {
+            case TABLE_ID_USER:
+                return User.TABLE_NAME;
+            case TABLE_ID_USER_WITH_USERID:
+                return User.TABLE_NAME;
+            default:
+                return null;
+        }
+    }
+
+        // We had better put some specific database query methods here.
 }

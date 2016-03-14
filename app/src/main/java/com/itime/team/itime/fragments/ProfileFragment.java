@@ -17,6 +17,7 @@
 package com.itime.team.itime.fragments;
 
 
+import android.content.Intent;
 import android.database.Cursor;
 import android.net.Uri;
 import android.support.v4.app.DialogFragment;
@@ -34,6 +35,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.itime.team.itime.R;
+import com.itime.team.itime.activities.InputDialogActivity;
 import com.itime.team.itime.database.ITimeDataStore;
 
 
@@ -41,7 +43,7 @@ import com.itime.team.itime.database.ITimeDataStore;
  * Created by Xuhui Chen (yorkfine) on 19/01/16.
  */
 public class ProfileFragment extends Fragment implements View.OnClickListener,
-        InputDialogFragment.InputDialogListener, LoaderManager.LoaderCallbacks<Cursor> {
+        LoaderManager.LoaderCallbacks<Cursor> {
 
     private static final String LOG_TAG = ProfileFragment.class.getSimpleName();
 
@@ -63,7 +65,7 @@ public class ProfileFragment extends Fragment implements View.OnClickListener,
     private String mUserId;
 
     private static final String PROFILE_FRAGMENT_TAG = ProfileFragment.class.getSimpleName();
-    private static final String SETTINGS_PROFILE_NAME_TAG = "inputName";
+    private static final int REQUEST_SET_USER_NAME = 1;
     private static final String SETTINGS_PROFILE_EMAIL_TAG = "inputEmail";
     private static final String SETTINGS_PROFILE_PHONE_NUMBER_TAG = "inputPhoneNumber";
 
@@ -114,10 +116,9 @@ public class ProfileFragment extends Fragment implements View.OnClickListener,
         switch (id) {
             case R.id.setting_profile_name:
                 DialogFragment nameInputDialog = new InputDialogFragment();
-                bundle.putString(InputDialogFragment.INPUT_DIALOG_TITLE, "Edit User Name");
-
-                nameInputDialog.setArguments(bundle);
-                nameInputDialog.show(getFragmentManager(), SETTINGS_PROFILE_NAME_TAG);
+                final Intent intent = new Intent(getActivity(), InputDialogActivity.class);
+                intent.putExtra(InputDialogActivity.INPUT_DIALOG_TITLE, "Edit User Name");
+                startActivityForResult(intent, REQUEST_SET_USER_NAME);
                 break;
 
             case R.id.setting_profile_qrcode:
@@ -146,23 +147,15 @@ public class ProfileFragment extends Fragment implements View.OnClickListener,
     }
 
     @Override
-    public void onDialogPositiveClick(DialogFragment dialog) {
-        String tag = dialog.getTag();
-        switch (tag) {
-            case SETTINGS_PROFILE_NAME_TAG:
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        switch (requestCode) {
+            case REQUEST_SET_USER_NAME: {
+                if (resultCode == InputDialogActivity.RESULT_SET_TEXT) {
+                    mUserNameTextView.setText(data.getStringExtra(InputDialogActivity.RETURN_TEXT));
+                }
                 break;
-            case SETTINGS_PROFILE_EMAIL_TAG:
-                break;
-            case SETTINGS_PROFILE_PHONE_NUMBER_TAG:
-                break;
-            default:
-                Log.e(PROFILE_FRAGMENT_TAG, "UnKnow Click Result from " + tag);
+            }
         }
-    }
-
-    @Override
-    public void onDialogNegativeClick(DialogFragment dialog) {
-
     }
 
     @Override

@@ -41,7 +41,7 @@ public class InputDialogFragment extends DialogFragment {
      * implement this interface in order to receive event callbacks.
      * Each method passes the DialogFragment in case the host needs to query it. */
     public interface InputDialogListener {
-        public void onDialogPositiveClick(DialogFragment dialog);
+        public void onDialogPositiveClick(String text);
         public void onDialogNegativeClick(DialogFragment dialog);
     }
 
@@ -70,7 +70,7 @@ public class InputDialogFragment extends DialogFragment {
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
 
         // Get the layout inflater
-        LayoutInflater inflater = getActivity().getLayoutInflater();
+        final LayoutInflater inflater = getActivity().getLayoutInflater();
 
         TextView title = new TextView(getActivity());
         // You Can Customise your Title here
@@ -90,7 +90,8 @@ public class InputDialogFragment extends DialogFragment {
                 .setPositiveButton(R.string.Save, new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int id) {
-                        mListener.onDialogPositiveClick(InputDialogFragment.this);
+                        TextView inputArea = (TextView) getDialog().findViewById(R.id.input_area);
+                        mListener.onDialogPositiveClick(inputArea.getText().toString());
 
                     }
                 })

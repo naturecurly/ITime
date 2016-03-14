@@ -39,7 +39,7 @@ import com.itime.team.itime.fragments.ProfileFragment;
  * Created by Xuhui Chen (yorkfine) on 12/01/16.
  */
 // TODO: Refactor to DetaiedSettingActivity
-public class SettingsActivity extends AppCompatActivity implements InputDialogFragment.InputDialogListener {
+public class SettingsActivity extends AppCompatActivity {
 
     private static final String LOG_TAG = SettingsActivity.class.getSimpleName();
 
@@ -130,15 +130,5 @@ public class SettingsActivity extends AppCompatActivity implements InputDialogFr
         int id = item.getItemId();
 
         return super.onOptionsItemSelected(item);
-    }
-
-    @Override
-    public void onDialogPositiveClick(DialogFragment dialog) {
-        // TODO: dummy set value return from dialog. Would be delete when database is avaliable
-    }
-
-    @Override
-    public void onDialogNegativeClick(DialogFragment dialog) {
-
     }
 }

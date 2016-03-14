@@ -47,13 +47,17 @@ public interface ITimeDataStore {
 
         String USER_ID = "user_id";
         String USER_NAME = "user_name";
+        String PASSWORD = "password"; // maybe useless
 
-        String PROFILE_IMAGE_URL = "profile_image_url";
+        String USER_PROFILE_PICTURE = "user_profile_picture";
         String EMAIL = "email";
         String PHONE_NUMBER = "phone_number";
+        String DEFAULT_ALERT = "default_alert";
 
-        String [] COLUMNS = {_ID, USER_ID, USER_NAME, PROFILE_IMAGE_URL, EMAIL, PHONE_NUMBER};
-        String [] TYPES = {TYPE_PRIMARY_KEY, TYPE_TEXT_NOT_NULL, TYPE_TEXT_NOT_NULL, TYPE_TEXT, TYPE_TEXT, TYPE_TEXT};
+        String [] COLUMNS = {_ID, USER_ID, USER_NAME, PASSWORD, USER_PROFILE_PICTURE, EMAIL,
+                PHONE_NUMBER, DEFAULT_ALERT};
+        String [] TYPES = {TYPE_PRIMARY_KEY, TYPE_TEXT_NOT_NULL, TYPE_TEXT_NOT_NULL,
+                TYPE_TEXT_NOT_NULL, TYPE_TEXT_NOT_NULL, TYPE_TEXT, TYPE_TEXT, TYPE_TEXT_NOT_NULL};
     }
 
 }

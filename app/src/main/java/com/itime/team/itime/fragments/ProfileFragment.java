@@ -16,24 +16,35 @@
 
 package com.itime.team.itime.fragments;
 
+
+import android.database.Cursor;
+import android.net.Uri;
 import android.support.v4.app.DialogFragment;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentActivity;
+import android.support.v4.app.LoaderManager;
+import android.support.v4.content.CursorLoader;
+import android.support.v4.content.Loader;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.itime.team.itime.R;
+import com.itime.team.itime.database.ITimeDataStore;
 
 
 /**
  * Created by Xuhui Chen (yorkfine) on 19/01/16.
  */
-public class ProfileFragment extends Fragment implements View.OnClickListener, InputDialogFragment.InputDialogListener {
+public class ProfileFragment extends Fragment implements View.OnClickListener,
+        InputDialogFragment.InputDialogListener, LoaderManager.LoaderCallbacks<Cursor> {
+
+    private static final String LOG_TAG = ProfileFragment.class.getSimpleName();
+
     private View mProfileView;
     private View mName;
     private View mID;
@@ -41,10 +52,22 @@ public class ProfileFragment extends Fragment implements View.OnClickListener, I
     private View mEmail;
     private View mPhoneNumber;
 
+    //Views
+    private TextView mUserNameTextView;
+    private TextView mUserIdTextView;
+    private ImageView mUserProfileImageView;
+    private TextView mUserEmailTextView;
+    private TextView mUserPhoneNumberTv;
+
+    // User ID of this user
+    private String mUserId;
+
     private static final String PROFILE_FRAGMENT_TAG = ProfileFragment.class.getSimpleName();
     private static final String SETTINGS_PROFILE_NAME_TAG = "inputName";
     private static final String SETTINGS_PROFILE_EMAIL_TAG = "inputEmail";
     private static final String SETTINGS_PROFILE_PHONE_NUMBER_TAG = "inputPhoneNumber";
+
+    private static final int PROFILE_LOADER = 0;
 
 
     @Nullable
@@ -66,6 +89,15 @@ public class ProfileFragment extends Fragment implements View.OnClickListener, I
 
         View [] views = new View[]{mName, mEmail, mPhoneNumber};
         bindOnClickListener(views);
+
+        mUserNameTextView = (TextView) mProfileView.findViewById(R.id.setting_profile_name_text);
+        mUserIdTextView = (TextView) mProfileView.findViewById(R.id.setting_profile_id_text);
+        mUserProfileImageView = (ImageView) mProfileView.findViewById(R.id.setting_profile_picture);
+        mUserEmailTextView = (TextView) mProfileView.findViewById(R.id.setting_profile_email_text);
+        mUserPhoneNumberTv = (TextView) mProfileView.findViewById(R.id.setting_profile_phone_number_text);
+
+        // TODO: 14/03/16 Not a good way to store static data in a model object
+        mUserId = com.itime.team.itime.bean.User.ID;
     }
 
     private void bindOnClickListener (View [] views) {
@@ -108,6 +140,12 @@ public class ProfileFragment extends Fragment implements View.OnClickListener, I
     }
 
     @Override
+    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
+        getLoaderManager().initLoader(PROFILE_LOADER, null, this);
+        super.onActivityCreated(savedInstanceState);
+    }
+
+    @Override
     public void onDialogPositiveClick(DialogFragment dialog) {
         String tag = dialog.getTag();
         switch (tag) {
@@ -125,5 +163,51 @@ public class ProfileFragment extends Fragment implements View.OnClickListener, I
     @Override
     public void onDialogNegativeClick(DialogFragment dialog) {
 
+    }
+
+    @Override
+    public Loader<Cursor> onCreateLoader(int id, Bundle args) {
+        Uri userByIdUri = ITimeDataStore.User.CONTENT_URI.buildUpon().appendPath(mUserId).build();
+        return new CursorLoader(getActivity(),
+                userByIdUri,
+                null,
+                null,
+                null,
+                null);
+    }
+
+    @Override
+    public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
+        if (data.moveToFirst()) {
+            Log.i(LOG_TAG, "user information found in database");
+            CursorIndices cursorIndices = new CursorIndices(data);
+            final String userId = data.getString(cursorIndices.userId);
+            final String userName = data.getString(cursorIndices.userName);
+            final String userEmail = data.getString(cursorIndices.email);
+            final String userPhoneNum = data.getString(cursorIndices.phone);
+
+            mUserIdTextView.setText(userId);
+            mUserNameTextView.setText(userName);
+            mUserEmailTextView.setText(userEmail);
+            mUserPhoneNumberTv.setText(userPhoneNum);
+        }
+    }
+
+
+    @Override
+    public void onLoaderReset(Loader<Cursor> loader) {
+
+    }
+
+    static class CursorIndices {
+        final int _id, userName, userId, email, phone;
+
+        CursorIndices(final Cursor mCursor) {
+            _id = mCursor.getColumnIndex(ITimeDataStore.User._ID);
+            userName = mCursor.getColumnIndex(ITimeDataStore.User.USER_NAME);
+            userId = mCursor.getColumnIndex(ITimeDataStore.User.USER_ID);
+            email = mCursor.getColumnIndex(ITimeDataStore.User.EMAIL);
+            phone = mCursor.getColumnIndex(ITimeDataStore.User.PHONE_NUMBER);
+        }
     }
 }

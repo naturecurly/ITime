@@ -45,9 +45,20 @@ public class ITimeDataProivder extends ContentProvider {
         final int tableId = DataStoreUtils.getTableId(uri);
         final String table = DataStoreUtils.getTableNameById(tableId);
         switch (tableId) {
-            case DataStoreUtils.TABLE_ID_USER_WITH_USERID:
+            case DataStoreUtils.TABLE_ID_USER_WITH_USERID: {
                 // TODO: 13/03/16 query with user_id
-                return null;
+                String userId = uri.getLastPathSegment();
+                Cursor c = mOpenHelper.getReadableDatabase().query(
+                        table,
+                        projection,
+                        ITimeDataStore.User.USER_ID + " = ?",
+                        new String[]{userId},
+                        null,
+                        null,
+                        null);
+                setNotificationUri(c, uri);
+                return c;
+            }
         }
         if (table == null) return null;
         final Cursor c = mOpenHelper.getReadableDatabase().query(table, projection, selection,
@@ -55,6 +66,7 @@ public class ITimeDataProivder extends ContentProvider {
         setNotificationUri(c, uri);
         return c;
     }
+
 
     @Nullable
     @Override
@@ -65,7 +77,16 @@ public class ITimeDataProivder extends ContentProvider {
     @Nullable
     @Override
     public Uri insert(Uri uri, ContentValues values) {
-        return null;
+        final int tableId = DataStoreUtils.getTableId(uri);
+        final String table = DataStoreUtils.getTableNameById(tableId);
+        final long rowId;
+        switch (tableId) {
+            //
+        }
+        if (table == null) return null;
+        rowId = mOpenHelper.getWritableDatabase().insert(table, null, values);
+        getContext().getContentResolver().notifyChange(uri, null);
+        return Uri.withAppendedPath(uri, String.valueOf(rowId));
     }
 
     @Override

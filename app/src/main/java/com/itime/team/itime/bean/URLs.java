@@ -16,4 +16,6 @@ public class URLs {
     public static final String SIGN_IN = HEAD + "sign_in";
     public static final String MEETING_INVITATION = HEAD + "meeting_invitation";
     public static final String DELETE_FRIEND = HEAD + "delete_friend";
+    public static final String LOAD_USER_INFO = HEAD + "load_user_infor";
+
 }

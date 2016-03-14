@@ -119,4 +119,17 @@ public class TestProvider extends AndroidTestCase {
         TestUtilities.validateCursor("testUserQuery", userCursor, userValues);
 
     }
+
+    public void testDelete() {
+        // set up will call deleteAllRecords
+        Cursor c = mContext.getContentResolver().query(
+                ITimeDataStore.User.CONTENT_URI,
+                null,
+                null,
+                null,
+                null
+        );
+        assertEquals("Error: Records not deleted from User table during delete", 0, c.getCount());
+        c.close();
+    }
 }

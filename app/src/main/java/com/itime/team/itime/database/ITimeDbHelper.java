@@ -19,14 +19,17 @@ package com.itime.team.itime.database;
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.util.Log;
+
 import com.itime.team.itime.database.ITimeDataStore.User;
 
 /**
  * Created by Xuhui Chen (yorkfine) on 12/03/16.
  */
 public class ITimeDbHelper extends SQLiteOpenHelper {
+    private static final String LOG_TAG = ITimeDbHelper.class.getSimpleName();
     // If you change the database schema, you must increase the database version
-    private static final int DATABASE_VERSION = 1;
+    private static final int DATABASE_VERSION = 2;
 
     static final String DATABASE_NAME = "itime.db";
 
@@ -36,6 +39,7 @@ public class ITimeDbHelper extends SQLiteOpenHelper {
 
     @Override
     public void onCreate(SQLiteDatabase db) {
+        Log.i(LOG_TAG, "onCreate is called, create tables");
         db.beginTransaction();
         // execSQL
         db.execSQL(createTable(User.TABLE_NAME, User.COLUMNS, User.TYPES));
@@ -45,8 +49,10 @@ public class ITimeDbHelper extends SQLiteOpenHelper {
 
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
+        Log.i(LOG_TAG, "upgrade database");
         // drop table
-        // onCreate(db);
+        db.execSQL("DROP TABLE IF EXISTS " + User.TABLE_NAME);
+        onCreate(db);
     }
 
     // create each table

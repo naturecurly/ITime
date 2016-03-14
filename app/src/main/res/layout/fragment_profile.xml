@@ -15,6 +15,7 @@
             android:layout_centerVertical="true"/>
 
         <ImageView
+            android:id="@+id/setting_profile_picture"
             android:layout_width="48dp"
             android:layout_height="48dp"
             android:layout_alignParentRight="true"
@@ -86,6 +87,11 @@
         style="@style/ProfileListLayout">
 
         <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Email"/>
+
+        <TextView
             android:id="@+id/setting_profile_email_text"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -97,6 +103,11 @@
     <RelativeLayout
         android:id="@+id/setting_profile_phone_number"
         style="@style/ProfileListLayout">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Phone Number"/>
 
         <TextView
             android:id="@+id/setting_profile_phone_number_text"

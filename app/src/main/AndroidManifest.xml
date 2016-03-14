@@ -113,8 +113,8 @@
             <intent-filter>
                 <action android:name="android.intent.action.SEND"/>
                 <category android:name="android.intent.category.DEFAULT"/>
-                <data android:scheme="scheme" android:host="host" />
-                <data android:mimeType="text/plain"/>
+                <data android:scheme="http" android:host="itime" />
+                <data android:mimeType="text/html"/>
             </intent-filter>
 
         </activity>
@@ -233,6 +233,9 @@
             android:name="com.google.android.geo.API_KEY"
             android:value="@string/google_app_id_me"/>
 
+        <meta-data
+            android:name="io.fabric.ApiKey"
+            android:value="41dc50126209eaf8803a53d2f262fc1ae0dc6b58" />
     </application>
 
 </manifest>

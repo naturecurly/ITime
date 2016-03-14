@@ -1,6 +1,7 @@
 package com.itime.team.itime.fragments;
 
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.DialogFragment;
@@ -79,13 +80,28 @@ public class PhoneContactAddWayDialogFragment extends DialogFragment implements 
         String[] reciver = mFriendEmail.toString().split(";");
         String mySbuject = "Add Friend";
         String myCc = "cc";
-        String mybody = "<a href=\"scheme://host/\">Agree</a>";
-        Intent myIntent = new Intent(android.content.Intent.ACTION_SEND);
-        myIntent.setType("plain/text");
+        String mybody = "<a href='scheme://host/'><u>Agree</u></a>";
+        Intent myIntent = new Intent(android.content.Intent.ACTION_SEND, Uri.fromParts("mailto", "", null));
+        myIntent.setType("text/html");
         myIntent.putExtra(android.content.Intent.EXTRA_EMAIL, reciver);
         myIntent.putExtra(android.content.Intent.EXTRA_CC, myCc);
         myIntent.putExtra(android.content.Intent.EXTRA_SUBJECT, mySbuject);
-        myIntent.putExtra(android.content.Intent.EXTRA_TEXT, Html.fromHtml(mybody));
+        //myIntent.putExtra(android.content.Intent.EXTRA_TEXT, Html.fromHtml(mybody));
+//        myIntent.putExtra(Intent.EXTRA_TEXT, Html.fromHtml(new StringBuilder()
+//                .append("<p style='font-weight:bold;'>Hello, this is ")
+//                .append(User.ID)
+//                .append(", please click the link</p>")
+//                .append(mybody)
+//                .append("<p> to be my iTime firend. If you do not install the iTime yet, please click following " +
+//                        "link to find the App ")
+//                .append("Install iTime</p>")
+//                .toString()));
+        myIntent.putExtra(Intent.EXTRA_TEXT, Html.fromHtml(new StringBuilder()
+                       .append("<p style='font-weight:bold;'>Some Content</p>")
+                       .append("<a>http://www.google.com</a><br/>")
+                       .append("<a href='http://itime/'>Agree</a>")
+                       .append("<small><p>More content</p></small>")
+                       .toString()));
         startActivity(Intent.createChooser(myIntent, "mail"));
     }
 

@@ -15,6 +15,7 @@ import android.widget.Toast;
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.VolleyError;
+import com.crashlytics.android.Crashlytics;
 import com.facebook.appevents.AppEventsLogger;
 import com.itime.team.itime.R;
 import com.itime.team.itime.bean.Device;
@@ -27,6 +28,7 @@ import com.itime.team.itime.utils.DateUtil;
 import com.itime.team.itime.utils.JsonManager;
 import com.itime.team.itime.utils.MySingleton;
 
+import io.fabric.sdk.android.Fabric;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -52,6 +54,7 @@ public class CheckLoginActivity extends AppCompatActivity implements DataRequest
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        Fabric.with(this, new Crashlytics());
         setContentView(R.layout.activity_checklogin);
         mIn = AnimationUtils.loadAnimation(this, R.anim.alpha_light);
         mMain = (LinearLayout) findViewById(R.id.checklogin_main);

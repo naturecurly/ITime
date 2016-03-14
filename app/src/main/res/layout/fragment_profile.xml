@@ -95,7 +95,8 @@
             android:id="@+id/setting_profile_email_text"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Email"/>
+            android:layout_alignParentRight="true"
+            android:text="null"/>
 
     </RelativeLayout>
 
@@ -113,7 +114,8 @@
             android:id="@+id/setting_profile_phone_number_text"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Phone Number"/>
+            android:layout_alignParentRight="true"
+            android:text="null"/>
 
     </RelativeLayout>
 

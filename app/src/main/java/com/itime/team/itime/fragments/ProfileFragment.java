@@ -66,8 +66,8 @@ public class ProfileFragment extends Fragment implements View.OnClickListener,
 
     private static final String PROFILE_FRAGMENT_TAG = ProfileFragment.class.getSimpleName();
     private static final int REQUEST_SET_USER_NAME = 1;
-    private static final String SETTINGS_PROFILE_EMAIL_TAG = "inputEmail";
-    private static final String SETTINGS_PROFILE_PHONE_NUMBER_TAG = "inputPhoneNumber";
+    private static final int REQUEST_SET_EMAIL = 2;
+    private static final int REQUEST_SET_PHONE_NUMBER = 3;
 
     private static final int PROFILE_LOADER = 0;
 
@@ -114,28 +114,28 @@ public class ProfileFragment extends Fragment implements View.OnClickListener,
         int id = v.getId();
         Bundle bundle = new Bundle();
         switch (id) {
-            case R.id.setting_profile_name:
-                DialogFragment nameInputDialog = new InputDialogFragment();
+            case R.id.setting_profile_name: {
                 final Intent intent = new Intent(getActivity(), InputDialogActivity.class);
                 intent.putExtra(InputDialogActivity.INPUT_DIALOG_TITLE, "Edit User Name");
                 startActivityForResult(intent, REQUEST_SET_USER_NAME);
                 break;
+            }
 
             case R.id.setting_profile_qrcode:
                 break;
 
-            case R.id.setting_profile_email:
-                DialogFragment emailInputDialog = new InputDialogFragment();
-                bundle.putString(InputDialogFragment.INPUT_DIALOG_TITLE, "Edit Your Email");
-                emailInputDialog.setArguments(bundle);
-                emailInputDialog.show(getFragmentManager(), SETTINGS_PROFILE_EMAIL_TAG);
+            case R.id.setting_profile_email: {
+                final Intent intent = new Intent(getActivity(), InputDialogActivity.class);
+                intent.putExtra(InputDialogActivity.INPUT_DIALOG_TITLE, "Edit Your Email");
+                startActivityForResult(intent, REQUEST_SET_EMAIL);
                 break;
-            case R.id.setting_profile_phone_number:
-                DialogFragment phoneNumInputDialog = new InputDialogFragment();
-                bundle.putString(InputDialogFragment.INPUT_DIALOG_TITLE, "Edit Your Phone Number");
-                phoneNumInputDialog.setArguments(bundle);
-                phoneNumInputDialog.show(getFragmentManager(), SETTINGS_PROFILE_PHONE_NUMBER_TAG);
+            }
+            case R.id.setting_profile_phone_number: {
+                final Intent intent = new Intent(getActivity(), InputDialogActivity.class);
+                intent.putExtra(InputDialogActivity.INPUT_DIALOG_TITLE, "Edit Your Phone Number");
+                startActivityForResult(intent, REQUEST_SET_PHONE_NUMBER);
                 break;
+            }
         }
 
     }
@@ -152,6 +152,18 @@ public class ProfileFragment extends Fragment implements View.OnClickListener,
             case REQUEST_SET_USER_NAME: {
                 if (resultCode == InputDialogActivity.RESULT_SET_TEXT) {
                     mUserNameTextView.setText(data.getStringExtra(InputDialogActivity.RETURN_TEXT));
+                }
+                break;
+            }
+            case REQUEST_SET_EMAIL: {
+                if (resultCode == InputDialogActivity.RESULT_SET_TEXT) {
+                    mUserEmailTextView.setText(data.getStringExtra(InputDialogActivity.RETURN_TEXT));
+                }
+                break;
+            }
+            case REQUEST_SET_PHONE_NUMBER: {
+                if (resultCode == InputDialogActivity.RESULT_SET_TEXT) {
+                    mUserPhoneNumberTv.setText(data.getStringExtra(InputDialogActivity.RETURN_TEXT));
                 }
                 break;
             }

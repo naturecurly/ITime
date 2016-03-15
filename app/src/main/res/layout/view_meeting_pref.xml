@@ -10,6 +10,7 @@
 
     <!-- left part: Reject or Accept-->
     <TextView
+        android:id="@+id/preference_type"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Reject"
@@ -23,14 +24,17 @@
         android:layout_alignParentRight="true"
         android:gravity="right">
         <TextView
+            android:id="@+id/preference_starts_date"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="From: Date"/>
         <TextView
+            android:id="@+id/preference_repeat_type"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Weekly"/>
         <TextView
+            android:id="@+id/preference_duration"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="00:00 - 00:00"/>

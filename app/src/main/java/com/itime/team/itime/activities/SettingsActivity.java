@@ -44,6 +44,8 @@ public class SettingsActivity extends AppCompatActivity {
     private static final String LOG_TAG = SettingsActivity.class.getSimpleName();
 
     private static final String SETTINGS = "Settings";
+    private static final String SETTINGS_DATA = "Settings_data";
+
     private static final int PROFILE_SETTINGS = 1;
     private static final int MEETING_SETTINGS = 2;
     private static final int IMPORT_SETTINGS = 3;
@@ -106,6 +108,12 @@ public class SettingsActivity extends AppCompatActivity {
 
                 case MEETING_SUB_SETTINGS:
                     MeetingSubPreferenceFragment mspf = new MeetingSubPreferenceFragment();
+                    String data = getIntent().getStringExtra(SETTINGS_DATA);
+                    if (data != null) {
+                        Bundle args = new Bundle();
+                        args.putString(MeetingSubPreferenceFragment.PREFERENCE_DATA, data);
+                        mspf.setArguments(args);
+                    }
                     getSupportFragmentManager().beginTransaction()
                             .add(R.id.setting_content, mspf)
                             .commit();

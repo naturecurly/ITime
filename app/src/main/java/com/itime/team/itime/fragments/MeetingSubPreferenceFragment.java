@@ -26,6 +26,7 @@ import android.preference.PreferenceFragment;
 import android.preference.PreferenceManager;
 import android.preference.PreferenceScreen;
 import android.support.v4.app.Fragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -37,26 +38,42 @@ import android.widget.TextView;
 import android.widget.TimePicker;
 
 import com.itime.team.itime.R;
+import com.itime.team.itime.utils.DateUtil;
+
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.util.Calendar;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.TimeZone;
 
 /**
  * Created by Xuhui Chen (yorkfine) on 27/01/16.
  *
  * TODO: Singleton class is preferable?
  */
-public class MeetingSubPreferenceFragment extends Fragment
-        implements Preference.OnPreferenceClickListener, Preference.OnPreferenceChangeListener {
+public class MeetingSubPreferenceFragment extends Fragment implements View.OnClickListener,
+        Preference.OnPreferenceClickListener, Preference.OnPreferenceChangeListener {
+
+    private static final String LOG_TAG = MeetingSubPreferenceFragment.class.getSimpleName();
 
     private static final String MEETING_PREFERENCE_COUNT = "meeting_preference_count";
+
+    public static final String PREFERENCE_DATA = "preference_data";
 
     private View mMeetingSubPrefView;
     private boolean mIsNewPreferences = false;
     private int mCurPrefercenIndex = -1;
     private boolean isReject;
-    private String preferenceId;
+    private Preference preference;
+
+    // View
+    private TextView mStartsDate;
+    private TextView mStartsTime;
+    private TextView mEndsTime;
+    private TextView mRepeat;
+    private TextView mType;
 
     public MeetingSubPreferenceFragment() {
         super();
@@ -68,6 +85,7 @@ public class MeetingSubPreferenceFragment extends Fragment
         mMeetingSubPrefView = inflater.inflate(R.layout.fragment_sub_preference_meeting, null);
         TextView title = (TextView) getActivity().findViewById(R.id.setting_toolbar_title);
         title.setText("Edit Preference");
+
         Bundle args = getArguments();
         // TODO: new preference does nothing, but indexed preference fetch the values
         if (args != null && args.getBoolean("AddMeetingPreference")) {
@@ -76,8 +94,90 @@ public class MeetingSubPreferenceFragment extends Fragment
         if (args != null && !mIsNewPreferences) {
             // TODO: set preferences from last fragment
         }
+
+        bindListener();
+        holdViews();
+        if (args != null && args.getString(PREFERENCE_DATA) != null) {
+            try {
+                JSONObject data = new JSONObject(args.getString(PREFERENCE_DATA));
+                initViewsValue(data);
+            } catch (JSONException e) {
+                Log.e(LOG_TAG, e.getMessage());
+            }
+
+        } else {
+            initViewsValue(null);
+        }
         return mMeetingSubPrefView;
         //return super.onCreateView(inflater, container, savedInstanceState);
+    }
+
+    private void holdViews() {
+        mStartsDate = (TextView) mMeetingSubPrefView.findViewById(R.id.setting_meeting_start_date_text);
+        mStartsTime = (TextView) mMeetingSubPrefView.findViewById(R.id.setting_meeting_start_time_text);
+        mEndsTime = (TextView) mMeetingSubPrefView.findViewById(R.id.setting_meeting_end_time_text);
+        mRepeat = (TextView) mMeetingSubPrefView.findViewById(R.id.setting_meeting_repeat_text);
+        mType = (TextView) mMeetingSubPrefView.findViewById(R.id.setting_meeting_type_text);
+    }
+
+    private void initViewsValue(JSONObject values) {
+        if (values != null) {
+            // set existing values
+            try {
+                mType.setText(values.getString("preference_type"));
+
+                Calendar c = Calendar.getInstance();
+                String startsDate = values.getString("starts_date");
+                c.setTime(DateUtil.getLocalDateObject(startsDate));
+                c.setTimeZone(TimeZone.getDefault());
+                String startsDate1 = String.format("%d/%d/%d", c.get(Calendar.DATE), c.get(Calendar.MONTH)+1, c.get(Calendar.YEAR));
+                mStartsDate.setText(startsDate1);
+                mRepeat.setText(values.getString("repeat_type"));
+                isReject = values.getString("repeat_type").equalsIgnoreCase("reject") ? true : false;
+                String startsTime = values.getString("starts_time");
+                String endsTime = values.getString("ends_time");
+                c.setTime(DateUtil.getLocalDateObject(startsTime));
+                String starts = String.format("%s:%s", c.get(Calendar.HOUR_OF_DAY), c.get(Calendar.MINUTE));
+                mStartsTime.setText(starts);
+                c.setTime(DateUtil.getLocalDateObject(endsTime));
+                String ends = String.format("%s:%s", c.get(Calendar.HOUR_OF_DAY), c.get(Calendar.MINUTE));
+                mEndsTime.setText(ends);
+
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+        } else {
+            // set today values
+            Calendar c = Calendar.getInstance();
+            String startsDate1 = String.format("%d/%d/%d", c.get(Calendar.DATE), c.get(Calendar.MONTH) + 1, c.get(Calendar.YEAR));
+            mStartsDate.setText(startsDate1);
+            String starts = String.format("%s:%s", c.get(Calendar.HOUR_OF_DAY), c.get(Calendar.MINUTE));
+            mStartsTime.setText(starts);
+            String ends = String.format("%s:%s", c.get(Calendar.HOUR_OF_DAY), c.get(Calendar.MINUTE));
+            mEndsTime.setText(ends);
+            mRepeat.setText("Daily");
+            mType.setText("Reject");
+        }
+
+
+    }
+
+    private void bindListener() {
+        if (mMeetingSubPrefView == null) return;
+        final int [] viewIds = new int[]{
+                R.id.setting_meeting_start_date,
+                R.id.setting_meeting_start_time,
+                R.id.setting_meeting_end_time,
+                R.id.setting_meeting_repeat,
+                R.id.setting_meeting_type
+        };
+        for (int id : viewIds) {
+            View v = mMeetingSubPrefView.findViewById(id);
+            if (v != null) {
+                v.setOnClickListener(this);
+            }
+        }
+
     }
 
     @Override
@@ -91,7 +191,7 @@ public class MeetingSubPreferenceFragment extends Fragment
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
         if (id == R.id.action_save) {
-            // TODO: Save preference to sharePref and update server
+            // TODO: Save preference and update server
             //saveMeetingPreferences();
             return true;
         }
@@ -235,5 +335,45 @@ public class MeetingSubPreferenceFragment extends Fragment
             }
         }
         return true;
+    }
+
+    @Override
+    public void onClick(View v) {
+        final int id = v.getId();
+        switch (id) {
+            case R.id.setting_meeting_start_date: {
+                final Calendar cal = Calendar.getInstance();
+                DatePickerDialog datePicker = new DatePickerDialog(getContext(), new DatePickerDialog.OnDateSetListener() {
+                    @Override
+                    public void onDateSet(DatePicker view, int year, int monthOfYear, int dayOfMonth) {
+                        mStartsDate.setText(String.format("%d/%d/%d", dayOfMonth, monthOfYear, year));
+                    }
+                }, cal.get(Calendar.YEAR), cal.get(Calendar.MONTH)+1, cal.get(Calendar.DAY_OF_MONTH));
+                datePicker.show();
+                break;
+            }
+            case R.id.setting_meeting_start_time:
+            case R.id.setting_meeting_end_time: {
+                final Calendar cal = Calendar.getInstance();
+                TimePickerDialog timePicker = new TimePickerDialog(getContext(), new TimePickerDialog.OnTimeSetListener() {
+                    @Override
+                    public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
+                        TextView time = id == R.id.setting_meeting_start_time ? mStartsTime : mEndsTime;
+                        time.setText(hourOfDay + ":" + minute);
+                    }
+                }, cal.get(Calendar.HOUR_OF_DAY), cal.get(Calendar.MINUTE),false);
+                timePicker.show();
+                break;
+            }
+            case R.id.setting_meeting_repeat: {
+                break;
+            }
+            case R.id.setting_meeting_type: {
+                String text = isReject ? "Accept" : "Reject";
+                isReject = !isReject;
+                mType.setText(text);
+                break;
+            }
+        }
     }
 }

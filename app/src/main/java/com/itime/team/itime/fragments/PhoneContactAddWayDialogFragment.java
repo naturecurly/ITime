@@ -15,6 +15,7 @@ import android.widget.RadioGroup;
 
 import com.itime.team.itime.R;
 import com.itime.team.itime.bean.Contact;
+import com.itime.team.itime.bean.User;
 
 import java.util.ArrayList;
 
@@ -86,22 +87,23 @@ public class PhoneContactAddWayDialogFragment extends DialogFragment implements 
         myIntent.putExtra(android.content.Intent.EXTRA_EMAIL, reciver);
         myIntent.putExtra(android.content.Intent.EXTRA_CC, myCc);
         myIntent.putExtra(android.content.Intent.EXTRA_SUBJECT, mySbuject);
-        //myIntent.putExtra(android.content.Intent.EXTRA_TEXT, Html.fromHtml(mybody));
-//        myIntent.putExtra(Intent.EXTRA_TEXT, Html.fromHtml(new StringBuilder()
-//                .append("<p style='font-weight:bold;'>Hello, this is ")
-//                .append(User.ID)
-//                .append(", please click the link</p>")
-//                .append(mybody)
-//                .append("<p> to be my iTime firend. If you do not install the iTime yet, please click following " +
-//                        "link to find the App ")
-//                .append("Install iTime</p>")
-//                .toString()));
+        myIntent.putExtra(android.content.Intent.EXTRA_TEXT, Html.fromHtml(mybody));
         myIntent.putExtra(Intent.EXTRA_TEXT, Html.fromHtml(new StringBuilder()
-                       .append("<p style='font-weight:bold;'>Some Content</p>")
-                       .append("<a>http://www.google.com</a><br/>")
-                       .append("<a href='http://itime/'>Agree</a>")
-                       .append("<small><p>More content</p></small>")
-                       .toString()));
+                .append("<p style='font-weight:bold;'>Hello, this is ")
+                .append(User.ID)
+                .append(", please click the link</p>")
+                .append("<a>http://jp.app/openwith?name=zhangsan&age=26</a>")
+//                .append("<a>http://www.android.com</a><br/>")
+                .append("<p> to be my iTime firend. If you do not install the iTime yet, please click following " +
+                        "link to find the App ")
+                .append("Install iTime</p>")
+                .toString()));
+//        myIntent.putExtra(Intent.EXTRA_TEXT, Html.fromHtml(new StringBuilder()
+//                .append("<p style='font-weight:bold;'>Some Content</p>")
+//                .append("<a>http://itime/</a><br/>")
+//                .append("<a href='scheme://host/'><u>Agree</u></a>")
+//                .append("<small><p>More content</p></small>")
+//                .toString()));
         startActivity(Intent.createChooser(myIntent, "mail"));
     }
 

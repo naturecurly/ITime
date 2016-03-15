@@ -20,18 +20,14 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.DecelerateInterpolator;
-import android.widget.AbsListView;
 import android.widget.Button;
-import android.widget.FrameLayout;
 import android.widget.ImageButton;
-import android.widget.ImageView;
-import android.widget.ListView;
 import android.widget.RelativeLayout;
-import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.itime.team.itime.R;
+import com.itime.team.itime.activities.NewEventActivity;
 import com.itime.team.itime.activities.WeeklyActivity;
 import com.itime.team.itime.listener.OnDateSelectedListener;
 import com.itime.team.itime.listener.RecyclerItemClickListener;
@@ -453,6 +449,11 @@ public class CalendarFragment extends Fragment {
                 }
                 //ft.addToBackStack(null);
                 ft.commit();
+                break;
+            case R.id.add_event:
+                Intent intent = new Intent(getActivity(), NewEventActivity.class);
+                startActivity(intent);
+                break;
         }
         return super.onOptionsItemSelected(item);
     }

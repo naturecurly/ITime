@@ -108,13 +108,18 @@
             android:theme="@style/SettingTheme"></activity>
 
         <activity
+            android:name=".activities.NewEventActivity"
+            android:theme="@style/SettingTheme"></activity>
+
+        <activity
             android:name=".activities.ReceiveMsgActivity"
             android:theme="@style/AppTheme.NoActionBar">
             <intent-filter>
-                <action android:name="android.intent.action.SEND"/>
-                <category android:name="android.intent.category.DEFAULT"/>
-                <data android:scheme="http" android:host="itime" />
-                <data android:mimeType="text/html"/>
+                <action android:name="android.intent.action.VIEW"/>
+                <data android:scheme="http" android:host="jp.app" android:pathPrefix="/openwith"/>
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                
             </intent-filter>
 
         </activity>

@@ -107,9 +107,9 @@ public class NewMeetingActivity extends AppCompatActivity implements View.OnTouc
     public boolean onOptionsItemSelected(MenuItem item) {
         if(item.getItemId() == R.id.new_meeting_menu_send){
             AlertDialog.Builder builder = new AlertDialog.Builder(this);
-            builder.setMessage("This part is being developed");
+            builder.setMessage(getString(R.string.new_meeting_confirm_content));
             builder.setIcon(R.mipmap.ic_launcher);
-            builder.setTitle("Sorry");
+            builder.setTitle(getString(R.string.new_meeting_confirm_title));
             builder.setNegativeButton("No", new DialogInterface.OnClickListener() {
                 @Override
                 public void onClick(DialogInterface dialog, int which) {

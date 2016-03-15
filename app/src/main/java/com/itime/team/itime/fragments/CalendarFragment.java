@@ -107,7 +107,6 @@ public class CalendarFragment extends Fragment {
         fm = getFragmentManager();
         setHasOptionsMenu(true);
 
-        imageButton = (ImageButton) getActivity().findViewById(R.id.event_list);
 //        if (getArguments() != null) {
 //            int month = getArguments().getInt("month");
 //            int year = getArguments().getInt("year");
@@ -216,6 +215,7 @@ public class CalendarFragment extends Fragment {
                 }
             }
         });
+        imageButton = (ImageButton) getActivity().findViewById(R.id.event_list);
         reSetMenuOnClickListener(imageButton);
 
 

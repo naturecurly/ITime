@@ -28,7 +28,9 @@ public abstract class WeeklyBaseActivity extends AppCompatActivity implements We
     private static final int TYPE_WEEK_VIEW = 3;
     private int mWeekViewType = TYPE_WEEK_VIEW;
     private WeekView mWeekView;
-
+    private boolean isWeekView = true;
+    private Menu mMenu;
+    private boolean isLoaded = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -70,6 +72,7 @@ public abstract class WeeklyBaseActivity extends AppCompatActivity implements We
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
+        mMenu = menu;
         getMenuInflater().inflate(R.menu.menu_weekly, menu);
         return true;
     }
@@ -83,15 +86,39 @@ public abstract class WeeklyBaseActivity extends AppCompatActivity implements We
 //                mWeekView.goToToday();
 //                return true;
             case R.id.action_day_view:
-                if (mWeekViewType != TYPE_DAY_VIEW) {
-                    item.setChecked(!item.isChecked());
-                    mWeekViewType = TYPE_DAY_VIEW;
-                    mWeekView.setNumberOfVisibleDays(1);
+                if (isWeekView == true) {
+                    isLoaded = true;
+                    invalidateOptionsMenu();
+                    if (mWeekViewType != TYPE_DAY_VIEW) {
+                        item.setChecked(!item.isChecked());
+                        mWeekViewType = TYPE_DAY_VIEW;
+                        mWeekView.setNumberOfVisibleDays(1);
 
-                    // Lets change some dimensions to best fit the view.
-                    mWeekView.setColumnGap((int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 8, getResources().getDisplayMetrics()));
-                    mWeekView.setTextSize((int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_SP, 12, getResources().getDisplayMetrics()));
-                    mWeekView.setEventTextSize((int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_SP, 12, getResources().getDisplayMetrics()));
+                        // Lets change some dimensions to best fit the view.
+                        mWeekView.setColumnGap((int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 8, getResources().getDisplayMetrics()));
+                        mWeekView.setTextSize((int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_SP, 12, getResources().getDisplayMetrics()));
+                        mWeekView.setEventTextSize((int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_SP, 12, getResources().getDisplayMetrics()));
+                        isWeekView = false;
+
+
+                    }
+                } else {
+
+                    if (mWeekViewType != TYPE_WEEK_VIEW) {
+                        isLoaded = true;
+                        invalidateOptionsMenu();
+                        item.setChecked(!item.isChecked());
+                        mWeekViewType = TYPE_WEEK_VIEW;
+                        mWeekView.setNumberOfVisibleDays(7);
+
+                        // Lets change some dimensions to best fit the view.
+                        mWeekView.setColumnGap((int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 2, getResources().getDisplayMetrics()));
+                        mWeekView.setTextSize((int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_SP, 10, getResources().getDisplayMetrics()));
+                        mWeekView.setEventTextSize((int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_SP, 10, getResources().getDisplayMetrics()));
+                        isWeekView = true;
+
+                    }
+
                 }
                 return true;
 //            case R.id.action_three_day_view:
@@ -123,12 +150,27 @@ public abstract class WeeklyBaseActivity extends AppCompatActivity implements We
         return super.onOptionsItemSelected(item);
     }
 
+    @Override
+    public boolean onPrepareOptionsMenu(Menu menu) {
+        if (isLoaded) {
+            if (!isWeekView) {
+                MenuItem menuItem = mMenu.findItem(R.id.action_day_view);
+                menuItem.setTitle("Weekly");
+            } else {
+                MenuItem menuItem = mMenu.findItem(R.id.action_day_view);
+                menuItem.setTitle("Daily");
+            }
+        }
+        return super.onPrepareOptionsMenu(menu);
+    }
+
     /**
      * Set up a date time interpreter which will show short date values when in week view and long
      * date values otherwise.
      *
      * @param shortDate True if the date values should be short.
      */
+
     private void setupDateTimeInterpreter(final boolean shortDate) {
         mWeekView.setDateTimeInterpreter(new DateTimeInterpreter() {
             @Override

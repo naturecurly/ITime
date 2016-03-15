@@ -36,7 +36,8 @@ import com.itime.team.itime.R;
 /**
  * Created by Xuhui Chen (yorkfine) on 19/01/16.
  */
-public class AlertTimePreferenceFragment extends Fragment {
+// TODO: 15/03/16 refactor. reuse with alert time preference list
+public class RepeatPreferenceFragment extends Fragment {
     private View alertTimeView;
     private ListView mAlertTimeList;
     private String [] data;
@@ -50,12 +51,12 @@ public class AlertTimePreferenceFragment extends Fragment {
         alertTimeView = inflater.inflate(R.layout.fragment_preference_alert_time, null);
 
         mAlertTimeList = (ListView) alertTimeView.findViewById(R.id.setting_dft_alert_time_list);
-        data = getResources().getStringArray(R.array.entry_default_alert_time);
-        AlertTimeListAdapter alertTimeListAdapter = new AlertTimeListAdapter(getActivity(), R.layout.view_setting_list, data);
+        data = getResources().getStringArray(R.array.repeat_values);
+        RepeatPreferenceListAdapter alertTimeListAdapter = new RepeatPreferenceListAdapter(getActivity(), R.layout.view_setting_list, data);
         mAlertTimeList.setAdapter(alertTimeListAdapter);
 
         TextView title = (TextView) getActivity().findViewById(R.id.setting_toolbar_title);
-        title.setText("Default Alert Time");
+        title.setText("Repeat");
         setHasOptionsMenu(true);
 
         mAlertTimeList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -73,13 +74,13 @@ public class AlertTimePreferenceFragment extends Fragment {
         return alertTimeView;
     }
 
-    private class AlertTimeListAdapter extends ArrayAdapter<String> {
+    private class RepeatPreferenceListAdapter extends ArrayAdapter<String> {
 
         Context context;
         int layoutResourceId;
         String data[] = null;
 
-        public AlertTimeListAdapter(Context context, int resource, String[] data) {
+        public RepeatPreferenceListAdapter(Context context, int resource, String[] data) {
             super(context, resource, data);
             this.context = context;
             this.layoutResourceId = resource;

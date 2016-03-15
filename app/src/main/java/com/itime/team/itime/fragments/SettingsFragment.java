@@ -193,9 +193,11 @@ public class SettingsFragment extends Fragment implements View.OnClickListener, 
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == ALERT_TIME_SETTINGS) {
-            String text = PreferenceManager.getDefaultSharedPreferences(getActivity()).getString("default_alert_time", "10mins");
-            TextView textView = (TextView) mAlertTimeView.findViewById(R.id.setting_dft_alert_time_text);
-            textView.setText(text);
+            if (resultCode == AlertTimePreferenceFragment.RESULT_SET_DEFAULT_ALERT) {
+                String text = data.getStringExtra(AlertTimePreferenceFragment.RETURN_TEXT);
+                TextView textView = (TextView) mAlertTimeView.findViewById(R.id.setting_dft_alert_time_text);
+                textView.setText(text);
+            }
         }
     }
 

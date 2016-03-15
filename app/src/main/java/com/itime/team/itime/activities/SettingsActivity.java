@@ -34,6 +34,7 @@ import com.itime.team.itime.fragments.InputDialogFragment;
 import com.itime.team.itime.fragments.MeetingPreferenceFragment;
 import com.itime.team.itime.fragments.MeetingSubPreferenceFragment;
 import com.itime.team.itime.fragments.ProfileFragment;
+import com.itime.team.itime.fragments.RepeatPreferenceFragment;
 
 /**
  * Created by Xuhui Chen (yorkfine) on 12/01/16.
@@ -104,6 +105,14 @@ public class SettingsActivity extends AppCompatActivity {
                             .add(R.id.setting_content, apf)
                             .commit();
                     //getSupportFragmentManager().putFragment(fragmentBundle, "AlertTimePreferenceFragment", apf);
+                    break;
+
+                // TODO: 15/03/16 refactor. Not put it here
+                case 6:
+                    RepeatPreferenceFragment rpf = new RepeatPreferenceFragment();
+                    getSupportFragmentManager().beginTransaction()
+                            .add(R.id.setting_content, rpf)
+                            .commit();
                     break;
 
                 case MEETING_SUB_SETTINGS:

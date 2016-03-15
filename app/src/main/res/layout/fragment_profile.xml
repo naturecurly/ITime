@@ -6,6 +6,7 @@
 
     <!-- Profile Photo-->
     <RelativeLayout
+        android:id="@+id/setting_profile_picture"
         style="@style/ProfileListLayout">
 
         <TextView
@@ -15,7 +16,7 @@
             android:layout_centerVertical="true"/>
 
         <ImageView
-            android:id="@+id/setting_profile_picture"
+            android:id="@+id/setting_profile_picture_img"
             android:layout_width="48dp"
             android:layout_height="48dp"
             android:layout_alignParentRight="true"

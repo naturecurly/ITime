@@ -19,11 +19,13 @@ package com.itime.team.itime.fragments;
 
 import android.content.Intent;
 import android.database.Cursor;
+import android.graphics.Bitmap;
 import android.net.Uri;
 import android.support.v4.app.DialogFragment;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
@@ -34,9 +36,11 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.google.zxing.WriterException;
 import com.itime.team.itime.R;
 import com.itime.team.itime.activities.InputDialogActivity;
 import com.itime.team.itime.database.ITimeDataStore;
+import com.zxing.encoding.EncodingHandler;
 
 
 /**
@@ -51,6 +55,7 @@ public class ProfileFragment extends Fragment implements View.OnClickListener,
     private View mName;
     private View mID;
     private View mQRCode;
+    private View mProfileImage;
     private View mEmail;
     private View mPhoneNumber;
 
@@ -68,6 +73,8 @@ public class ProfileFragment extends Fragment implements View.OnClickListener,
     private static final int REQUEST_SET_USER_NAME = 1;
     private static final int REQUEST_SET_EMAIL = 2;
     private static final int REQUEST_SET_PHONE_NUMBER = 3;
+    private static final int REQUEST_IMAGE_SELECT = 4;
+
 
     private static final int PROFILE_LOADER = 0;
 
@@ -88,13 +95,15 @@ public class ProfileFragment extends Fragment implements View.OnClickListener,
         mName = mProfileView.findViewById(R.id.setting_profile_name);
         mEmail = mProfileView.findViewById(R.id.setting_profile_email);
         mPhoneNumber = mProfileView.findViewById(R.id.setting_profile_phone_number);
+        mProfileImage = mProfileView.findViewById(R.id.setting_profile_picture);
+        mQRCode = mProfileView.findViewById(R.id.setting_profile_qrcode);
 
-        View [] views = new View[]{mName, mEmail, mPhoneNumber};
+        View [] views = new View[]{mName, mEmail, mPhoneNumber, mProfileImage, mQRCode};
         bindOnClickListener(views);
 
         mUserNameTextView = (TextView) mProfileView.findViewById(R.id.setting_profile_name_text);
         mUserIdTextView = (TextView) mProfileView.findViewById(R.id.setting_profile_id_text);
-        mUserProfileImageView = (ImageView) mProfileView.findViewById(R.id.setting_profile_picture);
+        mUserProfileImageView = (ImageView) mProfileView.findViewById(R.id.setting_profile_picture_img);
         mUserEmailTextView = (TextView) mProfileView.findViewById(R.id.setting_profile_email_text);
         mUserPhoneNumberTv = (TextView) mProfileView.findViewById(R.id.setting_profile_phone_number_text);
 
@@ -114,6 +123,13 @@ public class ProfileFragment extends Fragment implements View.OnClickListener,
         int id = v.getId();
         Bundle bundle = new Bundle();
         switch (id) {
+            case R.id.setting_profile_picture: {
+                Intent intent = new Intent(Intent.ACTION_PICK);
+                intent.setType("image/*");
+                intent.setAction(Intent.ACTION_GET_CONTENT);
+                startActivityForResult(intent, REQUEST_IMAGE_SELECT);
+                break;
+            }
             case R.id.setting_profile_name: {
                 final Intent intent = new Intent(getActivity(), InputDialogActivity.class);
                 intent.putExtra(InputDialogActivity.INPUT_DIALOG_TITLE, "Edit User Name");
@@ -122,6 +138,14 @@ public class ProfileFragment extends Fragment implements View.OnClickListener,
             }
 
             case R.id.setting_profile_qrcode:
+                final QRCodeFragment qrCodeFragment = new QRCodeFragment();
+                final Bundle args = new Bundle();
+                args.putString(QRCodeFragment.QRCODE_STRING, mUserId);
+                qrCodeFragment.setArguments(args);
+                qrCodeFragment.show(getActivity().getSupportFragmentManager(), "qrcode_fragment");
+                //FragmentTransaction ft = getActivity().getSupportFragmentManager().beginTransaction();
+                //ft.add(qrCodeFragment, "qrcode_fragment");
+                //ft.commit();
                 break;
 
             case R.id.setting_profile_email: {
@@ -149,6 +173,12 @@ public class ProfileFragment extends Fragment implements View.OnClickListener,
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         switch (requestCode) {
+            case REQUEST_IMAGE_SELECT: {
+                if (data != null) {
+                    mUserProfileImageView.setImageURI(data.getData());
+                }
+                break;
+            }
             case REQUEST_SET_USER_NAME: {
                 if (resultCode == InputDialogActivity.RESULT_SET_TEXT) {
                     mUserNameTextView.setText(data.getStringExtra(InputDialogActivity.RETURN_TEXT));

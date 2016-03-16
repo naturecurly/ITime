@@ -1,8 +1,14 @@
 package com.itime.team.itime.fragments;
 
+import android.app.AlertDialog;
+import android.content.ActivityNotFoundException;
+import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.DialogFragment;
+import android.text.Html;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -35,6 +41,8 @@ public class MeetingAddDialogFragment extends DialogFragment implements DataRequ
     private View addDialog;
     private JsonManager mJsonManager;
     private ArrayList<HashMap<String, Object>> mUserInfo;
+    public static final String PACKAGE_NAME = "com.facebook.orca";
+
 
     public MeetingAddDialogFragment(ArrayList<HashMap<String, Object>> mUserInfo){
         this.mUserInfo = mUserInfo;
@@ -103,15 +111,51 @@ public class MeetingAddDialogFragment extends DialogFragment implements DataRequ
                     Intent intent = new Intent(getActivity(), CaptureActivity.class);
                     startActivityForResult(intent, 0);
                 }else if (position == 3){
-
+                    StringBuffer info = new StringBuffer();
+                    info.append("Hello, this is ").append(User.ID).append(", please click the link")
+                            .append(Html.fromHtml("<a>www.google.com</a>")).append(" to be my iTime firend. If you do not install the iTime yet, please click following ")
+                            .append("link to find the App Install iTime");
+                    Intent sendIntent = new Intent();
+                    sendIntent.setAction(Intent.ACTION_SEND);
+                    sendIntent.putExtra(Intent.EXTRA_TEXT, info.toString());
+                    sendIntent.setType("text/plain");
+                    sendIntent.setPackage("com.facebook.orca");
+                    try {
+                        startActivity(sendIntent);
+                    } catch (android.content.ActivityNotFoundException ex) {
+                        AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
+                        builder.setMessage(getString(R.string.add_friend_facebook_install));
+                        builder.setIcon(R.mipmap.ic_launcher);
+                        builder.setTitle(getString(R.string.warning));
+                        builder.setNegativeButton("No", null);
+                        builder.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                openMessengerInPlayStore(getContext());
+                            }
+                        });
+                        builder.show();
+                    }
                 }else if(position == 4){
 
                 } else{
 
                 }
-                MeetingAddDialogFragment.this.dismiss();
+                if( position !=3 ) MeetingAddDialogFragment.this.dismiss();
             }
         });
+    }
+
+
+    public void openMessengerInPlayStore(Context context) {
+        try {
+            startViewUri(context, "market://details?id=" + PACKAGE_NAME);
+        } catch (ActivityNotFoundException anfe) {
+            startViewUri(context, "http://play.google.com/store/apps/details?id=" + PACKAGE_NAME);
+        }
+    }
+    private void startViewUri(Context context, String uri) {
+        context.startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(uri)));
     }
 
     @Override

@@ -53,6 +53,8 @@
     <string name="new_meeting_confirm_title">Sending Invitation</string>
     <string name="new_meeting_confirm_content">Do you want to send the Meeting Invitation</string>
 
+    <string name="new_event_title">New Event</string>
+
 
     <string name="login_username">Username</string>
     <string name="login_password">Password</string>
@@ -96,9 +98,12 @@
     <string name="title_intent_preference">title_intent_preference</string>
     <string name="summary_intent_preference">summary_intent_preference</string>
 
+    <string name="add_friend_facebook_install">You do not install Messenger yat, would you like to install?</string>
+
     <string name="facebook_app_id">450185851844736</string>
     <string name="google_app_id_me">AIzaSyDjDteQOjuWYV7ST_Wi7k34i36j2OngA88</string>
     <string name="google_web_id">AIzaSyBC4zDmkarugKY0Njs_n2TtEUVEyeESn0c</string>
+
     <string name="action_today">Today</string>
     <string name="action_day_view">Daily</string>
     <string name="action_three_day_view">3 day view</string>

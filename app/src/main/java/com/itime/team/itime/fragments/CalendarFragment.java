@@ -3,6 +3,7 @@ package com.itime.team.itime.fragments;
 import android.animation.ValueAnimator;
 import android.content.Intent;
 import android.graphics.Color;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -26,19 +27,32 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.android.volley.Request;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
 import com.itime.team.itime.R;
 import com.itime.team.itime.activities.NewEventActivity;
 import com.itime.team.itime.activities.WeeklyActivity;
+import com.itime.team.itime.bean.URLs;
+import com.itime.team.itime.bean.User;
 import com.itime.team.itime.listener.OnDateSelectedListener;
 import com.itime.team.itime.listener.RecyclerItemClickListener;
 import com.itime.team.itime.listener.ScrollMeetingViewListener;
 import com.itime.team.itime.utils.DateUtil;
 import com.itime.team.itime.utils.DensityUtil;
+import com.itime.team.itime.utils.JsonArrayFormRequest;
+import com.itime.team.itime.utils.MySingleton;
 import com.itime.team.itime.views.CalendarView;
 import com.itime.team.itime.views.MeetingScrollView;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -59,6 +73,7 @@ public class CalendarFragment extends Fragment {
     private int firstVisibleItem, visibleItemCount, totalItemCount;
     private MeetingScrollView mScrollView;
     private boolean isExpended = false;
+    private JSONArray mResponse;
 
     public LinearLayoutManager getLinearLayoutManager() {
         return linearLayoutManager;
@@ -75,7 +90,9 @@ public class CalendarFragment extends Fragment {
     private int clickedMonth = 0;
     private int clickedYear = 0;
     private FragmentManager fm;
+    private List<String> eventDateList = new ArrayList<>();
 
+    private String mUserId;
 
     public static CalendarFragment newInstance(Bundle bundle) {
 
@@ -102,10 +119,18 @@ public class CalendarFragment extends Fragment {
     }
 
     @Override
+    public void onActivityCreated(Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
+        fetchEvents(mUserId);
+        //analyseEvents(mResponse);
+    }
+
+    @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         fm = getFragmentManager();
         setHasOptionsMenu(true);
+        mUserId = User.ID;
 
 //        if (getArguments() != null) {
 //            int month = getArguments().getInt("month");
@@ -116,6 +141,7 @@ public class CalendarFragment extends Fragment {
 
 //        } else {
         fillData(Calendar.getInstance());
+
 //        }
     }
 
@@ -367,7 +393,26 @@ public class CalendarFragment extends Fragment {
             //holder.calendarView = new CalendarView(getActivity(), 2016, 1, 1);
             //holder.calendarView = new CalendarView(getActivity());
             //c.add(Calendar.DATE, -c.get(Calendar.DAY_OF_WEEK) - 7);
-            holder.calendarView.update(c.get("year"), c.get("month"), c.get("day"));
+            boolean[] ifEvents = new boolean[7];
+            Calendar cal = Calendar.getInstance();
+            cal.set(c.get("year"), c.get("month") - 1, c.get("day"));
+            cal.add(Calendar.DAY_OF_MONTH, 1);
+            // Log.d("testlist", eventDateList.get(0).toString());
+            //analyseEvents(mResponse);
+            for (int i = 0; i < 7; i++) {
+//
+//                if (eventDateList.contains(cal)) {
+//                    ifEvents[i] = true;
+//                }
+
+                if (eventDateList.contains(cal.get(Calendar.DAY_OF_MONTH) + "-" + (cal.get(Calendar.MONTH) + 1) + "-" + cal.get(Calendar.YEAR))) {
+                    ifEvents[i] = true;
+                    Log.d("testdate", eventDateList.size() + "");
+                }
+                cal.add(Calendar.DAY_OF_MONTH, 1);
+
+            }
+            holder.calendarView.update(c.get("year"), c.get("month"), c.get("day"), ifEvents);
 
             //holder.calendarView.update(c);
             //holder.calendarView.update(dates.get(position).get(Calendar.YEAR),dates.get(position).get(Calendar.MONTH),dates.get(position).get(Calendar.DAY_OF_MONTH));
@@ -509,6 +554,66 @@ public class CalendarFragment extends Fragment {
     public List<Map<String, Integer>> getList() {
         return dates;
     }
+
+
+    public void fetchEvents(String userId) {
+        JSONObject jsonObject = new JSONObject();
+        try {
+            jsonObject.put("user_id", userId);
+//            jsonObject.put("if_sync_event", 1);
+//            jsonObject.put("if_sync_event_ignore", 0);
+//            jsonObject.put("if_sync_preference", 0);
+//            jsonObject.put("if_sync_calendar_type", 0);
+            jsonObject.put("local_events", "");
+
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+        final String url = URLs.SYNC;
+        Uri uri = Uri.parse(url);
+        Uri.Builder builder = uri.buildUpon();
+        final String query = builder.appendQueryParameter("json", jsonObject.toString()).build().getQuery();
+
+        JsonArrayFormRequest request = new JsonArrayFormRequest(Request.Method.POST, url, query, new Response.Listener<JSONArray>() {
+            @Override
+            public void onResponse(JSONArray response) {
+                //System.out.print("ttttttttttttttt");
+
+                //mResponse = response;
+                analyseEvents(response);
+                recyclerView.getAdapter().notifyDataSetChanged();
+                Log.i("Event_response", response.toString());
+            }
+        }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+
+            }
+        });
+        MySingleton.getInstance(getContext()).addToRequestQueue(request);
+    }
+
+    public void analyseEvents(JSONArray response) {
+        for (int i = 0; i < response.length(); i++) {
+            JSONObject jsonObject = null;
+            try {
+                jsonObject = response.getJSONObject(i);
+                String time = (String) jsonObject.get("event_ends_datetime");
+                Date date = DateUtil.getLocalDateObject(time);
+                Calendar cal = Calendar.getInstance();
+                cal.setTime(date);
+                Log.d("testdate", cal.get(Calendar.DAY_OF_MONTH) + "-" + (cal.get(Calendar.MONTH) + 1) + "-" + cal.get(Calendar.YEAR));
+                eventDateList.add(cal.get(Calendar.DAY_OF_MONTH) + "-" + (cal.get(Calendar.MONTH) + 1) + "-" + cal.get(Calendar.YEAR));
+
+                //Log.d("Event_name", name);
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+
+        }
+    }
+
 
 }
 

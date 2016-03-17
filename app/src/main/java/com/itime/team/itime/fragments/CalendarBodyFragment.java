@@ -38,7 +38,7 @@ public class CalendarBodyFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_calendar_body, container, false);
         calendarView = (CalendarView) view.findViewById(R.id.calendar_view);
-        calendarView.update(year, month, day);
+//        calendarView.update(year, month, day);
 //        viewPager = (ViewPager) container;
 //        calendarView = (CalendarView) view.findViewById(R.id.calendar_view);
 //        calendarView.setOnDateSelectedListener(new OnDateSelectedListener() {

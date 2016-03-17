@@ -43,6 +43,7 @@ public class CalendarView extends View {
     private Paint mLinePaint;
     private Paint mMonthTextPaint;
     private Paint mYearViewMonthTextPaint;
+    private Paint mPointPaint;
     private int mViewWidth;
     private int mViewHight;
     private float mCellSpace;
@@ -63,6 +64,7 @@ public class CalendarView extends View {
     int dateY = 0;
     private OnDateSelectedListener listener;
     private boolean isInitialed = false;
+    private boolean[] ifEvents = new boolean[7];
 
     public CalendarView(Context context, AttributeSet attrs, int defStyle) {
         super(context, attrs, defStyle);
@@ -126,6 +128,8 @@ public class CalendarView extends View {
 
     private void init(Context context) {
         //bm = BitmapFactory.decodeResource(getResources(), R.drawable.ic_calendar_circle);
+        this.context = context;
+
         mMonthTextPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
         mMonthTextPaint.setTextAlign(Paint.Align.CENTER);
         mMonthTextPaint.setColor(Color.rgb(255, 165, 0));
@@ -156,7 +160,11 @@ public class CalendarView extends View {
         mGridPaint.setStyle(Paint.Style.STROKE);
         mLinePaint = new Paint((Paint.ANTI_ALIAS_FLAG));
         mLinePaint.setColor(Color.GRAY);
-        this.context = context;
+
+        mPointPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
+        mPointPaint.setStyle(Paint.Style.FILL);
+        mPointPaint.setColor(Color.RED);
+//        mPointPaint.setStrokeWidth(DensityUtil.dip2px(context, 3));
         if (isInitialed == false)
             initDate();
 
@@ -245,13 +253,15 @@ public class CalendarView extends View {
         public State state;
         public int month;
         public int year;
+        public boolean hasEvents;
 
-        public Cell(String text, State state, int month, int year) {
+        public Cell(String text, State state, int month, int year, boolean hasEvents) {
             super();
             this.text = text;
             this.state = state;
             this.month = month;
             this.year = year;
+            this.hasEvents = hasEvents;
         }
 
         public void setText(String text) {
@@ -303,6 +313,10 @@ public class CalendarView extends View {
                 canvas.drawText(DateUtil.month[month - 1], i * mCellSpace + mCellSpace / 2, (j + 1) * mCellSpace - mCellSpace * 3 / 4 + (defaultStyle == MONTH_STYLE ? mCellSpace : 0), mMonthTextPaint);
 
             }
+            if (hasEvents) {
+                //canvas.drawPoint(i * mCellSpace + mCellSpace / 2, mCellSpace / 2, mPointPaint);
+                canvas.drawCircle(i * mCellSpace + mCellSpace / 2, j * mCellSpace + mCellSpace * 3 / 4, DensityUtil.dip2px(context, 2), mPointPaint);
+            }
         }
 
         public String getText() {
@@ -320,7 +334,7 @@ public class CalendarView extends View {
 
     private void fillDate() {
         if (defaultStyle == MONTH_STYLE) {
-            fillMonthDate();
+            //fillMonthDate();
         } else {
             fillWeekDate();
         }
@@ -350,65 +364,66 @@ public class CalendarView extends View {
                 if (mShowDay == DateUtil.getCurrentMonthDays() &&
                         mShowYear == DateUtil.getYear()
                         && mShowMonth == DateUtil.getMonth()) {
-                    rows[week].cells[i] = new Cell(mShowDay + "", State.TODAY, mShowMonth, mShowYear);
+                    rows[week].cells[i] = new Cell(mShowDay + "", State.TODAY, mShowMonth, mShowYear, ifEvents[i]);
                     continue;
                 }
-                rows[week].cells[i] = new Cell(mShowDay + "", State.CURRENT_MONTH_DAY, mShowMonth, mShowYear);
+                rows[week].cells[i] = new Cell(mShowDay + "", State.CURRENT_MONTH_DAY, mShowMonth, mShowYear, ifEvents[i]);
             }
         }
     }
 
-    private void fillMonthDate() {
-        //Log.d("test", mShowDay + " " + mShowMonth + " " + mShowYear);
-//        int monthDay = DateUtil.getCurrentMonthDays();
-//        Log.d("test_monthDay", monthDay + "");
-        // int lastMonthDays = DateUtil.getMonthDays(mShowYear, mShowMonth - 1);
-        // Log.d("test_lastmonthDay", lastMonthDays + "");
-        int currentMonthDays = DateUtil.getMonthDays(mShowYear, mShowMonth);
-        Log.d("test_currentmonthDay", currentMonthDays + "");
-        int firstDayWeek = DateUtil.getWeekDayFromDate(mShowYear, mShowMonth);
-        Log.d("test_firstDayWeek", firstDayWeek + "");
-        boolean isCurrentMonth = false;
-        if (mShowYear == DateUtil.getYear() && mShowMonth == DateUtil.getMonth()) {
-            isCurrentMonth = true;
-        }
-        int time = 0;
-        for (int j = 0; j < TOTAL_ROW; j++) {
-            rows[j] = new Row();
-            for (int i = 0; i < TOTAL_COL; i++) {
-                int postion = i + j * TOTAL_COL + 1;
-                if (postion >= firstDayWeek
-                        && postion < firstDayWeek + currentMonthDays) {
-                    time++;
-//                    if (isCurrentMonth && time == monthDay) {
-//                        rows[j].cells[i] = new Cell(time + "", State.TODAY, mShowMonth, mShowYear);
-//                        continue;
-//                    }
-                    rows[j].cells[i] = new Cell(time + "",
-                            State.CURRENT_MONTH_DAY, mShowMonth, mShowYear);
-                    continue;
-                } else {
-                    rows[j].cells[i] = new Cell("", State.CURRENT_MONTH_DAY, mShowMonth, mShowYear);
-                }
-//                } else if (postion < firstDayWeek) {
-//                    rows[j].cells[i] = new Cell((lastMonthDays - (firstDayWeek
-//                            - 2) + postion - 1)
-//                            + "", State.PAST_MONTH_DAY, mShowMonth - 1, mShowYear);
+//    private void fillMonthDate() {
+//        //Log.d("test", mShowDay + " " + mShowMonth + " " + mShowYear);
+////        int monthDay = DateUtil.getCurrentMonthDays();
+////        Log.d("test_monthDay", monthDay + "");
+//        // int lastMonthDays = DateUtil.getMonthDays(mShowYear, mShowMonth - 1);
+//        // Log.d("test_lastmonthDay", lastMonthDays + "");
+//        int currentMonthDays = DateUtil.getMonthDays(mShowYear, mShowMonth);
+//        Log.d("test_currentmonthDay", currentMonthDays + "");
+//        int firstDayWeek = DateUtil.getWeekDayFromDate(mShowYear, mShowMonth);
+//        Log.d("test_firstDayWeek", firstDayWeek + "");
+//        boolean isCurrentMonth = false;
+//        if (mShowYear == DateUtil.getYear() && mShowMonth == DateUtil.getMonth()) {
+//            isCurrentMonth = true;
+//        }
+//        int time = 0;
+//        for (int j = 0; j < TOTAL_ROW; j++) {
+//            rows[j] = new Row();
+//            for (int i = 0; i < TOTAL_COL; i++) {
+//                int postion = i + j * TOTAL_COL + 1;
+//                if (postion >= firstDayWeek
+//                        && postion < firstDayWeek + currentMonthDays) {
+//                    time++;
+////                    if (isCurrentMonth && time == monthDay) {
+////                        rows[j].cells[i] = new Cell(time + "", State.TODAY, mShowMonth, mShowYear);
+////                        continue;
+////                    }
+//                    rows[j].cells[i] = new Cell(time + "",
+//                            State.CURRENT_MONTH_DAY, mShowMonth, mShowYear);
 //                    continue;
-//                } else if (postion >= firstDayWeek + currentMonthDays) {
-//                    rows[j].cells[i] = new Cell((postion - firstDayWeek
-//                            - currentMonthDays + 1)
-//                            + "", State.NEXT_MONTH_DAY, mShowMonth + 1, mShowYear);
+//                } else {
+//                    rows[j].cells[i] = new Cell("", State.CURRENT_MONTH_DAY, mShowMonth, mShowYear);
 //                }
-            }
-        }
-    }
+////                } else if (postion < firstDayWeek) {
+////                    rows[j].cells[i] = new Cell((lastMonthDays - (firstDayWeek
+////                            - 2) + postion - 1)
+////                            + "", State.PAST_MONTH_DAY, mShowMonth - 1, mShowYear);
+////                    continue;
+////                } else if (postion >= firstDayWeek + currentMonthDays) {
+////                    rows[j].cells[i] = new Cell((postion - firstDayWeek
+////                            - currentMonthDays + 1)
+////                            + "", State.NEXT_MONTH_DAY, mShowMonth + 1, mShowYear);
+////                }
+//            }
+//        }
+//    }
 
 
-    public void update(int year, int month, int day) {
+    public void update(int year, int month, int day, boolean[] ifEvents) {
         this.mShowMonth = month;
         this.mShowYear = year;
         this.mShowDay = day;
+        this.ifEvents = ifEvents;
         fillDate();
         invalidate();
     }

@@ -31,8 +31,10 @@ import com.android.volley.Request;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.itime.team.itime.R;
+import com.itime.team.itime.activities.EventsActivity;
 import com.itime.team.itime.activities.NewEventActivity;
 import com.itime.team.itime.activities.WeeklyActivity;
+import com.itime.team.itime.bean.Events;
 import com.itime.team.itime.bean.URLs;
 import com.itime.team.itime.bean.User;
 import com.itime.team.itime.listener.OnDateSelectedListener;
@@ -523,19 +525,14 @@ public class CalendarFragment extends Fragment {
         imageButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Fragment fragment = new EventListFragment();
-                FragmentTransaction ft = fm.beginTransaction();
+//                Fragment fragment = new EventListFragment();
+//                FragmentTransaction ft = fm.beginTransaction();
                 //ft.detach(getFragmentManager().findFragmentById(R.id.realtab_content)).add(fragment,"list");
-                ft.hide(currentFragment);
-                if (!fragment.isAdded()) {
-                    ft.add(R.id.realtab_content, fragment);
-                } else {
-                    ft.show(fragment);
-                }
+                Intent intent = new Intent(getActivity(), EventsActivity.class);
+                startActivity(intent);
                 //ft.replace(R.id.realtab_content, fragment);
 
                 //ft.addToBackStack(null);
-                ft.commit();
             }
         });
 
@@ -581,6 +578,7 @@ public class CalendarFragment extends Fragment {
                 //System.out.print("ttttttttttttttt");
 
                 //mResponse = response;
+                Events.response = response;
                 analyseEvents(response);
                 recyclerView.getAdapter().notifyDataSetChanged();
                 Log.i("Event_response", response.toString());
@@ -599,7 +597,7 @@ public class CalendarFragment extends Fragment {
             JSONObject jsonObject = null;
             try {
                 jsonObject = response.getJSONObject(i);
-                String time = (String) jsonObject.get("event_ends_datetime");
+                String time = (String) jsonObject.get("event_starts_datetime");
                 Date date = DateUtil.getLocalDateObject(time);
                 Calendar cal = Calendar.getInstance();
                 cal.setTime(date);

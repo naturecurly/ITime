@@ -5,6 +5,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.animation.Animation;
@@ -28,7 +29,6 @@ import com.itime.team.itime.utils.DateUtil;
 import com.itime.team.itime.utils.JsonManager;
 import com.itime.team.itime.utils.MySingleton;
 
-import io.fabric.sdk.android.Fabric;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -36,6 +36,8 @@ import org.json.JSONObject;
 import java.util.HashMap;
 import java.util.Timer;
 import java.util.TimerTask;
+
+import io.fabric.sdk.android.Fabric;
 
 /**
  * Created by mac on 16/2/26.
@@ -50,6 +52,9 @@ public class CheckLoginActivity extends AppCompatActivity implements DataRequest
     private JsonManager mJsonManager;
     private Intent MainIntent;
     private Intent LoginIntent;
+    private String mInviatedFriendID;
+
+    private boolean hasAddFriendRequest;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -66,6 +71,9 @@ public class CheckLoginActivity extends AppCompatActivity implements DataRequest
         mUsernameStr = "";
         mPasswordStr = "";
         mLastLoginTime = "";
+        hasAddFriendRequest = false;
+
+        getInvitation();
 
         getUserInfo();
 
@@ -83,7 +91,7 @@ public class CheckLoginActivity extends AppCompatActivity implements DataRequest
                     LoginIntent.putExtra("password",mPasswordStr);
                     LoginIntent.putExtra("lastlogintime",mLastLoginTime);
                     LoginIntent.putExtra("remember",mIsRemember);
-
+                    LoginIntent.putExtra("invitation",mInviatedFriendID);
                     startActivity(LoginIntent);
                     finish();
                 }
@@ -188,6 +196,20 @@ public class CheckLoginActivity extends AppCompatActivity implements DataRequest
         builder.show();
     }
 
+    private void getInvitation(){
+        Intent i_getvalue = getIntent();
+        String action = i_getvalue.getAction();
+
+        if(Intent.ACTION_VIEW.equals(action)){
+            Uri uri = i_getvalue.getData();
+            if(uri != null){
+                hasAddFriendRequest = true;
+                mInviatedFriendID = uri.getQueryParameter("id");
+
+            }
+        }
+    }
+
     @Override
     public void handleJSON(final JsonManager manager) {
         MySingleton.getInstance(this).getRequestQueue().addRequestFinishedListener(
@@ -204,7 +226,9 @@ public class CheckLoginActivity extends AppCompatActivity implements DataRequest
                                         String result = (String) jsonObject.get("result");
                                     if(result.equals("success")) {
                                         User.ID = mUsernameStr;
-                                        //User.isRemembered = true;
+                                        if (hasAddFriendRequest) {
+                                            MainIntent.putExtra("invitation",mInviatedFriendID);
+                                        }
                                         startActivity(MainIntent);
                                         finish();
                                     }else{

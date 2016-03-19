@@ -58,6 +58,7 @@ public class LoginActivity extends FragmentActivity implements View.OnClickListe
     private Intent mMainIntent;
 
     private JsonManager mJsonManager;
+    private String mInviatedFriendID;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -84,8 +85,11 @@ public class LoginActivity extends FragmentActivity implements View.OnClickListe
         mPasswordStr = intent.getStringExtra("password");
         mLastLoginTime = intent.getStringExtra("lastlogintime");
         mIsRemember = intent.getBooleanExtra("remember", false);
+        mInviatedFriendID = intent.getStringExtra("invitation");
 
         mMainIntent = new Intent(this, MainActivity.class);
+        mMainIntent.putExtra("invitation", mInviatedFriendID);
+
 
         setTexts();
 
@@ -259,9 +263,9 @@ public class LoginActivity extends FragmentActivity implements View.OnClickListe
                 }else {
                     updateUserTable();
                 }
-                Intent intent = new Intent(this, MainActivity.class);
+                //Intent intent = new Intent(this, MainActivity.class);
                 User.ID = mUsernameStr;
-                startActivity(intent);
+                startActivity(mMainIntent);
                 finish();
             }else if(json.get("result").toString().equals("fail")){
                 showToast(getResources().getString(R.string.login_warning_login_fail));

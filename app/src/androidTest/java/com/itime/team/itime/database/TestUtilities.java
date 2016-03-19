@@ -52,7 +52,7 @@ public class TestUtilities extends AndroidTestCase {
         ContentValues userValues = new ContentValues();
         userValues.put(ITimeDataStore.User.USER_ID, "xuhui");
         userValues.put(ITimeDataStore.User.USER_NAME, "xuhui");
-        userValues.put(ITimeDataStore.User.PROFILE_IMAGE_URL, "some_url");
+        //userValues.put(ITimeDataStore.User.PROFILE_IMAGE_URL, "some_url");
         userValues.put(ITimeDataStore.User.EMAIL, "yorkfinechan@gmail.com");
         userValues.put(ITimeDataStore.User.PHONE_NUMBER, "012345678");
 

@@ -1,6 +1,7 @@
 package com.itime.team.itime.activities;
 
 import android.app.ProgressDialog;
+import android.content.ContentResolver;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.os.Handler;
@@ -33,6 +34,12 @@ public class PhoneContactActivity extends AppCompatActivity implements AdapterVi
     private PhotoContactsAdapter mListViewAdapter;
     private ProgressDialog dialog;
 
+    private static final String[] PHONES_PROJECTION = new String[] {
+            ContactsContract.CommonDataKinds.Phone.DISPLAY_NAME, ContactsContract.CommonDataKinds.Phone.NUMBER,
+            ContactsContract.CommonDataKinds.Phone.CONTACT_ID};
+    private static final int PHONES_DISPLAY_NAME_INDEX = 0;
+    private static final int PHONES_NUMBER_INDEX = 1;
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -62,59 +69,20 @@ public class PhoneContactActivity extends AppCompatActivity implements AdapterVi
     }
 
     public void setContacts() {
-        Cursor cursor = getContentResolver().query(ContactsContract.Contacts.CONTENT_URI,
-                null, null, null, null);
-        int contactIdIndex = 0;
-        int nameIndex = 0;
-
-        if(cursor.getCount() > 0) {
-            contactIdIndex = cursor.getColumnIndex(ContactsContract.Contacts._ID);
-            nameIndex = cursor.getColumnIndex(ContactsContract.Contacts.DISPLAY_NAME);
-        }
-        while(cursor.moveToNext()) {
-            Contact contact = new Contact();
-            ArrayList<String> photoNumers = new ArrayList<>();
-
-            /*
-             * Set Name
-             */
-            String contactId = cursor.getString(contactIdIndex);
-            String name = cursor.getString(nameIndex);
-            contact.setName(name);
-
-            /*
-             * Search phone information of contacts
-             */
-            Cursor phones = getContentResolver().query(ContactsContract.CommonDataKinds.Phone.CONTENT_URI,
-                    null,
-                    ContactsContract.CommonDataKinds.Phone.CONTACT_ID + "=" + contactId,
-                    null, null);
-            int phoneIndex = 0;
-            if(phones.getCount() > 0) {
-                phoneIndex = phones.getColumnIndex(ContactsContract.CommonDataKinds.Phone.NUMBER);
+        ContentResolver resolver = this.getContentResolver();
+        Cursor phoneCursor = resolver.query(ContactsContract.CommonDataKinds.Phone.CONTENT_URI,PHONES_PROJECTION, null, null, null);
+        if (phoneCursor != null) {
+            while (phoneCursor.moveToNext()) {
+                Contact contact = new Contact();
+                String phoneNumber = phoneCursor.getString(PHONES_NUMBER_INDEX);
+                String contactName = phoneCursor.getString(PHONES_DISPLAY_NAME_INDEX);
+                contact.setName(contactName);
+                ArrayList<String> phoneNum = new ArrayList<>();
+                phoneNum.add(phoneNumber);
+                contact.setPhotoNumber(phoneNum);
+                mContact.add(contact);
             }
-            while(phones.moveToNext()) {
-                String phoneNumber = phones.getString(phoneIndex);
-                photoNumers.add(phoneNumber);
-            }
-            contact.setPhotoNumber(photoNumers);
-
-            /*
-             * set E-mail inforamtion
-             */
-            Cursor emails = getContentResolver().query(ContactsContract.CommonDataKinds.Email.CONTENT_URI,
-                    null,
-                    ContactsContract.CommonDataKinds.Email.CONTACT_ID + "=" + contactId,
-                    null, null);
-            int emailIndex = 0;
-            if(emails.getCount() > 0) {
-                emailIndex = emails.getColumnIndex(ContactsContract.CommonDataKinds.Email.DATA);
-            }
-            while(emails.moveToNext()) {
-                String email = emails.getString(emailIndex);
-                contact.seteMail(email);
-            }
-            mContact.add(contact);
+            phoneCursor.close();
         }
         initCheckBox();
     }

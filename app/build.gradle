@@ -51,11 +51,12 @@ dependencies {
     debugCompile 'com.squareup.leakcanary:leakcanary-android:1.3'
     releaseCompile 'com.squareup.leakcanary:leakcanary-android-no-op:1.3'
     compile 'com.facebook.android:facebook-android-sdk:[4,5)'
-    compile "com.google.android.gms:play-services-gcm:8.4.0"
+    compile 'com.google.android.gms:play-services-gcm:8.4.0'
     compile 'com.github.alamkanak:android-week-view:1.2.6'
     compile('com.crashlytics.sdk.android:crashlytics:2.5.5@aar') {
         transitive = true;
     }
+    compile files('libs/libammsdk.jar')
 }
 apply plugin: 'com.google.gms.google-services'
 

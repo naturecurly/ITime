@@ -101,6 +101,10 @@ public class CalendarFragment extends Fragment {
 
     }
 
+    private void addFriendFromLink(){
+        String s = getActivity().getIntent().getStringExtra("invitation");
+    }
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);

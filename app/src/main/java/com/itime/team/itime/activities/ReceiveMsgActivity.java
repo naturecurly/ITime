@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 
 import com.itime.team.itime.R;
 
@@ -23,6 +24,7 @@ public class ReceiveMsgActivity extends AppCompatActivity {
             if(uri != null){
                 String name = uri.getQueryParameter("name");
                 String age= uri.getQueryParameter("age");
+                Log.i("d",name + " " + age);
             }
         }
     }

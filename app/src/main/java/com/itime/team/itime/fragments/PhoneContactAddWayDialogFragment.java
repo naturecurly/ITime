@@ -30,6 +30,16 @@ public class PhoneContactAddWayDialogFragment extends DialogFragment implements 
     private RadioGroup mRadioGroup;
     private RadioButton mMessage,mEmail;
 
+    private static String invitationContent = new StringBuilder()
+            .append("<p style='font-weight:bold;'>Hello, this is ")
+            .append(User.ID)
+            .append(", please click the link</p>")
+            .append("<a>http://itime.app/openwith?id=" + User.ID + "</a>")
+            .append("<p> to be my iTime firend. If you do not install the iTime yet, please click following " +
+                    "link to find the App ")
+            .append("Install iTime</p>")
+            .toString();
+
     public PhoneContactAddWayDialogFragment(Boolean[] mIsChecked, ArrayList<Contact> mContact){
         this.mIsChecked = mIsChecked;
         this.mContact = mContact;
@@ -73,37 +83,22 @@ public class PhoneContactAddWayDialogFragment extends DialogFragment implements 
         Intent intent = new Intent(Intent.ACTION_VIEW);
         intent.putExtra("address", mPhoneNumbers.toString());
         intent.setType("vnd.android-dir/mms-sms");
-        intent.putExtra("sms_body", "<a>");
+        intent.putExtra("sms_body", Html.fromHtml(invitationContent).toString());
         startActivity(intent);
     }
+
 
     private void sendEmail(){
         String[] reciver = mFriendEmail.toString().split(";");
         String mySbuject = "Add Friend";
         String myCc = "cc";
-        String mybody = "<a href='scheme://host/'><u>Agree</u></a>";
         Intent myIntent = new Intent(android.content.Intent.ACTION_SEND, Uri.fromParts("mailto", "", null));
         myIntent.setType("text/html");
         myIntent.putExtra(android.content.Intent.EXTRA_EMAIL, reciver);
         myIntent.putExtra(android.content.Intent.EXTRA_CC, myCc);
         myIntent.putExtra(android.content.Intent.EXTRA_SUBJECT, mySbuject);
-        myIntent.putExtra(android.content.Intent.EXTRA_TEXT, Html.fromHtml(mybody));
-        myIntent.putExtra(Intent.EXTRA_TEXT, Html.fromHtml(new StringBuilder()
-                .append("<p style='font-weight:bold;'>Hello, this is ")
-                .append(User.ID)
-                .append(", please click the link</p>")
-                .append("<a>http://jp.app/openwith?name=zhangsan&age=26</a>")
-//                .append("<a>http://www.android.com</a><br/>")
-                .append("<p> to be my iTime firend. If you do not install the iTime yet, please click following " +
-                        "link to find the App ")
-                .append("Install iTime</p>")
-                .toString()));
-//        myIntent.putExtra(Intent.EXTRA_TEXT, Html.fromHtml(new StringBuilder()
-//                .append("<p style='font-weight:bold;'>Some Content</p>")
-//                .append("<a>http://itime/</a><br/>")
-//                .append("<a href='scheme://host/'><u>Agree</u></a>")
-//                .append("<small><p>More content</p></small>")
-//                .toString()));
+        myIntent.putExtra(Intent.EXTRA_TEXT, Html.fromHtml(invitationContent));
+
         startActivity(Intent.createChooser(myIntent, "mail"));
     }
 

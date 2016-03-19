@@ -6,8 +6,8 @@
     <string name="Calendar">Calendar</string>
     <string name="Mail">Mail</string>
     <string name="Setting">Setting</string>
-    <string name="meeting_setting">MEETING SETTING</string>
-    <string name="meeting_friend">ITIME FRIENDS</string>
+    <string name="meeting_setting">Meeting Setting</string>
+    <string name="meeting_friend">My iTIME Contacts</string>
     <string name="meeting_duration">Duration</string>
     <string name="Save">Save</string>
     <string name="Cancel">Cancel</string>

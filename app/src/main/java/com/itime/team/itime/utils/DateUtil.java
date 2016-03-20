@@ -291,10 +291,16 @@ public class DateUtil {
         return date;
     }
 
+    public static Calendar getLocalDateObjectToCalendar(Date date) {
+        Calendar cal = Calendar.getInstance();
+        cal.setTime(date);
+        return cal;
+    }
+
     public static String getDateWithTimeZone(int year, int month, int day, int hour, int min) {
         DateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss Z");
         Calendar c = Calendar.getInstance();
-        c.set(year, month-1, day, hour, min);
+        c.set(year, month - 1, day, hour, min);
         c.setTimeZone(TimeZone.getDefault());
         return formatter.format(c.getTime());
     }

@@ -32,28 +32,42 @@
         android:id="@+id/separator1"
         android:layout_width="match_parent"
         android:layout_height="1dp"
-        android:background="#90909090"
         android:layout_alignTop="@+id/textView"
-        android:layout_toRightOf="@+id/textView"
+        android:layout_marginTop="6dp"
         android:layout_toEndOf="@+id/textView"
-        android:layout_marginTop="6dp" />
+        android:layout_toRightOf="@+id/textView"
+        android:background="#90909090" />
+
     <View
         android:id="@+id/separator2"
         android:layout_width="match_parent"
         android:layout_height="1dp"
-        android:background="#90909090"
         android:layout_alignTop="@+id/textView2"
-        android:layout_toRightOf="@+id/textView2"
+        android:layout_marginTop="6dp"
         android:layout_toEndOf="@+id/textView2"
-        android:layout_marginTop="6dp" />
+        android:layout_toRightOf="@+id/textView2"
+        android:background="#90909090" />
 
-    <TextView
-        android:id="@+id/textView3"
+    <View
+        android:id="@+id/view"
+        android:layout_width="150dp"
+        android:layout_height="100dp"
+        android:background="@color/black"
+        android:layout_alignTop="@+id/separator1"
+        android:layout_alignLeft="@+id/separator1"
+        android:layout_alignStart="@+id/separator1"
+        android:layout_alignBottom="@+id/separator2" />
+
+    <View
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignLeft="@+id/textView"
-        android:layout_alignStart="@+id/textView"
-        android:layout_below="@+id/textView"
-        android:layout_marginTop="10dp"
-        android:text="New Text" />
+        android:layout_height="100dp"
+        android:layout_alignBottom="@+id/separator2"
+        android:layout_alignEnd="@+id/separator1"
+        android:layout_alignRight="@+id/separator1"
+        android:layout_alignTop="@+id/separator1"
+        android:layout_toEndOf="@+id/view"
+        android:layout_toRightOf="@+id/view"
+        android:background="@color/black"
+        android:id="@+id/view2" />
+
 </RelativeLayout>

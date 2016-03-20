@@ -15,6 +15,7 @@ import android.widget.RadioGroup;
 
 import com.itime.team.itime.R;
 import com.itime.team.itime.bean.Contact;
+import com.itime.team.itime.bean.URLs;
 import com.itime.team.itime.bean.User;
 
 import java.util.ArrayList;
@@ -30,11 +31,20 @@ public class PhoneContactAddWayDialogFragment extends DialogFragment implements 
     private RadioGroup mRadioGroup;
     private RadioButton mMessage,mEmail;
 
-    private static String invitationContent = new StringBuilder()
+//    private static String invitationContent = new StringBuilder()
+//            .append("<p style='font-weight:bold;'>Hello, this is ")
+//            .append(User.ID)
+//            .append(", please click the link</p>")
+//            .append("<a>http://itime.app/openwith?id=" + User.ID + "</a>")
+//            .append("<p> to be my iTime firend. If you do not install the iTime yet, please click following " +
+//                    "link to find the App ")
+//            .append("Install iTime</p>")
+//            .toString();
+    public static String invitationContent = new StringBuilder()
             .append("<p style='font-weight:bold;'>Hello, this is ")
             .append(User.ID)
             .append(", please click the link</p>")
-            .append("<a>http://itime.app/openwith?id=" + User.ID + "</a>")
+            .append("<a>").append(URLs.HEAD).append("openwith?id=" + User.ID + "</a>")
             .append("<p> to be my iTime firend. If you do not install the iTime yet, please click following " +
                     "link to find the App ")
             .append("Install iTime</p>")

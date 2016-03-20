@@ -60,7 +60,8 @@
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
         android:supportsRtl="true"
-        android:theme="@style/AppTheme">
+        android:theme="@style/AppTheme"
+        name="MyApplication">
         <!--android:name=".utils.JPushApp"-->
         <activity android:name=".activities.CheckLoginActivity">
             <intent-filter>
@@ -70,7 +71,8 @@
 
             <intent-filter>
                 <action android:name="android.intent.action.VIEW"/>
-                <data android:scheme="http" android:host="itime.app" android:pathPrefix="/openwith"/>
+                <data android:scheme="http" android:host="54.200.31.237:8000" android:pathPrefix="/openwith"/>
+                <!--<data android:scheme="http" android:host="itime.app" android:pathPrefix="/openwith"/>-->
                 <category android:name="android.intent.category.DEFAULT" />
                 <category android:name="android.intent.category.BROWSABLE" />
             </intent-filter>

@@ -23,6 +23,8 @@
     <uses-permission android:name="android.permission.WRITE_CONTACTS" />
     <uses-permission android:name="android.permission.SEND_SMS"></uses-permission>
     <uses-permission android:name="android.permission.READ_SMS"></uses-permission>
+    <uses-permission android:name="android.permission.READ_PHONE_STATE"/>
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
 
 
     <permission
@@ -69,7 +71,8 @@
 
             <intent-filter>
                 <action android:name="android.intent.action.VIEW"/>
-                <data android:scheme="http" android:host="itime.app" android:pathPrefix="/openwith"/>
+                <data android:scheme="http" android:host="54.200.31.237" android:pathPrefix="/openwith"/>
+                <!--<data android:scheme="http" android:host="itime.app" android:pathPrefix="/openwith"/>-->
                 <category android:name="android.intent.category.DEFAULT" />
                 <category android:name="android.intent.category.BROWSABLE" />
             </intent-filter>

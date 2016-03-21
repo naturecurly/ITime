@@ -103,6 +103,7 @@
     <string name="facebook_app_id">450185851844736</string>
     <string name="google_app_id_me">AIzaSyDjDteQOjuWYV7ST_Wi7k34i36j2OngA88</string>
     <string name="google_web_id">AIzaSyBC4zDmkarugKY0Njs_n2TtEUVEyeESn0c</string>
+    <string name="wechat_app_id">wx3f4cf39b8038b21a</string>
 
     <string name="action_today">Today</string>
     <string name="action_day_view">Daily</string>

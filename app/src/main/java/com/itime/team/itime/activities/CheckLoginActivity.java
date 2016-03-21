@@ -56,10 +56,14 @@ public class CheckLoginActivity extends AppCompatActivity implements DataRequest
 
     private boolean hasAddFriendRequest;
 
+
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         Fabric.with(this, new Crashlytics());
+
         setContentView(R.layout.activity_checklogin);
         mIn = AnimationUtils.loadAnimation(this, R.anim.alpha_light);
         mMain = (LinearLayout) findViewById(R.id.checklogin_main);
@@ -209,6 +213,7 @@ public class CheckLoginActivity extends AppCompatActivity implements DataRequest
             }
         }
     }
+
 
     @Override
     public void handleJSON(final JsonManager manager) {

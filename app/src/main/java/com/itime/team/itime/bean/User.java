@@ -6,6 +6,7 @@ package com.itime.team.itime.bean;
 public class User {
     public static String ID = "cai";
     public static boolean isRemembered = false;
+
 //    private String profilePicture = "";
 //
 //    public void setID(String ID) {

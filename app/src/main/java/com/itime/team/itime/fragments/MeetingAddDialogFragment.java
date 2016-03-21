@@ -24,6 +24,11 @@ import com.itime.team.itime.bean.URLs;
 import com.itime.team.itime.bean.User;
 import com.itime.team.itime.interfaces.DataRequest;
 import com.itime.team.itime.utils.JsonManager;
+import com.tencent.mm.sdk.modelmsg.SendMessageToWX;
+import com.tencent.mm.sdk.modelmsg.WXMediaMessage;
+import com.tencent.mm.sdk.modelmsg.WXTextObject;
+import com.tencent.mm.sdk.openapi.IWXAPI;
+import com.tencent.mm.sdk.openapi.WXAPIFactory;
 import com.zxing.activity.CaptureActivity;
 
 import org.json.JSONException;
@@ -43,6 +48,21 @@ public class MeetingAddDialogFragment extends DialogFragment implements DataRequ
     private ArrayList<HashMap<String, Object>> mUserInfo;
     public static final String PACKAGE_NAME = "com.facebook.orca";
 
+    private static String APPID;
+    private IWXAPI api;
+
+    public static String invitationContent = new StringBuilder()
+            .append("<p style='font-weight:bold;'>Hello, this is ")
+            .append(User.ID)
+            .append(", please click the link</p>")
+            .append("<a>").append("http://54.200.31.237/").append("openwith?id=" + User.ID + "</a>")
+            .append("<p> to be my iTime firend. If you do not install the iTime yet, please click following " +
+                    "link to find the App ")
+            .append("Install iTime</p>")
+            .toString();
+
+
+
 
     public MeetingAddDialogFragment(ArrayList<HashMap<String, Object>> mUserInfo){
         this.mUserInfo = mUserInfo;
@@ -50,6 +70,10 @@ public class MeetingAddDialogFragment extends DialogFragment implements DataRequ
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        APPID = getString(R.string.wechat_app_id);
+        regToWX();
+
+
         addDialog = inflater.inflate(R.layout.fragment_meeting_adddialog,container);
         listView = (ListView) addDialog.findViewById(R.id.meeting_add_listview);
         listItem = new ArrayList<HashMap<String, Object>>();
@@ -111,13 +135,13 @@ public class MeetingAddDialogFragment extends DialogFragment implements DataRequ
                     Intent intent = new Intent(getActivity(), CaptureActivity.class);
                     startActivityForResult(intent, 0);
                 }else if (position == 3){
-                    StringBuffer info = new StringBuffer();
-                    info.append("Hello, this is ").append(User.ID).append(", please click the link")
-                            .append(Html.fromHtml("<a>www.google.com</a>")).append(" to be my iTime firend. If you do not install the iTime yet, please click following ")
-                            .append("link to find the App Install iTime");
+//                    StringBuffer info = new StringBuffer();
+//                    info.append("Hello, this is ").append(User.ID).append(", please click the link ")
+//                            .append(Html.fromHtml("<a>http://itime.app/openwith?id=" + User.ID + "</a>")).append(" to be my iTime firend. If you do not install the iTime yet, please click following ")
+//                            .append("link to find the App Install iTime");
                     Intent sendIntent = new Intent();
                     sendIntent.setAction(Intent.ACTION_SEND);
-                    sendIntent.putExtra(Intent.EXTRA_TEXT, info.toString());
+                    sendIntent.putExtra(Intent.EXTRA_TEXT, Html.fromHtml(invitationContent).toString());
                     sendIntent.setType("text/plain");
                     sendIntent.setPackage("com.facebook.orca");
                     try {
@@ -137,6 +161,23 @@ public class MeetingAddDialogFragment extends DialogFragment implements DataRequ
                         builder.show();
                     }
                 }else if(position == 4){
+//                    StringBuffer info = new StringBuffer();
+//                    info.append("Hello, this is ").append(User.ID).append(", please click the link ")
+//                            .append(Html.fromHtml("<a>http://54.200.31.237:8000/openwith?id=" + User.ID + "</a>").toString()).append(" to be my iTime firend. If you do not install the iTime yet, please click following ")
+//                            .append("link to find the App Install iTime ").append(Html.fromHtml("<a href='http://54.200.31.237:8000/'>click</a>").toString());
+                    WXTextObject textObject = new WXTextObject(Html.fromHtml(invitationContent).toString());
+
+                    WXMediaMessage msg = new WXMediaMessage();
+                    msg.mediaObject = textObject;
+                    msg.description = "it is me";
+                    msg.messageExt = "content";
+
+                    SendMessageToWX.Req req = new SendMessageToWX.Req();
+                    req.transaction = String.valueOf(System.currentTimeMillis());
+                    req.message = msg;
+
+
+                    api.sendReq(req);
 
                 } else{
 
@@ -185,6 +226,11 @@ public class MeetingAddDialogFragment extends DialogFragment implements DataRequ
             ids.add(id);
         }
         return ids;
+    }
+
+    private void regToWX(){
+        api = WXAPIFactory.createWXAPI(getContext(), APPID, true);
+        api.registerApp(APPID);
     }
 
     @Override

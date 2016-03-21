@@ -15,7 +15,6 @@ import android.widget.RadioGroup;
 
 import com.itime.team.itime.R;
 import com.itime.team.itime.bean.Contact;
-import com.itime.team.itime.bean.URLs;
 import com.itime.team.itime.bean.User;
 
 import java.util.ArrayList;
@@ -44,7 +43,8 @@ public class PhoneContactAddWayDialogFragment extends DialogFragment implements 
             .append("<p style='font-weight:bold;'>Hello, this is ")
             .append(User.ID)
             .append(", please click the link</p>")
-            .append("<a>").append(URLs.HEAD).append("openwith?id=" + User.ID + "</a>")
+//            .append("<a>").append(URLs.HEAD).append("openwith?id=" + User.ID + "</a>")
+            .append("<a>").append("http://54.200.31.237/").append("openwith?id=" + User.ID + "</a>")
             .append("<p> to be my iTime firend. If you do not install the iTime yet, please click following " +
                     "link to find the App ")
             .append("Install iTime</p>")

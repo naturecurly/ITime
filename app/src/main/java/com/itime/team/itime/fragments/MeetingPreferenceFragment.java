@@ -16,7 +16,6 @@
 
 package com.itime.team.itime.fragments;
 
-import android.app.ActionBar;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
@@ -31,9 +30,7 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Adapter;
 import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
 import android.widget.BaseAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
@@ -47,7 +44,6 @@ import com.itime.team.itime.bean.URLs;
 import com.itime.team.itime.bean.User;
 import com.itime.team.itime.utils.DateUtil;
 import com.itime.team.itime.utils.JsonArrayFormRequest;
-import com.itime.team.itime.utils.JsonObjectFormRequest;
 import com.itime.team.itime.utils.MySingleton;
 
 import org.json.JSONArray;
@@ -64,8 +60,7 @@ import java.util.TimeZone;
  * Load local personal meeting preference when there exists, otherwise fetch these data from server.
  * Add preference views dynamically
  */
-public class MeetingPreferenceFragment extends Fragment
-        implements Preference.OnPreferenceClickListener {
+public class MeetingPreferenceFragment extends Fragment {
 
     private static final String LOG_TAG = MeetingPreferenceFragment.class.getSimpleName();
 
@@ -106,14 +101,6 @@ public class MeetingPreferenceFragment extends Fragment
         });
 
         return mMeetingPrefView;
-    }
-
-    @Override
-    public boolean onPreferenceClick(Preference preference) {
-//        getSupportFragmentManager().beginTransaction()
-//                .add(R.id.setting_content, new MeetingSubPreferenceFragment())
-//                .commit();
-        return false;
     }
 
     @Override

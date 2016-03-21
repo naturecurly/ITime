@@ -17,13 +17,11 @@
 package com.itime.team.itime.fragments;
 
 import android.content.ContentValues;
-import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;
 import android.os.Bundle;
-import android.preference.PreferenceManager;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.LoaderManager;
@@ -39,20 +37,18 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.android.volley.Request;
-import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
-import com.android.volley.toolbox.Volley;
 import com.facebook.login.LoginManager;
 import com.itime.team.itime.R;
 import com.itime.team.itime.activities.LoginActivity;
 import com.itime.team.itime.activities.SettingsActivity;
 import com.itime.team.itime.bean.URLs;
 import com.itime.team.itime.database.ITimeDataStore;
+import com.itime.team.itime.database.ITimeDataStore.User;
 import com.itime.team.itime.database.UserTableHelper;
 import com.itime.team.itime.utils.JsonObjectFormRequest;
 import com.itime.team.itime.utils.MySingleton;
-import com.itime.team.itime.database.ITimeDataStore.User;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -139,7 +135,6 @@ public class SettingsFragment extends Fragment implements View.OnClickListener, 
                 break;
 
             case SETTINGS_MEETING_ID:
-                //Intent intent1 = new Intent(getActivity(), MeetingPreferenceActivity.class);
                 intent.putExtra(SETTINGS, MEETING_SETTINGS);
                 startActivity(intent);
                 break;

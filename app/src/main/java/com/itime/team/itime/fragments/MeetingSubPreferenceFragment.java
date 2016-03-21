@@ -20,7 +20,6 @@ import android.app.DatePickerDialog;
 import android.app.TimePickerDialog;
 import android.content.Intent;
 import android.os.Bundle;
-import android.preference.ListPreference;
 import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -29,23 +28,19 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.TextView;
 import android.widget.TimePicker;
 
 import com.itime.team.itime.R;
 import com.itime.team.itime.activities.SettingsActivity;
-import com.itime.team.itime.bean.Preference;
 import com.itime.team.itime.bean.User;
 import com.itime.team.itime.utils.DateUtil;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.List;
 import java.util.TimeZone;
 import java.util.UUID;
 
@@ -238,10 +233,6 @@ public class MeetingSubPreferenceFragment extends Fragment implements View.OnCli
             }
 
         }
-    }
-
-    private void savePreference() {
-
     }
 
 

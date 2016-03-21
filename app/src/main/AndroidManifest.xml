@@ -115,11 +115,6 @@
             android:theme="@style/SettingTheme"></activity>
 
         <activity
-            android:name=".activities.MeetingPreferenceActivity"
-            android:parentActivityName=".activities.MainActivity"
-            android:theme="@style/SettingTheme"></activity>
-
-        <activity
             android:name=".activities.GooglePlacesAutocompleteActivity"
             android:theme="@style/SettingTheme"></activity>
 

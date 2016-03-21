@@ -17,7 +17,6 @@
 package com.itime.team.itime.activities;
 
 import android.os.Bundle;
-import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
@@ -26,11 +25,9 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.TextView;
 
 import com.itime.team.itime.R;
 import com.itime.team.itime.fragments.AlertTimePreferenceFragment;
-import com.itime.team.itime.fragments.InputDialogFragment;
 import com.itime.team.itime.fragments.MeetingPreferenceFragment;
 import com.itime.team.itime.fragments.MeetingSubPreferenceFragment;
 import com.itime.team.itime.fragments.ProfileFragment;

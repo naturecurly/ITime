@@ -19,13 +19,10 @@ package com.itime.team.itime.fragments;
 
 import android.content.Intent;
 import android.database.Cursor;
-import android.graphics.Bitmap;
 import android.net.Uri;
-import android.support.v4.app.DialogFragment;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentTransaction;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
@@ -36,11 +33,9 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.google.zxing.WriterException;
 import com.itime.team.itime.R;
 import com.itime.team.itime.activities.InputDialogActivity;
 import com.itime.team.itime.database.ITimeDataStore;
-import com.zxing.encoding.EncodingHandler;
 
 
 /**

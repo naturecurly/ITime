@@ -16,13 +16,16 @@
 
 package com.itime.team.itime.fragments;
 
+import android.app.Dialog;
+import android.content.Context;
 import android.graphics.Bitmap;
+import android.graphics.Point;
 import android.os.Bundle;
-import android.support.annotation.Nullable;
+import android.support.annotation.NonNull;
 import android.support.v4.app.DialogFragment;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
+import android.view.Display;
+import android.view.Window;
+import android.view.WindowManager;
 import android.widget.ImageView;
 import android.widget.Toast;
 
@@ -38,23 +41,43 @@ public class QRCodeFragment extends DialogFragment {
     private String mUserId;
 
     public static final String QRCODE_STRING = "qrcode_string";
-    @Nullable
+
+    @NonNull
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        View v = inflater.inflate(R.layout.fragment_profile_qrcode, null);
-        ImageView imageView = (ImageView) v.findViewById(R.id.setting_profile_qrcode_img);
-        Bitmap qrCodeBitmap = null;
+    public Dialog onCreateDialog(Bundle savedInstanceState) {
+        final Dialog dialog =  super.onCreateDialog(savedInstanceState);
+        dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+        dialog.setContentView(R.layout.fragment_profile_qrcode);
+        ImageView imageView = (ImageView) dialog.findViewById(R.id.setting_profile_qrcode_img);
+
         final Bundle arguments = getArguments();
         if (!arguments.isEmpty()) {
             mUserId = arguments.getString(QRCODE_STRING);
         }
+
+        Bitmap qrCodeBitmap;
+
+        // method1: change a fix dip to pixel
+        //final int dim = DensityUtil.dip2px(getContext(), 600);
+
+        // method2: get the display size and scale into 7/8
+        // This assumes the view is full screen, which is a good assumption
+        WindowManager manager = (WindowManager) getActivity().getSystemService(Context.WINDOW_SERVICE);
+        Display display = manager.getDefaultDisplay();
+        Point displaySize = new Point();
+        display.getSize(displaySize);
+        int width = displaySize.x;
+        int height = displaySize.y;
+        int smallerDimension = width < height ? width : height;
+        final int dim = smallerDimension * 7 / 8;
+
         try {
-            qrCodeBitmap = EncodingHandler.createQRCode(mUserId, 350);
+            qrCodeBitmap = EncodingHandler.createQRCode(mUserId, dim);
             imageView.setImageBitmap(qrCodeBitmap);
         } catch (WriterException e) {
             Toast.makeText(getActivity(), "QRCode text can not be empty", Toast.LENGTH_SHORT).show();
         }
 
-        return v;
+        return dialog;
     }
 }

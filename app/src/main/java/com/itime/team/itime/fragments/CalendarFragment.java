@@ -42,6 +42,7 @@ import com.itime.team.itime.listener.RecyclerItemClickListener;
 import com.itime.team.itime.listener.ScrollMeetingViewListener;
 import com.itime.team.itime.utils.DateUtil;
 import com.itime.team.itime.utils.DensityUtil;
+import com.itime.team.itime.utils.EventUtil;
 import com.itime.team.itime.utils.JsonArrayFormRequest;
 import com.itime.team.itime.utils.MySingleton;
 import com.itime.team.itime.views.CalendarView;
@@ -92,7 +93,7 @@ public class CalendarFragment extends Fragment {
     private int clickedYear = 0;
     private FragmentManager fm;
     private List<String> eventDateList = new ArrayList<>();
-
+    private int screenWidth;
     private String mUserId;
 
     public static CalendarFragment newInstance(Bundle bundle) {
@@ -181,7 +182,7 @@ public class CalendarFragment extends Fragment {
         recyclerView.setAdapter(new CalendarAdapter(dates));
         //rowHeight =
         DisplayMetrics dm = getResources().getDisplayMetrics();
-        int screenWidth = dm.widthPixels;
+        screenWidth = dm.widthPixels;
         rowHeight = screenWidth / 7;
         ViewGroup.LayoutParams recycler_layoutParams = recyclerView.getLayoutParams();
         recycler_layoutParams.height = rowHeight * 3;
@@ -189,37 +190,9 @@ public class CalendarFragment extends Fragment {
         //recyclerView.setHorizontalFadingEdgeEnabled(true);
         //recyclerView.setLayoutParams(new ViewGroup.LayoutParams(recycler_layoutParams));
         relativeLayout = (RelativeLayout) view.findViewById(R.id.lower_relative_layout);
-
+        addLowerViews(relativeLayout);
         //add views to relativeLayout
-        for (int i = 0; i < 24; i++) {
-            TextView timeTextView = new TextView(getActivity());
-            timeTextView.setText((i < 10 ? "0" + i : i + "") + ":00");
-            timeTextView.setId(i + 1);
-            //timeTextView.(DensityUtil.dip2px(getActivity(),6),DensityUtil.dip2px(getActivity(),6),DensityUtil.dip2px(getActivity(),6),DensityUtil.dip2px(getActivity(),25));
-            RelativeLayout.LayoutParams param = new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
-            if (i != 0) {
-                param.addRule(RelativeLayout.BELOW, i);
-                param.setMargins(DensityUtil.dip2px(getActivity(), 6), DensityUtil.dip2px(getActivity(), 6), DensityUtil.dip2px(getActivity(), 6), DensityUtil.dip2px(getActivity(), 15));
-                relativeLayout.addView(timeTextView, param);
-            }
-            if (i == 0) {
-                //param.addRule(RelativeLayout.ALIGN_PARENT_LEFT);
-                param.setMargins(DensityUtil.dip2px(getActivity(), 6), DensityUtil.dip2px(getActivity(), 2), DensityUtil.dip2px(getActivity(), 6), DensityUtil.dip2px(getActivity(), 15));
 
-                relativeLayout.addView(timeTextView, param);
-            }
-
-            View lineView = new View(getActivity());
-            RelativeLayout.LayoutParams line_param = new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
-            lineView.setBackgroundColor(Color.GRAY);
-            line_param.height = DensityUtil.dip2px(getActivity(), 1);
-            line_param.addRule(RelativeLayout.END_OF, i + 1);
-            line_param.addRule(RelativeLayout.ALIGN_TOP, i + 1);
-            line_param.setMargins(DensityUtil.dip2px(getActivity(), 6), DensityUtil.dip2px(getActivity(), 11), DensityUtil.dip2px(getActivity(), 0), DensityUtil.dip2px(getActivity(), 30));
-            relativeLayout.addView(lineView, line_param);
-
-
-        }
 
         //scrollView transaction
         mScrollView = (MeetingScrollView) view.findViewById(R.id.lower_scroll_view);
@@ -349,6 +322,39 @@ public class CalendarFragment extends Fragment {
         return view;
     }
 
+    private void addLowerViews(RelativeLayout relativeLayout) {
+        for (int i = 0; i < 24; i++) {
+            TextView timeTextView = new TextView(getActivity());
+            timeTextView.setText((i < 10 ? "0" + i : i + "") + ":00");
+            timeTextView.setId(i + 1);
+            //timeTextView.(DensityUtil.dip2px(getActivity(),6),DensityUtil.dip2px(getActivity(),6),DensityUtil.dip2px(getActivity(),6),DensityUtil.dip2px(getActivity(),25));
+            RelativeLayout.LayoutParams param = new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+            if (i != 0) {
+                param.addRule(RelativeLayout.BELOW, i);
+                param.setMargins(DensityUtil.dip2px(getActivity(), 6), DensityUtil.dip2px(getActivity(), 6), DensityUtil.dip2px(getActivity(), 6), DensityUtil.dip2px(getActivity(), 15));
+                relativeLayout.addView(timeTextView, param);
+            }
+            if (i == 0) {
+                //param.addRule(RelativeLayout.ALIGN_PARENT_LEFT);
+                param.setMargins(DensityUtil.dip2px(getActivity(), 6), DensityUtil.dip2px(getActivity(), 2), DensityUtil.dip2px(getActivity(), 6), DensityUtil.dip2px(getActivity(), 15));
+
+                relativeLayout.addView(timeTextView, param);
+            }
+
+            View lineView = new View(getActivity());
+            lineView.setId(100 + i);
+            RelativeLayout.LayoutParams line_param = new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+            lineView.setBackgroundColor(Color.GRAY);
+            line_param.height = DensityUtil.dip2px(getActivity(), 1);
+            line_param.addRule(RelativeLayout.END_OF, i + 1);
+            line_param.addRule(RelativeLayout.ALIGN_TOP, i + 1);
+            line_param.setMargins(DensityUtil.dip2px(getActivity(), 6), DensityUtil.dip2px(getActivity(), 11), DensityUtil.dip2px(getActivity(), 0), DensityUtil.dip2px(getActivity(), 30));
+            relativeLayout.addView(lineView, line_param);
+
+
+        }
+    }
+
 
     public void addItem() {
         Map<String, Integer> map = dates.get(dates.size() - 1);
@@ -440,10 +446,166 @@ public class CalendarFragment extends Fragment {
             calendarView.setOnDateSelectedListener(new OnDateSelectedListener() {
                 @Override
                 public void dateSelected(float x, float y) {
+                    List<Integer> eventGroup = new ArrayList<Integer>();
+                    List<Integer[]> eventTimeRagne = new ArrayList<Integer[]>();
                     CalendarView.Row row = calendarView.getRows()[0];
                     int day = Integer.valueOf(row.getCells()[DateUtil.analysePosition(x, rowHeight)].text);
                     int month = row.getCells()[DateUtil.analysePosition(x, rowHeight)].month;
                     int year = row.getCells()[DateUtil.analysePosition(x, rowHeight)].year;
+                    if (row.getCells()[DateUtil.analysePosition(x, rowHeight)].hasEvents) {
+                        Toast.makeText(getActivity(), "has event", Toast.LENGTH_SHORT).show();
+                        List<JSONObject> objectList = EventUtil.getEventFromDate(day + "-" + month + "-" + year);
+                        objectList = EventUtil.sortEvents(objectList);
+                        String start = null;
+                        String end = null;
+//                        for (int i = 0; i < objectList.size(); i++) {
+//                            try {
+//                                Date tempStart = DateUtil.getLocalDateObject(objectList.get(i).getString("event_starts_datetime"));
+//                                Date tempEnd = DateUtil.getLocalDateObject(objectList.get(i).getString("event_ends_datetime"));
+//                                eventTimeRagne.add(new Integer[]{tempStart.ge})
+//                            } catch (JSONException e) {
+//                                e.printStackTrace();
+//                            }
+//                        }
+                        try {
+                            start = objectList.get(0).getString("event_starts_datetime");
+                            end = objectList.get(0).getString("event_ends_datetime");
+
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+
+
+//                        int flag = 0;
+                        for (int i = 0; i < objectList.size(); ) {
+                            eventGroup.add(i);
+//                            i = flag;
+                            //flag = i;
+
+                            if (i == objectList.size() - 1) {
+                                eventGroup.add(i);
+                                i++;
+                            }
+                            for (int j = i + 1; j < objectList.size(); j++) {
+                                try {
+//                                    Date start = DateUtil.getLocalDateObject(objectList.get(i).getString("event_starts_datetime"));
+//                                    Date end = DateUtil.getLocalDateObject(objectList.get(i).getString("event_ends_datetime"));
+//                                    Date newStart = DateUtil.getLocalDateObject(objectList.get(j).getString("event_starts_datetime"));
+//                                    Date newEnd = DateUtil.getLocalDateObject(objectList.get(j).getString("event_ends_datetime"));
+                                    String newStart = objectList.get(j).getString("event_starts_datetime");
+                                    String newEnd = objectList.get(j).getString("event_ends_datetime");
+
+                                    if (newStart.compareTo(start) >= 0 && newStart.compareTo(end) < 0) {
+                                        i++;
+                                        //eventGroup.add(flag);
+                                        if (newEnd.compareTo(end) >= 0) {
+                                            end = newEnd;
+                                        }
+                                    } else {
+                                        eventGroup.add(i);
+
+                                        i++;
+                                        start = objectList.get(i).getString("event_starts_datetime");
+                                        end = objectList.get(i).getString("event_ends_datetime");
+                                        break;
+                                    }
+                                } catch (JSONException e) {
+                                    e.printStackTrace();
+                                }
+                            }
+
+
+                        }
+                        for (Integer integer : eventGroup) {
+                            Log.d("testGroup", integer + " ");
+                        }
+
+                        for (int i = 0; i < eventGroup.size(); i += 2) {
+                            if (eventGroup.get(i) == eventGroup.get(i + 1)) {
+                                int starthour = 0;
+                                int endhour = 0;
+                                try {
+                                    String dateString = objectList.get(eventGroup.get(i)).getString("event_starts_datetime");
+                                    String dateStringEnd = objectList.get(eventGroup.get(i)).getString("event_ends_datetime");
+                                    Calendar cal = DateUtil.getLocalDateObjectToCalendar(DateUtil.getLocalDateObject(dateString));
+                                    Calendar calEnd = DateUtil.getLocalDateObjectToCalendar(DateUtil.getLocalDateObject(dateStringEnd));
+                                    starthour = cal.get(Calendar.HOUR_OF_DAY);
+                                    endhour = calEnd.get(Calendar.HOUR_OF_DAY);
+                                } catch (JSONException e) {
+                                    e.printStackTrace();
+                                }
+                                TextView eventView = new TextView(getActivity());
+                                RelativeLayout.LayoutParams eventParam = new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+                                eventView.setBackgroundColor(Color.CYAN);
+                                try {
+                                    eventView.setText(objectList.get(eventGroup.get(i)).getString("event_name"));
+                                } catch (JSONException e) {
+                                    e.printStackTrace();
+                                }
+//                                eventParam.height = DensityUtil.dip2px(getActivity(), 30);
+//                                eventParam.width = DensityUtil.dip2px(getActivity(), 50);
+                                eventParam.addRule(RelativeLayout.ALIGN_TOP, 100 + starthour);
+                                eventParam.addRule(RelativeLayout.ALIGN_BOTTOM, 100 + endhour);
+                                eventParam.addRule(RelativeLayout.ALIGN_START, 100 + starthour);
+                                eventParam.addRule(RelativeLayout.ALIGN_LEFT, 100 + starthour);
+                                eventParam.addRule(RelativeLayout.ALIGN_RIGHT, 100 + starthour);
+                                eventParam.addRule(RelativeLayout.ALIGN_END, 100 + starthour);
+
+                                eventParam.setMargins(DensityUtil.dip2px(getActivity(), 1), DensityUtil.dip2px(getActivity(), 1), DensityUtil.dip2px(getActivity(), 1), DensityUtil.dip2px(getActivity(), 1));
+                                relativeLayout.addView(eventView, eventParam);
+                            } else {
+                                int overlapNumber = eventGroup.get(i + 1) - eventGroup.get(i) + 1;
+                                int startNumber = eventGroup.get(i);
+                                int flag = 0;
+                                for (int num = eventGroup.get(i); num <= eventGroup.get(i + 1); num++) {
+                                    int starthour = 0;
+                                    int endhour = 0;
+                                    try {
+                                        String dateString = objectList.get(num).getString("event_starts_datetime");
+                                        String dateStringEnd = objectList.get(num).getString("event_ends_datetime");
+                                        Calendar cal = DateUtil.getLocalDateObjectToCalendar(DateUtil.getLocalDateObject(dateString));
+                                        Calendar calEnd = DateUtil.getLocalDateObjectToCalendar(DateUtil.getLocalDateObject(dateStringEnd));
+                                        starthour = cal.get(Calendar.HOUR_OF_DAY);
+                                        endhour = calEnd.get(Calendar.HOUR_OF_DAY);
+                                    } catch (JSONException e) {
+                                        e.printStackTrace();
+                                    }
+                                    TextView eventView = new TextView(getActivity());
+                                    try {
+                                        eventView.setText(objectList.get(num).getString("event_name"));
+                                    } catch (JSONException e) {
+                                        e.printStackTrace();
+                                    }
+                                    RelativeLayout.LayoutParams eventParamOverlap = new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+                                    eventView.setBackgroundColor(Color.CYAN);
+                                    TextView view = (TextView) relativeLayout.findViewById(1);
+                                    float length = screenWidth - (view.getWidth() + DensityUtil.dip2px(getActivity(), 12));
+//                                    eventParamOverlap.height = DensityUtil.dip2px(getActivity(), 30);
+                                    eventParamOverlap.width = (int) (length / overlapNumber);
+                                    eventParamOverlap.addRule(RelativeLayout.ALIGN_TOP, 100 + starthour);
+                                    eventParamOverlap.addRule(RelativeLayout.ALIGN_BOTTOM, 100 + endhour);
+                                    eventParamOverlap.addRule(RelativeLayout.ALIGN_START, 100 + starthour);
+                                    eventParamOverlap.addRule(RelativeLayout.ALIGN_LEFT, 100 + starthour);
+
+//                                    eventParam.addRule(RelativeLayout.ALIGN_RIGHT, 100 + starthour);
+//                                    eventParam.addRule(RelativeLayout.ALIGN_END, 100 + starthour);
+                                    int leftMargin = (int) (flag * (length / overlapNumber));
+                                    Log.d("leftMargin", leftMargin + "");
+                                    eventParamOverlap.setMargins(leftMargin, DensityUtil.dip2px(getActivity(), 1), DensityUtil.dip2px(getActivity(), 1), DensityUtil.dip2px(getActivity(), 1));
+                                    relativeLayout.addView(eventView, eventParamOverlap);
+                                    flag++;
+                                }
+                            }
+                        }
+
+
+                    } else {
+                        relativeLayout.removeAllViews();
+                        addLowerViews(relativeLayout);
+
+                    }
+
+
                     if (day == clickedDay && month == clickedMonth && year == clickedYear) {
                         //Toast.makeText(getActivity(), "double clicked", Toast.LENGTH_SHORT).show();
 //                        FragmentTransaction ft = fm.beginTransaction();

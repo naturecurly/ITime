@@ -59,10 +59,10 @@ public class EventsActivity extends AppCompatActivity {
                 Calendar cal = Calendar.getInstance();
                 cal.setTime(date);
                 holder.eventDate.setText(DateUtil.weekName[cal.get(Calendar.DAY_OF_WEEK) - 1] + " " + cal.get(Calendar.YEAR) + "-" + (cal.get(Calendar.MONTH) + 1) + "-" + cal.get(Calendar.DAY_OF_MONTH));
-                holder.eventStartTime.setText(cal.get(Calendar.HOUR) + ":" + cal.get(Calendar.MINUTE));
+                holder.eventStartTime.setText(cal.get(Calendar.HOUR_OF_DAY) + ":" + cal.get(Calendar.MINUTE));
                 date = DateUtil.getLocalDateObject(object.getString("event_ends_datetime"));
                 cal.setTime(date);
-                holder.eventEndTime.setText(cal.get(Calendar.HOUR) + ":" + cal.get(Calendar.MINUTE));
+                holder.eventEndTime.setText(cal.get(Calendar.HOUR_OF_DAY) + ":" + cal.get(Calendar.MINUTE));
             } catch (JSONException e) {
                 e.printStackTrace();
             }

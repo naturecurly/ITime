@@ -67,6 +67,8 @@ public class SettingsFragment extends Fragment implements View.OnClickListener, 
     private static final int SETTINGS_MEETING_ID = R.id.setting_meeting;
     private static final int SETTINGS_IMPORT_ID = R.id.setting_import;
     private static final int SETTINGS_ALERT_TIME_ID = R.id.setting_dft_alert_time;
+    private static final int SETTINGS_CALENDAR_TYPE_ID = R.id.setting_calendar_type;
+    private static final int SETTINGS_CLEAR_CALENDAR_ID = R.id.setting_clear_calendar;
     private static final int SETTING_LOGOUT_ID = R.id.settings_btn_logout;
 
     private static final String SETTINGS = "Settings";
@@ -103,8 +105,12 @@ public class SettingsFragment extends Fragment implements View.OnClickListener, 
         v3.setOnClickListener(this);
         mAlertTimeView = view.findViewById(SETTINGS_ALERT_TIME_ID);
         mAlertTimeView.setOnClickListener(this);
-        View v4 = view.findViewById(SETTING_LOGOUT_ID);
+        View v4 = view.findViewById(SETTINGS_CALENDAR_TYPE_ID);
         v4.setOnClickListener(this);
+        View v5 = view.findViewById(SETTINGS_CLEAR_CALENDAR_ID);
+        v5.setOnClickListener(this);
+        View v6 = view.findViewById(SETTING_LOGOUT_ID);
+        v6.setOnClickListener(this);
 
         // Hold the views
         mUserIdTextView = (TextView) view.findViewById(R.id.setting_profile_id);
@@ -148,6 +154,12 @@ public class SettingsFragment extends Fragment implements View.OnClickListener, 
             case SETTINGS_ALERT_TIME_ID:
                 intent.putExtra(SETTINGS, ALERT_TIME_SETTINGS);
                 startActivityForResult(intent, ALERT_TIME_SETTINGS);
+                break;
+
+            case SETTINGS_CALENDAR_TYPE_ID:
+                break;
+
+            case SETTINGS_CLEAR_CALENDAR_ID:
                 break;
 
             case SETTING_LOGOUT_ID:

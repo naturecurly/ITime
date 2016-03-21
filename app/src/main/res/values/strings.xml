@@ -16,6 +16,9 @@
     <string name="settings_meeting_preference">Meeting Preferences</string>
     <string name="settings_import_calendar">Import Calendars</string>
     <string name="settings_default_alert_time">Default Alert Time</string>
+    <string name="settings_calendar_type">Calendar Type Setting</string>
+    <string name="settings_clear_calendar">Clear Calendar</string>
+
     <string name="profile_photo">Profile Photo</string>
 
     <string name="calendar_title">Calendar</string>

@@ -87,4 +87,22 @@ public class EventUtil {
 
 
     }
+
+
+    public static List<JSONObject> getEventsByMonth(int year, int month) {
+        JSONArray response = Events.response;
+        List<JSONObject> objects = new ArrayList<>();
+        for (int i = 0; i < response.length(); i++) {
+            try {
+                JSONObject object = response.getJSONObject(i);
+                Calendar cal = DateUtil.getLocalDateObjectToCalendar(DateUtil.getLocalDateObject(object.getString("event_starts_datetime")));
+                if (cal.get(Calendar.YEAR) == year && cal.get(Calendar.MONTH) == month - 1) {
+                    objects.add(object);
+                }
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+        }
+        return objects;
+    }
 }

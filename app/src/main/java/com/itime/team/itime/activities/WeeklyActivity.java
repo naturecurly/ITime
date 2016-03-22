@@ -1,20 +1,59 @@
 package com.itime.team.itime.activities;
 
+import android.util.Log;
+
 import com.alamkanak.weekview.WeekViewEvent;
 import com.itime.team.itime.R;
+import com.itime.team.itime.bean.Events;
+import com.itime.team.itime.utils.DateUtil;
+import com.itime.team.itime.utils.EventUtil;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 
 /**
  * Created by leveyleonhardt on 3/11/16.
  */
 public class WeeklyActivity extends WeeklyBaseActivity {
+    private JSONArray response = Events.response;
+    private int flag = 0;
+
     @Override
     public List<? extends WeekViewEvent> onMonthChange(int newYear, int newMonth) {
         // Populate the week view with some events.
         List<WeekViewEvent> events = new ArrayList<WeekViewEvent>();
+        Log.d("how many times", "times");
+        List<JSONObject> objects = EventUtil.getEventsByMonth(newYear, newMonth);
+//        if (flag == 0) {
+        for (int i = 0; i < objects.size(); i++) {
+            JSONObject object = new JSONObject();
+            try {
+                object = objects.get(i);
+                Date dateStart = DateUtil.getLocalDateObject(object.getString("event_starts_datetime"));
+                Date dateEnd = DateUtil.getLocalDateObject(object.getString("event_ends_datetime"));
+                Calendar calendar = Calendar.getInstance();
+                calendar.setTime(dateStart);
+                Calendar calendar1 = Calendar.getInstance();
+                calendar1.setTime(dateEnd);
+                String title = object.getString("event_name");
+                WeekViewEvent event = new WeekViewEvent(i, title, calendar, calendar1);
+                event.setColor(getResources().getColor(R.color.event_color_01));
+                events.add(event);
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+        }
+
+//            flag = 1;
+
+//    }
+
 
 //        Calendar startTime = Calendar.getInstance();
 //        startTime.set(Calendar.HOUR_OF_DAY, 3);

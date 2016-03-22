@@ -453,6 +453,9 @@ public class CalendarFragment extends Fragment {
                     int month = row.getCells()[DateUtil.analysePosition(x, rowHeight)].month;
                     int year = row.getCells()[DateUtil.analysePosition(x, rowHeight)].year;
                     if (row.getCells()[DateUtil.analysePosition(x, rowHeight)].hasEvents) {
+                        relativeLayout.removeAllViews();
+                        addLowerViews(relativeLayout);
+
                         Toast.makeText(getActivity(), "has event", Toast.LENGTH_SHORT).show();
                         List<JSONObject> objectList = EventUtil.getEventFromDate(day + "-" + month + "-" + year);
                         objectList = EventUtil.sortEvents(objectList);

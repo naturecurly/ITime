@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<!--
+Menu of inbox fragment. Switch between 'All' and 'Unread'
+  -->
+
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+    <item android:id="@+id/inbox_action"
+        android:title="All"
+        app:showAsAction="always" />
+</menu>

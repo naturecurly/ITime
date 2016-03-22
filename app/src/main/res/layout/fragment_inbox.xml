@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+
+<!--<View
+    android:layout_width="match_parent"
+    android:layout_height="0dp"
+    android:layout_weight="1"
+    android:background="#FF0000" />-->
+    <!--
+<View
+android:layout_width="match_parent"
+android:layout_height="100dp"
+android:background="#FFFF00" />
+<TextView
+android:layout_width="match_parent"
+android:layout_height="wrap_content"
+android:gravity="center"
+android:background="@android:color/black"
+android:text="hello world"
+android:padding="50dp" />
+-->
+    <ListView
+    android:id="@+id/inbox_message_list"
+    android:layout_width="match_parent"
+    android:layout_height="0dp"
+    android:layout_weight="1"
+    android:background="@color/grey">
+
+</ListView>
+
+
+
+<RelativeLayout
+    android:layout_width="match_parent"
+    android:layout_height="20dp"
+    android:layout_margin="10dp"
+    android:layout_gravity="bottom"
+    >
+    <TextView
+        android:id="@+id/inbox_mark_all_read"
+        android:text="@string/inbox_mark_all_read"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true" />
+    <TextView
+        android:id="@+id/inbox_delete_all"
+        android:text="@string/inbox_delete_all"
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:layout_alignParentRight="true"
+        />
+</RelativeLayout>
+
+</LinearLayout>

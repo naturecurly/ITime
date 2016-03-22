@@ -22,6 +22,7 @@ import android.widget.TextView;
 import com.bugtags.library.Bugtags;
 import com.itime.team.itime.R;
 import com.itime.team.itime.fragments.CalendarFragment;
+import com.itime.team.itime.fragments.InboxFragment;
 import com.itime.team.itime.fragments.MeetingFragment;
 import com.itime.team.itime.fragments.SettingsFragment;
 import com.itime.team.itime.fragments.YearViewFragment;
@@ -34,6 +35,7 @@ public class MainActivity extends AppCompatActivity implements
     private Menu mMenu;
     private CalendarFragment calendarFragment;
     private MeetingFragment meetingFragment;
+    private InboxFragment inboxFragment;
     private SettingsFragment settingsFragment;
     private YearViewFragment yearViewFragment;
     private RadioButton calendarButton;
@@ -72,6 +74,9 @@ public class MainActivity extends AppCompatActivity implements
                     case R.id.button_meeting:
                         showFragment(meetingFragment);
                         break;
+                    case R.id.button_inbox:
+                        showFragment(inboxFragment);
+                        break;
                     case R.id.button_setting:
                         showFragment(settingsFragment);
                         break;
@@ -86,6 +91,7 @@ public class MainActivity extends AppCompatActivity implements
         meetingFragment = new MeetingFragment();
         settingsFragment = new SettingsFragment();
         yearViewFragment = new YearViewFragment();
+        inboxFragment = new InboxFragment();
         calendarFragment.setCurrentFragment(calendarFragment, yearViewFragment);
         yearViewFragment.setCalendarFragment(calendarFragment,yearViewFragment);
         getSupportFragmentManager().beginTransaction().add(R.id.realtab_content, calendarFragment).commit();
@@ -100,16 +106,25 @@ public class MainActivity extends AppCompatActivity implements
             fragmentManager.beginTransaction().hide(meetingFragment).commit();
             fragmentManager.beginTransaction().hide(settingsFragment).commit();
             fragmentManager.beginTransaction().hide(yearViewFragment).commit();
+            fragmentManager.beginTransaction().hide(inboxFragment).commit();
             fragmentManager.beginTransaction().show(calendarFragment).commit();
         } else if (me == meetingFragment) {
             fragmentManager.beginTransaction().hide(calendarFragment).commit();
             fragmentManager.beginTransaction().hide(settingsFragment).commit();
             fragmentManager.beginTransaction().hide(yearViewFragment).commit();
+            fragmentManager.beginTransaction().hide(inboxFragment).commit();
             fragmentManager.beginTransaction().show(meetingFragment).commit();
+        } else if (me == inboxFragment) {
+            fragmentManager.beginTransaction().hide(calendarFragment).commit();
+            fragmentManager.beginTransaction().hide(settingsFragment).commit();
+            fragmentManager.beginTransaction().hide(yearViewFragment).commit();
+            fragmentManager.beginTransaction().hide(meetingFragment).commit();
+            fragmentManager.beginTransaction().show(inboxFragment).commit();
         } else if (me == settingsFragment) {
             fragmentManager.beginTransaction().hide(calendarFragment).commit();
             fragmentManager.beginTransaction().hide(meetingFragment).commit();
             fragmentManager.beginTransaction().hide(yearViewFragment).commit();
+            fragmentManager.beginTransaction().hide(inboxFragment).commit();
             fragmentManager.beginTransaction().show(settingsFragment).commit();
         }
 
@@ -123,6 +138,10 @@ public class MainActivity extends AppCompatActivity implements
         } else if (me == settingsFragment) {
             title.setText(getResources().getString(R.string.setting_title));
             settingsFragment.handleConfilct(mEventList, mToday);
+        } else if (me == inboxFragment) {
+            //inboxFragment.setTitle();
+            title.setText("Unread");
+
         }
 
         calendarButton = (RadioButton) findViewById(R.id.button_calendar);

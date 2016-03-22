@@ -25,9 +25,13 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewGroup;
+import android.widget.FrameLayout;
 
 import com.itime.team.itime.R;
 import com.itime.team.itime.fragments.AlertTimePreferenceFragment;
+import com.itime.team.itime.fragments.CalendarTypeFragment;
+import com.itime.team.itime.fragments.CalendarTypeSubFragment;
 import com.itime.team.itime.fragments.MeetingPreferenceFragment;
 import com.itime.team.itime.fragments.MeetingSubPreferenceFragment;
 import com.itime.team.itime.fragments.ProfileFragment;
@@ -49,6 +53,9 @@ public class SettingsActivity extends AppCompatActivity {
     private static final int IMPORT_SETTINGS = 3;
     private static final int ALERT_TIME_SETTINGS = 4;
     private static final int MEETING_SUB_SETTINGS = 5;
+    private static final int CALENDAR_TYPE_SETTINGS = 7;
+    private static final int CLEAR_CALENDAR_SETTINGS = 8;
+    private static final int CALENDAR_TYPE_SUB_SETTINGS = CalendarTypeFragment.CALENDAR_TYPE_SUB_SETTINGS;
 
     private static Bundle fragmentBundle = new Bundle();
 
@@ -112,6 +119,18 @@ public class SettingsActivity extends AppCompatActivity {
                             .commit();
                     break;
 
+                case CALENDAR_TYPE_SETTINGS:
+
+                    CalendarTypeFragment ctf = new CalendarTypeFragment();
+                    getSupportFragmentManager().beginTransaction()
+                            .add(R.id.setting_content, ctf)
+                            .commit();
+                    break;
+
+                case CLEAR_CALENDAR_SETTINGS:
+                    // TODO: 22/03/16 show clear calendar dialog
+                    break;
+
                 case MEETING_SUB_SETTINGS:
                     MeetingSubPreferenceFragment mspf = new MeetingSubPreferenceFragment();
                     String data = getIntent().getStringExtra(SETTINGS_DATA);
@@ -124,6 +143,13 @@ public class SettingsActivity extends AppCompatActivity {
                             .add(R.id.setting_content, mspf)
                             .commit();
                     //getSupportFragmentManager().putFragment(fragmentBundle, "MeetingSubPreferenceFragment", mspf);
+                    break;
+
+                case CALENDAR_TYPE_SUB_SETTINGS:
+                    CalendarTypeSubFragment ctsf = new CalendarTypeSubFragment();
+                    getSupportFragmentManager().beginTransaction()
+                            .add(R.id.setting_content, ctsf)
+                            .commit();
                     break;
                 default:
                     Log.e(LOG_TAG, "Unknows setting item");

@@ -125,7 +125,7 @@ public class RepeatPreferenceFragment extends Fragment {
 
         public View getRightView() {
             if (this.rightView == null) {
-                this.rightView =  row.findViewById(R.id.setting_list_right_text);
+                this.rightView =  row.findViewById(R.id.setting_list_right);
             }
             return this.rightView;
         }

@@ -33,13 +33,13 @@
 
     <!-- right part-->
     <LinearLayout
-        android:id="@+id/setting_list_right_text"
+        android:id="@+id/setting_list_right"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:orientation="vertical"
         android:layout_alignParentRight="true"
         android:gravity="right">
-        <!-- to be implement according to requirement -->
+        <!-- to be implemented according to requirement -->
     </LinearLayout>
 
 

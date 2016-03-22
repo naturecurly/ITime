@@ -76,6 +76,8 @@ public class SettingsFragment extends Fragment implements View.OnClickListener, 
     private static final int MEETING_SETTINGS = 2;
     private static final int IMPORT_SETTINGS = 3;
     private static final int ALERT_TIME_SETTINGS = 4;
+    private static final int CALENDAR_TYPE_SETTINGS = 7;
+    private static final int CLEAR_CALENDAR_SETTINGS = 8;
 
     //Views
     private TextView mUserNameTextView;
@@ -157,6 +159,8 @@ public class SettingsFragment extends Fragment implements View.OnClickListener, 
                 break;
 
             case SETTINGS_CALENDAR_TYPE_ID:
+                intent.putExtra(SETTINGS, CALENDAR_TYPE_SETTINGS);
+                startActivity(intent);
                 break;
 
             case SETTINGS_CLEAR_CALENDAR_ID:

@@ -53,6 +53,8 @@ import org.json.JSONObject;
 import java.io.IOException;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.TimeZone;
 import java.util.UUID;
 
@@ -298,6 +300,8 @@ public class MeetingSubPreferenceFragment extends Fragment implements View.OnCli
         try {
             jsonObject.put("user_id", mPreference.userId);
             JSONArray jsonArray = new JSONArray();
+            // set last update time to now
+            mPreference.lastUpdate = Calendar.getInstance().getTime();
             String jsonString = LoganSquare.serialize(mPreference);
             jsonArray.put(new JSONObject(jsonString));
             jsonObject.put("local_preferences", jsonArray);
@@ -309,11 +313,10 @@ public class MeetingSubPreferenceFragment extends Fragment implements View.OnCli
         }
 
         final String url = URLs.SYNC_PREFERENCES;
-        Uri uri = Uri.parse(url);
-        Uri.Builder builder = uri.buildUpon();
-        final String query = builder.appendQueryParameter("json", jsonObject.toString()).build().getQuery();
-        Log.i(LOG_TAG, query);
-        JsonArrayFormRequest request = new JsonArrayFormRequest(Request.Method.POST, url, query,
+        Map<String, String> params = new HashMap();
+        params.put("json", jsonObject.toString());
+        Log.i(LOG_TAG, jsonObject.toString());
+        JsonArrayFormRequest request = new JsonArrayFormRequest(Request.Method.POST, url, params,
                 new Response.Listener<JSONArray>() {
                     @Override
                     public void onResponse(JSONArray response) {

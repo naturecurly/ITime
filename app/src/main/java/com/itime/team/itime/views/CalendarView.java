@@ -505,6 +505,18 @@ public class CalendarView extends View {
         this.listener = listener;
     }
 
+    public boolean whetherHasFirstDay() {
+        Cell[] cell = rows[0].getCells();
+        for (int i = 0; i < 7; i++) {
+            if (cell[i].text.equals("1")) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+
+
 //    public void setCalendarType(int type) {
 //        if (type == MONTH_STYLE) {
 //            this.defaultStyle = MONTH_STYLE;

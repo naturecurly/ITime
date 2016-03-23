@@ -58,6 +58,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 
 /**
@@ -120,7 +121,7 @@ public class CalendarFragment extends Fragment {
 
     }
 
-    private void addFriendFromLink(){
+    private void addFriendFromLink() {
         String s = getActivity().getIntent().getStringExtra("invitation");
     }
 
@@ -157,7 +158,8 @@ public class CalendarFragment extends Fragment {
         //CalendarView calendarView = (CalendarView) view.findViewById(R.id.calendar_view);
         //rowHeight = calendarView.getLayoutParams().height;
         TextView title = (TextView) getActivity().findViewById(R.id.toolbar_title);
-        title.setText("Calendar");
+        Calendar now = Calendar.getInstance();
+        title.setText(now.get(Calendar.YEAR) + "-" + (now.get(Calendar.MONTH) + 1));
 
 
         mTodayButton = (Button) getActivity().findViewById(R.id.button_today);
@@ -268,6 +270,14 @@ public class CalendarFragment extends Fragment {
             public void onScrolled(final RecyclerView recyclerView, int dx, int dy) {
                 super.onScrolled(recyclerView, dx, dy);
 
+                CalendarView firstVisibleView = (CalendarView) (recyclerView.getChildAt(0)).findViewById(R.id.calendar_view);
+                if (firstVisibleView.whetherHasFirstDay()) {
+                    CalendarView.Row[] rows = firstVisibleView.getRows();
+                    TextView textView = (TextView) getActivity().findViewById(R.id.toolbar_title);
+//                    CalendarView.Cell[] cells = rows[0].getCells();
+//                    cells
+                    textView.setText(firstVisibleView.getmShowYear() + "-" + firstVisibleView.getmShowMonth());
+                }
 
                 visibleItemCount = linearLayoutManager.getChildCount();
                 //Log.i("Vcount", visibleItemCount + "");
@@ -446,19 +456,44 @@ public class CalendarFragment extends Fragment {
             calendarView.setOnDateSelectedListener(new OnDateSelectedListener() {
                 @Override
                 public void dateSelected(float x, float y) {
+                    Calendar now = Calendar.getInstance();
+
+
                     List<Integer> eventGroup = new ArrayList<Integer>();
                     List<Integer[]> eventTimeRagne = new ArrayList<Integer[]>();
                     CalendarView.Row row = calendarView.getRows()[0];
                     int day = Integer.valueOf(row.getCells()[DateUtil.analysePosition(x, rowHeight)].text);
                     int month = row.getCells()[DateUtil.analysePosition(x, rowHeight)].month;
                     int year = row.getCells()[DateUtil.analysePosition(x, rowHeight)].year;
+                    if (now.get(Calendar.YEAR) == year && now.get(Calendar.MONTH) == month - 1 && now.get(Calendar.DAY_OF_MONTH) == day) {
+                        int nowHour = now.get(Calendar.HOUR_OF_DAY);
+                        View v = relativeLayout.findViewById(nowHour + 1);
+                        Log.d("first_event_pixel", v.getY() + "");
+                        mScrollView.smoothScrollTo(0, (int) v.getY());
+                    }
                     if (row.getCells()[DateUtil.analysePosition(x, rowHeight)].hasEvents) {
                         relativeLayout.removeAllViews();
                         addLowerViews(relativeLayout);
-
+                        //relativeLayout.invalidate();
                         Toast.makeText(getActivity(), "has event", Toast.LENGTH_SHORT).show();
                         List<JSONObject> objectList = EventUtil.getEventFromDate(day + "-" + month + "-" + year);
                         objectList = EventUtil.sortEvents(objectList);
+
+                        JSONObject firstObject = objectList.get(0);
+                        Calendar firstTimeCal = Calendar.getInstance();
+                        try {
+                            String firstTimeString = firstObject.getString("event_starts_datetime");
+                            Date firstTimeDate = DateUtil.getLocalDateObject(firstTimeString);
+                            firstTimeCal = DateUtil.getLocalDateObjectToCalendar(firstTimeDate);
+
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+                        Log.d("first_event_hour", firstTimeCal.get(Calendar.HOUR_OF_DAY) + "");
+                        int firstPosition = firstTimeCal.get(Calendar.HOUR_OF_DAY);
+                        View firstEventView = relativeLayout.findViewById(100 + firstPosition);
+                        mScrollView.smoothScrollTo(0, DensityUtil.dip2px(getActivity(), 30 * firstPosition));
+
                         String start = null;
                         String end = null;
 //                        for (int i = 0; i < objectList.size(); i++) {

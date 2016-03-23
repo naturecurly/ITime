@@ -19,6 +19,7 @@ package com.itime.team.itime.fragments;
 import android.app.DatePickerDialog;
 import android.app.TimePickerDialog;
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.util.Log;
@@ -32,15 +33,26 @@ import android.widget.DatePicker;
 import android.widget.TextView;
 import android.widget.TimePicker;
 
+import com.android.volley.Request;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.bluelinelabs.logansquare.LoganSquare;
 import com.itime.team.itime.R;
 import com.itime.team.itime.activities.SettingsActivity;
+import com.itime.team.itime.api.model.Preference;
+import com.itime.team.itime.bean.URLs;
 import com.itime.team.itime.bean.User;
 import com.itime.team.itime.utils.DateUtil;
+import com.itime.team.itime.utils.JsonArrayFormRequest;
+import com.itime.team.itime.utils.MySingleton;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.IOException;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.TimeZone;
 import java.util.UUID;
 
@@ -59,11 +71,26 @@ public class MeetingSubPreferenceFragment extends Fragment implements View.OnCli
 
     public static final int REPEAT_SETTINGS = 0;
 
+    public enum Type {
+        UNAVAILABLE ("Unavailable"),
+        PREFER ("Prefer");
+
+        private final String text;
+        Type(String text) {
+            this.text = text;
+        }
+
+        public String getText() {
+            return text;
+        }
+    }
+
     private View mMeetingSubPrefView;
     private boolean mIsNewPreferences = false;
     private int mCurPrefercenIndex = -1;
-    private boolean isReject;
+    private boolean isPrefer;
     private JSONObject mPreferenceJSONObject;
+    private Preference mPreference; // api model synchronize with server
 
     // View
     private TextView mStartsDate;
@@ -97,18 +124,41 @@ public class MeetingSubPreferenceFragment extends Fragment implements View.OnCli
         if (args != null && args.getString(PREFERENCE_DATA) != null) {
             try {
                 JSONObject data = new JSONObject(args.getString(PREFERENCE_DATA));
-                initViewsValue(data);
+                mPreference = LoganSquare.parse(args.getString(PREFERENCE_DATA), Preference.class);
+                //initViewsValue(data);
                 mPreferenceJSONObject = data;
             } catch (JSONException e) {
+                Log.e(LOG_TAG, e.getMessage());
+            } catch (IOException e) {
                 Log.e(LOG_TAG, e.getMessage());
             }
 
         } else {
-            initViewsValue(null);
+            newPreference();
+            //initViewsValue(null);
             initPreferenceJSONObject();
         }
+        initViewsValue();
         return mMeetingSubPrefView;
         //return super.onCreateView(inflater, container, savedInstanceState);
+    }
+
+    private void newPreference() {
+        Calendar c = Calendar.getInstance();
+        Date today = c.getTime();
+
+        mPreference = new Preference();
+        mPreference.id = UUID.randomUUID().toString();
+        mPreference.userId = User.ID;
+        mPreference.startsDate = today;
+        mPreference.startsTime = today;
+        mPreference.endsTime = today;
+        mPreference.isLongRepeat = false;
+        mPreference.repeatType = "Daily";
+        mPreference.preferenceType = Type.UNAVAILABLE.getText();
+        mPreference.ifDeleted = false;
+        mPreference.repeatToDate = today;
+        mPreference.lastUpdate = today;
     }
 
     private void initPreferenceJSONObject() {
@@ -146,11 +196,32 @@ public class MeetingSubPreferenceFragment extends Fragment implements View.OnCli
         mType = (TextView) mMeetingSubPrefView.findViewById(R.id.setting_meeting_type_text);
     }
 
+    private void initViewsValue() {
+        mType.setText(mPreference.preferenceType);
+        mRepeat.setText(mPreference.repeatType);
+
+        Calendar c = Calendar.getInstance();
+        c.setTime(mPreference.startsDate);
+        String startsDate1 = String.format("%d/%d/%d", c.get(Calendar.DATE), c.get(Calendar.MONTH) + 1, c.get(Calendar.YEAR));
+        mStartsDate.setText(startsDate1);
+
+        c.setTime(mPreference.startsTime);
+        String starts = String.format("%s:%s", c.get(Calendar.HOUR_OF_DAY), c.get(Calendar.MINUTE));
+        mStartsTime.setText(starts);
+
+        c.setTime(mPreference.endsTime);
+        String ends = String.format("%s:%s", c.get(Calendar.HOUR_OF_DAY), c.get(Calendar.MINUTE));
+        mEndsTime.setText(ends);
+
+        isPrefer = mPreference.preferenceType.equalsIgnoreCase(Type.PREFER.getText());
+    }
+
     private void initViewsValue(JSONObject values) {
         if (values != null) {
             // set existing values
             try {
-                mType.setText(values.getString("preference_type"));
+                //mType.setText(values.getString("preference_type"));
+                mType.setText(mPreference.preferenceType);
 
                 Calendar c = Calendar.getInstance();
                 String startsDate = values.getString("starts_date");
@@ -159,7 +230,7 @@ public class MeetingSubPreferenceFragment extends Fragment implements View.OnCli
                 String startsDate1 = String.format("%d/%d/%d", c.get(Calendar.DATE), c.get(Calendar.MONTH)+1, c.get(Calendar.YEAR));
                 mStartsDate.setText(startsDate1);
                 mRepeat.setText(values.getString("repeat_type"));
-                isReject = values.getString("repeat_type").equalsIgnoreCase("reject") ? true : false;
+                isPrefer = values.getString("prefernece_type").equalsIgnoreCase("reject") ? true : false;
                 String startsTime = values.getString("starts_time");
                 String endsTime = values.getString("ends_time");
                 c.setTime(DateUtil.getLocalDateObject(startsTime));
@@ -184,8 +255,6 @@ public class MeetingSubPreferenceFragment extends Fragment implements View.OnCli
             mRepeat.setText("Daily");
             mType.setText("Reject");
         }
-
-
     }
 
     private void bindListener() {
@@ -218,10 +287,49 @@ public class MeetingSubPreferenceFragment extends Fragment implements View.OnCli
         int id = item.getItemId();
         if (id == R.id.action_save) {
             // TODO: Save preference and update server
-            //saveMeetingPreferences();
+            saveMeetingPreferences();
             return true;
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    private void saveMeetingPreferences() {
+        JSONObject jsonObject = new JSONObject();
+        try {
+            jsonObject.put("user_id", mPreference.userId);
+            JSONArray jsonArray = new JSONArray();
+            String jsonString = LoganSquare.serialize(mPreference);
+            jsonArray.put(new JSONObject(jsonString));
+            jsonObject.put("local_preferences", jsonArray);
+        } catch (JSONException e) {
+            e.printStackTrace();
+            return;
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        final String url = URLs.SYNC_PREFERENCES;
+        Uri uri = Uri.parse(url);
+        Uri.Builder builder = uri.buildUpon();
+        final String query = builder.appendQueryParameter("json", jsonObject.toString()).build().getQuery();
+        Log.i(LOG_TAG, query);
+        JsonArrayFormRequest request = new JsonArrayFormRequest(Request.Method.POST, url, query,
+                new Response.Listener<JSONArray>() {
+                    @Override
+                    public void onResponse(JSONArray response) {
+                        Log.i(LOG_TAG, response.toString());
+                        //mAdapter.notifyDataSetChanged();
+                        getActivity().finish();
+                    }
+                },
+                new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        Log.e(LOG_TAG, error.toString());
+                    }
+                }
+        );
+        MySingleton.getInstance(getContext()).addToRequestQueue(request);
     }
 
     @Override
@@ -247,7 +355,7 @@ public class MeetingSubPreferenceFragment extends Fragment implements View.OnCli
                     public void onDateSet(DatePicker view, int year, int monthOfYear, int dayOfMonth) {
                         mStartsDate.setText(String.format("%d/%d/%d", dayOfMonth, monthOfYear, year));
                     }
-                }, cal.get(Calendar.YEAR), cal.get(Calendar.MONTH)+1, cal.get(Calendar.DAY_OF_MONTH));
+                }, cal.get(Calendar.YEAR), cal.get(Calendar.MONTH), cal.get(Calendar.DAY_OF_MONTH));
                 datePicker.show();
                 break;
             }
@@ -272,9 +380,10 @@ public class MeetingSubPreferenceFragment extends Fragment implements View.OnCli
                 break;
             }
             case R.id.setting_meeting_type: {
-                String text = isReject ? "Accept" : "Reject";
-                isReject = !isReject;
+                String text = isPrefer ? Type.UNAVAILABLE.getText() : Type.PREFER.getText();
+                isPrefer = !isPrefer;
                 mType.setText(text);
+                mPreference.preferenceType = text;
                 break;
             }
         }

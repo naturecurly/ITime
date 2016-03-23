@@ -53,6 +53,9 @@ import com.itime.team.itime.utils.MySingleton;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.util.HashMap;
+import java.util.Map;
+
 /**
  * Created by Xuhui Chen (yorkfine) on 10/01/16.
  */
@@ -224,11 +227,10 @@ public class SettingsFragment extends Fragment implements View.OnClickListener, 
         }
 
         final String url = URLs.LOAD_USER_INFO;
-        Uri uri = Uri.parse(url);
-        Uri.Builder builder = uri.buildUpon();
-        final String query = builder.appendQueryParameter("json", jsonObject.toString()).build().getQuery();
+        Map<String, String> params = new HashMap();
+        params.put("json", jsonObject.toString());
 
-        JsonObjectFormRequest request = new JsonObjectFormRequest(Request.Method.POST, url, query,
+        JsonObjectFormRequest request = new JsonObjectFormRequest(Request.Method.POST, url, params,
                 new Response.Listener<JSONObject>() {
                     @Override
                     public void onResponse(JSONObject response) {

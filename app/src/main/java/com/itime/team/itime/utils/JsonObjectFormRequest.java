@@ -26,24 +26,26 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.UnsupportedEncodingException;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Created by Xuhui Chen (yorkfine) on 14/03/16.
- * Hack PROTOCOL_CONTENT_TYPE from `application/json` to orginal `application/x-www-form-urlencoded`
+ * PROTOCOL_CONTENT_TYPE is `application/x-www-form-urlencoded` derived from Request
  */
-public class JsonObjectFormRequest extends JsonRequest<JSONObject> {
+public class JsonObjectFormRequest extends JsonFormRequest<JSONObject> {
     /**
      * Creates a new request.
      * @param method the HTTP method to use
      * @param url URL to fetch the JSON from
-     * @param requestBody A {@link String} to post with the request. Null is allowed and
-     *   indicates no parameters will be posted along with request.
+     * @param params A {@link Map<String, String>} contains all params in <Key, Value> to post with
+     *   the request. Null is allowed and indicates no parameters will be posted along with request.
      * @param listener Listener to receive the JSON response
      * @param errorListener Error listener, or null to ignore errors.
      */
-    public JsonObjectFormRequest(int method, String url, String requestBody,
+    public JsonObjectFormRequest(int method, String url, Map<String, String> params,
                              Response.Listener<JSONObject> listener, Response.ErrorListener errorListener) {
-        super(method, url, requestBody, listener,
+        super(method, url, params, listener,
                 errorListener);
     }
 
@@ -68,32 +70,6 @@ public class JsonObjectFormRequest extends JsonRequest<JSONObject> {
         super(method, url, null, listener, errorListener);
     }
 
-    /**
-     * Creates a new request.
-     * @param method the HTTP method to use
-     * @param url URL to fetch the JSON from
-     * @param jsonRequest A {@link JSONObject} to post with the request. Null is allowed and
-     *   indicates no parameters will be posted along with request.
-     * @param listener Listener to receive the JSON response
-     * @param errorListener Error listener, or null to ignore errors.
-     */
-    public JsonObjectFormRequest(int method, String url, JSONObject jsonRequest,
-                             Response.Listener<JSONObject> listener, Response.ErrorListener errorListener) {
-        super(method, url, (jsonRequest == null) ? null : jsonRequest.toString(), listener,
-                errorListener);
-    }
-
-    /**
-     * Constructor which defaults to <code>GET</code> if <code>jsonRequest</code> is
-     * <code>null</code>, <code>POST</code> otherwise.
-     *
-     * @see #JsonObjectFormRequest(int, String, JSONObject, Response.Listener, Response.ErrorListener)
-     */
-    public JsonObjectFormRequest(String url, JSONObject jsonRequest, Response.Listener<JSONObject> listener,
-                             Response.ErrorListener errorListener) {
-        this(jsonRequest == null ? Method.GET : Method.POST, url, jsonRequest,
-                listener, errorListener);
-    }
 
     @Override
     protected Response<JSONObject> parseNetworkResponse(NetworkResponse response) {
@@ -107,13 +83,5 @@ public class JsonObjectFormRequest extends JsonRequest<JSONObject> {
         } catch (JSONException je) {
             return Response.error(new ParseError(je));
         }
-    }
-
-    /**
-     * Hack PROTOCOL_CONTENT_TYPE from `application/json` to orginal `application/x-www-form-urlencoded`
-     * Returns the content type of the POST or PUT body.
-     */
-    public String getBodyContentType() {
-        return "application/x-www-form-urlencoded; charset=" + getParamsEncoding();
     }
 }

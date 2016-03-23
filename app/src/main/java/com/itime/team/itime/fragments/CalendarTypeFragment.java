@@ -51,6 +51,9 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.util.HashMap;
+import java.util.Map;
+
 /**
  * Created by Xuhui Chen (yorkfine) on 22/03/16.
  */
@@ -147,11 +150,10 @@ public class CalendarTypeFragment extends Fragment {
         }
 
         final String url = URLs.LOAD_USER_CALENDAR_TYPES;
-        Uri uri = Uri.parse(url);
-        Uri.Builder builder = uri.buildUpon();
-        final String query = builder.appendQueryParameter("json", jsonObject.toString()).build().getQuery();
+        Map<String, String> params = new HashMap();
+        params.put("json", jsonObject.toString());
 
-        JsonArrayFormRequest request = new JsonArrayFormRequest(Request.Method.POST, url, query,
+        JsonArrayFormRequest request = new JsonArrayFormRequest(Request.Method.POST, url, params,
                 new Response.Listener<JSONArray>() {
                     @Override
                     public void onResponse(JSONArray response) {

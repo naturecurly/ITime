@@ -771,11 +771,10 @@ public class CalendarFragment extends Fragment {
         }
 
         final String url = URLs.SYNC;
-        Uri uri = Uri.parse(url);
-        Uri.Builder builder = uri.buildUpon();
-        final String query = builder.appendQueryParameter("json", jsonObject.toString()).build().getQuery();
+        Map<String, String> params = new HashMap();
+        params.put("json", jsonObject.toString());
 
-        JsonArrayFormRequest request = new JsonArrayFormRequest(Request.Method.POST, url, query, new Response.Listener<JSONArray>() {
+        JsonArrayFormRequest request = new JsonArrayFormRequest(Request.Method.POST, url, params, new Response.Listener<JSONArray>() {
             @Override
             public void onResponse(JSONArray response) {
                 //System.out.print("ttttttttttttttt");

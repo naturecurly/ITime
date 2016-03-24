@@ -536,16 +536,28 @@ public class CalendarFragment extends Fragment {
                                     if (newStart.compareTo(start) >= 0 && newStart.compareTo(end) < 0) {
                                         i++;
                                         //eventGroup.add(flag);
+                                        if (j == objectList.size() - 1) {
+                                            eventGroup.add(i);
+                                            i++;
+                                        }
                                         if (newEnd.compareTo(end) >= 0) {
                                             end = newEnd;
                                         }
+
                                     } else {
                                         eventGroup.add(i);
-
-                                        i++;
-                                        start = objectList.get(i).getString("event_starts_datetime");
-                                        end = objectList.get(i).getString("event_ends_datetime");
-                                        break;
+                                        if (j == objectList.size() - 1) {
+                                            eventGroup.add(j);
+                                            eventGroup.add(j);
+                                            i = i + 2;
+                                        }
+                                        //i++;
+                                        else {
+                                            start = objectList.get(i + 1).getString("event_starts_datetime");
+                                            end = objectList.get(i + 1).getString("event_ends_datetime");
+                                            i++;
+                                            break;
+                                        }
                                     }
                                 } catch (JSONException e) {
                                     e.printStackTrace();

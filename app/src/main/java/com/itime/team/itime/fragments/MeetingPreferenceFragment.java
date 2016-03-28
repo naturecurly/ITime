@@ -41,6 +41,8 @@ import com.itime.team.itime.R;
 import com.itime.team.itime.activities.SettingsActivity;
 import com.itime.team.itime.bean.URLs;
 import com.itime.team.itime.bean.User;
+import com.itime.team.itime.task.PreferenceTask;
+import com.itime.team.itime.task.PreferenceTask.Callback;
 import com.itime.team.itime.utils.DateUtil;
 import com.itime.team.itime.utils.JsonArrayFormRequest;
 import com.itime.team.itime.utils.MySingleton;
@@ -175,7 +177,20 @@ public class MeetingPreferenceFragment extends Fragment {
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        fetchMeetingPreference();
+        //fetchMeetingPreference();
+        final class PreferenceCallback implements Callback {
+
+            @Override
+            public void callback() {
+
+            }
+
+            @Override
+            public void callbackError() {
+
+            }
+        }
+        PreferenceTask.getInstance(getContext()).syncPreference(User.ID, null, new PreferenceCallback());
     }
 
     private class MeetingPreferenceAdapter extends BaseAdapter {

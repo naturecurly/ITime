@@ -80,6 +80,8 @@ dependencies {
     compile 'com.bugtags.library:bugtags-lib:latest.integration'
     apt 'com.bluelinelabs:logansquare-compiler:1.3.6'
     compile 'com.bluelinelabs:logansquare:1.3.6'
+    compile 'com.hannesdorfmann.parcelableplease:annotation:1.0.2'
+    apt 'com.hannesdorfmann.parcelableplease:processor:1.0.2'
 }
 apply plugin: 'com.google.gms.google-services'
 

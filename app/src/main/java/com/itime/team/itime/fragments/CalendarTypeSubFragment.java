@@ -19,6 +19,7 @@ package com.itime.team.itime.fragments;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -28,7 +29,19 @@ import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.TextView;
 
+import com.android.volley.Request;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.JsonObjectRequest;
 import com.itime.team.itime.R;
+import com.itime.team.itime.bean.URLs;
+import com.itime.team.itime.bean.User;
+import com.itime.team.itime.utils.MySingleton;
+
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.util.UUID;
 
 /**
  * Created by Xuhui Chen (yorkfine) on 22/03/16.
@@ -65,8 +78,48 @@ public class CalendarTypeSubFragment extends Fragment {
         int id = item.getItemId();
         if (id == R.id.action_save) {
             // TODO: Save new calendar tpe and update server
+            updateCanlendarType();
             return true;
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    private void updateCanlendarType() {
+        JSONObject jsonObject = new JSONObject();
+        try {
+            jsonObject.put("calendar_id", UUID.randomUUID().toString());
+            jsonObject.put("user_id", User.ID);
+            jsonObject.put("calendar_name", mCalendarType.getText());
+            jsonObject.put("calendar_owner_id", User.ID);
+            jsonObject.put("calendar_owner_name", User.ID);
+            jsonObject.put("if_show", true);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+        final String url = URLs.INSERT_OR_UPDATE_USER_CALENDAR_TYPE;
+        JsonObjectRequest request = new JsonObjectRequest(Request.Method.POST, url, jsonObject.toString(),
+                new Response.Listener<JSONObject>() {
+                    @Override
+                    public void onResponse(JSONObject response) {
+                        Log.i(LOG_TAG, response.toString());
+                        try {
+                            if (response.getString("result").equals("success")) {
+                                getActivity().finish();
+                            }
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                },
+                new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+
+                    }
+                }
+        );
+        MySingleton.getInstance(getContext()).addToRequestQueue(request);
+
     }
 }

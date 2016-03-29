@@ -305,10 +305,6 @@ public class SettingsFragment extends Fragment implements View.OnClickListener, 
             mUserDefaultAlertTimeTv.setText(defaultAlert);
 
             mUser = new ParcelableUser(data, new ParcelableUser.CursorIndices(data));
-        } else {
-            // TODO: 14/03/16 should not fetch data here
-            fetchUserProfile(mUserId);
-            Log.e(LOG_TAG, "no user information found in database");
         }
 
     }

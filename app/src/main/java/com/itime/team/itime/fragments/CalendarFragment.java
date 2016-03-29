@@ -604,7 +604,11 @@ public class CalendarFragment extends Fragment {
                                     Calendar cal = DateUtil.getLocalDateObjectToCalendar(DateUtil.getLocalDateObject(dateString));
                                     Calendar calEnd = DateUtil.getLocalDateObjectToCalendar(DateUtil.getLocalDateObject(dateStringEnd));
                                     starthour = cal.get(Calendar.HOUR_OF_DAY);
-                                    endhour = calEnd.get(Calendar.HOUR_OF_DAY);
+                                    if (calEnd.get(Calendar.DAY_OF_MONTH) > cal.get(Calendar.DAY_OF_MONTH)) {
+                                        endhour = 23;
+                                    } else {
+                                        endhour = calEnd.get(Calendar.HOUR_OF_DAY);
+                                    }
                                 } catch (JSONException e) {
                                     e.printStackTrace();
                                 }

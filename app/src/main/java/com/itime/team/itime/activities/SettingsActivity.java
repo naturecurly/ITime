@@ -17,6 +17,7 @@
 package com.itime.team.itime.activities;
 
 import android.os.Bundle;
+import android.os.Parcelable;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
@@ -133,10 +134,10 @@ public class SettingsActivity extends AppCompatActivity {
 
                 case MEETING_SUB_SETTINGS:
                     MeetingSubPreferenceFragment mspf = new MeetingSubPreferenceFragment();
-                    String data = getIntent().getStringExtra(SETTINGS_DATA);
+                    Parcelable data = getIntent().getParcelableExtra(SETTINGS_DATA);
                     if (data != null) {
                         Bundle args = new Bundle();
-                        args.putString(MeetingSubPreferenceFragment.PREFERENCE_DATA, data);
+                        args.putParcelable(MeetingSubPreferenceFragment.PREFERENCE_DATA, data);
                         mspf.setArguments(args);
                     }
                     getSupportFragmentManager().beginTransaction()

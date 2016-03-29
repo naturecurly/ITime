@@ -18,9 +18,14 @@ package com.itime.team.itime.fragments;
 
 import android.content.Context;
 import android.content.Intent;
+import android.database.Cursor;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.LoaderManager;
+import android.support.v4.content.CursorLoader;
+import android.support.v4.content.Loader;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -30,6 +35,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.BaseAdapter;
+import android.widget.CursorAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
 
@@ -41,6 +47,8 @@ import com.itime.team.itime.R;
 import com.itime.team.itime.activities.SettingsActivity;
 import com.itime.team.itime.bean.URLs;
 import com.itime.team.itime.bean.User;
+import com.itime.team.itime.database.ITimeDataStore;
+import com.itime.team.itime.model.ParcelablePreference;
 import com.itime.team.itime.task.PreferenceTask;
 import com.itime.team.itime.task.PreferenceTask.Callback;
 import com.itime.team.itime.utils.DateUtil;
@@ -51,6 +59,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.security.Permission;
 import java.util.Calendar;
 import java.util.HashMap;
 import java.util.Map;
@@ -63,7 +72,7 @@ import java.util.TimeZone;
  * Load local personal meeting preference when there exists, otherwise fetch these data from server.
  * Add preference views dynamically
  */
-public class MeetingPreferenceFragment extends Fragment {
+public class MeetingPreferenceFragment extends Fragment implements LoaderManager.LoaderCallbacks<Cursor> {
 
     private static final String LOG_TAG = MeetingPreferenceFragment.class.getSimpleName();
 
@@ -78,6 +87,7 @@ public class MeetingPreferenceFragment extends Fragment {
     private JSONArray mData;
     private ListView mPrefListView;
     private MeetingPreferenceAdapter mAdapter;
+    private MeetingPreferenceAdapter1 mMeetingPrefAdapter;
 
     @Nullable
     @Override
@@ -93,13 +103,18 @@ public class MeetingPreferenceFragment extends Fragment {
             mData = new JSONArray();
         }
         mAdapter = new MeetingPreferenceAdapter(getContext(), mData);
-        mPrefListView.setAdapter(mAdapter);
+        mMeetingPrefAdapter = new MeetingPreferenceAdapter1(getActivity(), null, 0);
+        mPrefListView.setAdapter(mMeetingPrefAdapter);
         mPrefListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
 
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                JSONObject item = (JSONObject) mAdapter.getItem(position);
-                openMeetingSubPreference(item.toString());
+                Cursor cursor = (Cursor) parent.getItemAtPosition(position);
+                ParcelablePreference.CursorIndices indices = new ParcelablePreference.CursorIndices(cursor);
+                if (cursor != null) {
+                    ParcelablePreference preference = new ParcelablePreference(cursor, indices);
+                    openMeetingSubPreference(preference);
+                }
             }
         });
 
@@ -123,11 +138,11 @@ public class MeetingPreferenceFragment extends Fragment {
         return super.onOptionsItemSelected(item);
     }
 
-    /**
+    /*
      *
      * @param data JSONObject data in String
      */
-    private void openMeetingSubPreference(String data) {
+    /*private void openMeetingSubPreference(String data) {
         Intent intent = new Intent(getActivity(), SettingsActivity.class);
         intent.putExtra(SETTINGS, MEETING_SUB_SETTINGS);
         if (data != null) {
@@ -135,6 +150,15 @@ public class MeetingPreferenceFragment extends Fragment {
         }
         startActivity(intent);
 
+    }*/
+
+    private void openMeetingSubPreference(ParcelablePreference preference) {
+        Intent intent = new Intent(getActivity(), SettingsActivity.class);
+        intent.putExtra(SETTINGS, MEETING_SUB_SETTINGS);
+        if (preference != null) {
+            intent.putExtra(SETTINGS_DATA, preference);
+        }
+        startActivity(intent);
     }
 
     private void fetchMeetingPreference() {
@@ -176,9 +200,10 @@ public class MeetingPreferenceFragment extends Fragment {
 
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
+        getLoaderManager().initLoader(0, null, this);
         super.onActivityCreated(savedInstanceState);
         //fetchMeetingPreference();
-        final class PreferenceCallback implements Callback {
+        /*final class PreferenceCallback implements Callback {
 
             @Override
             public void callback() {
@@ -189,8 +214,103 @@ public class MeetingPreferenceFragment extends Fragment {
             public void callbackError() {
 
             }
+        }*/
+        //PreferenceTask.getInstance(getContext()).syncPreference(User.ID, null, new PreferenceCallback());
+    }
+
+    @Override
+    public Loader<Cursor> onCreateLoader(int id, Bundle args) {
+        return new CursorLoader(getActivity(),
+                ITimeDataStore.Preference.CONTENT_URI,
+                null,
+                null,
+                null,
+                null);
+    }
+
+    @Override
+    public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
+        mMeetingPrefAdapter.swapCursor(data);
+
+    }
+
+    @Override
+    public void onLoaderReset(Loader<Cursor> loader) {
+        mMeetingPrefAdapter.swapCursor(null);
+    }
+
+    static class CursorIndices {
+        final int _id, preferencId, userId, startsDate, startsTime, endsTime, isLongRepeat,
+                repeatType, preferenceType, ifDeleted, repeatToDate, lastUpdate;
+
+        CursorIndices(final Cursor mCursor) {
+            _id = mCursor.getColumnIndex(ITimeDataStore.Preference._ID);
+            preferencId = mCursor.getColumnIndex(ITimeDataStore.Preference.PREFERENCE_ID);
+            userId = mCursor.getColumnIndex(ITimeDataStore.Preference.USER_ID);
+            startsDate = mCursor.getColumnIndex(ITimeDataStore.Preference.STARTS_DATE);
+            endsTime = mCursor.getColumnIndex(ITimeDataStore.Preference.ENDS_TIME);
+            startsTime = mCursor.getColumnIndex(ITimeDataStore.Preference.STARTS_TIME);
+            isLongRepeat = mCursor.getColumnIndex(ITimeDataStore.Preference.IS_LONG_REPEAT);
+            repeatType = mCursor.getColumnIndex(ITimeDataStore.Preference.REPEAT_TYPE);
+            preferenceType = mCursor.getColumnIndex(ITimeDataStore.Preference.PREFERENCE_TYPE);
+            ifDeleted = mCursor.getColumnIndex(ITimeDataStore.Preference.IF_DELETED);
+            repeatToDate = mCursor.getColumnIndex(ITimeDataStore.Preference.REPEAT_TO_DATE);
+            lastUpdate = mCursor.getColumnIndex(ITimeDataStore.Preference.PREFERENCE_LAST_UPDATE_DATETIME);
         }
-        PreferenceTask.getInstance(getContext()).syncPreference(User.ID, null, new PreferenceCallback());
+    }
+
+    private class MeetingPreferenceAdapter1 extends CursorAdapter {
+
+        public MeetingPreferenceAdapter1(Context context, Cursor c, int flags) {
+            super(context, c, flags);
+        }
+
+        private class ViewHolder {
+            private TextView mPrefTypeText = null;
+            private TextView mPrefStartsDateText = null;
+            private TextView mPrefRepeatTypeText = null;
+            private TextView mPrefDurationText = null;
+        }
+
+        @Override
+        public View newView(Context context, Cursor cursor, ViewGroup parent) {
+            ViewHolder holder;
+            LayoutInflater inflater = LayoutInflater.from(context);
+            View view = inflater.inflate(R.layout.view_meeting_pref, null);
+            holder = new ViewHolder();
+            holder.mPrefTypeText = (TextView)view.findViewById(R.id.preference_type);
+            holder.mPrefStartsDateText = (TextView)view.findViewById(R.id.preference_starts_date);
+            holder.mPrefRepeatTypeText = (TextView) view.findViewById(R.id.preference_repeat_type);
+            holder.mPrefDurationText = (TextView) view.findViewById(R.id.preference_duration);
+            view.setTag(holder);
+            return view;
+        }
+
+        @Override
+        public void bindView(View view, Context context, Cursor cursor) {
+
+            ViewHolder holder = (ViewHolder) view.getTag();
+            CursorIndices cursorIndices = new CursorIndices(cursor);
+            holder.mPrefTypeText.setText(cursor.getString(cursorIndices.preferenceType));
+            Calendar c = Calendar.getInstance();
+            String startsDate = cursor.getString(cursorIndices.startsDate);
+            c.setTime(DateUtil.getLocalDateObject(startsDate));
+            c.setTimeZone(TimeZone.getDefault());
+            String startsDate1 = String.format("%s-%s-%s", c.get(Calendar.YEAR), c.get(Calendar.MONTH)+1, c.get(Calendar.DATE));
+            holder.mPrefStartsDateText.setText(startsDate1);
+            holder.mPrefRepeatTypeText.setText(cursor.getString(cursorIndices.repeatType));
+            String startsTime = cursor.getString(cursorIndices.startsTime);
+            String endsTime = cursor.getString(cursorIndices.endsTime);
+            c.setTime(DateUtil.getLocalDateObject(startsTime));
+            String starts = String.format("%s:%s", c.get(Calendar.HOUR_OF_DAY), c.get(Calendar.MINUTE));
+            c.setTime(DateUtil.getLocalDateObject(endsTime));
+            String ends = String.format("%s:%s", c.get(Calendar.HOUR_OF_DAY), c.get(Calendar.MINUTE));
+
+            holder.mPrefDurationText.setText(String.format("%s - %s", starts, ends));
+
+
+
+        }
     }
 
     private class MeetingPreferenceAdapter extends BaseAdapter {

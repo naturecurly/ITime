@@ -75,8 +75,8 @@ public class PreferenceTask {
     }
 
     public interface Callback {
-        public void callback();
-        public void callbackError();
+        public void callback(ParcelablePreference[] preference);
+        public void callbackError(VolleyError error);
     }
 
     public void syncPreference(String userId, @Nullable ParcelablePreference[] preferences,
@@ -127,7 +127,7 @@ public class PreferenceTask {
                         ////
 
                         if (callback != null) {
-                            callback.callback();
+                            callback.callback(preferences);
                         }
                     }
                 },
@@ -136,7 +136,7 @@ public class PreferenceTask {
                     public void onErrorResponse(VolleyError error) {
                         Log.e(LOG_TAG, error.toString());
                         if (callback != null) {
-                            callback.callbackError();
+                            callback.callbackError(error);
                         }
                     }
                 });

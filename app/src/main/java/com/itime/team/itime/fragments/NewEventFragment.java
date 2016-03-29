@@ -44,6 +44,8 @@ import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.UUID;
 
 /**
@@ -373,11 +375,10 @@ public class NewEventFragment extends Fragment implements View.OnClickListener, 
         }
 
         final String url = URLs.SYNC;
-        Uri uri = Uri.parse(url);
-        Uri.Builder builder = uri.buildUpon();
-        final String query = builder.appendQueryParameter("json", json.toString()).build().getQuery();
+        Map<String, String> params = new HashMap();
+        params.put("json", json.toString());
 
-        JsonArrayFormRequest request = new JsonArrayFormRequest(Request.Method.POST, url, query, new Response.Listener<JSONArray>() {
+        JsonArrayFormRequest request = new JsonArrayFormRequest(Request.Method.POST, url, params, new Response.Listener<JSONArray>() {
             @Override
             public void onResponse(JSONArray response) {
 

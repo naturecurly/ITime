@@ -60,4 +60,34 @@ public interface ITimeDataStore {
                 TYPE_TEXT_NOT_NULL, TYPE_TEXT_NOT_NULL, TYPE_TEXT, TYPE_TEXT, TYPE_TEXT_NOT_NULL};
     }
 
+    interface Preference extends BaseColumns {
+        String TABLE_NAME = "preference";
+        String CONTENT_PATH = TABLE_NAME;
+        Uri CONTENT_URI = Uri.withAppendedPath(BASE_CONTENT_URI, CONTENT_PATH);
+
+        String PREFERENCE_ID = "preference_id";
+        String USER_ID = "user_id";
+        String STARTS_DATE = "starts_date";
+        String STARTS_TIME = "starts_time";
+        String ENDS_TIME = "ends_time";
+        String IS_LONG_REPEAT = "is_long_repeat";
+        String REPEAT_TYPE = "repeat_type";
+        String PREFERENCE_TYPE = "preference_type";
+        String IF_DELETED = "if_deleted";
+        String REPEAT_TO_DATE = "repeat_to_date";
+        String PREFERENCE_LAST_UPDATE_DATETIME = "preference_last_update_datetime";
+
+        String [] COLUMNS = {_ID, PREFERENCE_ID, USER_ID, STARTS_DATE, STARTS_TIME, ENDS_TIME,
+                IS_LONG_REPEAT, REPEAT_TYPE, PREFERENCE_TYPE, IF_DELETED, REPEAT_TO_DATE,
+                PREFERENCE_LAST_UPDATE_DATETIME};
+
+        String [] TYPES = {TYPE_PRIMARY_KEY, TYPE_TEXT_NOT_NULL, TYPE_TEXT_NOT_NULL,
+                TYPE_TEXT_NOT_NULL, TYPE_TEXT_NOT_NULL, TYPE_TEXT_NOT_NULL,
+                TYPE_BOOLEAN_DEFAULT_FALSE, TYPE_TEXT_NOT_NULL, TYPE_TEXT_NOT_NULL,
+                TYPE_BOOLEAN_DEFAULT_FALSE, TYPE_TEXT_NOT_NULL, TYPE_TEXT_NOT_NULL,};
+
+
+
+    }
+
 }

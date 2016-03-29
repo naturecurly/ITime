@@ -29,10 +29,14 @@ public class DataStoreUtils {
 
     public static final int TABLE_ID_USER = 1;
     public static final int TABLE_ID_USER_WITH_USERID = 2;
+    public static final int TABLE_ID_PREFERENCE = 10;
+    public static final int TABLE_ID_PREFERENCE_WITH_USERID = 11;
 
     static {
         CONTENT_PROVIDER_URI_MATCHER.addURI(ITimeDataStore.AUTHORITY, User.CONTENT_PATH, TABLE_ID_USER);
         CONTENT_PROVIDER_URI_MATCHER.addURI(ITimeDataStore.AUTHORITY, User.CONTENT_PATH + "/*", TABLE_ID_USER_WITH_USERID);
+        CONTENT_PROVIDER_URI_MATCHER.addURI(ITimeDataStore.AUTHORITY, Preference.CONTENT_PATH, TABLE_ID_PREFERENCE);
+        CONTENT_PROVIDER_URI_MATCHER.addURI(ITimeDataStore.AUTHORITY, Preference.CONTENT_PATH + "/*", TABLE_ID_PREFERENCE_WITH_USERID);
     }
 
     public static int getTableId(final Uri uri) {
@@ -46,6 +50,10 @@ public class DataStoreUtils {
                 return User.TABLE_NAME;
             case TABLE_ID_USER_WITH_USERID:
                 return User.TABLE_NAME;
+            case TABLE_ID_PREFERENCE:
+                return Preference.TABLE_NAME;
+            case TABLE_ID_PREFERENCE_WITH_USERID:
+                return Preference.TABLE_NAME;
             default:
                 return null;
         }

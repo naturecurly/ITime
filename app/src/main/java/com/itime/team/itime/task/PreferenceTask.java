@@ -16,6 +16,7 @@
 
 package com.itime.team.itime.task;
 
+import android.content.ContentValues;
 import android.content.Context;
 import android.support.annotation.Nullable;
 import android.util.Log;
@@ -26,7 +27,9 @@ import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonArrayRequest;
 import com.bluelinelabs.logansquare.LoganSquare;
 import com.itime.team.itime.bean.URLs;
+import com.itime.team.itime.database.ITimeDataStore;
 import com.itime.team.itime.model.ParcelablePreference;
+import com.itime.team.itime.utils.ContentValuesCreator;
 import com.itime.team.itime.utils.MySingleton;
 
 import org.json.JSONArray;
@@ -105,7 +108,24 @@ public class PreferenceTask {
                     @Override
                     public void onResponse(JSONArray response) {
                         Log.i(LOG_TAG, response.toString());
-                        savePreferenceToDatabase();
+
+                        // TODO: 29/03/16 do in worker thread
+                        final ParcelablePreference[] preferences = new ParcelablePreference[response.length()];
+                        try {
+                            for (int i = 0; i < response.length(); i++) {
+                                preferences[i] = LoganSquare.parse(response.getJSONObject(i).toString(), ParcelablePreference.class);
+                            }
+
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                            return;
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                            return;
+                        }
+                        savePreferenceToDatabase(preferences);
+                        ////
+
                         if (callback != null) {
                             callback.callback();
                         }
@@ -139,7 +159,20 @@ public class PreferenceTask {
         syncPreference(userId, preferences, callback);
     }
 
-    public void savePreferenceToDatabase() {
+    /**
+     * save synchronized preference into database
+     * @param preferences
+     */
+    public void savePreferenceToDatabase(final ParcelablePreference[] preferences) {
+        // 1. delete all preferences
+        mContext.getContentResolver().delete(ITimeDataStore.Preference.CONTENT_URI, null, null);
+        // 2. insert all new preferences
+        final ContentValues[] valueArray = new ContentValues[preferences.length];
+        int i = 0;
+        for (ParcelablePreference p : preferences) {
+            valueArray[i++] = ContentValuesCreator.createPreference(p);
+        }
+        mContext.getContentResolver().bulkInsert(ITimeDataStore.Preference.CONTENT_URI, valueArray);
 
     }
 }

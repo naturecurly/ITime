@@ -24,7 +24,6 @@ import android.widget.ScrollView;
 import android.widget.TimePicker;
 import android.widget.Toast;
 
-import com.android.volley.Request;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
@@ -33,7 +32,6 @@ import com.itime.team.itime.activities.GooglePlacesAutocompleteActivity;
 import com.itime.team.itime.bean.URLs;
 import com.itime.team.itime.bean.User;
 import com.itime.team.itime.utils.DateUtil;
-import com.itime.team.itime.utils.JsonArrayFormRequest;
 import com.itime.team.itime.utils.JsonManager;
 import com.itime.team.itime.utils.MySingleton;
 import com.itime.team.itime.utils.URLConnectionUtil;
@@ -377,18 +375,6 @@ public class NewEventFragment extends Fragment implements View.OnClickListener, 
         Uri.Builder builder = uri.buildUpon();
         final String query = builder.appendQueryParameter("json", json.toString()).build().getQuery();
 
-        JsonArrayFormRequest request = new JsonArrayFormRequest(Request.Method.POST, url, query, new Response.Listener<JSONArray>() {
-            @Override
-            public void onResponse(JSONArray response) {
 
-                Log.i("Event_response", response.toString());
-            }
-        }, new Response.ErrorListener() {
-            @Override
-            public void onErrorResponse(VolleyError error) {
-
-            }
-        });
-        MySingleton.getInstance(getContext()).addToRequestQueue(request);
     }
 }

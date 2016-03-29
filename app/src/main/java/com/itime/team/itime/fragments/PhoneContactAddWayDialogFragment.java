@@ -39,12 +39,12 @@ public class PhoneContactAddWayDialogFragment extends DialogFragment implements 
 //                    "link to find the App ")
 //            .append("Install iTime</p>")
 //            .toString();
-    public static String invitationContent = new StringBuilder()
+    public String invitationContent = new StringBuilder()
             .append("<p style='font-weight:bold;'>Hello, this is ")
             .append(User.ID)
             .append(", please click the link</p>")
 //            .append("<a>").append(URLs.HEAD).append("openwith?id=" + User.ID + "</a>")
-            .append("<a>").append("http://54.200.31.237/").append("openwith?id=" + User.ID + "</a>")
+            .append("<a>").append("http://54.200.31.237/").append("openwith?id=" + User.ID.replace("@","###") + "</a>")
             .append("<p> to be my iTime firend. If you do not install the iTime yet, please click following " +
                     "link to find the App ")
             .append("Install iTime</p>")

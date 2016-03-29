@@ -20,4 +20,5 @@ public class URLs {
     public static final String SYNC_PREFERENCES = HEAD + "sync_preferences";
     public static final String SYNC = HEAD + "sync_events";
     public static final String LOAD_USER_CALENDAR_TYPES = HEAD + "load_user_calendar_types";
+    public static final String SYNCS = HEAD + "sync";
 }

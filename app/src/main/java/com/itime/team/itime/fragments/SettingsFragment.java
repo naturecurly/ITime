@@ -48,6 +48,7 @@ import com.itime.team.itime.database.ITimeDataStore;
 import com.itime.team.itime.database.ITimeDataStore.User;
 import com.itime.team.itime.database.UserTableHelper;
 import com.itime.team.itime.model.ParcelableUser;
+import com.itime.team.itime.task.UserTask;
 import com.itime.team.itime.utils.JsonObjectFormRequest;
 import com.itime.team.itime.utils.MySingleton;
 
@@ -214,6 +215,9 @@ public class SettingsFragment extends Fragment implements View.OnClickListener, 
                 String text = data.getStringExtra(AlertTimePreferenceFragment.RETURN_TEXT);
                 TextView textView = (TextView) mAlertTimeView.findViewById(R.id.setting_dft_alert_time_text);
                 textView.setText(text);
+                UserTask task = UserTask.getInstance(getActivity());
+                mUser.defaultAlert = text;
+                task.updateUserInfo(mUserId, mUser, null);
             }
         }
     }
@@ -298,7 +302,7 @@ public class SettingsFragment extends Fragment implements View.OnClickListener, 
             CursorIndices cursorIndices = new CursorIndices(data);
             final String userId = data.getString(cursorIndices.userId);
             final String userName = data.getString(cursorIndices.userName);
-            final String defaultAlert = data.getColumnName(cursorIndices.defaultAlert);
+            final String defaultAlert = data.getString(cursorIndices.defaultAlert);
 
             mUserIdTextView.setText(userId);
             mUserNameTextView.setText(userName);

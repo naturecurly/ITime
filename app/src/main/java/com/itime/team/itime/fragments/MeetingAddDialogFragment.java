@@ -18,7 +18,6 @@ import android.widget.ListView;
 import android.widget.SimpleAdapter;
 
 import com.itime.team.itime.R;
-import com.itime.team.itime.activities.PhoneContactActivity;
 import com.itime.team.itime.activities.SearchFriendActivity;
 import com.itime.team.itime.bean.URLs;
 import com.itime.team.itime.bean.User;
@@ -51,11 +50,11 @@ public class MeetingAddDialogFragment extends DialogFragment implements DataRequ
     private static String APPID;
     private IWXAPI api;
 
-    public static String invitationContent = new StringBuilder()
+    public String invitationContent = new StringBuilder()
             .append("<p style='font-weight:bold;'>Hello, this is ")
             .append(User.ID)
             .append(", please click the link</p>")
-            .append("<a>").append("http://54.200.31.237/").append("openwith?id=" + User.ID + "</a>")
+            .append("<a>").append("http://54.200.31.237/").append("openwith?id=" + User.ID.replace("@","###") + "</a>")
             .append("<p> to be my iTime firend. If you do not install the iTime yet, please click following " +
                     "link to find the App ")
             .append("Install iTime</p>")
@@ -96,7 +95,12 @@ public class MeetingAddDialogFragment extends DialogFragment implements DataRequ
 
         map = new HashMap<String, Object>();
         map.put("ItemImage", R.drawable.contacts);
-        map.put("ItemText", "Add Contacts");
+        map.put("ItemText", "Add Contacts by Phone Number");
+        listItem.add(map);
+
+        map = new HashMap<String, Object>();
+        map.put("ItemImage", R.drawable.mail_i);
+        map.put("ItemText", "Add Contacts by Email");
         listItem.add(map);
 
         map = new HashMap<String, Object>();
@@ -129,12 +133,26 @@ public class MeetingAddDialogFragment extends DialogFragment implements DataRequ
                     intent.putStringArrayListExtra("friendIDs",getFriendIDs());
                     startActivity(intent);
                 }else if (position == 1){
-                    Intent intent = new Intent(getActivity(), PhoneContactActivity.class);
+//                    Intent intent = new Intent(getActivity(), PhoneContactActivity.class);
+//                    startActivity(intent);
+                    Intent intent = new Intent(Intent.ACTION_VIEW);
+                    intent.setType("vnd.android-dir/mms-sms");
+                    intent.putExtra("sms_body", Html.fromHtml(invitationContent).toString());
                     startActivity(intent);
-                }else if (position == 2){
+                }else if(position == 2){
+                    String mySbuject = "Add Friend";
+                    String myCc = "cc";
+                    Intent myIntent = new Intent(android.content.Intent.ACTION_SEND, Uri.fromParts("mailto", "", null));
+                    myIntent.setType("text/html");
+                    myIntent.putExtra(android.content.Intent.EXTRA_CC, myCc);
+                    myIntent.putExtra(android.content.Intent.EXTRA_SUBJECT, mySbuject);
+                    myIntent.putExtra(Intent.EXTRA_TEXT, Html.fromHtml(invitationContent));
+
+                    startActivity(Intent.createChooser(myIntent, "mail"));
+                }else if (position == 3){
                     Intent intent = new Intent(getActivity(), CaptureActivity.class);
                     startActivityForResult(intent, 0);
-                }else if (position == 3){
+                }else if (position == 4){
 //                    StringBuffer info = new StringBuffer();
 //                    info.append("Hello, this is ").append(User.ID).append(", please click the link ")
 //                            .append(Html.fromHtml("<a>http://itime.app/openwith?id=" + User.ID + "</a>")).append(" to be my iTime firend. If you do not install the iTime yet, please click following ")
@@ -160,7 +178,7 @@ public class MeetingAddDialogFragment extends DialogFragment implements DataRequ
                         });
                         builder.show();
                     }
-                }else if(position == 4){
+                }else if(position == 5){
 //                    StringBuffer info = new StringBuffer();
 //                    info.append("Hello, this is ").append(User.ID).append(", please click the link ")
 //                            .append(Html.fromHtml("<a>http://54.200.31.237:8000/openwith?id=" + User.ID + "</a>").toString()).append(" to be my iTime firend. If you do not install the iTime yet, please click following ")
@@ -169,7 +187,7 @@ public class MeetingAddDialogFragment extends DialogFragment implements DataRequ
 
                     WXMediaMessage msg = new WXMediaMessage();
                     msg.mediaObject = textObject;
-                    msg.description = "it is me";
+                    msg.description = Html.fromHtml(invitationContent).toString();
                     msg.messageExt = "content";
 
                     SendMessageToWX.Req req = new SendMessageToWX.Req();

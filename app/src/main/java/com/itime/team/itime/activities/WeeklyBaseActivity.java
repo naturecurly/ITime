@@ -1,5 +1,6 @@
 package com.itime.team.itime.activities;
 
+import android.content.Intent;
 import android.graphics.RectF;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
@@ -212,6 +213,8 @@ public abstract class WeeklyBaseActivity extends AppCompatActivity implements We
     @Override
     public void onEmptyViewLongPress(Calendar time) {
         Toast.makeText(this, "Empty view long pressed: " + getEventTitle(time), Toast.LENGTH_SHORT).show();
+        Intent intent = new Intent(this, NewEventActivity.class);
+        startActivity(intent);
     }
 
     public WeekView getWeekView() {

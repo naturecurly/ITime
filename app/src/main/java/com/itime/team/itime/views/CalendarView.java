@@ -65,6 +65,8 @@ public class CalendarView extends View {
     private OnDateSelectedListener listener;
     private boolean isInitialed = false;
     private boolean[] ifEvents = new boolean[7];
+    private boolean isTodayClicked = false;
+    private boolean isTodayHasEvents = false;
 
     public CalendarView(Context context, AttributeSet attrs, int defStyle) {
         super(context, attrs, defStyle);
@@ -118,11 +120,14 @@ public class CalendarView extends View {
                 rows[i].drawCells(canvas, i);
         }
         if (isDateSelected == 1) {
-            dateX = DateUtil.analysePosition(upX, mCellSpace);
-            dateY = DateUtil.analysePosition(upY, mCellSpace);
+            if (!isTodayClicked) {
+                dateX = DateUtil.analysePosition(upX, mCellSpace);
+                dateY = DateUtil.analysePosition(upY, mCellSpace);
+            }
             canvas.drawCircle(dateX * mCellSpace + mCellSpace / 2, dateY * mCellSpace + mCellSpace / 2, mCellSpace / 3, mSelectedCirclePaint);
             //mShowDay = 2;
             isDateSelected = 0;
+            isTodayClicked = false;
         }
     }
 
@@ -365,6 +370,9 @@ public class CalendarView extends View {
                         mShowYear == DateUtil.getYear()
                         && mShowMonth == DateUtil.getMonth()) {
                     rows[week].cells[i] = new Cell(mShowDay + "", State.TODAY, mShowMonth, mShowYear, ifEvents[i]);
+                    dateX = i;
+                    dateY = 0;
+                    isTodayHasEvents = ifEvents[i];
                     continue;
                 }
                 rows[week].cells[i] = new Cell(mShowDay + "", State.CURRENT_MONTH_DAY, mShowMonth, mShowYear, ifEvents[i]);
@@ -515,9 +523,17 @@ public class CalendarView extends View {
         return false;
     }
 
+    public void setTodaySelected() {
+        isTodayClicked = true;
+        isDateSelected = 1;
+        invalidate();
+    }
 
+    public boolean isTodayHasEvents() {
+        return isTodayHasEvents;
+    }
 
-//    public void setCalendarType(int type) {
+    //    public void setCalendarType(int type) {
 //        if (type == MONTH_STYLE) {
 //            this.defaultStyle = MONTH_STYLE;
 //            invalidate();

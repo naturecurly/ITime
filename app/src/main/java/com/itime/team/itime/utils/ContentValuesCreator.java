@@ -20,14 +20,23 @@ import android.content.ContentValues;
 
 import com.itime.team.itime.database.ITimeDataStore;
 import com.itime.team.itime.model.ParcelablePreference;
+import com.itime.team.itime.model.ParcelableUser;
 
 /**
  * Created by Xuhui Chen (yorkfine) on 29/03/16.
  */
 public final class ContentValuesCreator {
 
-    public static ContentValues createUser() {
+    public static ContentValues createUser(ParcelableUser user) {
+        if (user == null) return null;
         final ContentValues values = new ContentValues();
+        values.put(ITimeDataStore.User.USER_ID, user.userId);
+        values.put(ITimeDataStore.User.USER_NAME, user.userName);
+        values.put(ITimeDataStore.User.PASSWORD, user.password);
+        values.put(ITimeDataStore.User.EMAIL, user.email);
+        values.put(ITimeDataStore.User.PHONE_NUMBER, user.phoneNumber);
+        values.put(ITimeDataStore.User.USER_PROFILE_PICTURE, user.userProfilePicture);
+        values.put(ITimeDataStore.User.DEFAULT_ALERT, user.defaultAlert);
         return values;
     }
 

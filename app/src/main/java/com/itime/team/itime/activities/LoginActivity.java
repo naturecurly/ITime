@@ -31,6 +31,8 @@ import com.itime.team.itime.bean.User;
 import com.itime.team.itime.database.DeviceTableHelper;
 import com.itime.team.itime.database.UserTableHelper;
 import com.itime.team.itime.interfaces.DataRequest;
+import com.itime.team.itime.task.PreferenceTask;
+import com.itime.team.itime.task.UserTask;
 import com.itime.team.itime.utils.DateUtil;
 import com.itime.team.itime.utils.JsonManager;
 import com.itime.team.itime.utils.MySingleton;
@@ -264,7 +266,14 @@ public class LoginActivity extends FragmentActivity implements View.OnClickListe
                     updateUserTable();
                 }
                 //Intent intent = new Intent(this, MainActivity.class);
+
                 User.ID = mUsernameStr;
+
+                PreferenceTask preferenceTask = PreferenceTask.getInstance(getApplicationContext());
+                preferenceTask.syncPreference(User.ID, null, null);
+                UserTask userTask = UserTask.getInstance(getApplicationContext());
+                userTask.loadUserInfo(User.ID, null);
+
                 startActivity(mMainIntent);
                 finish();
             }else if(json.get("result").toString().equals("fail")){

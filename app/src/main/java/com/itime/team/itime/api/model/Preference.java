@@ -16,8 +16,6 @@
 
 package com.itime.team.itime.api.model;
 
-import android.animation.TypeConverter;
-
 import com.bluelinelabs.logansquare.annotation.JsonField;
 import com.bluelinelabs.logansquare.annotation.JsonObject;
 import com.itime.team.itime.api.model.utils.ITimeDateTypeConverter;

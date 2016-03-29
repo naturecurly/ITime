@@ -47,6 +47,7 @@ import com.itime.team.itime.bean.URLs;
 import com.itime.team.itime.database.ITimeDataStore;
 import com.itime.team.itime.database.ITimeDataStore.User;
 import com.itime.team.itime.database.UserTableHelper;
+import com.itime.team.itime.model.ParcelableUser;
 import com.itime.team.itime.utils.JsonObjectFormRequest;
 import com.itime.team.itime.utils.MySingleton;
 
@@ -91,6 +92,8 @@ public class SettingsFragment extends Fragment implements View.OnClickListener, 
 
     // User ID of this user
     private String mUserId;
+
+    private ParcelableUser mUser;
 
     View mAlertTimeView;
 
@@ -300,10 +303,8 @@ public class SettingsFragment extends Fragment implements View.OnClickListener, 
             mUserIdTextView.setText(userId);
             mUserNameTextView.setText(userName);
             mUserDefaultAlertTimeTv.setText(defaultAlert);
-        } else {
-            // TODO: 14/03/16 should not fetch data here
-            fetchUserProfile(mUserId);
-            Log.e(LOG_TAG, "no user information found in database");
+
+            mUser = new ParcelableUser(data, new ParcelableUser.CursorIndices(data));
         }
 
     }

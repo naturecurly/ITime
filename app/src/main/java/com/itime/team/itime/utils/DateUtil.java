@@ -297,6 +297,12 @@ public class DateUtil {
         return cal;
     }
 
+    public static String formatLocalDateObject(Date date) {
+        DateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss Z");
+        formatter.setTimeZone(TimeZone.getDefault());
+        return formatter.format(date);
+    }
+
     public static String getDateWithTimeZone(int year, int month, int day, int hour, int min) {
         DateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss Z");
         Calendar c = Calendar.getInstance();

@@ -36,6 +36,8 @@ import android.widget.TextView;
 import com.itime.team.itime.R;
 import com.itime.team.itime.activities.InputDialogActivity;
 import com.itime.team.itime.database.ITimeDataStore;
+import com.itime.team.itime.model.ParcelableUser;
+import com.itime.team.itime.task.UserTask;
 
 
 /**
@@ -60,6 +62,9 @@ public class ProfileFragment extends Fragment implements View.OnClickListener,
     private ImageView mUserProfileImageView;
     private TextView mUserEmailTextView;
     private TextView mUserPhoneNumberTv;
+
+    // Data
+    private ParcelableUser mUser;
 
     // User ID of this user
     private String mUserId;
@@ -104,6 +109,7 @@ public class ProfileFragment extends Fragment implements View.OnClickListener,
 
         // TODO: 14/03/16 Not a good way to store static data in a model object
         mUserId = com.itime.team.itime.bean.User.ID;
+        mUser = new ParcelableUser();
     }
 
     private void bindOnClickListener (View [] views) {
@@ -176,18 +182,24 @@ public class ProfileFragment extends Fragment implements View.OnClickListener,
             }
             case REQUEST_SET_USER_NAME: {
                 if (resultCode == InputDialogActivity.RESULT_SET_TEXT) {
+                    mUser.userName = data.getStringExtra(InputDialogActivity.RETURN_TEXT);
+                    UserTask.getInstance(getActivity()).updateUserInfo(mUserId, mUser, null);
                     mUserNameTextView.setText(data.getStringExtra(InputDialogActivity.RETURN_TEXT));
                 }
                 break;
             }
             case REQUEST_SET_EMAIL: {
                 if (resultCode == InputDialogActivity.RESULT_SET_TEXT) {
+                    mUser.email = data.getStringExtra(InputDialogActivity.RETURN_TEXT);
+                    UserTask.getInstance(getActivity()).updateUserInfo(mUserId, mUser, null);
                     mUserEmailTextView.setText(data.getStringExtra(InputDialogActivity.RETURN_TEXT));
                 }
                 break;
             }
             case REQUEST_SET_PHONE_NUMBER: {
                 if (resultCode == InputDialogActivity.RESULT_SET_TEXT) {
+                    mUser.phoneNumber = data.getStringExtra(InputDialogActivity.RETURN_TEXT);
+                    UserTask.getInstance(getActivity()).updateUserInfo(mUserId, mUser, null);
                     mUserPhoneNumberTv.setText(data.getStringExtra(InputDialogActivity.RETURN_TEXT));
                 }
                 break;
@@ -215,11 +227,15 @@ public class ProfileFragment extends Fragment implements View.OnClickListener,
             final String userName = data.getString(cursorIndices.userName);
             final String userEmail = data.getString(cursorIndices.email);
             final String userPhoneNum = data.getString(cursorIndices.phone);
+            final String userDefaultAlert = data.getString(cursorIndices.defaultAlert);
+            final String userProfilePicture = data.getString(cursorIndices.profilePicture);
 
             mUserIdTextView.setText(userId);
             mUserNameTextView.setText(userName);
             mUserEmailTextView.setText(userEmail);
             mUserPhoneNumberTv.setText(userPhoneNum);
+
+            mUser = new ParcelableUser(data, new ParcelableUser.CursorIndices(data));
         }
     }
 
@@ -230,7 +246,7 @@ public class ProfileFragment extends Fragment implements View.OnClickListener,
     }
 
     static class CursorIndices {
-        final int _id, userName, userId, email, phone;
+        final int _id, userName, userId, email, phone, defaultAlert, profilePicture;
 
         CursorIndices(final Cursor mCursor) {
             _id = mCursor.getColumnIndex(ITimeDataStore.User._ID);
@@ -238,6 +254,8 @@ public class ProfileFragment extends Fragment implements View.OnClickListener,
             userId = mCursor.getColumnIndex(ITimeDataStore.User.USER_ID);
             email = mCursor.getColumnIndex(ITimeDataStore.User.EMAIL);
             phone = mCursor.getColumnIndex(ITimeDataStore.User.PHONE_NUMBER);
+            defaultAlert = mCursor.getColumnIndex(ITimeDataStore.User.DEFAULT_ALERT);
+            profilePicture = mCursor.getColumnIndex(ITimeDataStore.User.USER_PROFILE_PICTURE);
         }
     }
 }

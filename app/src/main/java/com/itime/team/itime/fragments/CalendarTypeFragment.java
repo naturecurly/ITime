@@ -133,7 +133,6 @@ public class CalendarTypeFragment extends Fragment {
             intent.putExtra(SETTINGS_DATA, data);
         }
         startActivity(intent);
-
     }
 
     /**

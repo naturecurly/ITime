@@ -42,6 +42,8 @@ import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.UUID;
 
 /**
@@ -371,9 +373,8 @@ public class NewEventFragment extends Fragment implements View.OnClickListener, 
         }
 
         final String url = URLs.SYNC;
-        Uri uri = Uri.parse(url);
-        Uri.Builder builder = uri.buildUpon();
-        final String query = builder.appendQueryParameter("json", json.toString()).build().getQuery();
+        Map<String, String> params = new HashMap();
+        params.put("json", json.toString());
 
 
     }

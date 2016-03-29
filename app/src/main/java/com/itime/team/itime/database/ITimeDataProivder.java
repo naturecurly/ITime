@@ -106,7 +106,18 @@ public class ITimeDataProivder extends ContentProvider {
 
     @Override
     public int update(Uri uri, ContentValues values, String selection, String[] selectionArgs) {
-        return 0;
+        final int tableId = DataStoreUtils.getTableId(uri);
+        final String table = DataStoreUtils.getTableNameById(tableId);
+        final long rowId;
+        switch (tableId) {
+
+        }
+        if (table == null) return 0;
+        final int result = mOpenHelper.getWritableDatabase().update(table, values, selection, selectionArgs);
+        if (result > 0) {
+            getContentResolver().notifyChange(uri, null);
+        }
+        return result;
     }
 
     private void setNotificationUri(final Cursor c, final Uri uri) {

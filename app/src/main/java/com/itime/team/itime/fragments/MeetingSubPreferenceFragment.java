@@ -19,10 +19,8 @@ package com.itime.team.itime.fragments;
 import android.app.DatePickerDialog;
 import android.app.TimePickerDialog;
 import android.content.Intent;
-import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -33,29 +31,15 @@ import android.widget.DatePicker;
 import android.widget.TextView;
 import android.widget.TimePicker;
 
-import com.android.volley.Request;
-import com.android.volley.Response;
 import com.android.volley.VolleyError;
-import com.bluelinelabs.logansquare.LoganSquare;
 import com.itime.team.itime.R;
 import com.itime.team.itime.activities.SettingsActivity;
-import com.itime.team.itime.api.model.Preference;
-import com.itime.team.itime.bean.URLs;
 import com.itime.team.itime.bean.User;
-import com.itime.team.itime.utils.DateUtil;
-import com.itime.team.itime.utils.JsonArrayFormRequest;
-import com.itime.team.itime.utils.MySingleton;
+import com.itime.team.itime.model.ParcelablePreference;
+import com.itime.team.itime.task.PreferenceTask;
 
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
-
-import java.io.IOException;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.TimeZone;
 import java.util.UUID;
 
 /**
@@ -66,8 +50,6 @@ import java.util.UUID;
 public class MeetingSubPreferenceFragment extends Fragment implements View.OnClickListener {
 
     private static final String LOG_TAG = MeetingSubPreferenceFragment.class.getSimpleName();
-
-    private static final String MEETING_PREFERENCE_COUNT = "meeting_preference_count";
 
     public static final String PREFERENCE_DATA = "preference_data";
 
@@ -89,10 +71,8 @@ public class MeetingSubPreferenceFragment extends Fragment implements View.OnCli
 
     private View mMeetingSubPrefView;
     private boolean mIsNewPreferences = false;
-    private int mCurPrefercenIndex = -1;
     private boolean isPrefer;
-    private JSONObject mPreferenceJSONObject;
-    private Preference mPreference; // api model synchronize with server
+    private ParcelablePreference mParcelablePreference; // api model synchronize with server
 
     // View
     private TextView mStartsDate;
@@ -100,6 +80,16 @@ public class MeetingSubPreferenceFragment extends Fragment implements View.OnCli
     private TextView mEndsTime;
     private TextView mRepeat;
     private TextView mType;
+
+    // Data
+    // Starts time and end times are associated with the starts date, it is convenient
+    // to generate the final data before uploading
+    private Calendar mStartsDateCalendar;
+    private int mStartsTimeHour;
+    private int mStartsTimeMinute;
+    private int mEndsTimeHour;
+    private int mEndsTimeMinute;
+
 
     public MeetingSubPreferenceFragment() {
         super();
@@ -123,72 +113,38 @@ public class MeetingSubPreferenceFragment extends Fragment implements View.OnCli
 
         bindListener();
         holdViews();
-        if (args != null && args.getString(PREFERENCE_DATA) != null) {
-            try {
-                JSONObject data = new JSONObject(args.getString(PREFERENCE_DATA));
-                mPreference = LoganSquare.parse(args.getString(PREFERENCE_DATA), Preference.class);
-                //initViewsValue(data);
-                mPreferenceJSONObject = data;
-            } catch (JSONException e) {
-                Log.e(LOG_TAG, e.getMessage());
-            } catch (IOException e) {
-                Log.e(LOG_TAG, e.getMessage());
-            }
-
+        if (args != null && args.get(PREFERENCE_DATA) != null) {
+            mParcelablePreference = args.getParcelable(PREFERENCE_DATA);
         } else {
             newPreference();
-            //initViewsValue(null);
-            initPreferenceJSONObject();
         }
+        initDataValue();
         initViewsValue();
         return mMeetingSubPrefView;
         //return super.onCreateView(inflater, container, savedInstanceState);
     }
 
+    /**
+     * new meeting preference, set all the date to today and random a preference id
+     */
     private void newPreference() {
         Calendar c = Calendar.getInstance();
         Date today = c.getTime();
 
-        mPreference = new Preference();
-        mPreference.id = UUID.randomUUID().toString();
-        mPreference.userId = User.ID;
-        mPreference.startsDate = today;
-        mPreference.startsTime = today;
-        mPreference.endsTime = today;
-        mPreference.isLongRepeat = false;
-        mPreference.repeatType = "Daily";
-        mPreference.preferenceType = Type.UNAVAILABLE.getText();
-        mPreference.ifDeleted = false;
-        mPreference.repeatToDate = today;
-        mPreference.lastUpdate = today;
+        mParcelablePreference = new ParcelablePreference();
+        mParcelablePreference.id = UUID.randomUUID().toString();
+        mParcelablePreference.userId = User.ID;
+        mParcelablePreference.startsDate = today;
+        mParcelablePreference.startsTime = today;
+        mParcelablePreference.endsTime = today;
+        mParcelablePreference.isLongRepeat = false;
+        mParcelablePreference.repeatType = "Daily";
+        mParcelablePreference.preferenceType = Type.UNAVAILABLE.getText();
+        mParcelablePreference.ifDeleted = false;
+        mParcelablePreference.repeatToDate = today;
+        mParcelablePreference.lastUpdate = today;
     }
 
-    private void initPreferenceJSONObject() {
-        mPreferenceJSONObject = new JSONObject();
-        Calendar c = Calendar.getInstance();
-        int year = c.get(Calendar.YEAR);
-        int month = c.get(Calendar.MONTH) + 1;
-        int date = c.get(Calendar.DATE);
-        int hour = c.get(Calendar.HOUR_OF_DAY);
-        int minute = c.get(Calendar.MINUTE);
-        try {
-            mPreferenceJSONObject.put("preference_id", UUID.randomUUID().toString());
-            mPreferenceJSONObject.put("starts_time", DateUtil.getDateWithTimeZone(year, month, date, hour, minute));
-            mPreferenceJSONObject.put("ends_time", DateUtil.getDateWithTimeZone(year, month, date, hour, minute));
-            mPreferenceJSONObject.put("repeat_type", "Daily");
-            mPreferenceJSONObject.put("if_deleted", 0);
-            mPreferenceJSONObject.put("repeat_to_date", DateUtil.getDateWithTimeZone(year, month, date, hour, minute));
-            mPreferenceJSONObject.put("is_long_repeat", 1);
-            mPreferenceJSONObject.put("preference_type", "Reject");
-            mPreferenceJSONObject.put("starts_date", DateUtil.getDateWithTimeZone(year, month, date, hour, minute));
-            mPreferenceJSONObject.put("user_id", User.ID);
-            mPreferenceJSONObject.put("preference_last_update_datetime", DateUtil.getDateWithTimeZone(year, month, date, hour, minute));
-
-
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-    }
 
     private void holdViews() {
         mStartsDate = (TextView) mMeetingSubPrefView.findViewById(R.id.setting_meeting_start_date_text);
@@ -198,66 +154,39 @@ public class MeetingSubPreferenceFragment extends Fragment implements View.OnCli
         mType = (TextView) mMeetingSubPrefView.findViewById(R.id.setting_meeting_type_text);
     }
 
+    private void initDataValue() {
+        Calendar c = Calendar.getInstance();
+        c.setTime(mParcelablePreference.startsDate);
+        mStartsDateCalendar = c;
+        Calendar c1 = Calendar.getInstance();
+        c1.setTime(mParcelablePreference.startsTime);
+        mStartsTimeHour = c1.get(Calendar.HOUR_OF_DAY);
+        mStartsTimeMinute = c1.get(Calendar.MINUTE);
+        c1.setTime(mParcelablePreference.endsTime);
+        mEndsTimeHour = c1.get(Calendar.HOUR_OF_DAY);
+        mEndsTimeMinute = c1.get(Calendar.MINUTE);
+
+    }
     private void initViewsValue() {
-        mType.setText(mPreference.preferenceType);
-        mRepeat.setText(mPreference.repeatType);
+        mType.setText(mParcelablePreference.preferenceType);
+        mRepeat.setText(mParcelablePreference.repeatType);
 
         Calendar c = Calendar.getInstance();
-        c.setTime(mPreference.startsDate);
+        c.setTime(mParcelablePreference.startsDate);
         String startsDate1 = String.format("%d/%d/%d", c.get(Calendar.DATE), c.get(Calendar.MONTH) + 1, c.get(Calendar.YEAR));
         mStartsDate.setText(startsDate1);
 
-        c.setTime(mPreference.startsTime);
+        c.setTime(mParcelablePreference.startsTime);
         String starts = String.format("%s:%s", c.get(Calendar.HOUR_OF_DAY), c.get(Calendar.MINUTE));
         mStartsTime.setText(starts);
 
-        c.setTime(mPreference.endsTime);
+        c.setTime(mParcelablePreference.endsTime);
         String ends = String.format("%s:%s", c.get(Calendar.HOUR_OF_DAY), c.get(Calendar.MINUTE));
         mEndsTime.setText(ends);
 
-        isPrefer = mPreference.preferenceType.equalsIgnoreCase(Type.PREFER.getText());
+        isPrefer = mParcelablePreference.preferenceType.equalsIgnoreCase(Type.PREFER.getText());
     }
 
-    private void initViewsValue(JSONObject values) {
-        if (values != null) {
-            // set existing values
-            try {
-                //mType.setText(values.getString("preference_type"));
-                mType.setText(mPreference.preferenceType);
-
-                Calendar c = Calendar.getInstance();
-                String startsDate = values.getString("starts_date");
-                c.setTime(DateUtil.getLocalDateObject(startsDate));
-                c.setTimeZone(TimeZone.getDefault());
-                String startsDate1 = String.format("%d/%d/%d", c.get(Calendar.DATE), c.get(Calendar.MONTH)+1, c.get(Calendar.YEAR));
-                mStartsDate.setText(startsDate1);
-                mRepeat.setText(values.getString("repeat_type"));
-                isPrefer = values.getString("prefernece_type").equalsIgnoreCase("reject") ? true : false;
-                String startsTime = values.getString("starts_time");
-                String endsTime = values.getString("ends_time");
-                c.setTime(DateUtil.getLocalDateObject(startsTime));
-                String starts = String.format("%s:%s", c.get(Calendar.HOUR_OF_DAY), c.get(Calendar.MINUTE));
-                mStartsTime.setText(starts);
-                c.setTime(DateUtil.getLocalDateObject(endsTime));
-                String ends = String.format("%s:%s", c.get(Calendar.HOUR_OF_DAY), c.get(Calendar.MINUTE));
-                mEndsTime.setText(ends);
-
-            } catch (JSONException e) {
-                e.printStackTrace();
-            }
-        } else {
-            // set today values
-            Calendar c = Calendar.getInstance();
-            String startsDate1 = String.format("%d/%d/%d", c.get(Calendar.DATE), c.get(Calendar.MONTH) + 1, c.get(Calendar.YEAR));
-            mStartsDate.setText(startsDate1);
-            String starts = String.format("%s:%s", c.get(Calendar.HOUR_OF_DAY), c.get(Calendar.MINUTE));
-            mStartsTime.setText(starts);
-            String ends = String.format("%s:%s", c.get(Calendar.HOUR_OF_DAY), c.get(Calendar.MINUTE));
-            mEndsTime.setText(ends);
-            mRepeat.setText("Daily");
-            mType.setText("Reject");
-        }
-    }
 
     private void bindListener() {
         if (mMeetingSubPrefView == null) return;
@@ -296,43 +225,32 @@ public class MeetingSubPreferenceFragment extends Fragment implements View.OnCli
     }
 
     private void saveMeetingPreferences() {
-        JSONObject jsonObject = new JSONObject();
-        try {
-            jsonObject.put("user_id", mPreference.userId);
-            JSONArray jsonArray = new JSONArray();
-            // set last update time to now
-            mPreference.lastUpdate = Calendar.getInstance().getTime();
-            String jsonString = LoganSquare.serialize(mPreference);
-            jsonArray.put(new JSONObject(jsonString));
-            jsonObject.put("local_preferences", jsonArray);
-        } catch (JSONException e) {
-            e.printStackTrace();
-            return;
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        class PreferenceCallback implements PreferenceTask.Callback {
 
-        final String url = URLs.SYNC_PREFERENCES;
-        Map<String, String> params = new HashMap();
-        params.put("json", jsonObject.toString());
-        Log.i(LOG_TAG, jsonObject.toString());
-        JsonArrayFormRequest request = new JsonArrayFormRequest(Request.Method.POST, url, params,
-                new Response.Listener<JSONArray>() {
-                    @Override
-                    public void onResponse(JSONArray response) {
-                        Log.i(LOG_TAG, response.toString());
-                        //mAdapter.notifyDataSetChanged();
-                        getActivity().finish();
-                    }
-                },
-                new Response.ErrorListener() {
-                    @Override
-                    public void onErrorResponse(VolleyError error) {
-                        Log.e(LOG_TAG, error.toString());
-                    }
-                }
-        );
-        MySingleton.getInstance(getContext()).addToRequestQueue(request);
+            @Override
+            public void callback(ParcelablePreference[] preferences) {
+                getActivity().finish();
+            }
+
+            @Override
+            public void callbackError(VolleyError error) {
+
+            }
+        }
+        PreferenceCallback callback = new PreferenceCallback();
+        // set starts date, start time and end time
+        mParcelablePreference.startsDate = mStartsDateCalendar.getTime();
+        int year = mStartsDateCalendar.get(Calendar.YEAR);
+        int month = mStartsDateCalendar.get(Calendar.MONTH);
+        int day = mStartsDateCalendar.get(Calendar.DATE);
+        mStartsDateCalendar.set(year, month, day, mStartsTimeHour, mStartsTimeMinute);
+        mParcelablePreference.startsTime = mStartsDateCalendar.getTime();
+        mStartsDateCalendar.set(year, month, day, mEndsTimeHour, mEndsTimeMinute);
+        mParcelablePreference.endsTime = mStartsDateCalendar.getTime();
+        // set last update time to now
+        mParcelablePreference.lastUpdate = Calendar.getInstance().getTime();
+        PreferenceTask.getInstance(getContext()).updatePreference(User.ID, mParcelablePreference, callback);
+
     }
 
     @Override
@@ -341,11 +259,11 @@ public class MeetingSubPreferenceFragment extends Fragment implements View.OnCli
             if (resultCode == RepeatPreferenceFragment.RESULT_SET_DEFAULT_ALERT) {
                 String text = data.getStringExtra(RepeatPreferenceFragment.RETURN_TEXT);
                 mRepeat.setText(text);
+                mParcelablePreference.repeatType = text;
             }
 
         }
     }
-
 
     @Override
     public void onClick(View v) {
@@ -356,7 +274,8 @@ public class MeetingSubPreferenceFragment extends Fragment implements View.OnCli
                 DatePickerDialog datePicker = new DatePickerDialog(getContext(), new DatePickerDialog.OnDateSetListener() {
                     @Override
                     public void onDateSet(DatePicker view, int year, int monthOfYear, int dayOfMonth) {
-                        mStartsDate.setText(String.format("%d/%d/%d", dayOfMonth, monthOfYear, year));
+                        mStartsDate.setText(String.format("%d/%d/%d", dayOfMonth, monthOfYear + 1, year));
+                        mStartsDateCalendar.set(year, monthOfYear, dayOfMonth);
                     }
                 }, cal.get(Calendar.YEAR), cal.get(Calendar.MONTH), cal.get(Calendar.DAY_OF_MONTH));
                 datePicker.show();
@@ -369,6 +288,15 @@ public class MeetingSubPreferenceFragment extends Fragment implements View.OnCli
                     @Override
                     public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
                         TextView time = id == R.id.setting_meeting_start_time ? mStartsTime : mEndsTime;
+
+                        if (id == R.id.setting_meeting_start_time) {
+                            mStartsTimeHour = hourOfDay;
+                            mStartsTimeMinute = minute;
+                        } else {
+                            mEndsTimeHour = hourOfDay;
+                            mEndsTimeMinute = minute;
+                        }
+
                         time.setText(hourOfDay + ":" + minute);
                     }
                 }, cal.get(Calendar.HOUR_OF_DAY), cal.get(Calendar.MINUTE),false);
@@ -386,11 +314,9 @@ public class MeetingSubPreferenceFragment extends Fragment implements View.OnCli
                 String text = isPrefer ? Type.UNAVAILABLE.getText() : Type.PREFER.getText();
                 isPrefer = !isPrefer;
                 mType.setText(text);
-                mPreference.preferenceType = text;
+                mParcelablePreference.preferenceType = text;
                 break;
             }
         }
     }
-
-
 }

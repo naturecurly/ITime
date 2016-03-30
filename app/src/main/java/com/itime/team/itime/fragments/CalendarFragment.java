@@ -96,6 +96,7 @@ public class CalendarFragment extends Fragment {
     private List<String> eventDateList = new ArrayList<>();
     private int screenWidth;
     private String mUserId;
+    private Calendar today = Calendar.getInstance();
 
     public static CalendarFragment newInstance(Bundle bundle) {
 
@@ -175,6 +176,11 @@ public class CalendarFragment extends Fragment {
                 previousTotal = 0;
                 linearLayoutManager.scrollToPositionWithOffset(5, 0);
                 recyclerView.getAdapter().notifyDataSetChanged();
+                CalendarView todayCalendar = (CalendarView) recyclerView.getChildAt(1).findViewById(R.id.calendar_view);
+                todayCalendar.setTodaySelected();
+                if (todayCalendar.isTodayHasEvents()) {
+                    paintLowerPanel(today.get(Calendar.DAY_OF_MONTH), today.get(Calendar.MONTH) + 1, today.get(Calendar.YEAR));
+                }
             }
         });
         recyclerView = (RecyclerView) view.findViewById(R.id.recycler_view);
@@ -363,6 +369,26 @@ public class CalendarFragment extends Fragment {
 
 
         }
+        for (int i = 0; i < 24; i++) {
+            View occupiedView = new View(getActivity());
+            occupiedView.setId(1000 + i);
+//            occupiedView.setBackgroundColor(Color.BLACK);
+            RelativeLayout.LayoutParams occupied_param = new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+            occupied_param.addRule(RelativeLayout.ALIGN_TOP, 100 + i);
+            occupied_param.addRule(RelativeLayout.ALIGN_BOTTOM, 100 + i + 1);
+            occupied_param.addRule(RelativeLayout.RIGHT_OF, i + 1);
+            occupied_param.addRule(RelativeLayout.END_OF, i + 1);
+
+            occupiedView.setOnLongClickListener(new View.OnLongClickListener() {
+                @Override
+                public boolean onLongClick(View v) {
+                    Intent intent = new Intent(getActivity(), NewEventActivity.class);
+                    startActivity(intent);
+                    return true;
+                }
+            });
+            relativeLayout.addView(occupiedView, occupied_param);
+        }
     }
 
 
@@ -457,8 +483,6 @@ public class CalendarFragment extends Fragment {
                 @Override
                 public void dateSelected(float x, float y) {
                     Calendar now = Calendar.getInstance();
-
-
                     List<Integer> eventGroup = new ArrayList<Integer>();
                     List<Integer[]> eventTimeRagne = new ArrayList<Integer[]>();
                     CalendarView.Row row = calendarView.getRows()[0];
@@ -580,7 +604,11 @@ public class CalendarFragment extends Fragment {
                                     Calendar cal = DateUtil.getLocalDateObjectToCalendar(DateUtil.getLocalDateObject(dateString));
                                     Calendar calEnd = DateUtil.getLocalDateObjectToCalendar(DateUtil.getLocalDateObject(dateStringEnd));
                                     starthour = cal.get(Calendar.HOUR_OF_DAY);
-                                    endhour = calEnd.get(Calendar.HOUR_OF_DAY);
+                                    if (calEnd.get(Calendar.DAY_OF_MONTH) > cal.get(Calendar.DAY_OF_MONTH)) {
+                                        endhour = 23;
+                                    } else {
+                                        endhour = calEnd.get(Calendar.HOUR_OF_DAY);
+                                    }
                                 } catch (JSONException e) {
                                     e.printStackTrace();
                                 }
@@ -795,7 +823,8 @@ public class CalendarFragment extends Fragment {
                 Events.response = response;
                 analyseEvents(response);
                 recyclerView.getAdapter().notifyDataSetChanged();
-                Log.i("Event_response", response.toString());
+//                Log.i("Event_response", response.toString());
+                System.out.println(response.toString());
             }
         }, new Response.ErrorListener() {
             @Override
@@ -824,6 +853,188 @@ public class CalendarFragment extends Fragment {
             }
 
         }
+    }
+
+
+    public void paintLowerPanel(int day, int month, int year) {
+
+        List<Integer> eventGroup = new ArrayList<Integer>();
+        relativeLayout.removeAllViews();
+        addLowerViews(relativeLayout);
+        //relativeLayout.invalidate();
+        Toast.makeText(getActivity(), "has event", Toast.LENGTH_SHORT).show();
+        List<JSONObject> objectList = EventUtil.getEventFromDate(day + "-" + month + "-" + year);
+        objectList = EventUtil.sortEvents(objectList);
+
+        JSONObject firstObject = objectList.get(0);
+        Calendar firstTimeCal = Calendar.getInstance();
+        try {
+            String firstTimeString = firstObject.getString("event_starts_datetime");
+            Date firstTimeDate = DateUtil.getLocalDateObject(firstTimeString);
+            firstTimeCal = DateUtil.getLocalDateObjectToCalendar(firstTimeDate);
+
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        Log.d("first_event_hour", firstTimeCal.get(Calendar.HOUR_OF_DAY) + "");
+        int firstPosition = firstTimeCal.get(Calendar.HOUR_OF_DAY);
+        View firstEventView = relativeLayout.findViewById(100 + firstPosition);
+        mScrollView.smoothScrollTo(0, DensityUtil.dip2px(getActivity(), 30 * firstPosition));
+
+        String start = null;
+        String end = null;
+//                        for (int i = 0; i < objectList.size(); i++) {
+//                            try {
+//                                Date tempStart = DateUtil.getLocalDateObject(objectList.get(i).getString("event_starts_datetime"));
+//                                Date tempEnd = DateUtil.getLocalDateObject(objectList.get(i).getString("event_ends_datetime"));
+//                                eventTimeRagne.add(new Integer[]{tempStart.ge})
+//                            } catch (JSONException e) {
+//                                e.printStackTrace();
+//                            }
+//                        }
+        try {
+            start = objectList.get(0).getString("event_starts_datetime");
+            end = objectList.get(0).getString("event_ends_datetime");
+
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+
+//                        int flag = 0;
+        for (int i = 0; i < objectList.size(); ) {
+            eventGroup.add(i);
+//                            i = flag;
+            //flag = i;
+
+            if (i == objectList.size() - 1) {
+                eventGroup.add(i);
+                i++;
+            }
+            for (int j = i + 1; j < objectList.size(); j++) {
+                try {
+//                                    Date start = DateUtil.getLocalDateObject(objectList.get(i).getString("event_starts_datetime"));
+//                                    Date end = DateUtil.getLocalDateObject(objectList.get(i).getString("event_ends_datetime"));
+//                                    Date newStart = DateUtil.getLocalDateObject(objectList.get(j).getString("event_starts_datetime"));
+//                                    Date newEnd = DateUtil.getLocalDateObject(objectList.get(j).getString("event_ends_datetime"));
+                    String newStart = objectList.get(j).getString("event_starts_datetime");
+                    String newEnd = objectList.get(j).getString("event_ends_datetime");
+
+                    if (newStart.compareTo(start) >= 0 && newStart.compareTo(end) < 0) {
+                        i++;
+                        //eventGroup.add(flag);
+                        if (j == objectList.size() - 1) {
+                            eventGroup.add(i);
+                            i++;
+                        }
+                        if (newEnd.compareTo(end) >= 0) {
+                            end = newEnd;
+                        }
+
+                    } else {
+                        eventGroup.add(i);
+                        if (j == objectList.size() - 1) {
+                            eventGroup.add(j);
+                            eventGroup.add(j);
+                            i = i + 2;
+                        }
+                        //i++;
+                        else {
+                            start = objectList.get(i + 1).getString("event_starts_datetime");
+                            end = objectList.get(i + 1).getString("event_ends_datetime");
+                            i++;
+                            break;
+                        }
+                    }
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
+
+
+        }
+        for (Integer integer : eventGroup) {
+            Log.d("testGroup", integer + " ");
+        }
+
+        for (int i = 0; i < eventGroup.size(); i += 2) {
+            if (eventGroup.get(i) == eventGroup.get(i + 1)) {
+                int starthour = 0;
+                int endhour = 0;
+                try {
+                    String dateString = objectList.get(eventGroup.get(i)).getString("event_starts_datetime");
+                    String dateStringEnd = objectList.get(eventGroup.get(i)).getString("event_ends_datetime");
+                    Calendar cal = DateUtil.getLocalDateObjectToCalendar(DateUtil.getLocalDateObject(dateString));
+                    Calendar calEnd = DateUtil.getLocalDateObjectToCalendar(DateUtil.getLocalDateObject(dateStringEnd));
+                    starthour = cal.get(Calendar.HOUR_OF_DAY);
+                    endhour = calEnd.get(Calendar.HOUR_OF_DAY);
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+                TextView eventView = new TextView(getActivity());
+                RelativeLayout.LayoutParams eventParam = new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+                eventView.setBackgroundColor(Color.CYAN);
+                try {
+                    eventView.setText(objectList.get(eventGroup.get(i)).getString("event_name"));
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+//                                eventParam.height = DensityUtil.dip2px(getActivity(), 30);
+//                                eventParam.width = DensityUtil.dip2px(getActivity(), 50);
+                eventParam.addRule(RelativeLayout.ALIGN_TOP, 100 + starthour);
+                eventParam.addRule(RelativeLayout.ALIGN_BOTTOM, 100 + endhour);
+                eventParam.addRule(RelativeLayout.ALIGN_START, 100 + starthour);
+                eventParam.addRule(RelativeLayout.ALIGN_LEFT, 100 + starthour);
+                eventParam.addRule(RelativeLayout.ALIGN_RIGHT, 100 + starthour);
+                eventParam.addRule(RelativeLayout.ALIGN_END, 100 + starthour);
+
+                eventParam.setMargins(DensityUtil.dip2px(getActivity(), 1), DensityUtil.dip2px(getActivity(), 1), DensityUtil.dip2px(getActivity(), 1), DensityUtil.dip2px(getActivity(), 1));
+                relativeLayout.addView(eventView, eventParam);
+            } else {
+                int overlapNumber = eventGroup.get(i + 1) - eventGroup.get(i) + 1;
+                int startNumber = eventGroup.get(i);
+                int flag = 0;
+                for (int num = eventGroup.get(i); num <= eventGroup.get(i + 1); num++) {
+                    int starthour = 0;
+                    int endhour = 0;
+                    try {
+                        String dateString = objectList.get(num).getString("event_starts_datetime");
+                        String dateStringEnd = objectList.get(num).getString("event_ends_datetime");
+                        Calendar cal = DateUtil.getLocalDateObjectToCalendar(DateUtil.getLocalDateObject(dateString));
+                        Calendar calEnd = DateUtil.getLocalDateObjectToCalendar(DateUtil.getLocalDateObject(dateStringEnd));
+                        starthour = cal.get(Calendar.HOUR_OF_DAY);
+                        endhour = calEnd.get(Calendar.HOUR_OF_DAY);
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+                    TextView eventView = new TextView(getActivity());
+                    try {
+                        eventView.setText(objectList.get(num).getString("event_name"));
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+                    RelativeLayout.LayoutParams eventParamOverlap = new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+                    eventView.setBackgroundColor(Color.CYAN);
+                    TextView view = (TextView) relativeLayout.findViewById(1);
+                    float length = screenWidth - (view.getWidth() + DensityUtil.dip2px(getActivity(), 12));
+//                                    eventParamOverlap.height = DensityUtil.dip2px(getActivity(), 30);
+                    eventParamOverlap.width = (int) (length / overlapNumber);
+                    eventParamOverlap.addRule(RelativeLayout.ALIGN_TOP, 100 + starthour);
+                    eventParamOverlap.addRule(RelativeLayout.ALIGN_BOTTOM, 100 + endhour);
+                    eventParamOverlap.addRule(RelativeLayout.ALIGN_START, 100 + starthour);
+                    eventParamOverlap.addRule(RelativeLayout.ALIGN_LEFT, 100 + starthour);
+
+//                                    eventParam.addRule(RelativeLayout.ALIGN_RIGHT, 100 + starthour);
+//                                    eventParam.addRule(RelativeLayout.ALIGN_END, 100 + starthour);
+                    int leftMargin = (int) (flag * (length / overlapNumber));
+                    Log.d("leftMargin", leftMargin + "");
+                    eventParamOverlap.setMargins(leftMargin, DensityUtil.dip2px(getActivity(), 1), DensityUtil.dip2px(getActivity(), 1), DensityUtil.dip2px(getActivity(), 1));
+                    relativeLayout.addView(eventView, eventParamOverlap);
+                    flag++;
+                }
+            }
+        }
+
     }
 
 

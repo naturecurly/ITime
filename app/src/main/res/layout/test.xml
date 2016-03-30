@@ -49,25 +49,15 @@
         android:background="#90909090" />
 
     <View
-        android:id="@+id/view"
-        android:layout_width="150dp"
-        android:layout_height="100dp"
-        android:background="@color/black"
-        android:layout_alignTop="@+id/separator1"
-        android:layout_alignLeft="@+id/separator1"
-        android:layout_alignStart="@+id/separator1"
-        android:layout_alignBottom="@+id/separator2" />
-
-    <View
+        android:id="@+id/occupied_space"
         android:layout_width="wrap_content"
-        android:layout_height="100dp"
-        android:layout_alignBottom="@+id/separator2"
-        android:layout_alignEnd="@+id/separator1"
-        android:layout_alignRight="@+id/separator1"
-        android:layout_alignTop="@+id/separator1"
-        android:layout_toEndOf="@+id/view"
-        android:layout_toRightOf="@+id/view"
+        android:layout_height="wrap_content"
         android:background="@color/black"
-        android:id="@+id/view2" />
+        android:layout_alignTop="@+id/textView"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true"
+        android:layout_alignBottom="@+id/textView2"
+        android:layout_toRightOf="@+id/textView"
+        android:layout_toEndOf="@+id/textView"></View>
 
 </RelativeLayout>

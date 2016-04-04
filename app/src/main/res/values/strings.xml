@@ -71,6 +71,14 @@
     <string name="login_warning_username_illegal">Sorry, please use real email address as your username</string>
     <string name="login_warning_password_illegal">Sorry, the length of your password should be more than 5</string>
 
+    <string name="meeting_detail_attendees">Attendees</string>
+    <string name="meeting_detail_invite">Invitation from</string>
+    <string name="meeting_detail_depture">Depture at</string>
+    <string name="meeting_detail_starts">Starts</string>
+    <string name="meeting_detail_ends">Ends</string>
+    <string name="meeting_detail_repeats">Repeats</string>
+    <string name="meeting_detail_Punctual">Punctual</string>
+
     <string name="check_login_timeout">Timeout, please check your internet</string>
 
     <string name="search_friend_added_friend_info">Please wait for your friend\'s reply</string>

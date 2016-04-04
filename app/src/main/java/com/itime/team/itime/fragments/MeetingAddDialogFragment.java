@@ -162,6 +162,7 @@ public class MeetingAddDialogFragment extends DialogFragment implements DataRequ
                     sendIntent.putExtra(Intent.EXTRA_TEXT, Html.fromHtml(invitationContent).toString());
                     sendIntent.setType("text/plain");
                     sendIntent.setPackage("com.facebook.orca");
+                    final Context c = getContext();
                     try {
                         startActivity(sendIntent);
                     } catch (android.content.ActivityNotFoundException ex) {
@@ -173,7 +174,7 @@ public class MeetingAddDialogFragment extends DialogFragment implements DataRequ
                         builder.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
-                                openMessengerInPlayStore(getContext());
+                                openMessengerInPlayStore(c);
                             }
                         });
                         builder.show();

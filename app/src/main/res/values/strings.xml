@@ -39,6 +39,13 @@
     <string name="meeting_duration_textview">Duration</string>
     <string name="meeting_select_title">Meeting Time Select</string>
 
+    <string name="meeting_dialog_search">Search iTIME friends</string>
+    <string name="meeting_dialog_sms">Add Contacts by SMS</string>
+    <string name="meeting_dialog_email">Add Contacts by Email</string>
+    <string name="meeting_dialog_qrcode">Scan QR code</string>
+    <string name="meeting_dialog_facebook">Add Facebook Friends</string>
+    <string name="meeting_dialog_wechat">Add WeChat Friends</string>
+
 
     <string name="phone_contact_title">Search Contacts</string>
     <string name="phone_contact_addway_title">Add Method</string>

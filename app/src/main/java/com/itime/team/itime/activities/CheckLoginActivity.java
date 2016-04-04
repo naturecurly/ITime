@@ -14,7 +14,7 @@ import android.widget.LinearLayout;
 import android.widget.Toast;
 
 import com.android.volley.Request;
-import com.android.volley.RequestQueue;
+import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.crashlytics.android.Crashlytics;
 import com.facebook.appevents.AppEventsLogger;
@@ -24,16 +24,15 @@ import com.itime.team.itime.bean.URLs;
 import com.itime.team.itime.bean.User;
 import com.itime.team.itime.database.DeviceTableHelper;
 import com.itime.team.itime.database.UserTableHelper;
-import com.itime.team.itime.interfaces.DataRequest;
 import com.itime.team.itime.utils.DateUtil;
-import com.itime.team.itime.utils.JsonManager;
+import com.itime.team.itime.utils.JsonObjectFormRequest;
 import com.itime.team.itime.utils.MySingleton;
 
-import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.HashMap;
+import java.util.Map;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -42,22 +41,18 @@ import io.fabric.sdk.android.Fabric;
 /**
  * Created by mac on 16/2/26.
  */
-public class CheckLoginActivity extends AppCompatActivity implements DataRequest{
+public class CheckLoginActivity extends AppCompatActivity{
     private Animation mIn;
     private LinearLayout mMain;
     private String mUsernameStr, mPasswordStr, mLastLoginTime;
     private boolean mCanLogin;
     private boolean isFirstLogin;
     private boolean mIsRemember;
-    private JsonManager mJsonManager;
     private Intent MainIntent;
     private Intent LoginIntent;
     private String mInviatedFriendID;
 
     private boolean hasAddFriendRequest;
-
-
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -70,7 +65,6 @@ public class CheckLoginActivity extends AppCompatActivity implements DataRequest
         mMain.startAnimation(mIn);
         LoginIntent = new Intent(this,LoginActivity.class);
         MainIntent = new Intent(this, MainActivity.class);
-        mJsonManager = new JsonManager();
 
         mUsernameStr = "";
         mPasswordStr = "";
@@ -162,12 +156,42 @@ public class CheckLoginActivity extends AppCompatActivity implements DataRequest
             json.put("connect_token","");
             json.put("dev_id", Device.DeviceID);
             json.put("dev_token", "");
-            requestJSONObject(mJsonManager, json, URLs.SIGN_IN,
-                    "login");
-            handleJSON(mJsonManager);
         } catch (JSONException e) {
             e.printStackTrace();
         }
+
+        final String url = URLs.SIGN_IN;
+        Map<String, String> params = new HashMap();
+        params.put("json", json.toString());
+
+        JsonObjectFormRequest request = new JsonObjectFormRequest(Request.Method.POST, url, params, new Response.Listener<JSONObject>() {
+            @Override
+            public void onResponse(JSONObject response) {
+                String result = null;
+                try {
+                    result = (String) response.get("result");
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+                if(result.equals("success")) {
+                    User.ID = mUsernameStr;
+                    if (hasAddFriendRequest) {
+                        MainIntent.putExtra("invitation",mInviatedFriendID);
+                    }
+                    startActivity(MainIntent);
+                    finish();
+                }else{
+                    Toast.makeText(getApplicationContext(),
+                            getString(R.string.login_warning_login_fail),Toast.LENGTH_SHORT);
+                }
+            }
+        }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                handleTimeout();
+            }
+        });
+        MySingleton.getInstance(this).addToRequestQueue(request);
     }
 
     private String getDeviceID(){
@@ -212,56 +236,5 @@ public class CheckLoginActivity extends AppCompatActivity implements DataRequest
 
             }
         }
-    }
-
-
-    @Override
-    public void handleJSON(final JsonManager manager) {
-        MySingleton.getInstance(this).getRequestQueue().addRequestFinishedListener(
-                new RequestQueue.RequestFinishedListener<String>() {
-                    @Override
-                    public void onRequestFinished(Request<String> request) {
-                        JSONObject jsonObject;
-                        JSONArray jsonArray;
-                        HashMap map;
-                        VolleyError error;
-                        try {
-                            while ((map = mJsonManager.getJsonQueue().poll()) != null) {
-                                if ((jsonObject = (JSONObject) map.get("login")) != null) {
-                                        String result = (String) jsonObject.get("result");
-                                    if(result.equals("success")) {
-                                        User.ID = mUsernameStr;
-                                        if (hasAddFriendRequest) {
-                                            MainIntent.putExtra("invitation",mInviatedFriendID);
-                                        }
-                                        startActivity(MainIntent);
-                                        finish();
-                                    }else{
-                                        Toast.makeText(getApplicationContext(),
-                                                getString(R.string.login_warning_login_fail),Toast.LENGTH_SHORT);
-                                    }
-                                }
-                            }
-                            while ((map = mJsonManager.getErrorQueue().poll()) != null) {
-                                if((error = (VolleyError) map.get("login")) != null){
-                                    handleTimeout();
-                                }
-                            }
-                        } catch (JSONException e) {
-                            e.printStackTrace();
-                        }
-                    }
-                }
-        );
-    }
-
-    @Override
-    public void requestJSONObject(JsonManager manager, JSONObject jsonObject, String url, String tag) {
-        manager.postForJsonObject(url, jsonObject, this, tag);
-    }
-
-    @Override
-    public void requestJSONArray(JsonManager manager, JSONObject jsonObject, String url, String tag) {
-        manager.postForJsonArray(url, jsonObject, this, tag);
     }
 }

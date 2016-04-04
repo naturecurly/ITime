@@ -24,7 +24,6 @@ import android.widget.TimePicker;
 import android.widget.Toast;
 
 import com.android.volley.Request;
-import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
@@ -33,9 +32,8 @@ import com.itime.team.itime.bean.URLs;
 import com.itime.team.itime.bean.User;
 import com.itime.team.itime.fragments.NewMeetingAlertDialogFragment;
 import com.itime.team.itime.fragments.NewMeetingRepeatDialogFragment;
-import com.itime.team.itime.interfaces.DataRequest;
 import com.itime.team.itime.utils.DateUtil;
-import com.itime.team.itime.utils.JsonManager;
+import com.itime.team.itime.utils.JsonObjectFormRequest;
 import com.itime.team.itime.utils.MySingleton;
 import com.itime.team.itime.utils.URLConnectionUtil;
 
@@ -46,12 +44,13 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.Map;
 import java.util.UUID;
 
 /**
  * Created by mac on 16/2/17.
  */
-public class NewMeetingActivity extends AppCompatActivity implements View.OnTouchListener, View.OnClickListener, CompoundButton.OnCheckedChangeListener, DataRequest{
+public class NewMeetingActivity extends AppCompatActivity implements View.OnTouchListener, View.OnClickListener, CompoundButton.OnCheckedChangeListener{
     private EditText mMessage;
     private Button mStartDate, mStartTime, mEndDate, mEndTime;
     private Button mRepeat;
@@ -86,7 +85,7 @@ public class NewMeetingActivity extends AppCompatActivity implements View.OnTouc
     private ArrayList<String> mRpeatValue;
     private ArrayList<Integer> mAlertValue;
 
-    private JsonManager mJsonManager;
+//    private JsonManager mJsonManager;
 
 
     @Override
@@ -175,7 +174,6 @@ public class NewMeetingActivity extends AppCompatActivity implements View.OnTouc
         mRpeatValue.add("One-time event");
         mAlertValue.add(1);
 
-        mJsonManager = new JsonManager();
 
         //simpleRequest();
     }
@@ -356,52 +354,77 @@ public class NewMeetingActivity extends AppCompatActivity implements View.OnTouc
             json.put("meeting_status", status);
             json.put("event_venue_show",showLocation);
             Log.i("resu",json.toString());
-            requestJSONObject(mJsonManager, json, URLs.MEETING_INVITATION,
-                    "invitation");
-            handleJSON(mJsonManager);
+
         } catch (JSONException e) {
             e.printStackTrace();
         }
 
-    }
+        final String url = URLs.MEETING_INVITATION;
+        Map<String, String> params = new HashMap();
+        params.put("json", json.toString());
 
-    @Override
-    public void handleJSON(JsonManager manager) {
-        MySingleton.getInstance(this).getRequestQueue().addRequestFinishedListener(
-                new RequestQueue.RequestFinishedListener<String>() {
-                    @Override
-                    public void onRequestFinished(Request<String> request) {
-                        JSONObject jsonObject;
-                        JSONArray jsonArray;
-                        HashMap map;
-                        while ((map = mJsonManager.getJsonQueue().poll()) != null) {
-                            if ((jsonObject = (JSONObject) map.get("invitation")) != null) {
-                                try {
-                                    if(jsonObject.getString("result").equals("success")){
-                                        setResult(RESULT_OK);
-                                        Toast.makeText(getApplicationContext(),
-                                                getString(R.string.new_meeting_send_invitation_successful), Toast.LENGTH_SHORT).show();
-                                        finish();
-                                    }
-                                } catch (JSONException e) {
-                                    e.printStackTrace();
-                                }
-                            }
-                        }
+        JsonObjectFormRequest request = new JsonObjectFormRequest(Request.Method.POST, url, params, new Response.Listener<JSONObject>() {
+            @Override
+            public void onResponse(JSONObject response) {
+                try {
+                    if(response.getString("result").equals("success")){
+                        setResult(RESULT_OK);
+                        Toast.makeText(getApplicationContext(),
+                                getString(R.string.new_meeting_send_invitation_successful), Toast.LENGTH_SHORT).show();
+                        finish();
                     }
+                } catch (JSONException e) {
+                    e.printStackTrace();
                 }
-        );
+
+            }
+        }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+
+            }
+        });
+        MySingleton.getInstance(this).addToRequestQueue(request);
+
     }
 
-    @Override
-    public void requestJSONObject(JsonManager manager, JSONObject jsonObject, String url, String tag) {
-        manager.postForJsonObject(url, jsonObject, this, tag);
-    }
-
-    @Override
-    public void requestJSONArray(JsonManager manager, JSONObject jsonObject, String url, String tag) {
-        manager.postForJsonArray(url, jsonObject, this, tag);
-    }
+//    @Override
+//    public void handleJSON(JsonManager manager) {
+//        MySingleton.getInstance(this).getRequestQueue().addRequestFinishedListener(
+//                new RequestQueue.RequestFinishedListener<String>() {
+//                    @Override
+//                    public void onRequestFinished(Request<String> request) {
+//                        JSONObject jsonObject;
+//                        JSONArray jsonArray;
+//                        HashMap map;
+//                        while ((map = mJsonManager.getJsonQueue().poll()) != null) {
+//                            if ((jsonObject = (JSONObject) map.get("invitation")) != null) {
+//                                try {
+//                                    if(jsonObject.getString("result").equals("success")){
+//                                        setResult(RESULT_OK);
+//                                        Toast.makeText(getApplicationContext(),
+//                                                getString(R.string.new_meeting_send_invitation_successful), Toast.LENGTH_SHORT).show();
+//                                        finish();
+//                                    }
+//                                } catch (JSONException e) {
+//                                    e.printStackTrace();
+//                                }
+//                            }
+//                        }
+//                    }
+//                }
+//        );
+//    }
+//
+//    @Override
+//    public void requestJSONObject(JsonManager manager, JSONObject jsonObject, String url, String tag) {
+//        manager.postForJsonObject(url, jsonObject, this, tag);
+//    }
+//
+//    @Override
+//    public void requestJSONArray(JsonManager manager, JSONObject jsonObject, String url, String tag) {
+//        manager.postForJsonArray(url, jsonObject, this, tag);
+//    }
 
     private void getCoordinate(String address){
         StringBuffer buffer = new StringBuffer();

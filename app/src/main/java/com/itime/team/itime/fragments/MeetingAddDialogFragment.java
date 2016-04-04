@@ -90,32 +90,32 @@ public class MeetingAddDialogFragment extends DialogFragment implements DataRequ
     private void initData(){
         HashMap<String, Object> map = new HashMap<String, Object>();
         map.put("ItemImage", R.drawable.search);
-        map.put("ItemText", "Search iTIME friends");
+        map.put("ItemText", getString(R.string.meeting_dialog_search));
         listItem.add(map);
 
         map = new HashMap<String, Object>();
         map.put("ItemImage", R.drawable.contacts);
-        map.put("ItemText", "Add Contacts by Phone Number");
+        map.put("ItemText", getString(R.string.meeting_dialog_sms));
         listItem.add(map);
 
         map = new HashMap<String, Object>();
         map.put("ItemImage", R.drawable.mail_i);
-        map.put("ItemText", "Add Contacts by Email");
+        map.put("ItemText", getString(R.string.meeting_dialog_email));
         listItem.add(map);
 
         map = new HashMap<String, Object>();
         map.put("ItemImage", R.drawable.qrcode);
-        map.put("ItemText", "Scan QR code");
+        map.put("ItemText", getString(R.string.meeting_dialog_qrcode));
         listItem.add(map);
 
         map = new HashMap<String, Object>();
         map.put("ItemImage", R.drawable.facebook);
-        map.put("ItemText", "Add Facebook Friends");
+        map.put("ItemText", getString(R.string.meeting_dialog_facebook));
         listItem.add(map);
 
         map = new HashMap<String, Object>();
         map.put("ItemImage", R.drawable.wechat);
-        map.put("ItemText", "Add WeChat Friends");
+        map.put("ItemText", getString(R.string.meeting_dialog_wechat));
         listItem.add(map);
 
         SimpleAdapter listItemAdapter = new SimpleAdapter(getActivity(),listItem,

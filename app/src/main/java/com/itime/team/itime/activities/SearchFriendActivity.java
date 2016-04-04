@@ -13,12 +13,13 @@ import android.widget.ListView;
 import android.widget.Toast;
 
 import com.android.volley.Request;
-import com.android.volley.RequestQueue;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
 import com.itime.team.itime.R;
 import com.itime.team.itime.bean.URLs;
 import com.itime.team.itime.bean.User;
-import com.itime.team.itime.interfaces.DataRequest;
-import com.itime.team.itime.utils.JsonManager;
+import com.itime.team.itime.utils.JsonArrayFormRequest;
+import com.itime.team.itime.utils.JsonObjectFormRequest;
 import com.itime.team.itime.utils.MySingleton;
 import com.itime.team.itime.views.adapters.SearchFriendListViewAdapter;
 
@@ -28,16 +29,17 @@ import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Created by mac on 16/2/1.
  */
-public class SearchFriendActivity extends AppCompatActivity implements DataRequest,SearchView.OnQueryTextListener, AdapterView.OnItemClickListener{
+public class SearchFriendActivity extends AppCompatActivity implements SearchView.OnQueryTextListener, AdapterView.OnItemClickListener{
     private SearchView mSearch;
     private ListView mListView;
-    private JsonManager mJsonManager;
     private ArrayList<HashMap<String, Object>> mListItem;
     private ArrayList<String> mFriendIDs;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -61,7 +63,6 @@ public class SearchFriendActivity extends AppCompatActivity implements DataReque
     private void init(){
         mSearch = (SearchView) findViewById(R.id.meeting_search_search);
         mListView = (ListView) findViewById(R.id.meeting_search_friendbyid);
-        mJsonManager = new JsonManager();
         mSearch.setOnQueryTextListener(this);
         mListItem = new ArrayList<>();
         mListView.setOnItemClickListener(this);
@@ -71,14 +72,27 @@ public class SearchFriendActivity extends AppCompatActivity implements DataReque
     private void searchFriend(String name){
         JSONObject jsonObject = new JSONObject();
         try {
-            String url = URLs.SEARCH_FRIENDS;
-            jsonObject.put("user_id",User.ID);
-            jsonObject.put("name",name);
-            requestJSONArray(mJsonManager, jsonObject, url, "search_friend");
-            handleJSON(mJsonManager);
+            jsonObject.put("user_id", User.ID);
+            jsonObject.put("name", name);
+
+            final String url = URLs.SEARCH_FRIENDS;
+            Map<String, String> params = new HashMap();
+            params.put("json", jsonObject.toString());
+            JsonArrayFormRequest request = new JsonArrayFormRequest(Request.Method.POST, url, params, new Response.Listener<JSONArray>() {
+                @Override
+                public void onResponse(JSONArray response) {
+                    adaptListView(response);
+                }
+            }, new Response.ErrorListener() {
+                @Override
+                public void onErrorResponse(VolleyError error) {
+                }
+            });
+            MySingleton.getInstance(this).addToRequestQueue(request);
         } catch (JSONException e) {
             e.printStackTrace();
         }
+
     }
 
     private void adaptListView(JSONArray jsonArray){
@@ -102,35 +116,6 @@ public class SearchFriendActivity extends AppCompatActivity implements DataReque
         } catch (JSONException e) {
             e.printStackTrace();
         }
-    }
-
-    @Override
-    public void handleJSON(JsonManager manager) {
-        MySingleton.getInstance(this).getRequestQueue().addRequestFinishedListener(
-                new RequestQueue.RequestFinishedListener<String>() {
-                    @Override
-                    public void onRequestFinished(Request<String> request) {
-                        JSONObject jsonObject;
-                        JSONArray jsonArray;
-                        HashMap map;
-                        while ((map = mJsonManager.getJsonQueue().poll()) != null) {
-                            if ((jsonArray = (JSONArray) map.get("search_friend")) != null) {
-                                adaptListView(jsonArray);
-                            }
-                        }
-                    }
-                }
-        );
-    }
-
-    @Override
-    public void requestJSONObject(JsonManager manager, JSONObject jsonObject, String url, String tag) {
-        manager.postForJsonObject(url, jsonObject, this, tag);
-    }
-
-    @Override
-    public void requestJSONArray(JsonManager manager, JSONObject jsonObject, String url, String tag) {
-        manager.postForJsonArray(url, jsonObject, this, tag);
     }
 
     @Override
@@ -169,7 +154,6 @@ public class SearchFriendActivity extends AppCompatActivity implements DataReque
         builder.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
-                String url = URLs.ADD_FRIEND_REQUEST;
                 JSONObject object = new JSONObject();
                 try {
                     object.put("user_id", User.ID);
@@ -177,21 +161,27 @@ public class SearchFriendActivity extends AppCompatActivity implements DataReque
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
-                requestJSONObject(mJsonManager, object, url, "adding_friend_request");
+
+                final String url = URLs.ADD_FRIEND_REQUEST;
+                Map<String, String> params = new HashMap();
+                params.put("json", object.toString());
+
+                JsonObjectFormRequest request = new JsonObjectFormRequest(Request.Method.POST, url, params, new Response.Listener<JSONObject>() {
+                    @Override
+                    public void onResponse(JSONObject response) {
+
+                    }
+                }, new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                    }
+                });
+                MySingleton.getInstance(getApplicationContext()).addToRequestQueue(request);
                 Toast.makeText(getApplicationContext(),getResources().
                         getString(R.string.search_friend_added_friend_info),Toast.LENGTH_SHORT).show();
-//                AlertDialog.Builder builder2 = new AlertDialog.Builder(SearchFriendActivity.this);
-//                builder2.setMessage(getResources().getString(R.string.search_friend_added_friend_info));
-//                builder2.setIcon(R.mipmap.ic_launcher);
-//                builder2.setTitle("Information");
-//                builder2.setPositiveButton("Yes", null);
-//                builder2.show();
             }
         });
         builder.show();
-
-
-
     }
 
     private void notAllowedSendRequest(final int position){

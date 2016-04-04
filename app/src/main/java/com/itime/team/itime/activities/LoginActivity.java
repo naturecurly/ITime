@@ -14,7 +14,7 @@ import android.widget.Switch;
 import android.widget.Toast;
 
 import com.android.volley.Request;
-import com.android.volley.RequestQueue;
+import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.facebook.CallbackManager;
 import com.facebook.FacebookCallback;
@@ -30,25 +30,24 @@ import com.itime.team.itime.bean.URLs;
 import com.itime.team.itime.bean.User;
 import com.itime.team.itime.database.DeviceTableHelper;
 import com.itime.team.itime.database.UserTableHelper;
-import com.itime.team.itime.interfaces.DataRequest;
 import com.itime.team.itime.task.PreferenceTask;
 import com.itime.team.itime.task.UserTask;
 import com.itime.team.itime.utils.DateUtil;
-import com.itime.team.itime.utils.JsonManager;
+import com.itime.team.itime.utils.JsonObjectFormRequest;
 import com.itime.team.itime.utils.MySingleton;
 import com.itime.team.itime.views.widget.ClearEditText;
 
-import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.HashMap;
+import java.util.Map;
 import java.util.UUID;
 
 /**
  * Created by mac on 16/2/24.
  */
-public class LoginActivity extends FragmentActivity implements View.OnClickListener, DataRequest{
+public class LoginActivity extends FragmentActivity implements View.OnClickListener{
     private Toast mToast;
     private ClearEditText mUsername, mPassword;
     private Button mLogin, mRegister;
@@ -59,7 +58,6 @@ public class LoginActivity extends FragmentActivity implements View.OnClickListe
     private CallbackManager callbackManager;
     private Intent mMainIntent;
 
-    private JsonManager mJsonManager;
     private String mInviatedFriendID;
 
     @Override
@@ -77,7 +75,6 @@ public class LoginActivity extends FragmentActivity implements View.OnClickListe
 
     private void init(){
         getDeviceID();
-        mJsonManager = new JsonManager();
 
         mLogin.setOnClickListener(this);
         mRegister.setOnClickListener(this);
@@ -137,19 +134,34 @@ public class LoginActivity extends FragmentActivity implements View.OnClickListe
         mUsernameStr = mUsername.getText().toString();
         String password = mPassword.getText().toString();
         if(isUsernameLegal(mUsernameStr) && isPasswordLeagal(password)) {
-            JSONObject json = new JSONObject();
+            final JSONObject json = new JSONObject();
             try {
                 json.put("user_id", mUsernameStr);
                 json.put("password", password);
                 json.put("connect_token", "");
                 json.put("dev_id", Device.DeviceID);
                 json.put("dev_token", "");
-                requestJSONObject(mJsonManager, json, URLs.REGISTER,
-                        "register");
-                handleJSON(mJsonManager);
             } catch (JSONException e) {
                 e.printStackTrace();
             }
+
+            final String url = URLs.REGISTER;
+            Map<String, String> params = new HashMap();
+            params.put("json", json.toString());
+
+            JsonObjectFormRequest request = new JsonObjectFormRequest(Request.Method.POST, url, params, new Response.Listener<JSONObject>() {
+                @Override
+                public void onResponse(JSONObject response) {
+                    doRegister(response);
+                }
+            }, new Response.ErrorListener() {
+                @Override
+                public void onErrorResponse(VolleyError error) {
+                    handleTimeout();
+                }
+            });
+            MySingleton.getInstance(this).addToRequestQueue(request);
+
         }
     }
 
@@ -242,20 +254,36 @@ public class LoginActivity extends FragmentActivity implements View.OnClickListe
         }
         mUsernameStr = mUsername.getText().toString();
         String password = mPassword.getText().toString();
-        JSONObject json = new JSONObject();
+        final JSONObject json = new JSONObject();
         try {
             json.put("user_id",mUsernameStr);
             json.put("password",password);
             json.put("connect_token","");
             json.put("dev_id", Device.DeviceID);
             json.put("dev_token", "");
-            requestJSONObject(mJsonManager, json, URLs.SIGN_IN,
-                    "login");
-            handleJSON(mJsonManager);
+
         } catch (JSONException e) {
             e.printStackTrace();
         }
+
+        final String url = URLs.SIGN_IN;
+        Map<String, String> params = new HashMap();
+        params.put("json", json.toString());
+
+        JsonObjectFormRequest request = new JsonObjectFormRequest(Request.Method.POST, url, params, new Response.Listener<JSONObject>() {
+            @Override
+            public void onResponse(JSONObject response) {
+                doLogin(response);
+            }
+        }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                handleTimeout();
+            }
+        });
+        MySingleton.getInstance(this).addToRequestQueue(request);
     }
+
 
     private void doLogin(JSONObject json){
         try {
@@ -343,48 +371,6 @@ public class LoginActivity extends FragmentActivity implements View.OnClickListe
     private void handleTimeout(){
         Toast.makeText(getApplicationContext(),getString(R.string.check_login_timeout)
                 ,Toast.LENGTH_LONG).show();
-    }
-
-    @Override
-    public void handleJSON(JsonManager manager) {
-        MySingleton.getInstance(this).getRequestQueue().addRequestFinishedListener(
-                new RequestQueue.RequestFinishedListener<String>() {
-                    @Override
-                    public void onRequestFinished(Request<String> request) {
-                        JSONObject jsonObject;
-                        JSONArray jsonArray;
-                        HashMap map;
-                        VolleyError error;
-                        while ((map = mJsonManager.getJsonQueue().poll()) != null) {
-                            if ((jsonObject = (JSONObject) map.get("register")) != null) {
-                                doRegister(jsonObject);
-                            }
-
-                            if ((jsonObject = (JSONObject) map.get("login")) != null) {
-                                doLogin(jsonObject);
-                            }
-                        }
-                        while ((map = mJsonManager.getErrorQueue().poll()) != null) {
-                            if((error = (VolleyError) map.get("login")) != null){
-                                handleTimeout();
-                            }
-                            if((error = (VolleyError) map.get("register")) != null){
-                                handleTimeout();
-                            }
-                        }
-                    }
-                }
-        );
-    }
-
-    @Override
-    public void requestJSONObject(JsonManager manager, JSONObject jsonObject, String url, String tag) {
-        manager.postForJsonObject(url, jsonObject, this, tag);
-    }
-
-    @Override
-    public void requestJSONArray(JsonManager manager, JSONObject jsonObject, String url, String tag) {
-        manager.postForJsonArray(url, jsonObject, this, tag);
     }
 
     private void linkFaceBook(){

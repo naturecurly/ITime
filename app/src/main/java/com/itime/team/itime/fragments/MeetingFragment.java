@@ -23,15 +23,15 @@ import android.widget.TimePicker;
 import android.widget.Toast;
 
 import com.android.volley.Request;
-import com.android.volley.RequestQueue;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
 import com.itime.team.itime.R;
 import com.itime.team.itime.activities.DateSelectionActivity;
 import com.itime.team.itime.bean.URLs;
 import com.itime.team.itime.bean.User;
-import com.itime.team.itime.interfaces.DataRequest;
 import com.itime.team.itime.listener.ScrollMeetingViewListener;
 import com.itime.team.itime.utils.DateUtil;
-import com.itime.team.itime.utils.JsonManager;
+import com.itime.team.itime.utils.JsonArrayFormRequest;
 import com.itime.team.itime.utils.MySingleton;
 import com.itime.team.itime.views.MeetingScrollView;
 import com.itime.team.itime.views.adapters.DynamicListViewAdapter;
@@ -51,7 +51,7 @@ import java.util.Map;
  * information so that reduce the computing work load of MeetingSelection Fragment.
  */
 public class MeetingFragment extends Fragment implements View.OnClickListener,SearchView.OnQueryTextListener,
-         DataRequest, ScrollMeetingViewListener{
+        ScrollMeetingViewListener{
 //    private List<TextView> parent;
     private Map<Integer, View> map;
     private View mmeeting;
@@ -85,7 +85,7 @@ public class MeetingFragment extends Fragment implements View.OnClickListener,Se
     private int mEndHour;
     private int mEndMin;
 
-    private JsonManager mJsonManager;
+    //private JsonManager mJsonManager;
     private MeetingScrollView mScrollView;
 
     //If the value is true, it satisfies the condition of inviting people
@@ -199,21 +199,12 @@ public class MeetingFragment extends Fragment implements View.OnClickListener,Se
         mEndDate.setText(dateFormat(mEndDay, mEndMonth, mEndYear));
 
         mIsFeasible = true;
-        mJsonManager = new JsonManager();
     }
 
-    public void initListView(){
+    public void initListView() {
         listItem.clear();
         listItemForPresent.clear();
-        JSONObject userID = new JSONObject();
-        try {
-            userID.put("user_id", User.ID);
-            requestJSONArray(mJsonManager, userID, URLs.LOAD_FRIEND,
-                    "load_friends");
-            handleJSON(mJsonManager);
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
+        fetchEvents();
     }
 
     private void doInitListView(JSONArray mUserInfo){
@@ -410,36 +401,32 @@ public class MeetingFragment extends Fragment implements View.OnClickListener,Se
         return true;
     }
 
+    public void fetchEvents() {
+        JSONObject jsonObject = new JSONObject();
+        try {
+            jsonObject.put("user_id", User.ID);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
 
-    @Override
-    public void handleJSON(JsonManager manager) {
-        MySingleton.getInstance(getContext()).getRequestQueue().addRequestFinishedListener(
-                new RequestQueue.RequestFinishedListener<String>() {
-                    @Override
-                    public void onRequestFinished(Request<String> request) {
-                        JSONObject jsonObject;
-                        JSONArray jsonArray;
-                        HashMap map;
-                        while ((map = mJsonManager.getJsonQueue().poll()) != null) {
-                            if ((jsonArray = (JSONArray) map.get("load_friends")) != null) {
-                                doInitListView(jsonArray);
-                            }
+        final String url = URLs.LOAD_FRIEND;
+        Map<String, String> params = new HashMap();
+        params.put("json", jsonObject.toString());
 
-                        }
-                    }
-                }
-        );
+        JsonArrayFormRequest request = new JsonArrayFormRequest(Request.Method.POST, url, params, new Response.Listener<JSONArray>() {
+            @Override
+            public void onResponse(JSONArray response) {
+                doInitListView(response);
+            }
+        }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+
+            }
+        });
+        MySingleton.getInstance(getContext()).addToRequestQueue(request);
     }
 
-    @Override
-    public void requestJSONObject(JsonManager manager,JSONObject jsonObject, String url, String tag) {
-        manager.postForJsonObject(url, jsonObject, getActivity(), tag);
-    }
-
-    @Override
-    public void requestJSONArray(JsonManager manager,JSONObject jsonObject, String url, String tag) {
-        manager.postForJsonArray(url, jsonObject, getActivity(), tag);
-    }
 
     @Override
     public void onScrollChanged(MeetingScrollView scrollView, int x, int y, int oldx, int oldy) {

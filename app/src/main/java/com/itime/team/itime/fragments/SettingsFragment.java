@@ -69,8 +69,8 @@ public class SettingsFragment extends Fragment implements View.OnClickListener, 
 
 
     private static final int SETTINGS_PROFILE_ID = R.id.setting_profile;
-    private static final int SETTINGS_MEETING_ID = R.id.setting_meeting;
-    private static final int SETTINGS_IMPORT_ID = R.id.setting_import;
+    private static final int SETTINGS_MEETING_ID = R.id.settings_meeting_preference;
+    private static final int SETTINGS_IMPORT_ID = R.id.settings_import_calendar;
     private static final int SETTINGS_ALERT_TIME_ID = R.id.setting_dft_alert_time;
     private static final int SETTINGS_CALENDAR_TYPE_ID = R.id.setting_calendar_type;
     private static final int SETTINGS_CLEAR_CALENDAR_ID = R.id.setting_clear_calendar;

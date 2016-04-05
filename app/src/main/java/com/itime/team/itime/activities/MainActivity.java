@@ -93,7 +93,7 @@ public class MainActivity extends AppCompatActivity implements
         yearViewFragment = new YearViewFragment();
         inboxFragment = new InboxFragment();
         calendarFragment.setCurrentFragment(calendarFragment, yearViewFragment);
-        yearViewFragment.setCalendarFragment(calendarFragment,yearViewFragment);
+        yearViewFragment.setCalendarFragment(calendarFragment, yearViewFragment);
         getSupportFragmentManager().beginTransaction().add(R.id.realtab_content, calendarFragment).commit();
     }
 

@@ -21,6 +21,7 @@ import com.itime.team.itime.R;
 import com.itime.team.itime.listener.OnDateSelectedListener;
 import com.itime.team.itime.utils.DateUtil;
 import com.itime.team.itime.utils.DensityUtil;
+import com.itime.team.itime.utils.EventUtil;
 
 import java.util.Calendar;
 
@@ -67,6 +68,7 @@ public class CalendarView extends View {
     private boolean[] ifEvents = new boolean[7];
     private boolean isTodayClicked = false;
     private boolean isTodayHasEvents = false;
+    private boolean hasToday = false;
 
     public CalendarView(Context context, AttributeSet attrs, int defStyle) {
         super(context, attrs, defStyle);
@@ -120,10 +122,10 @@ public class CalendarView extends View {
                 rows[i].drawCells(canvas, i);
         }
         if (isDateSelected == 1) {
-            if (!isTodayClicked) {
-                dateX = DateUtil.analysePosition(upX, mCellSpace);
-                dateY = DateUtil.analysePosition(upY, mCellSpace);
-            }
+//            if (!isTodayClicked) {
+            dateX = DateUtil.analysePosition(upX, mCellSpace);
+            dateY = DateUtil.analysePosition(upY, mCellSpace);
+//            }
             canvas.drawCircle(dateX * mCellSpace + mCellSpace / 2, dateY * mCellSpace + mCellSpace / 2, mCellSpace / 3, mSelectedCirclePaint);
             //mShowDay = 2;
             isDateSelected = 0;
@@ -220,7 +222,7 @@ public class CalendarView extends View {
 //                        if (defaultStyle == WEEK_STYLE) {
                     isDateSelected = 1;
                     listener.dateSelected(upX, upY);
-                    invalidate();
+//                    invalidate();
 //                        }
                 }
 
@@ -298,7 +300,9 @@ public class CalendarView extends View {
 //                    Bitmap newbm = Bitmap.createBitmap(bm, 0, 0, pic_width, pic_height, matrix, true);
 //                    canvas.drawBitmap(newbm, i * mCellSpace, j * mCellSpace + (defaultStyle == MONTH_STYLE ? mCellSpace : 0), mCirclePaint);
                     canvas.drawCircle(i * mCellSpace + mCellSpace / 2, j * mCellSpace + mCellSpace / 2, mCellSpace / 3, mCirclePaint);
-
+                    if (EventUtil.isTodayPressed) {
+                        canvas.drawCircle(i * mCellSpace + mCellSpace / 2, j * mCellSpace + mCellSpace / 2, mCellSpace / 3, mSelectedCirclePaint);
+                    }
                     break;
             }
 
@@ -370,9 +374,8 @@ public class CalendarView extends View {
                         mShowYear == DateUtil.getYear()
                         && mShowMonth == DateUtil.getMonth()) {
                     rows[week].cells[i] = new Cell(mShowDay + "", State.TODAY, mShowMonth, mShowYear, ifEvents[i]);
-                    dateX = i;
-                    dateY = 0;
                     isTodayHasEvents = ifEvents[i];
+                    hasToday = true;
                     continue;
                 }
                 rows[week].cells[i] = new Cell(mShowDay + "", State.CURRENT_MONTH_DAY, mShowMonth, mShowYear, ifEvents[i]);
@@ -525,12 +528,16 @@ public class CalendarView extends View {
 
     public void setTodaySelected() {
         isTodayClicked = true;
-        isDateSelected = 1;
-        invalidate();
+//        isDateSelected = 1;
+//        invalidate();
     }
 
     public boolean isTodayHasEvents() {
         return isTodayHasEvents;
+    }
+
+    public boolean isHasToday() {
+        return hasToday;
     }
 
     //    public void setCalendarType(int type) {

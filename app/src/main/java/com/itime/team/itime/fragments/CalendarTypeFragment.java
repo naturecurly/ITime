@@ -63,6 +63,7 @@ public class CalendarTypeFragment extends Fragment {
 
     private static final String SETTINGS = "Settings";
     private static final String SETTINGS_DATA = "Settings_data";
+    private static final int REQUEST_ADD_CALENDAR_TYPE = 1;
     public static final int CALENDAR_TYPE_SUB_SETTINGS = 9;
 
     private View mCalendarTypeView;
@@ -132,7 +133,19 @@ public class CalendarTypeFragment extends Fragment {
         if (data != null) {
             intent.putExtra(SETTINGS_DATA, data);
         }
-        startActivity(intent);
+        startActivityForResult(intent, REQUEST_ADD_CALENDAR_TYPE);
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (requestCode == REQUEST_ADD_CALENDAR_TYPE) {
+            if (resultCode == CalendarTypeSubFragment.RESULT_ADD_CALENDAR_TYPE) {
+                if (data != null && data.getBooleanExtra(CalendarTypeSubFragment.RETURN_IF_ADDED, false)) {
+                    // reload data from server
+                    fetchCalendarType();
+                }
+            }
+        }
     }
 
     /**

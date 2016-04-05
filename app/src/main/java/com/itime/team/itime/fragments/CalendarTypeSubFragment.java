@@ -16,6 +16,7 @@
 
 package com.itime.team.itime.fragments;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -49,6 +50,9 @@ import java.util.UUID;
 public class CalendarTypeSubFragment extends Fragment {
 
     private static final String LOG_TAG = CalendarTypeSubFragment.class.getSimpleName();
+
+    public static final int RESULT_ADD_CALENDAR_TYPE = 1;
+    public static final String RETURN_IF_ADDED = "return_if_added";
 
     private EditText mCalendarType;
 
@@ -105,6 +109,9 @@ public class CalendarTypeSubFragment extends Fragment {
                         Log.i(LOG_TAG, response.toString());
                         try {
                             if (response.getString("result").equals("success")) {
+                                final Intent intent = new Intent();
+                                intent.putExtra(RETURN_IF_ADDED, true);
+                                getActivity().setResult(RESULT_ADD_CALENDAR_TYPE, intent);
                                 getActivity().finish();
                             }
                         } catch (JSONException e) {

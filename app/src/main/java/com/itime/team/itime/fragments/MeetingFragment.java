@@ -27,6 +27,7 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.itime.team.itime.R;
 import com.itime.team.itime.activities.DateSelectionActivity;
+import com.itime.team.itime.activities.MeetingDetailActivity;
 import com.itime.team.itime.bean.URLs;
 import com.itime.team.itime.bean.User;
 import com.itime.team.itime.listener.ScrollMeetingViewListener;
@@ -383,6 +384,8 @@ public class MeetingFragment extends Fragment implements View.OnClickListener,Se
             }else{
                 Toast.makeText(getContext(),"Please select a friend at least", Toast.LENGTH_LONG)
                         .show();
+                Intent intent = new Intent(getActivity(), MeetingDetailActivity.class);
+                startActivity(intent);
             }
         }else{
             Toast.makeText(getActivity(), "the Start Time should be earlier than End Time",

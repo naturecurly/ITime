@@ -82,60 +82,78 @@
 
         <activity
             android:name=".activities.LoginActivity"
-            android:theme="@style/MyAppTheme"></activity>
+            android:theme="@style/MyAppTheme"
+            android:screenOrientation="portrait"></activity>
 
         <activity
             android:name=".activities.MainActivity"
             android:label="@string/app_name"
+            android:screenOrientation="portrait"
             android:theme="@style/AppTheme.NoActionBar">
         </activity>
 
         <activity
             android:name=".activities.DateSelectionActivity"
-            android:theme="@style/AppTheme.NoActionBar"></activity>
+            android:theme="@style/AppTheme.NoActionBar"
+            android:screenOrientation="portrait"></activity>
 
         <activity
             android:name=".activities.SendInvitationActivity"
-            android:theme="@style/AppTheme.NoActionBar"></activity>
+            android:theme="@style/AppTheme.NoActionBar"
+            android:screenOrientation="portrait"></activity>
 
         <activity
             android:name=".activities.SettingsActivity"
-            android:theme="@style/SettingTheme"></activity>
+            android:theme="@style/SettingTheme"
+            android:screenOrientation="portrait"></activity>
 
         <activity
             android:name=".activities.SearchFriendActivity"
-            android:theme="@style/SettingTheme"></activity>
+            android:theme="@style/SettingTheme"
+            android:screenOrientation="portrait"></activity>
 
         <activity
             android:name=".activities.PhoneContactActivity"
-            android:theme="@style/SettingTheme"></activity>
+            android:theme="@style/SettingTheme"
+            android:screenOrientation="portrait"></activity>
 
         <activity
             android:name=".activities.NewMeetingActivity"
-            android:theme="@style/SettingTheme"></activity>
+            android:theme="@style/SettingTheme"
+            android:screenOrientation="portrait"></activity>
 
         <activity
             android:name=".activities.GooglePlacesAutocompleteActivity"
-            android:theme="@style/SettingTheme"></activity>
+            android:theme="@style/SettingTheme"
+            android:screenOrientation="portrait"></activity>
+
+        <activity
+            android:name=".activities.MeetingDetailActivity"
+            android:theme="@style/SettingTheme"
+            android:screenOrientation="portrait"></activity>
 
         <activity
             android:name=".activities.NewEventActivity"
-            android:theme="@style/SettingTheme"></activity>
+            android:theme="@style/SettingTheme"
+            android:screenOrientation="portrait"></activity>
 
         <activity
             android:name=".activities.ReceiveMsgActivity"
-            android:theme="@style/AppTheme.NoActionBar">
+            android:theme="@style/AppTheme.NoActionBar"
+            android:screenOrientation="portrait">
         </activity>
 
         <activity
             android:name=".activities.InputDialogActivity"
-            android:theme="@style/Theme.InputDialog.NoDisplay"></activity>
+            android:theme="@style/Theme.InputDialog.NoDisplay"
+            android:screenOrientation="portrait"></activity>
 
         <activity
             android:name="com.facebook.FacebookActivity"
             android:configChanges="keyboard|keyboardHidden|screenLayout|screenSize|orientation"
             android:label="@string/app_name"
-            android:theme="@android:style/Theme.Translucent.NoTitleBar" />
+            android:theme="@android:style/Theme.Translucent.NoTitleBar"
+            android:screenOrientation="portrait"/>
 
         <receiver
             android:name="com.google.android.gms.gcm.GcmReceiver"
@@ -148,8 +166,10 @@
         </receiver>
 
 
-        <activity android:name=".activities.WeeklyActivity" />
-        <activity android:name=".activities.EventsActivity" />
+        <activity android:name=".activities.WeeklyActivity"
+            android:screenOrientation="portrait"/>
+        <activity android:name=".activities.EventsActivity"
+            android:screenOrientation="portrait"/>
 
         <provider
             android:name=".database.ITimeDataProivder"

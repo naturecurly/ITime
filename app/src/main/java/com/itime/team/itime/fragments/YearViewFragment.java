@@ -10,6 +10,8 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -51,6 +53,10 @@ public class YearViewFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View v = inflater.inflate(R.layout.fragment_year_view, container, false);
+//        Button mToday = (Button) getActivity().findViewById(R.id.button_today);
+//        mToday.setVisibility(View.GONE);
+//        ImageButton mEventList = (ImageButton) getActivity().findViewById(R.id.event_list);
+//        mEventList.setVisibility(View.GONE);
         //calendarView = (CalendarView) v.findViewById(R.id.year_view);
         mYearRecyclerView = (RecyclerView) v.findViewById(R.id.recycler_view_year_view);
         linearLayoutManager = new LinearLayoutManager(getActivity());
@@ -184,7 +190,13 @@ public class YearViewFragment extends Fragment {
                         ((CalendarFragment) fragment).previousTotal = 0;
                         ((CalendarFragment) fragment).getLinearLayoutManager().scrollToPositionWithOffset(5, 0);
                         ((CalendarFragment) fragment).getRecyclerView().getAdapter().notifyDataSetChanged();
-
+                        TextView title = (TextView) getActivity().findViewById(R.id.toolbar_title);
+                        title.setText(year + "-" + month);
+                        ImageButton imageButton = (ImageButton) getActivity().findViewById(R.id.event_list);
+                        imageButton.setVisibility(View.VISIBLE);
+                        Button mTodayButton = (Button) getActivity().findViewById(R.id.button_today);
+                        mTodayButton.setVisibility(View.VISIBLE);
+                        imageButton.setVisibility(View.VISIBLE);
                         fragmentTransaction.hide(yearFragment);
                         fragmentTransaction.show(fragment);
                         //fragmentTransaction.addToBackStack(null);

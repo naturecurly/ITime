@@ -17,6 +17,9 @@ import java.util.List;
  * Created by leveyleonhardt on 3/19/16.
  */
 public class EventUtil {
+
+    public static boolean isTodayPressed = false;
+
     public static List<JSONObject> getEventFromDate(String dateString) {
         List<JSONObject> list = new ArrayList<>();
         JSONArray response = Events.response;

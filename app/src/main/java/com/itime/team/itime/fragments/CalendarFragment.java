@@ -96,7 +96,10 @@ public class CalendarFragment extends Fragment {
     private List<String> eventDateList = new ArrayList<>();
     private int screenWidth;
     private String mUserId;
-    private Calendar today = Calendar.getInstance();
+    private final Calendar today = Calendar.getInstance();
+    private CalendarView lastCalendarView = null;
+    private CalendarView todayCalendarView = null;
+    private TextView title;
 
     public static CalendarFragment newInstance(Bundle bundle) {
 
@@ -158,7 +161,7 @@ public class CalendarFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_calendar, container, false);
         //CalendarView calendarView = (CalendarView) view.findViewById(R.id.calendar_view);
         //rowHeight = calendarView.getLayoutParams().height;
-        TextView title = (TextView) getActivity().findViewById(R.id.toolbar_title);
+        title = (TextView) getActivity().findViewById(R.id.toolbar_title);
         Calendar now = Calendar.getInstance();
         title.setText(now.get(Calendar.YEAR) + "-" + (now.get(Calendar.MONTH) + 1));
 
@@ -174,13 +177,21 @@ public class CalendarFragment extends Fragment {
                 fillData(Calendar.getInstance());
                 loading = true;
                 previousTotal = 0;
-                linearLayoutManager.scrollToPositionWithOffset(5, 0);
+                EventUtil.isTodayPressed = true;
+
+//                linearLayoutManager.scrollToPositionWithOffset(5, 0);
                 recyclerView.getAdapter().notifyDataSetChanged();
-                CalendarView todayCalendar = (CalendarView) recyclerView.getChildAt(1).findViewById(R.id.calendar_view);
-                todayCalendar.setTodaySelected();
-                if (todayCalendar.isTodayHasEvents()) {
-                    paintLowerPanel(today.get(Calendar.DAY_OF_MONTH), today.get(Calendar.MONTH) + 1, today.get(Calendar.YEAR));
-                }
+                recyclerView.scrollToPosition(5);
+//                EventUtil.isTodayPressed = false;
+//                linearLayoutManager.scrollToPosition(5);
+//                CalendarView todayCalendar = (CalendarView) linearLayoutManager.getChildAt(0).findViewById(R.id.calendar_view);
+//                lastCalendarView = todayCalendar;
+//                todayCalendar.setTodaySelected();
+//                todayCalendarView.setTodaySelected();
+//                Toast.makeText(getActivity(), todayCalendarView.getmShowMonth() + " " + todayCalendarView.getmShowDay(), Toast.LENGTH_SHORT).show();
+//                if (todayCalendar.isTodayHasEvents()) {
+//                    paintLowerPanel(today.get(Calendar.DAY_OF_MONTH), today.get(Calendar.MONTH) + 1, today.get(Calendar.YEAR));
+//                }
             }
         });
         recyclerView = (RecyclerView) view.findViewById(R.id.recycler_view);
@@ -231,21 +242,21 @@ public class CalendarFragment extends Fragment {
         reSetMenuOnClickListener(imageButton);
 
 
-        recyclerView.addOnItemTouchListener(new RecyclerItemClickListener(getActivity(), new RecyclerItemClickListener.OnItemClickListener() {
-            @Override
-            public void onItemClick(View view, int position) {
-                //Toast.makeText(getActivity(), position + "", Toast.LENGTH_LONG).show();
-                if (lastPosition == -1) {
-                    lastPosition = position;
-                } else {
-                    if (recyclerView.findViewHolderForAdapterPosition(lastPosition) != null) {
-                        ((CalendarViewHolder) recyclerView.findViewHolderForLayoutPosition(lastPosition)).calendarView.removeSelectedDate();
-                        Log.d("dateSelected", "Cleared" + lastPosition);
-                    }
-                    lastPosition = position;
-                }
-            }
-        }));
+//        recyclerView.addOnItemTouchListener(new RecyclerItemClickListener(getActivity(), new RecyclerItemClickListener.OnItemClickListener() {
+//            @Override
+//            public void onItemClick(View view, int position) {
+//                //Toast.makeText(getActivity(), position + "", Toast.LENGTH_LONG).show();
+//                if (lastPosition == -1) {
+//                    lastPosition = position;
+//                } else {
+//                    if (recyclerView.findViewHolderForAdapterPosition(lastPosition) != null) {
+//                        ((CalendarViewHolder) recyclerView.findViewHolderForLayoutPosition(lastPosition)).calendarView.removeSelectedDate();
+//                        Log.d("dateSelected", "Cleared" + lastPosition);
+//                    }
+//                    lastPosition = position;
+//                }
+//            }
+//        }));
 
         recyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
             @Override
@@ -434,6 +445,10 @@ public class CalendarFragment extends Fragment {
 
         @Override
         public void onBindViewHolder(CalendarViewHolder holder, int position) {
+//            if (holder.calendarView.isHasToday()) {
+//                todayCalendarView = holder.calendarView;
+//            }
+            boolean flag = false;
             Map<String, Integer> c = dates.get(position);
             //Log.i("testCalendar", dates.get(position).get(Calendar.DATE) + "," + dates.get(position).get(Calendar.MONTH));
             //holder.calendarView = new CalendarView(getActivity(),dates.get(position).get(Calendar.YEAR),dates.get(position).get(Calendar.MONTH),dates.get(position).get(Calendar.DAY_OF_MONTH));
@@ -451,7 +466,10 @@ public class CalendarFragment extends Fragment {
 //                if (eventDateList.contains(cal)) {
 //                    ifEvents[i] = true;
 //                }
-
+                if (cal.get(Calendar.DAY_OF_MONTH) == today.get(Calendar.DAY_OF_MONTH) && cal.get(Calendar.MONTH) == today.get(Calendar.MONTH) && cal.get(Calendar.YEAR) == today.get(Calendar.YEAR)) {
+                    Toast.makeText(getActivity(), cal.get(Calendar.DAY_OF_MONTH) + "", Toast.LENGTH_SHORT).show();
+                    flag = true;
+                }
                 if (eventDateList.contains(cal.get(Calendar.DAY_OF_MONTH) + "-" + (cal.get(Calendar.MONTH) + 1) + "-" + cal.get(Calendar.YEAR))) {
                     ifEvents[i] = true;
                     Log.d("testdate", eventDateList.size() + "");
@@ -460,7 +478,9 @@ public class CalendarFragment extends Fragment {
 
             }
             holder.calendarView.update(c.get("year"), c.get("month"), c.get("day"), ifEvents);
-
+            if (flag) {
+                todayCalendarView = holder.calendarView;
+            }
             //holder.calendarView.update(c);
             //holder.calendarView.update(dates.get(position).get(Calendar.YEAR),dates.get(position).get(Calendar.MONTH),dates.get(position).get(Calendar.DAY_OF_MONTH));
 
@@ -482,6 +502,16 @@ public class CalendarFragment extends Fragment {
             calendarView.setOnDateSelectedListener(new OnDateSelectedListener() {
                 @Override
                 public void dateSelected(float x, float y) {
+                    EventUtil.isTodayPressed = false;
+                    if (lastCalendarView == null) {
+                        lastCalendarView = calendarView;
+                    } else if (lastCalendarView == calendarView) {
+
+                    } else {
+                        lastCalendarView.removeSelectedDate();
+                        lastCalendarView = calendarView;
+                    }
+                    calendarView.invalidate();
                     Calendar now = Calendar.getInstance();
                     List<Integer> eventGroup = new ArrayList<Integer>();
                     List<Integer[]> eventTimeRagne = new ArrayList<Integer[]>();
@@ -516,7 +546,10 @@ public class CalendarFragment extends Fragment {
                         Log.d("first_event_hour", firstTimeCal.get(Calendar.HOUR_OF_DAY) + "");
                         int firstPosition = firstTimeCal.get(Calendar.HOUR_OF_DAY);
                         View firstEventView = relativeLayout.findViewById(100 + firstPosition);
-                        mScrollView.smoothScrollTo(0, DensityUtil.dip2px(getActivity(), 30 * firstPosition));
+                        if (!(now.get(Calendar.YEAR) == year && now.get(Calendar.MONTH) == month - 1 && now.get(Calendar.DAY_OF_MONTH) == day)) {
+                            mScrollView.smoothScrollTo(0, DensityUtil.dip2px(getActivity(), 30 * firstPosition));
+
+                        }
 
                         String start = null;
                         String end = null;
@@ -739,6 +772,9 @@ public class CalendarFragment extends Fragment {
                 }
                 //ft.addToBackStack(null);
                 ft.commit();
+                title.setText("Years");
+                mTodayButton.setVisibility(View.GONE);
+                imageButton.setVisibility(View.GONE);
                 break;
             case R.id.add_event:
                 Intent intent = new Intent(getActivity(), NewEventActivity.class);

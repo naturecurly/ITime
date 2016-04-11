@@ -5,32 +5,64 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:orientation="vertical">
+        android:orientation="vertical"
+        android:focusable="true"
+        android:focusableInTouchMode="true">
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="horizontal">
+            android:orientation="horizontal"
+            android:layout_marginTop="20dp"
+            >
             <RadioGroup
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal">
+                android:orientation="horizontal"
+                android:id="@+id/meeting_detail_radio_group"
+                android:background="@color/white">
                 <RadioButton
                     android:layout_width="wrap_content"
-                    android:layout_height="wrap_content" />
+                    android:layout_height="wrap_content"
+                    android:button="@null"
+                    android:text="@string/meeting_detail_accept"
+                    android:textColor="@color/green_level4"
+                    android:gravity="center"
+                    android:layout_weight="1"
+                    android:textStyle="bold"
+                    android:id="@+id/meeting_detail_radio_accept"
+                    />
                 <RadioButton
                     android:layout_width="wrap_content"
-                    android:layout_height="wrap_content" />
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:button="@null"
+                    android:text="@string/meeting_detail_Maybe"
+                    android:textColor="@color/orange"
+                    android:gravity="center"
+                    android:textStyle="bold"
+                    android:id="@+id/meeting_detail_radio_maybe"/>
                 <RadioButton
                     android:layout_width="wrap_content"
-                    android:layout_height="wrap_content" />
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:button="@null"
+                    android:text="@string/meeting_detail_Decline"
+                    android:textColor="@color/red"
+                    android:gravity="center"
+                    android:textStyle="bold"
+                    android:id="@+id/meeting_detail_radio_decline"/>
             </RadioGroup>
+            <!--<EditText-->
+                <!--android:layout_width="0dp"-->
+                <!--android:layout_height="0dp"-->
+                <!--android:focusable="true"/>-->
         </LinearLayout>
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            android:layout_marginTop="50dp">
+            android:layout_marginTop="40dp">
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="30dp"
@@ -95,6 +127,7 @@
                         android:layout_width="50dp"
                         android:layout_height="50dp"
                         android:src="@drawable/default_profile_image"
+                        android:id="@+id/meeting_detail_image"
                         android:layout_gravity="right"/>
                 </LinearLayout>
 
@@ -105,6 +138,7 @@
                 android:layout_height="30dp"
                 android:background="@color/white"
                 android:text="@string/meeting_detail_attendees"
+                android:id="@+id/meeting_detail_attendee"
                 android:gravity="center_vertical|left"/>
         </LinearLayout>
 
@@ -216,6 +250,7 @@
                 android:layout_marginBottom="1dp"
                 android:background="@color/white"
                 android:orientation="horizontal"
+
                 >
                 <TextView
                     android:layout_width="wrap_content"
@@ -223,17 +258,53 @@
                     android:text="@string/meeting_detail_Punctual"
                     android:gravity="center_vertical"
                     android:textColor="@color/black"
+                    android:layout_weight="20"
                     />
                 <CheckBox
-                    android:layout_width="match_parent"
+                    android:layout_width="wrap_content"
                     android:layout_height="match_parent"
+                    android:layout_weight="1"
                     android:gravity="center_vertical|right"
+                    android:id="@+id/meeting_detail_punctual"
                     />
-
             </LinearLayout>
-
-
         </LinearLayout>
+
+        <fragment xmlns:android="http://schemas.android.com/apk/res/android"
+            android:name="com.google.android.gms.maps.MapFragment"
+            android:id="@+id/meeting_map"
+            android:layout_width="match_parent"
+            android:layout_height="300dp"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/meeting_detail_note"/>
+        <EditText
+            android:layout_width="match_parent"
+            android:layout_height="200dp"
+            android:scrollbars="vertical"
+            android:background="@color/white"
+            android:layout_marginBottom="20dp"
+            android:singleLine="false"
+            android:id="@+id/meeting_detail_note"
+            android:gravity="top"
+            />
+        <Button
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/meeting_detail_email"
+            android:id="@+id/meeting_detail_email"
+            android:layout_marginBottom="20dp"
+            android:background="@color/white"/>
+        <Button
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/meeting_detail_quit"
+            android:background="@color/white"
+            android:gravity="center"
+            android:textColor="@color/red"
+            android:id="@+id/meeting_detail_quit"/>
     </LinearLayout>
 
 </ScrollView>

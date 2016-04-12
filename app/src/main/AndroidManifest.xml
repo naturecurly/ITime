@@ -23,8 +23,8 @@
     <uses-permission android:name="android.permission.WRITE_CONTACTS" />
     <uses-permission android:name="android.permission.SEND_SMS"></uses-permission>
     <uses-permission android:name="android.permission.READ_SMS"></uses-permission>
-    <uses-permission android:name="android.permission.READ_PHONE_STATE"/>
-    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
+    <uses-permission android:name="android.permission.READ_PHONE_STATE" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
 
     <!-- Creating Permission to receive Google Maps -->
     <permission
@@ -67,9 +67,9 @@
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
         android:largeHeap="true"
+        android:launchMode="singleInstance"
         android:supportsRtl="true"
-        android:theme="@style/AppTheme"
-        android:launchMode = "singleInstance">
+        android:theme="@style/AppTheme">
         <!--android:name=".utils.JPushApp"-->
         <activity android:name=".activities.CheckLoginActivity">
             <intent-filter>
@@ -78,8 +78,11 @@
             </intent-filter>
 
             <intent-filter>
-                <action android:name="android.intent.action.VIEW"/>
-                <data android:scheme="http" android:host="54.200.31.237" android:pathPrefix="/openwith"/>
+                <action android:name="android.intent.action.VIEW" />
+                <data
+                    android:host="54.200.31.237"
+                    android:pathPrefix="/openwith"
+                    android:scheme="http" />
                 <!--<data android:scheme="http" android:host="itime.app" android:pathPrefix="/openwith"/>-->
                 <category android:name="android.intent.category.DEFAULT" />
                 <category android:name="android.intent.category.BROWSABLE" />
@@ -89,60 +92,60 @@
 
         <activity
             android:name=".activities.LoginActivity"
-            android:theme="@style/MyAppTheme"
-            android:screenOrientation="portrait"></activity>
+            android:screenOrientation="portrait"
+            android:theme="@style/MyAppTheme"></activity>
 
         <activity
             android:name=".activities.MainActivity"
             android:label="@string/app_name"
+            android:launchMode="singleTask"
             android:screenOrientation="portrait"
-            android:theme="@style/AppTheme.NoActionBar">
-        </activity>
+            android:theme="@style/AppTheme.NoActionBar"></activity>
 
         <activity
             android:name=".activities.DateSelectionActivity"
-            android:theme="@style/AppTheme.NoActionBar"
-            android:screenOrientation="portrait"></activity>
+            android:screenOrientation="portrait"
+            android:theme="@style/AppTheme.NoActionBar"></activity>
 
         <activity
             android:name=".activities.SendInvitationActivity"
-            android:theme="@style/AppTheme.NoActionBar"
-            android:screenOrientation="portrait"></activity>
+            android:screenOrientation="portrait"
+            android:theme="@style/AppTheme.NoActionBar"></activity>
 
         <activity
             android:name=".activities.SettingsActivity"
-            android:theme="@style/SettingTheme"
-            android:screenOrientation="portrait"></activity>
+            android:screenOrientation="portrait"
+            android:theme="@style/SettingTheme"></activity>
 
         <activity
             android:name=".activities.SearchFriendActivity"
-            android:theme="@style/SettingTheme"
-            android:screenOrientation="portrait"></activity>
+            android:screenOrientation="portrait"
+            android:theme="@style/SettingTheme"></activity>
 
         <activity
             android:name=".activities.PhoneContactActivity"
-            android:theme="@style/SettingTheme"
-            android:screenOrientation="portrait"></activity>
+            android:screenOrientation="portrait"
+            android:theme="@style/SettingTheme"></activity>
 
         <activity
             android:name=".activities.NewMeetingActivity"
-            android:theme="@style/SettingTheme"
-            android:screenOrientation="portrait"></activity>
+            android:screenOrientation="portrait"
+            android:theme="@style/SettingTheme"></activity>
 
         <activity
             android:name=".activities.GooglePlacesAutocompleteActivity"
-            android:theme="@style/SettingTheme"
-            android:screenOrientation="portrait"></activity>
+            android:screenOrientation="portrait"
+            android:theme="@style/SettingTheme"></activity>
 
         <activity
             android:name=".activities.MeetingDetailActivity"
-            android:theme="@style/SettingTheme"
-            android:screenOrientation="portrait"></activity>
+            android:screenOrientation="portrait"
+            android:theme="@style/SettingTheme"></activity>
 
         <activity
             android:name=".activities.NewEventActivity"
-            android:theme="@style/SettingTheme"
-            android:screenOrientation="portrait"></activity>
+            android:screenOrientation="portrait"
+            android:theme="@style/SettingTheme"></activity>
 
         <activity
             android:name=".activities.MeetingAttendeesActivity"
@@ -151,21 +154,26 @@
 
         <activity
             android:name=".activities.ReceiveMsgActivity"
-            android:theme="@style/AppTheme.NoActionBar"
-            android:screenOrientation="portrait">
-        </activity>
+            android:screenOrientation="portrait"
+            android:theme="@style/AppTheme.NoActionBar"></activity>
 
         <activity
             android:name=".activities.InputDialogActivity"
-            android:theme="@style/Theme.InputDialog.NoDisplay"
-            android:screenOrientation="portrait"></activity>
+            android:screenOrientation="portrait"
+            android:theme="@style/Theme.InputDialog.NoDisplay"></activity>
 
         <activity
             android:name="com.facebook.FacebookActivity"
             android:configChanges="keyboard|keyboardHidden|screenLayout|screenSize|orientation"
             android:label="@string/app_name"
-            android:theme="@android:style/Theme.Translucent.NoTitleBar"
-            android:screenOrientation="portrait"/>
+            android:screenOrientation="portrait"
+            android:theme="@android:style/Theme.Translucent.NoTitleBar" />
+
+        <activity
+            android:name=".activities.YearViewActivity"
+            android:parentActivityName=".activities.MainActivity"
+            android:screenOrientation="portrait"
+            android:theme="@style/AppTheme.NoActionBar"></activity>
 
         <receiver
             android:name="com.google.android.gms.gcm.GcmReceiver"
@@ -178,10 +186,12 @@
         </receiver>
 
 
-        <activity android:name=".activities.WeeklyActivity"
-            android:screenOrientation="portrait"/>
-        <activity android:name=".activities.EventsActivity"
-            android:screenOrientation="portrait"/>
+        <activity
+            android:name=".activities.WeeklyActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".activities.EventsActivity"
+            android:screenOrientation="portrait" />
 
         <provider
             android:name=".database.ITimeDataProivder"

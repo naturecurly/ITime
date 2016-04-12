@@ -1,6 +1,7 @@
 package com.itime.team.itime.fragments;
 
 import android.animation.ValueAnimator;
+import android.app.usage.UsageEvents;
 import android.content.Intent;
 import android.graphics.Color;
 import android.net.Uri;
@@ -34,6 +35,7 @@ import com.itime.team.itime.R;
 import com.itime.team.itime.activities.EventsActivity;
 import com.itime.team.itime.activities.NewEventActivity;
 import com.itime.team.itime.activities.WeeklyActivity;
+import com.itime.team.itime.activities.YearViewActivity;
 import com.itime.team.itime.bean.Events;
 import com.itime.team.itime.bean.URLs;
 import com.itime.team.itime.bean.User;
@@ -66,6 +68,7 @@ import java.util.Objects;
  */
 public class CalendarFragment extends Fragment {
 
+    private static final int YEAR_REQUEST = 100;
     private RecyclerView recyclerView;
     private List<Map<String, Integer>> dates = new ArrayList<>();
     private int lastPosition = -1;
@@ -473,7 +476,15 @@ public class CalendarFragment extends Fragment {
                 if (eventDateList.contains(cal.get(Calendar.DAY_OF_MONTH) + "-" + (cal.get(Calendar.MONTH) + 1) + "-" + cal.get(Calendar.YEAR))) {
                     ifEvents[i] = true;
                     Log.d("testdate", eventDateList.size() + "");
+                } else if (Events.repeatEvent != null) {
+                    try {
+                        ifEvents[i] = EventUtil.hasRepeatEvent(cal);
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
                 }
+
+
                 cal.add(Calendar.DAY_OF_MONTH, 1);
 
             }
@@ -760,21 +771,20 @@ public class CalendarFragment extends Fragment {
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.item_year_view:
-                Fragment fragment = new YearViewFragment();
-                FragmentTransaction ft = fm.beginTransaction();
-                //ft.detach(getFragmentManager().findFragmentById(R.id.realtab_content)).add(fragment,"list");
-//                ft.replace(R.id.realtab_content, fragment);
-                ft.hide(currentFragment);
-                if (!yearFragment.isAdded()) {
-                    ft.add(R.id.realtab_content, yearFragment);
-                } else {
-                    ft.show(yearFragment);
-                }
-                //ft.addToBackStack(null);
-                ft.commit();
-                title.setText("Years");
-                mTodayButton.setVisibility(View.GONE);
-                imageButton.setVisibility(View.GONE);
+//                Fragment fragment = new YearViewFragment();
+//                FragmentTransaction ft = fm.beginTransaction();
+//                ft.hide(currentFragment);
+//                if (!yearFragment.isAdded()) {
+//                    ft.add(R.id.realtab_content, yearFragment);
+//                } else {
+//                    ft.show(yearFragment);
+//                }
+//                ft.commit();
+//                title.setText("Years");
+//                mTodayButton.setVisibility(View.GONE);
+//                imageButton.setVisibility(View.GONE);
+                Intent start_year_intent = new Intent(getActivity(), YearViewActivity.class);
+                startActivityForResult(start_year_intent, YEAR_REQUEST);
                 break;
             case R.id.add_event:
                 Intent intent = new Intent(getActivity(), NewEventActivity.class);
@@ -858,9 +868,10 @@ public class CalendarFragment extends Fragment {
                 //mResponse = response;
                 Events.response = response;
                 analyseEvents(response);
+                Events.repeatEvent = EventUtil.getRepeatEventsFromEvents(response);
                 recyclerView.getAdapter().notifyDataSetChanged();
-//                Log.i("Event_response", response.toString());
-                System.out.println(response.toString());
+                Log.i("Event_response", response.toString());
+//                System.out.println(response.toString());
             }
         }, new Response.ErrorListener() {
             @Override
@@ -1073,6 +1084,25 @@ public class CalendarFragment extends Fragment {
 
     }
 
-
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (requestCode == YEAR_REQUEST) {
+            if (resultCode == getActivity().RESULT_OK) {
+                Bundle date = data.getExtras();
+                int month = data.getIntExtra("month", today.get(Calendar.MONTH) + 1);
+                int year = data.getIntExtra("year", today.get(Calendar.YEAR));
+                Toast.makeText(getActivity(), month + " " + year, Toast.LENGTH_SHORT).show();
+                Calendar calendar = Calendar.getInstance();
+                calendar.set(year, month - 1, 1);
+                getList().clear();
+                fillData(calendar);
+                this.loading = true;
+                previousTotal = 0;
+                linearLayoutManager.scrollToPositionWithOffset(5, 0);
+                recyclerView.getAdapter().notifyDataSetChanged();
+                title.setText(year + "-" + month);
+            }
+        }
+    }
 }
 

@@ -1,5 +1,6 @@
 package com.itime.team.itime.fragments;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -16,6 +17,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.itime.team.itime.R;
+import com.itime.team.itime.activities.MainActivity;
 import com.itime.team.itime.utils.DateUtil;
 import com.itime.team.itime.views.CalendarView;
 import com.itime.team.itime.views.MonthCalendarView;
@@ -174,33 +176,40 @@ public class YearViewFragment extends Fragment {
                     public void onClick(View v) {
                         //Toast.makeText(getActivity(), "test", Toast.LENGTH_SHORT).show();
                         MonthCalendarView c = (MonthCalendarView) v;
-                        Toast.makeText(getActivity(), ((MonthCalendarView) v).getmShowMonth() + "", Toast.LENGTH_SHORT).show();
+//                        Toast.makeText(getActivity(), ((MonthCalendarView) v).getmShowMonth() + "", Toast.LENGTH_SHORT).show();
                         int year = c.getmShowYear();
                         int month = c.getmShowMonth();
-                        FragmentTransaction fragmentTransaction = getFragmentManager().beginTransaction();
+//                        Intent intent = new Intent(getActivity(), MainActivity.class);
+                        Intent intent = getActivity().getIntent();
                         Bundle bundle = new Bundle();
                         bundle.putInt("year", year);
                         bundle.putInt("month", month);
-                        //fragmentTransaction.replace(R.id.realtab_content, CalendarFragment.newInstance(bundle));
-                        Calendar calendar = Calendar.getInstance();
-                        calendar.set(year, month - 1, 1);
-                        ((CalendarFragment) fragment).getList().clear();
-                        ((CalendarFragment) fragment).fillData(calendar);
-                        ((CalendarFragment) fragment).loading = true;
-                        ((CalendarFragment) fragment).previousTotal = 0;
-                        ((CalendarFragment) fragment).getLinearLayoutManager().scrollToPositionWithOffset(5, 0);
-                        ((CalendarFragment) fragment).getRecyclerView().getAdapter().notifyDataSetChanged();
-                        TextView title = (TextView) getActivity().findViewById(R.id.toolbar_title);
-                        title.setText(year + "-" + month);
-                        ImageButton imageButton = (ImageButton) getActivity().findViewById(R.id.event_list);
-                        imageButton.setVisibility(View.VISIBLE);
-                        Button mTodayButton = (Button) getActivity().findViewById(R.id.button_today);
-                        mTodayButton.setVisibility(View.VISIBLE);
-                        imageButton.setVisibility(View.VISIBLE);
-                        fragmentTransaction.hide(yearFragment);
-                        fragmentTransaction.show(fragment);
-                        //fragmentTransaction.addToBackStack(null);
-                        fragmentTransaction.commit();
+                        intent.putExtras(bundle);
+                        getActivity().setResult(getActivity().RESULT_OK,intent);
+//                        startActivity(intent);
+                        getActivity().finish();
+//                        FragmentTransaction fragmentTransaction = getFragmentManager().beginTransaction();
+
+//                        //fragmentTransaction.replace(R.id.realtab_content, CalendarFragment.newInstance(bundle));
+//                        Calendar calendar = Calendar.getInstance();
+//                        calendar.set(year, month - 1, 1);
+//                        ((CalendarFragment) fragment).getList().clear();
+//                        ((CalendarFragment) fragment).fillData(calendar);
+//                        ((CalendarFragment) fragment).loading = true;
+//                        ((CalendarFragment) fragment).previousTotal = 0;
+//                        ((CalendarFragment) fragment).getLinearLayoutManager().scrollToPositionWithOffset(5, 0);
+//                        ((CalendarFragment) fragment).getRecyclerView().getAdapter().notifyDataSetChanged();
+//                        TextView title = (TextView) getActivity().findViewById(R.id.toolbar_title);
+//                        title.setText(year + "-" + month);
+//                        ImageButton imageButton = (ImageButton) getActivity().findViewById(R.id.event_list);
+//                        imageButton.setVisibility(View.VISIBLE);
+//                        Button mTodayButton = (Button) getActivity().findViewById(R.id.button_today);
+//                        mTodayButton.setVisibility(View.VISIBLE);
+//                        imageButton.setVisibility(View.VISIBLE);
+//                        fragmentTransaction.hide(yearFragment);
+//                        fragmentTransaction.show(fragment);
+//                        //fragmentTransaction.addToBackStack(null);
+//                        fragmentTransaction.commit();
                     }
                 });
             }

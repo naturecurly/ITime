@@ -37,7 +37,7 @@ public class MainActivity extends AppCompatActivity implements
     private MeetingFragment meetingFragment;
     private InboxFragment inboxFragment;
     private SettingsFragment settingsFragment;
-    private YearViewFragment yearViewFragment;
+    //    private YearViewFragment yearViewFragment;
     private RadioButton calendarButton;
     private FragmentManager fragmentManager;
     private TextView title;
@@ -90,10 +90,7 @@ public class MainActivity extends AppCompatActivity implements
 
         meetingFragment = new MeetingFragment();
         settingsFragment = new SettingsFragment();
-        yearViewFragment = new YearViewFragment();
         inboxFragment = new InboxFragment();
-        calendarFragment.setCurrentFragment(calendarFragment, yearViewFragment);
-        yearViewFragment.setCalendarFragment(calendarFragment, yearViewFragment);
         getSupportFragmentManager().beginTransaction().add(R.id.realtab_content, calendarFragment).commit();
     }
 
@@ -105,25 +102,21 @@ public class MainActivity extends AppCompatActivity implements
         if (me == calendarFragment) {
             fragmentManager.beginTransaction().hide(meetingFragment).commit();
             fragmentManager.beginTransaction().hide(settingsFragment).commit();
-            fragmentManager.beginTransaction().hide(yearViewFragment).commit();
             fragmentManager.beginTransaction().hide(inboxFragment).commit();
             fragmentManager.beginTransaction().show(calendarFragment).commit();
         } else if (me == meetingFragment) {
             fragmentManager.beginTransaction().hide(calendarFragment).commit();
             fragmentManager.beginTransaction().hide(settingsFragment).commit();
-            fragmentManager.beginTransaction().hide(yearViewFragment).commit();
             fragmentManager.beginTransaction().hide(inboxFragment).commit();
             fragmentManager.beginTransaction().show(meetingFragment).commit();
         } else if (me == inboxFragment) {
             fragmentManager.beginTransaction().hide(calendarFragment).commit();
             fragmentManager.beginTransaction().hide(settingsFragment).commit();
-            fragmentManager.beginTransaction().hide(yearViewFragment).commit();
             fragmentManager.beginTransaction().hide(meetingFragment).commit();
             fragmentManager.beginTransaction().show(inboxFragment).commit();
         } else if (me == settingsFragment) {
             fragmentManager.beginTransaction().hide(calendarFragment).commit();
             fragmentManager.beginTransaction().hide(meetingFragment).commit();
-            fragmentManager.beginTransaction().hide(yearViewFragment).commit();
             fragmentManager.beginTransaction().hide(inboxFragment).commit();
             fragmentManager.beginTransaction().show(settingsFragment).commit();
         }
@@ -209,4 +202,5 @@ public class MainActivity extends AppCompatActivity implements
         Bugtags.onDispatchTouchEvent(this, event);
         return super.dispatchTouchEvent(event);
     }
+
 }

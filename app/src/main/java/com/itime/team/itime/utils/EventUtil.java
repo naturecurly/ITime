@@ -108,4 +108,57 @@ public class EventUtil {
         }
         return objects;
     }
+
+    public static List<JSONObject> getRepeatEventsFromEvents(JSONArray events) {
+        JSONArray response = Events.response;
+        List<JSONObject> objects = new ArrayList<>();
+        for (int i = 0; i < response.length(); i++) {
+            try {
+                JSONObject object = response.getJSONObject(i);
+                if (!object.getString("event_repeats_type").equals("One-time event")) {
+                    objects.add(object);
+                }
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+
+        }
+        return objects;
+    }
+
+    public static boolean hasRepeatEvent(Calendar calendar) throws JSONException {
+        List<JSONObject> list = Events.repeatEvent;
+        for (int i = 0; i < list.size(); i++) {
+            JSONObject object = list.get(i);
+            String type = object.getString("event_repeats_type");
+            Calendar eventCal = DateUtil.getLocalDateObjectToCalendar(DateUtil.getLocalDateObject(object.getString("event_starts_datetime_new")));
+            int day = calendar.get(Calendar.DAY_OF_YEAR) - eventCal.get(Calendar.DAY_OF_YEAR);
+            if (type.equals("Daily")) {
+                if (calendar.compareTo(eventCal) > 0) {
+                    return true;
+                }
+            } else if (type.equals("Weekly")) {
+                if (day > 0 && day % 7 == 0) {
+                    return true;
+                }
+            } else if (type.equals("Bi-Weekly")) {
+                if (day > 0 && day % 14 == 0) {
+                    return true;
+                }
+            } else if (type.equals("Monthly")) {
+                if (calendar.compareTo(eventCal) > 0) {
+                    if (calendar.get(Calendar.DAY_OF_MONTH) == eventCal.get(Calendar.DAY_OF_MONTH)) {
+                        return true;
+                    }
+                }
+            } else if (type.equals("Yearly")) {
+                if (calendar.compareTo(eventCal) > 0) {
+                    if (calendar.get(Calendar.DAY_OF_MONTH) == eventCal.get(Calendar.DAY_OF_MONTH) && calendar.get(Calendar.MONTH) == eventCal.get(Calendar.MONTH)) {
+                        return true;
+                    }
+                }
+            }
+        }
+        return false;
+    }
 }

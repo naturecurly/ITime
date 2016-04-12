@@ -513,7 +513,11 @@ public class CalendarFragment extends Fragment {
             calendarView.setOnDateSelectedListener(new OnDateSelectedListener() {
                 @Override
                 public void dateSelected(float x, float y) {
-                    EventUtil.isTodayPressed = false;
+                    if (EventUtil.isTodayPressed) {
+                        EventUtil.isTodayPressed = false;
+                        todayCalendarView.invalidate();
+                    }
+
                     if (lastCalendarView == null) {
                         lastCalendarView = calendarView;
                     } else if (lastCalendarView == calendarView) {
@@ -738,6 +742,11 @@ public class CalendarFragment extends Fragment {
                         clickedMonth = 0;
                         clickedYear = 0;
                         Intent intent = new Intent(getActivity(), WeeklyActivity.class);
+                        Bundle bundle = new Bundle();
+                        bundle.putInt("year", year);
+                        bundle.putInt("month", month);
+                        bundle.putInt("day", day);
+                        intent.putExtras(bundle);
                         startActivity(intent);
 
                     } else {

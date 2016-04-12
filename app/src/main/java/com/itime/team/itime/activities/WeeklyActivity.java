@@ -1,5 +1,7 @@
 package com.itime.team.itime.activities;
 
+import android.os.Bundle;
+import android.os.PersistableBundle;
 import android.util.Log;
 
 import com.alamkanak.weekview.WeekViewEvent;
@@ -23,6 +25,8 @@ import java.util.List;
 public class WeeklyActivity extends WeeklyBaseActivity {
     private JSONArray response = Events.response;
     private int flag = 0;
+
+
 
     @Override
     public List<? extends WeekViewEvent> onMonthChange(int newYear, int newMonth) {

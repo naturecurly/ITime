@@ -33,19 +33,26 @@ public abstract class WeeklyBaseActivity extends AppCompatActivity implements We
     private boolean isWeekView = true;
     private Menu mMenu;
     private boolean isLoaded = false;
-
+    private Calendar calendar;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_weekly);
-
+        Intent intent = getIntent();
+        Bundle bundle = intent.getExtras();
+        Toast.makeText(this, "test" + bundle.getInt("day"), Toast.LENGTH_SHORT).show();
+        int day = bundle.getInt("day");
+        int month = bundle.getInt("month");
+        int year = bundle.getInt("year");
+        calendar = Calendar.getInstance();
+        calendar.set(year, month - 1, day);
         Toolbar toolbar = (Toolbar) findViewById(R.id.week_toolbar);
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayShowTitleEnabled(false);
 
         // Get a reference for the week view in the layout.
         mWeekView = (WeekView) findViewById(R.id.weekView);
-        mWeekView.setNumberOfVisibleDays(7);
+        mWeekView.setNumberOfVisibleDays(5);
 
         // Lets change some dimensions to best fit the view.
         mWeekView.setColumnGap((int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 2, getResources().getDisplayMetrics()));
@@ -69,6 +76,7 @@ public abstract class WeeklyBaseActivity extends AppCompatActivity implements We
         // Set up a date time interpreter to interpret how the date and time will be formatted in
         // the week view. This is optional.
         setupDateTimeInterpreter(false);
+        mWeekView.goToDate(calendar);
     }
 
 
@@ -100,6 +108,7 @@ public abstract class WeeklyBaseActivity extends AppCompatActivity implements We
                         mWeekView.setColumnGap((int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 8, getResources().getDisplayMetrics()));
                         mWeekView.setTextSize((int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_SP, 12, getResources().getDisplayMetrics()));
                         mWeekView.setEventTextSize((int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_SP, 12, getResources().getDisplayMetrics()));
+                        mWeekView.goToDate(calendar);
                         isWeekView = false;
 
 
@@ -111,12 +120,14 @@ public abstract class WeeklyBaseActivity extends AppCompatActivity implements We
                         invalidateOptionsMenu();
                         item.setChecked(!item.isChecked());
                         mWeekViewType = TYPE_WEEK_VIEW;
-                        mWeekView.setNumberOfVisibleDays(7);
+                        mWeekView.setNumberOfVisibleDays(5);
 
                         // Lets change some dimensions to best fit the view.
                         mWeekView.setColumnGap((int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 2, getResources().getDisplayMetrics()));
                         mWeekView.setTextSize((int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_SP, 10, getResources().getDisplayMetrics()));
                         mWeekView.setEventTextSize((int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_SP, 10, getResources().getDisplayMetrics()));
+                        mWeekView.goToDate(calendar);
+
                         isWeekView = true;
 
                     }

@@ -19,7 +19,8 @@
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
                 android:id="@+id/meeting_detail_radio_group"
-                android:background="@color/white">
+                android:background="@color/white"
+                android:padding="5dp">
                 <RadioButton
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -71,7 +72,8 @@
                 android:layout_marginBottom="1dp"
                 android:id="@+id/meeting_detail_event_name"
                 android:text="New event"
-                android:textColor="@color/black"/>
+                android:textColor="@color/black"
+                android:paddingLeft="10dp"/>
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="30dp"
@@ -79,7 +81,8 @@
                 android:background="@color/white"
                 android:id="@+id/meeting_detail_city"
                 android:text="Melbourne"
-                android:textColor="@color/black"/>
+                android:textColor="@color/black"
+                android:paddingLeft="10dp"/>
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="30dp"
@@ -88,7 +91,9 @@
                 android:layout_marginBottom="1dp"
                 android:id="@+id/meeting_detail_address"
                 android:text="Carlton"
-                android:textColor="@color/black"/>
+                android:textSize="13dp"
+                android:paddingLeft="10dp"
+                />
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -100,7 +105,8 @@
                     android:layout_height="50dp"
                     android:text="@string/meeting_detail_invite"
                     android:gravity="center_vertical"
-                    android:textColor="@color/black"/>
+                    android:textColor="@color/black"
+                    android:paddingLeft="10dp"/>
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -139,7 +145,8 @@
                 android:background="@color/white"
                 android:text="@string/meeting_detail_attendees"
                 android:id="@+id/meeting_detail_attendee"
-                android:gravity="center_vertical|left"/>
+                android:gravity="center_vertical|left"
+                android:paddingLeft="10dp"/>
         </LinearLayout>
 
 
@@ -154,6 +161,8 @@
                 android:layout_marginBottom="1dp"
                 android:background="@color/white"
                 android:orientation="horizontal"
+                android:paddingLeft="10dp"
+                android:paddingRight="10dp"
                 >
                 <TextView
                     android:layout_width="wrap_content"
@@ -178,6 +187,8 @@
                 android:layout_marginBottom="1dp"
                 android:background="@color/white"
                 android:orientation="horizontal"
+                android:paddingLeft="10dp"
+                android:paddingRight="10dp"
                 >
                 <TextView
                     android:layout_width="wrap_content"
@@ -202,6 +213,8 @@
                 android:layout_marginBottom="1dp"
                 android:background="@color/white"
                 android:orientation="horizontal"
+                android:paddingLeft="10dp"
+                android:paddingRight="10dp"
                 >
                 <TextView
                     android:layout_width="wrap_content"
@@ -226,6 +239,8 @@
                 android:layout_marginBottom="1dp"
                 android:background="@color/white"
                 android:orientation="horizontal"
+                android:paddingLeft="10dp"
+                android:paddingRight="10dp"
                 >
                 <TextView
                     android:layout_width="wrap_content"
@@ -250,7 +265,8 @@
                 android:layout_marginBottom="1dp"
                 android:background="@color/white"
                 android:orientation="horizontal"
-
+                android:paddingLeft="10dp"
+                android:paddingRight="10dp"
                 >
                 <TextView
                     android:layout_width="wrap_content"
@@ -274,7 +290,9 @@
             android:name="com.google.android.gms.maps.MapFragment"
             android:id="@+id/meeting_map"
             android:layout_width="match_parent"
-            android:layout_height="300dp"/>
+            android:layout_height="300dp"
+            android:layout_marginTop="20dp"
+            android:layout_marginBottom="20dp"/>
 
         <TextView
             android:layout_width="wrap_content"

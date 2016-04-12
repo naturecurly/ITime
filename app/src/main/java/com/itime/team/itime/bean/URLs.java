@@ -23,6 +23,8 @@ public class URLs {
     public static final String LOAD_USER_CALENDAR_TYPES = HEAD + "load_user_calendar_types";
     public static final String INSERT_OR_UPDATE_USER_CALENDAR_TYPE = HEAD + "insert_or_update_user_calendar_type";
     public static final String SYNCS = HEAD + "sync";
-    public static final String LOAD_MEETING_INFO = "http://54.200.31.237:8000/load_meeting_infor";
-    public static final String LOAD_MEETING_ATTENDANTS = "http://54.200.31.237:8000/load_meeting_attendants";
+    public static final String LOAD_MEETING_INFO = HEAD + "load_meeting_infor";
+    public static final String LOAD_MEETING_ATTENDANTS = HEAD + "load_meeting_attendants";
+    public static final String MEETING_STATUS_CHANGE_WITH_REASON = HEAD + "meeting_status_change_with_reason";
+    public static final String MEETING_STATUS_CHANGE = HEAD + "meeting_status_change";
 }

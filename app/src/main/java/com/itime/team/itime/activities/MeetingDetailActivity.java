@@ -9,6 +9,7 @@ import android.widget.ImageView;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.android.volley.Request;
 import com.android.volley.Response;
@@ -22,12 +23,16 @@ import com.google.android.gms.maps.model.MarkerOptions;
 import com.itime.team.itime.R;
 import com.itime.team.itime.bean.MeetingInfo;
 import com.itime.team.itime.bean.URLs;
+import com.itime.team.itime.fragments.MeetingDetailReasonDialogFragment;
+import com.itime.team.itime.utils.DateUtil;
 import com.itime.team.itime.utils.JsonObjectFormRequest;
 import com.itime.team.itime.utils.MySingleton;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -46,15 +51,16 @@ public class MeetingDetailActivity extends FragmentActivity implements OnMapRead
     private EditText mNote;
     private Button mEmail, mQuit;
     private ImageView mImage;
+
+    private float mLat;
+    private float mLog;
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_meeting_detail);
         init();
 
-        mMapFragment = (MapFragment) getFragmentManager()
-                .findFragmentById(R.id.meeting_map);
-        mMapFragment.getMapAsync(this);
+
         loadMeetingInfo();
     }
 
@@ -87,9 +93,17 @@ public class MeetingDetailActivity extends FragmentActivity implements OnMapRead
 
     @Override
     public void onMapReady(GoogleMap googleMap) {
-        LatLng sydney = new LatLng(-34, 151);
+        LatLng sydney = new LatLng(mLog, mLat);
         googleMap.addMarker(new MarkerOptions().position(sydney).title("Marker in Sydney"));
         googleMap.moveCamera(CameraUpdateFactory.newLatLng(sydney));
+    }
+
+    private void loadMap(){
+        mLat = mMeetingInfo.getLatitude() == "" ? 144 : Float.valueOf(mMeetingInfo.getLatitude());
+        mLog = mMeetingInfo.getLongitude() == "" ? -37 : Float.valueOf(mMeetingInfo.getLatitude());
+        mMapFragment = (MapFragment) getFragmentManager()
+                .findFragmentById(R.id.meeting_map);
+        mMapFragment.getMapAsync(this);
     }
 
     private void loadMeetingInfo() {
@@ -152,12 +166,61 @@ public class MeetingDetailActivity extends FragmentActivity implements OnMapRead
             mMeetingAddress.setText(mMeetingInfo.getVenue());
             mID.setText(mMeetingInfo.getHostID());
             mName.setText(mMeetingInfo.getHostID());
+            mDeparture.setText(dateOutputFormat(mMeetingInfo.getStart()));
+            mStart.setText(dateOutputFormat(mMeetingInfo.getStart()));
+            mEnd.setText(dateOutputFormat(mMeetingInfo.getEnd()));
+            mRepeat.setText(mMeetingInfo.getRepeat());
+            mPunctual.setChecked(mMeetingInfo.getPunctual());
 
+            loadMap();
         } catch (JSONException e) {
             e.printStackTrace();
         }
     }
 
+    private String dateOutputFormat(Calendar calendar){
+        String time = new SimpleDateFormat("yyyy hh:mm").format(calendar.getTime());
+        int day = calendar.get(Calendar.DAY_OF_MONTH);
+        String  week = DateUtil.weekName[calendar.get(Calendar.DAY_OF_WEEK_IN_MONTH)];
+        String month = DateUtil.month[calendar.get(Calendar.MONTH)];
+        String output = week + ", " + day + " " + month + " " + time;
+        return output;
+
+    }
+
+    private void responseMeeting(String status){
+        JSONObject jsonObject = new JSONObject();
+        try {
+            jsonObject.put("meeting_id", "23C5D415-91E1-4E50-BDF9-26AECFE28506");
+            jsonObject.put("user_id", "1@2.com");
+            jsonObject.put("meeting_status", status);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+        final String url = URLs.MEETING_STATUS_CHANGE;
+        Map<String, String> params = new HashMap();
+        params.put("json", jsonObject.toString());
+
+        JsonObjectFormRequest request = new JsonObjectFormRequest(Request.Method.POST, url, params, new Response.Listener<JSONObject>() {
+            @Override
+            public void onResponse(JSONObject response) {
+                try {
+                    if (!response.getString("result").equals("success")){
+                        Toast.makeText(getApplicationContext(), getString(R.string.time_out), Toast.LENGTH_LONG);
+                    }
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
+        }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+
+            }
+        });
+        MySingleton.getInstance(this).addToRequestQueue(request);
+    }
 
     @Override
     public void onCheckedChanged(RadioGroup group, int checkedId) {
@@ -165,14 +228,22 @@ public class MeetingDetailActivity extends FragmentActivity implements OnMapRead
             mAccept.setBackgroundColor(getResources().getColor(R.color.grey));
             mMaybe.setBackgroundColor(getResources().getColor(R.color.white));
             mDecline.setBackgroundColor(getResources().getColor(R.color.white));
+
+            responseMeeting("Accept");
         } else if(checkedId == mMaybe.getId()){
             mAccept.setBackgroundColor(getResources().getColor(R.color.white));
             mMaybe.setBackgroundColor(getResources().getColor(R.color.grey));
             mDecline.setBackgroundColor(getResources().getColor(R.color.white));
+
+            responseMeeting("Maybe");
         } else if(checkedId == mDecline.getId()){
             mAccept.setBackgroundColor(getResources().getColor(R.color.white));
             mMaybe.setBackgroundColor(getResources().getColor(R.color.white));
             mDecline.setBackgroundColor(getResources().getColor(R.color.grey));
+
+            MeetingDetailReasonDialogFragment dialog = new MeetingDetailReasonDialogFragment();
+            dialog.show(getSupportFragmentManager(),"reasonDialog");
         }
     }
+
 }

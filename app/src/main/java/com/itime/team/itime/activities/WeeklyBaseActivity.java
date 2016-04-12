@@ -34,6 +34,7 @@ public abstract class WeeklyBaseActivity extends AppCompatActivity implements We
     private Menu mMenu;
     private boolean isLoaded = false;
     private Calendar calendar;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -109,6 +110,12 @@ public abstract class WeeklyBaseActivity extends AppCompatActivity implements We
                         mWeekView.setTextSize((int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_SP, 12, getResources().getDisplayMetrics()));
                         mWeekView.setEventTextSize((int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_SP, 12, getResources().getDisplayMetrics()));
                         mWeekView.goToDate(calendar);
+                        Calendar now = Calendar.getInstance();
+                        Calendar visibleDay = mWeekView.getFirstVisibleDay();
+                        if (visibleDay.get(Calendar.YEAR)==now.get(Calendar.YEAR)&&visibleDay.get(Calendar.MONTH)==now.get(Calendar.MONTH)&&visibleDay.get(Calendar.DAY_OF_MONTH)==now.get(Calendar.DAY_OF_MONTH)){
+                            mWeekView.goToHour(now.get(Calendar.HOUR_OF_DAY));
+                        }
+
                         isWeekView = false;
 
 
@@ -127,7 +134,6 @@ public abstract class WeeklyBaseActivity extends AppCompatActivity implements We
                         mWeekView.setTextSize((int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_SP, 10, getResources().getDisplayMetrics()));
                         mWeekView.setEventTextSize((int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_SP, 10, getResources().getDisplayMetrics()));
                         mWeekView.goToDate(calendar);
-
                         isWeekView = true;
 
                     }

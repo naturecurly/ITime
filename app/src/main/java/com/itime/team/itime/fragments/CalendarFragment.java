@@ -103,6 +103,7 @@ public class CalendarFragment extends Fragment {
     private CalendarView lastCalendarView = null;
     private CalendarView todayCalendarView = null;
     private TextView title;
+    private Calendar selectedCalendar = Calendar.getInstance();
 
     public static CalendarFragment newInstance(Bundle bundle) {
 
@@ -534,6 +535,7 @@ public class CalendarFragment extends Fragment {
                     int day = Integer.valueOf(row.getCells()[DateUtil.analysePosition(x, rowHeight)].text);
                     int month = row.getCells()[DateUtil.analysePosition(x, rowHeight)].month;
                     int year = row.getCells()[DateUtil.analysePosition(x, rowHeight)].year;
+                    selectedCalendar.set(year, month - 1, day);
                     if (now.get(Calendar.YEAR) == year && now.get(Calendar.MONTH) == month - 1 && now.get(Calendar.DAY_OF_MONTH) == day) {
                         int nowHour = now.get(Calendar.HOUR_OF_DAY);
                         View v = relativeLayout.findViewById(nowHour + 1);

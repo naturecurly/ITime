@@ -27,6 +27,7 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.WindowManager;
 import android.widget.EditText;
 import android.widget.TextView;
 
@@ -66,6 +67,15 @@ public class CalendarTypeSubFragment extends Fragment {
         TextView title = (TextView) getActivity().findViewById(R.id.setting_toolbar_title);
         title.setText("New Calendar Type");
 
+        /*
+        // Method1: show explicitly, but need show toggle off while this activity is back
+        mCalendarType.requestFocus();
+        InputMethodManager imm = (InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
+        imm.toggleSoftInput(InputMethodManager.SHOW_FORCED, InputMethodManager.HIDE_IMPLICIT_ONLY);
+         */
+
+        // Method2
+        getActivity().getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_VISIBLE);
 
         return view;
     }
@@ -76,6 +86,8 @@ public class CalendarTypeSubFragment extends Fragment {
         menu.removeItem(R.id.action_add);
         inflater.inflate(R.menu.calendar_type_sub, menu);
     }
+
+
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {

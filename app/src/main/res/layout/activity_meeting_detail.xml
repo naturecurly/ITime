@@ -1,328 +1,351 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical" android:layout_width="match_parent"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
     android:layout_height="match_parent">
-    <LinearLayout
+
+    <android.support.design.widget.AppBarLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:theme="@style/AppTheme.AppBarOverlay">
+
+        <android.support.v7.widget.Toolbar
+            android:id="@+id/meeting_detail_toolbar"
+            android:layout_width="match_parent"
+            android:layout_height="?attr/actionBarSize"
+            android:background="?attr/colorPrimary"
+            app:popupTheme="@style/AppTheme.PopupOverlay"
+
+            />
+    </android.support.design.widget.AppBarLayout>
+
+    <ScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:orientation="vertical"
-        android:focusable="true"
-        android:focusableInTouchMode="true">
+        android:orientation="vertical">
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:layout_marginTop="20dp"
-            >
-            <RadioGroup
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:id="@+id/meeting_detail_radio_group"
-                android:background="@color/white"
-                android:padding="5dp">
-                <RadioButton
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:button="@null"
-                    android:text="@string/meeting_detail_accept"
-                    android:textColor="@color/green_level4"
-                    android:gravity="center"
-                    android:layout_weight="1"
-                    android:textStyle="bold"
-                    android:id="@+id/meeting_detail_radio_accept"
-                    />
-                <RadioButton
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:button="@null"
-                    android:text="@string/meeting_detail_Maybe"
-                    android:textColor="@color/orange"
-                    android:gravity="center"
-                    android:textStyle="bold"
-                    android:id="@+id/meeting_detail_radio_maybe"/>
-                <RadioButton
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:button="@null"
-                    android:text="@string/meeting_detail_Decline"
-                    android:textColor="@color/red"
-                    android:gravity="center"
-                    android:textStyle="bold"
-                    android:id="@+id/meeting_detail_radio_decline"/>
-            </RadioGroup>
-            <!--<EditText-->
-                <!--android:layout_width="0dp"-->
-                <!--android:layout_height="0dp"-->
-                <!--android:focusable="true"/>-->
-        </LinearLayout>
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="match_parent"
             android:orientation="vertical"
-            android:layout_marginTop="40dp">
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="30dp"
-                android:gravity="center_vertical"
-                android:background="@color/white"
-                android:layout_marginBottom="1dp"
-                android:id="@+id/meeting_detail_event_name"
-                android:text="New event"
-                android:textColor="@color/black"
-                android:paddingLeft="10dp"/>
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="30dp"
-                android:gravity="center_vertical"
-                android:background="@color/white"
-                android:id="@+id/meeting_detail_city"
-                android:text="Melbourne"
-                android:textColor="@color/black"
-                android:paddingLeft="10dp"/>
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="30dp"
-                android:gravity="center_vertical"
-                android:background="@color/white"
-                android:layout_marginBottom="1dp"
-                android:id="@+id/meeting_detail_address"
-                android:text="Carlton"
-                android:textSize="13dp"
-                android:paddingLeft="10dp"
-                />
+            android:focusable="true"
+            android:focusableInTouchMode="true">
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
-                android:background="@color/white"
-                android:layout_marginBottom="1dp">
+                android:layout_marginTop="20dp"
+                >
+                <RadioGroup
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:id="@+id/meeting_detail_radio_group"
+                    android:background="@color/white"
+                    android:padding="5dp">
+                    <RadioButton
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:button="@null"
+                        android:text="@string/meeting_detail_accept"
+                        android:textColor="@color/green_level4"
+                        android:gravity="center"
+                        android:layout_weight="1"
+                        android:textStyle="bold"
+                        android:id="@+id/meeting_detail_radio_accept"
+                        />
+                    <RadioButton
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:button="@null"
+                        android:text="@string/meeting_detail_Maybe"
+                        android:textColor="@color/orange"
+                        android:gravity="center"
+                        android:textStyle="bold"
+                        android:id="@+id/meeting_detail_radio_maybe"/>
+                    <RadioButton
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:button="@null"
+                        android:text="@string/meeting_detail_Decline"
+                        android:textColor="@color/red"
+                        android:gravity="center"
+                        android:textStyle="bold"
+                        android:id="@+id/meeting_detail_radio_decline"/>
+                </RadioGroup>
+                <!--<EditText-->
+                    <!--android:layout_width="0dp"-->
+                    <!--android:layout_height="0dp"-->
+                    <!--android:focusable="true"/>-->
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:layout_marginTop="40dp">
                 <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="50dp"
-                    android:text="@string/meeting_detail_invite"
+                    android:layout_width="match_parent"
+                    android:layout_height="30dp"
                     android:gravity="center_vertical"
+                    android:background="@color/white"
+                    android:layout_marginBottom="1dp"
+                    android:id="@+id/meeting_detail_event_name"
+                    android:text="New event"
                     android:textColor="@color/black"
                     android:paddingLeft="10dp"/>
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="30dp"
+                    android:gravity="center_vertical"
+                    android:background="@color/white"
+                    android:id="@+id/meeting_detail_city"
+                    android:text="Melbourne"
+                    android:textColor="@color/black"
+                    android:paddingLeft="10dp"/>
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="30dp"
+                    android:gravity="center_vertical"
+                    android:background="@color/white"
+                    android:layout_marginBottom="1dp"
+                    android:id="@+id/meeting_detail_address"
+                    android:text="Carlton"
+                    android:textSize="13dp"
+                    android:paddingLeft="10dp"
+                    />
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="horizontal"
-                    android:gravity="right">
-                    <LinearLayout
+                    android:background="@color/white"
+                    android:layout_marginBottom="1dp">
+                    <TextView
                         android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:orientation="vertical">
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:id="@+id/meeting_detail_name"
-                            android:textColor="@color/black"
-                            android:text="cai"/>
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:id="@+id/meeting_detail_id"
-                            android:textColor="@color/black"
-                            android:text="cai"/>
-                    </LinearLayout>
-                    <ImageView
-                        android:layout_width="50dp"
                         android:layout_height="50dp"
-                        android:src="@drawable/default_profile_image"
-                        android:id="@+id/meeting_detail_image"
-                        android:layout_gravity="right"/>
+                        android:text="@string/meeting_detail_invite"
+                        android:gravity="center_vertical"
+                        android:textColor="@color/black"
+                        android:paddingLeft="10dp"/>
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        android:gravity="right">
+                        <LinearLayout
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:orientation="vertical">
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:id="@+id/meeting_detail_name"
+                                android:textColor="@color/black"
+                                android:text="cai"/>
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:id="@+id/meeting_detail_id"
+                                android:textColor="@color/black"
+                                android:text="cai"/>
+                        </LinearLayout>
+                        <ImageView
+                            android:layout_width="50dp"
+                            android:layout_height="50dp"
+                            android:src="@drawable/default_profile_image"
+                            android:id="@+id/meeting_detail_image"
+                            android:layout_gravity="right"/>
+                    </LinearLayout>
+
                 </LinearLayout>
 
+                <Button
+                    android:layout_width="match_parent"
+                    android:layout_height="30dp"
+                    android:background="@color/white"
+                    android:text="@string/meeting_detail_attendees"
+                    android:id="@+id/meeting_detail_attendee"
+                    android:gravity="center_vertical|left"
+                    android:paddingLeft="10dp"/>
             </LinearLayout>
 
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="50dp"
+                android:orientation="vertical">
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="30dp"
+                    android:layout_marginBottom="1dp"
+                    android:background="@color/white"
+                    android:orientation="horizontal"
+                    android:paddingLeft="10dp"
+                    android:paddingRight="10dp"
+                    >
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="match_parent"
+                        android:text="@string/meeting_detail_depture"
+                        android:gravity="center_vertical"
+                        android:textColor="@color/black"
+                        />
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:text="holder"
+                        android:id="@+id/meeting_detail_depture"
+                        android:gravity="center_vertical|right"
+                        />
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="30dp"
+                    android:layout_marginBottom="1dp"
+                    android:background="@color/white"
+                    android:orientation="horizontal"
+                    android:paddingLeft="10dp"
+                    android:paddingRight="10dp"
+                    >
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="match_parent"
+                        android:text="@string/meeting_detail_starts"
+                        android:gravity="center_vertical"
+                        android:textColor="@color/black"
+                        />
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:text="holder"
+                        android:id="@+id/meeting_detail_starts"
+                        android:gravity="center_vertical|right"
+                        />
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="30dp"
+                    android:layout_marginBottom="1dp"
+                    android:background="@color/white"
+                    android:orientation="horizontal"
+                    android:paddingLeft="10dp"
+                    android:paddingRight="10dp"
+                    >
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="match_parent"
+                        android:text="@string/meeting_detail_ends"
+                        android:gravity="center_vertical"
+                        android:textColor="@color/black"
+                        />
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:text="holder"
+                        android:id="@+id/meeting_detail_ends"
+                        android:gravity="center_vertical|right"
+                        />
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="30dp"
+                    android:layout_marginBottom="1dp"
+                    android:background="@color/white"
+                    android:orientation="horizontal"
+                    android:paddingLeft="10dp"
+                    android:paddingRight="10dp"
+                    >
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="match_parent"
+                        android:text="@string/meeting_detail_repeats"
+                        android:gravity="center_vertical"
+                        android:textColor="@color/black"
+                        />
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:text="holder"
+                        android:id="@+id/meeting_detail_repeats"
+                        android:gravity="center_vertical|right"
+                        />
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="30dp"
+                    android:layout_marginBottom="1dp"
+                    android:background="@color/white"
+                    android:orientation="horizontal"
+                    android:paddingLeft="10dp"
+                    android:paddingRight="10dp"
+                    >
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="match_parent"
+                        android:text="@string/meeting_detail_Punctual"
+                        android:gravity="center_vertical"
+                        android:textColor="@color/black"
+                        android:layout_weight="20"
+                        />
+                    <CheckBox
+                        android:layout_width="wrap_content"
+                        android:layout_height="match_parent"
+                        android:layout_weight="1"
+                        android:gravity="center_vertical|right"
+                        android:id="@+id/meeting_detail_punctual"
+                        />
+                </LinearLayout>
+            </LinearLayout>
+
+            <fragment xmlns:android="http://schemas.android.com/apk/res/android"
+                android:name="com.google.android.gms.maps.MapFragment"
+                android:id="@+id/meeting_map"
+                android:layout_width="match_parent"
+                android:layout_height="300dp"
+                android:layout_marginTop="20dp"
+                android:layout_marginBottom="20dp"/>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/meeting_detail_note"/>
+            <EditText
+                android:layout_width="match_parent"
+                android:layout_height="200dp"
+                android:scrollbars="vertical"
+                android:background="@color/white"
+                android:layout_marginBottom="20dp"
+                android:singleLine="false"
+                android:id="@+id/meeting_detail_note"
+                android:gravity="top"
+                />
             <Button
                 android:layout_width="match_parent"
-                android:layout_height="30dp"
+                android:layout_height="wrap_content"
+                android:text="@string/meeting_detail_email"
+                android:id="@+id/meeting_detail_email"
+                android:layout_marginBottom="20dp"
+                android:background="@color/white"/>
+            <Button
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/meeting_detail_quit"
                 android:background="@color/white"
-                android:text="@string/meeting_detail_attendees"
-                android:id="@+id/meeting_detail_attendee"
-                android:gravity="center_vertical|left"
-                android:paddingLeft="10dp"/>
+                android:gravity="center"
+                android:textColor="@color/red"
+                android:id="@+id/meeting_detail_quit"/>
         </LinearLayout>
+    </ScrollView>
 
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="50dp"
-            android:orientation="vertical">
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="30dp"
-                android:layout_marginBottom="1dp"
-                android:background="@color/white"
-                android:orientation="horizontal"
-                android:paddingLeft="10dp"
-                android:paddingRight="10dp"
-                >
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="match_parent"
-                    android:text="@string/meeting_detail_depture"
-                    android:gravity="center_vertical"
-                    android:textColor="@color/black"
-                    />
-                <TextView
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:text="holder"
-                    android:id="@+id/meeting_detail_depture"
-                    android:gravity="center_vertical|right"
-                    />
-
-            </LinearLayout>
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="30dp"
-                android:layout_marginBottom="1dp"
-                android:background="@color/white"
-                android:orientation="horizontal"
-                android:paddingLeft="10dp"
-                android:paddingRight="10dp"
-                >
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="match_parent"
-                    android:text="@string/meeting_detail_starts"
-                    android:gravity="center_vertical"
-                    android:textColor="@color/black"
-                    />
-                <TextView
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:text="holder"
-                    android:id="@+id/meeting_detail_starts"
-                    android:gravity="center_vertical|right"
-                    />
-
-            </LinearLayout>
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="30dp"
-                android:layout_marginBottom="1dp"
-                android:background="@color/white"
-                android:orientation="horizontal"
-                android:paddingLeft="10dp"
-                android:paddingRight="10dp"
-                >
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="match_parent"
-                    android:text="@string/meeting_detail_ends"
-                    android:gravity="center_vertical"
-                    android:textColor="@color/black"
-                    />
-                <TextView
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:text="holder"
-                    android:id="@+id/meeting_detail_ends"
-                    android:gravity="center_vertical|right"
-                    />
-
-            </LinearLayout>
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="30dp"
-                android:layout_marginBottom="1dp"
-                android:background="@color/white"
-                android:orientation="horizontal"
-                android:paddingLeft="10dp"
-                android:paddingRight="10dp"
-                >
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="match_parent"
-                    android:text="@string/meeting_detail_repeats"
-                    android:gravity="center_vertical"
-                    android:textColor="@color/black"
-                    />
-                <TextView
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:text="holder"
-                    android:id="@+id/meeting_detail_repeats"
-                    android:gravity="center_vertical|right"
-                    />
-
-            </LinearLayout>
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="30dp"
-                android:layout_marginBottom="1dp"
-                android:background="@color/white"
-                android:orientation="horizontal"
-                android:paddingLeft="10dp"
-                android:paddingRight="10dp"
-                >
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="match_parent"
-                    android:text="@string/meeting_detail_Punctual"
-                    android:gravity="center_vertical"
-                    android:textColor="@color/black"
-                    android:layout_weight="20"
-                    />
-                <CheckBox
-                    android:layout_width="wrap_content"
-                    android:layout_height="match_parent"
-                    android:layout_weight="1"
-                    android:gravity="center_vertical|right"
-                    android:id="@+id/meeting_detail_punctual"
-                    />
-            </LinearLayout>
-        </LinearLayout>
-
-        <fragment xmlns:android="http://schemas.android.com/apk/res/android"
-            android:name="com.google.android.gms.maps.MapFragment"
-            android:id="@+id/meeting_map"
-            android:layout_width="match_parent"
-            android:layout_height="300dp"
-            android:layout_marginTop="20dp"
-            android:layout_marginBottom="20dp"/>
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/meeting_detail_note"/>
-        <EditText
-            android:layout_width="match_parent"
-            android:layout_height="200dp"
-            android:scrollbars="vertical"
-            android:background="@color/white"
-            android:layout_marginBottom="20dp"
-            android:singleLine="false"
-            android:id="@+id/meeting_detail_note"
-            android:gravity="top"
-            />
-        <Button
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="@string/meeting_detail_email"
-            android:id="@+id/meeting_detail_email"
-            android:layout_marginBottom="20dp"
-            android:background="@color/white"/>
-        <Button
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="@string/meeting_detail_quit"
-            android:background="@color/white"
-            android:gravity="center"
-            android:textColor="@color/red"
-            android:id="@+id/meeting_detail_quit"/>
-    </LinearLayout>
-
-</ScrollView>
+</LinearLayout>

@@ -1,7 +1,11 @@
 package com.itime.team.itime.activities;
 
+import android.content.Intent;
 import android.os.Bundle;
-import android.support.v4.app.FragmentActivity;
+import android.support.v7.app.ActionBar;
+import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
+import android.view.View;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
@@ -39,7 +43,7 @@ import java.util.Map;
 /**
  * Created by mac on 16/4/5.
  */
-public class MeetingDetailActivity extends FragmentActivity implements OnMapReadyCallback, RadioGroup.OnCheckedChangeListener {
+public class MeetingDetailActivity extends AppCompatActivity implements OnMapReadyCallback, RadioGroup.OnCheckedChangeListener,View.OnClickListener {
     private MapFragment mMapFragment;
     private RadioGroup mRadioGroup;
     private RadioButton mAccept, mMaybe, mDecline;
@@ -59,12 +63,24 @@ public class MeetingDetailActivity extends FragmentActivity implements OnMapRead
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_meeting_detail);
         init();
-
-
         loadMeetingInfo();
     }
 
     private void init(){
+        Toolbar toolbar = (Toolbar) findViewById(R.id.meeting_detail_toolbar);
+        setSupportActionBar(toolbar);
+        setTitle(R.string.meeting_detail_title);
+        toolbar.setNavigationOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                onBackPressed();
+            }
+        });
+        ActionBar actionBar = getSupportActionBar();
+        if (actionBar != null) {
+            actionBar.setDisplayHomeAsUpEnabled(true);
+        }
+
         mRadioGroup = (RadioGroup) findViewById(R.id.meeting_detail_radio_group);
         mAccept = (RadioButton) findViewById(R.id.meeting_detail_radio_accept);
         mMaybe = (RadioButton) findViewById(R.id.meeting_detail_radio_maybe);
@@ -89,6 +105,7 @@ public class MeetingDetailActivity extends FragmentActivity implements OnMapRead
         mNote.clearFocus();
 
         mImage = (ImageView) findViewById(R.id.meeting_detail_image);
+        mAttendee.setOnClickListener(this);
     }
 
     @Override
@@ -246,4 +263,11 @@ public class MeetingDetailActivity extends FragmentActivity implements OnMapRead
         }
     }
 
+    @Override
+    public void onClick(View v) {
+        if (v.getId() == mAttendee.getId()){
+            Intent intent = new Intent(this, MeetingAttendeesActivity.class);
+            startActivity(intent);
+        }
+    }
 }

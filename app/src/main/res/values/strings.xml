@@ -96,6 +96,8 @@
     <string name="meeting_detail_quit">Quit Meeting</string>
     <string name="meeting_detail_reason">Reason</string>
     <string name="meeting_detail_reason_content">Why do you reject the meeting?</string>
+    <string name="meeting_detail_title">Meeting Detail</string>
+    <string name="meeting_attendees_title">Attendees</string>
 
     <string name="check_login_timeout">Timeout, please check your internet</string>
 

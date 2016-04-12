@@ -145,6 +145,11 @@
             android:screenOrientation="portrait"></activity>
 
         <activity
+            android:name=".activities.MeetingAttendeesActivity"
+            android:theme="@style/SettingTheme"
+            android:screenOrientation="portrait"></activity>
+
+        <activity
             android:name=".activities.ReceiveMsgActivity"
             android:theme="@style/AppTheme.NoActionBar"
             android:screenOrientation="portrait">

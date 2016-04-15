@@ -80,6 +80,7 @@ public class CalendarFragment extends Fragment {
     private MeetingScrollView mScrollView;
     private boolean isExpended = false;
     private JSONArray mResponse;
+    private boolean scroll_flag;
 
     public LinearLayoutManager getLinearLayoutManager() {
         return linearLayoutManager;
@@ -239,6 +240,10 @@ public class CalendarFragment extends Fragment {
                     animator.setDuration(500);
                     animator.setInterpolator(new DecelerateInterpolator());
                     animator.start();
+                }
+                if (scroll_flag) {
+                    scrollToDate(selectedCalendar);
+                    scroll_flag = false;
                 }
             }
         });
@@ -512,12 +517,15 @@ public class CalendarFragment extends Fragment {
             itemView.setOnClickListener(this);
             calendarView = (CalendarView) itemView.findViewById(R.id.calendar_view);
             calendarView.setOnDateSelectedListener(new OnDateSelectedListener() {
+                List<JSONObject> objectList;
+
                 @Override
                 public void dateSelected(float x, float y) {
                     if (EventUtil.isTodayPressed) {
                         EventUtil.isTodayPressed = false;
                         todayCalendarView.invalidate();
                     }
+                    scroll_flag = true;
 
                     if (lastCalendarView == null) {
                         lastCalendarView = calendarView;
@@ -529,7 +537,7 @@ public class CalendarFragment extends Fragment {
                     }
                     calendarView.invalidate();
                     Calendar now = Calendar.getInstance();
-                    List<Integer> eventGroup = new ArrayList<Integer>();
+                    final List<Integer> eventGroup = new ArrayList<Integer>();
                     List<Integer[]> eventTimeRagne = new ArrayList<Integer[]>();
                     CalendarView.Row row = calendarView.getRows()[0];
                     int day = Integer.valueOf(row.getCells()[DateUtil.analysePosition(x, rowHeight)].text);
@@ -547,7 +555,7 @@ public class CalendarFragment extends Fragment {
                         addLowerViews(relativeLayout);
                         //relativeLayout.invalidate();
                         Toast.makeText(getActivity(), "has event", Toast.LENGTH_SHORT).show();
-                        List<JSONObject> objectList = EventUtil.getEventFromDate(day + "-" + month + "-" + year);
+                        objectList = EventUtil.getEventFromDate(day + "-" + month + "-" + year);
                         objectList = EventUtil.sortEvents(objectList);
 
                         JSONObject firstObject = objectList.get(0);
@@ -646,6 +654,7 @@ public class CalendarFragment extends Fragment {
 
                         for (int i = 0; i < eventGroup.size(); i += 2) {
                             if (eventGroup.get(i) == eventGroup.get(i + 1)) {
+                                final int flag = i;
                                 int starthour = 0;
                                 int endhour = 0;
                                 try {
@@ -665,6 +674,23 @@ public class CalendarFragment extends Fragment {
                                 TextView eventView = new TextView(getActivity());
                                 RelativeLayout.LayoutParams eventParam = new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
                                 eventView.setBackgroundColor(Color.CYAN);
+
+                                eventView.setOnClickListener(new View.OnClickListener() {
+                                    @Override
+                                    public void onClick(View v) {
+                                        try {
+                                            String id =  objectList.get(eventGroup.get(flag)).getString("event_id");
+                                            Bundle bundle = new Bundle();
+                                            bundle.putString("event_id",id);
+                                            /*
+                                            * add intent to start activity here
+                                            * */
+
+                                        } catch (JSONException e) {
+                                            e.printStackTrace();
+                                        }
+                                    }
+                                });
                                 try {
                                     eventView.setText(objectList.get(eventGroup.get(i)).getString("event_name"));
                                 } catch (JSONException e) {
@@ -699,11 +725,24 @@ public class CalendarFragment extends Fragment {
                                         e.printStackTrace();
                                     }
                                     TextView eventView = new TextView(getActivity());
+
                                     try {
                                         eventView.setText(objectList.get(num).getString("event_name"));
+                                        final String id = objectList.get(num).getString("event_id");
+                                        eventView.setOnClickListener(new View.OnClickListener() {
+                                            @Override
+                                            public void onClick(View v) {
+                                                Bundle bundle = new Bundle();
+                                                bundle.putString("event_id",id);
+                                            /*
+                                            * add intent to start activity here
+                                            * */
+                                            }
+                                        });
                                     } catch (JSONException e) {
                                         e.printStackTrace();
                                     }
+
                                     RelativeLayout.LayoutParams eventParamOverlap = new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
                                     eventView.setBackgroundColor(Color.CYAN);
                                     TextView view = (TextView) relativeLayout.findViewById(1);
@@ -1114,6 +1153,16 @@ public class CalendarFragment extends Fragment {
                 title.setText(year + "-" + month);
             }
         }
+    }
+
+    public void scrollToDate(Calendar calendar) {
+        getList().clear();
+        fillData(calendar);
+        this.loading = true;
+        previousTotal = 0;
+        linearLayoutManager.scrollToPositionWithOffset(5, 0);
+        recyclerView.getAdapter().notifyDataSetChanged();
+
     }
 }
 

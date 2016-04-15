@@ -27,4 +27,11 @@ public class URLs {
     public static final String LOAD_MEETING_ATTENDANTS = HEAD + "load_meeting_attendants";
     public static final String MEETING_STATUS_CHANGE_WITH_REASON = HEAD + "meeting_status_change_with_reason";
     public static final String MEETING_STATUS_CHANGE = HEAD + "meeting_status_change";
+    public static final String LOAD_INBOX = HEAD + "load_inbox";
+    public static final String MARK_MESSAGE_TO_READ = HEAD + "mark_message_to_read";
+    public static final String MARK_MESSAGE_TO_USELESS = HEAD + "mark_message_to_useless";
+    public static final String UNREAD_MESSAGE_COUNT = HEAD + "unread_message_count";
+    public static final String DELETE_MESSAGE = HEAD + "delete_message";
+    public static final String MARK_ALL_MESSAGES_TO_READ = HEAD + "mark_all_messages_to_read";
+    public static final String DELETE_ALL_MESSAGES = HEAD + "delete_all_messages";
 }

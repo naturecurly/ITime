@@ -58,6 +58,9 @@ public class MeetingDetailActivity extends AppCompatActivity implements OnMapRea
 
     private float mLat;
     private float mLog;
+
+    public static final String ARG_MEETING_ID = "arg_meeting_id";
+    private String mMeetingId;
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -80,6 +83,8 @@ public class MeetingDetailActivity extends AppCompatActivity implements OnMapRea
         if (actionBar != null) {
             actionBar.setDisplayHomeAsUpEnabled(true);
         }
+
+        mMeetingId = getIntent().getStringExtra(ARG_MEETING_ID);
 
         mRadioGroup = (RadioGroup) findViewById(R.id.meeting_detail_radio_group);
         mAccept = (RadioButton) findViewById(R.id.meeting_detail_radio_accept);
@@ -126,7 +131,7 @@ public class MeetingDetailActivity extends AppCompatActivity implements OnMapRea
     private void loadMeetingInfo() {
         JSONObject jsonObject = new JSONObject();
         try {
-            jsonObject.put("meeting_id", "23C5D415-91E1-4E50-BDF9-26AECFE28506");
+            jsonObject.put("meeting_id", mMeetingId);
             jsonObject.put("user_id", "1@2.com");
         } catch (JSONException e) {
             e.printStackTrace();

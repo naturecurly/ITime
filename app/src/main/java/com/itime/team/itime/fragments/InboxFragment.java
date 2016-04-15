@@ -16,6 +16,7 @@
 
 package com.itime.team.itime.fragments;
 
+import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -25,9 +26,19 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.BaseAdapter;
+import android.widget.ListView;
 import android.widget.TextView;
 
+import com.android.volley.VolleyError;
 import com.itime.team.itime.R;
+import com.itime.team.itime.bean.User;
+import com.itime.team.itime.model.ParcelableMessage;
+import com.itime.team.itime.task.InboxTask;
+import com.itime.team.itime.utils.DateUtil;
+
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 
 /**
  * Created by Xuhui Chen (yorkfine) on 22/03/16.
@@ -42,12 +53,19 @@ public class InboxFragment extends Fragment {
     /* Status: UNREAD or ALL */
     private int mStatus = UNREAD;
 
+    private ListView messageListView;
+    private MessageAdapter mAdapter;
+
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         final View view = inflater.inflate(R.layout.fragment_inbox, null);
         setHasOptionsMenu(true);
         //setTitle();
+
+        messageListView = (ListView) view.findViewById(R.id.inbox_message_list);
+        mAdapter = new MessageAdapter(getActivity(), new ParcelableMessage[0]);
+        messageListView.setAdapter(mAdapter);
         return view;
     }
 
@@ -93,5 +111,89 @@ public class InboxFragment extends Fragment {
                 break;
         }
 
+    }
+
+    @Override
+    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
+        setMessages();
+    }
+
+    public void setMessages() {
+        InboxTask inboxTask = InboxTask.getInstance(getActivity());
+        InboxTask.Callback callback = new InboxTask.Callback() {
+            @Override
+            public void callback(ParcelableMessage[] messages) {
+                mAdapter.loadMessages(messages);
+            }
+
+            @Override
+            public void callbackError(VolleyError error) {
+
+            }
+        };
+        inboxTask.loadMessage(User.ID, callback);
+    }
+
+    public class MessageAdapter extends BaseAdapter {
+
+        private ParcelableMessage [] messageData = null;
+        private Context mContext;
+
+        /* show unread or all messages */
+        private boolean showAll = false;
+
+        public MessageAdapter(Context context, ParcelableMessage [] messages) {
+            mContext = context;
+            messageData = messages;
+        }
+
+        public void loadMessages(ParcelableMessage [] messageData) {
+            this.messageData = messageData;
+            notifyDataSetChanged();
+        }
+
+        @Override
+        public int getCount() {
+            return messageData.length;
+        }
+
+        @Override
+        public Object getItem(int position) {
+            return messageData[position];
+        }
+
+        @Override
+        public long getItemId(int position) {
+            return position;
+        }
+
+        @Override
+        public View getView(int position, View convertView, ViewGroup parent) {
+            ViewHolder holder;
+            if (convertView == null) {
+                LayoutInflater inflater = LayoutInflater.from(mContext);
+                convertView = inflater.inflate(R.layout.view_message_list_cell, null);
+                holder = new ViewHolder();
+                holder.mMessageSubTitle = (TextView) convertView.findViewById(R.id.message_subtitle);
+                holder.mMessageTime = (TextView) convertView.findViewById(R.id.message_time);
+                holder.mMessageBody = (TextView) convertView.findViewById(R.id.message_body);
+                convertView.setTag(holder);
+            } else {
+                holder = (ViewHolder) convertView.getTag();
+            }
+            holder.mMessageSubTitle.setText(messageData[position].messageSubtitle);
+            DateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+            String createTime = formatter.format(messageData[position].createdTime);
+            holder.mMessageTime.setText(createTime);
+            holder.mMessageBody.setText(messageData[position].messageBody);
+            return convertView;
+        }
+
+        private final class ViewHolder {
+            private TextView mMessageSubTitle = null;
+            private TextView mMessageTime = null;
+            private TextView mMessageBody = null;
+        }
     }
 }

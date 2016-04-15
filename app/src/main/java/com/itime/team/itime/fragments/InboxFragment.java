@@ -17,7 +17,9 @@
 package com.itime.team.itime.fragments;
 
 import android.content.Context;
+import android.graphics.Color;
 import android.os.Bundle;
+import android.os.Parcel;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
@@ -66,7 +68,7 @@ public class InboxFragment extends Fragment {
         //setTitle();
 
         messageListView = (ListView) view.findViewById(R.id.inbox_message_list);
-        mAdapter = new MessageAdapter(getActivity(), new ArrayList<ParcelableMessage>());
+        mAdapter = new MessageAdapter(getActivity(), new ArrayList<ParcelableMessage>(), mStatus == ALL);
         messageListView.setAdapter(mAdapter);
         return view;
     }
@@ -83,8 +85,7 @@ public class InboxFragment extends Fragment {
             mStatus = (mStatus+1)%2;
             setTitle();
             setItemTitle(item);
-            // TODO: 22/03/16 Reload the list view
-
+            mAdapter.setShowAll(mStatus == ALL);
         }
         return super.onOptionsItemSelected(item);
     }
@@ -140,14 +141,26 @@ public class InboxFragment extends Fragment {
     public class MessageAdapter extends BaseAdapter {
 
         private List<ParcelableMessage> messageData = null;
+        private List<ParcelableMessage> unReadMessageData = null;
         private Context mContext;
 
         /* show unread or all messages */
         private boolean showAll = false;
 
-        public MessageAdapter(Context context, List<ParcelableMessage> messages) {
+        public MessageAdapter(Context context, List<ParcelableMessage> messages, boolean showAll) {
             mContext = context;
             messageData = messages;
+            this.showAll = showAll;
+            setUnReadMessageData(messageData);
+        }
+
+        private void setUnReadMessageData(List<ParcelableMessage> messageData) {
+            unReadMessageData = new ArrayList<>();
+            for (ParcelableMessage m : messageData) {
+                if (m.ifRead) {
+                    unReadMessageData.add(m);
+                }
+            }
         }
 
         public void loadMessages(List<ParcelableMessage> messageData) {
@@ -155,14 +168,23 @@ public class InboxFragment extends Fragment {
             notifyDataSetChanged();
         }
 
+        public boolean isShowAll() {
+            return showAll;
+        }
+
+        public void setShowAll(boolean showAll) {
+            this.showAll = showAll;
+            notifyDataSetChanged();
+        }
+
         @Override
         public int getCount() {
-            return messageData.size();
+            return showAll ? messageData.size() : unReadMessageData.size();
         }
 
         @Override
         public Object getItem(int position) {
-            return messageData.get(position);
+            return showAll ? messageData.get(position) : unReadMessageData.get(position);
         }
 
         @Override
@@ -172,6 +194,7 @@ public class InboxFragment extends Fragment {
 
         @Override
         public View getView(int position, View convertView, ViewGroup parent) {
+
             ViewHolder holder;
             if (convertView == null) {
                 LayoutInflater inflater = LayoutInflater.from(mContext);
@@ -184,7 +207,12 @@ public class InboxFragment extends Fragment {
             } else {
                 holder = (ViewHolder) convertView.getTag();
             }
+
             ParcelableMessage message = (ParcelableMessage) getItem(position);
+            if (message.ifRead) {
+                convertView.setBackgroundColor(Color.GRAY);
+            }
+
             holder.mMessageTitle.setText(message.messageTitle);
             DateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
             String createTime = formatter.format(message.createdTime);

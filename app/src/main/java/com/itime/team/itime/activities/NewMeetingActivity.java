@@ -35,7 +35,6 @@ import com.itime.team.itime.fragments.NewMeetingRepeatDialogFragment;
 import com.itime.team.itime.utils.DateUtil;
 import com.itime.team.itime.utils.JsonObjectFormRequest;
 import com.itime.team.itime.utils.MySingleton;
-import com.itime.team.itime.utils.URLConnectionUtil;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -339,10 +338,10 @@ public class NewMeetingActivity extends AppCompatActivity implements View.OnTouc
         JSONObject json = new JSONObject();
         try {
             json.put("event_is_punctual",punctual);
-            json.put("event_starts_datetime", URLConnectionUtil.encode(startDateForPost));
-            json.put("event_ends_datetime", URLConnectionUtil.encode(endDateForPost));
+            json.put("event_starts_datetime", startDateForPost);
+            json.put("event_ends_datetime", endDateForPost);
             json.put("event_comment",comment);
-            json.put("event_name",name);
+            json.put("event_name",name.equals("") ? getString(R.string.new_meeting) : name);
             json.put("friends_id",friendID);
             json.put("event_repeats_type",repeative);
             json.put("event_latitude",mLat);

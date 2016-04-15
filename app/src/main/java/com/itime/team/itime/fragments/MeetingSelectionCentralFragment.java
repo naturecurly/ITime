@@ -638,8 +638,10 @@ public class MeetingSelectionCentralFragment extends Fragment implements ScrollV
                     duration = "6hrs";break;
             }
             post.put("duration", duration);
+//            post.put("starts", URLConnectionUtil.encode(mStartDateForPost));
             post.put("starts", URLConnectionUtil.encode(mStartDateForPost));
             post.put("events",new JSONArray());
+//            post.put("ends",URLConnectionUtil.encode(mEndDateForPost));
             post.put("ends",URLConnectionUtil.encode(mEndDateForPost));
             post.put("friend_id",friendID);
             requestJSONArray(mJsonManager, post, url, "match_time_with_friends");

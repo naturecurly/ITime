@@ -65,6 +65,7 @@
     <string name="new_meeting_send_invitation_successful">Meeting invitation has been sent successfully</string>
     <string name="new_meeting_confirm_title">Sending Invitation</string>
     <string name="new_meeting_confirm_content">Do you want to send the Meeting Invitation</string>
+    <string name="new_meeting">New Meeting</string>
 
     <string name="new_event_title">New Event</string>
 

@@ -13,7 +13,7 @@
     <!-- upper part-->
     <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="20dp"
+        android:layout_height="wrap_content"
         android:orientation="horizontal" >
 
         <TextView
@@ -26,13 +26,13 @@
 
         <!-- set ellipsize for long subtitle -->
         <TextView
-            android:id="@+id/message_subtitle"
+            android:id="@+id/message_title"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
             android:layout_alignParentLeft="true"
             android:layout_toLeftOf="@id/message_time"
-            android:singleLine="true"
-            android:ellipsize="end"
+            style="@style/InboxMessageTitle"
+            android:text="message title"
             />
 
     </RelativeLayout>
@@ -41,7 +41,8 @@
     <TextView
         android:id="@+id/message_body"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content" />
+        android:layout_height="wrap_content"
+        style="@style/InboxMessageBody"/>
 
 
 </LinearLayout>

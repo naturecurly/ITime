@@ -35,6 +35,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.IOException;
+import java.util.List;
 
 /**
  * Created by Xuhui Chen (yorkfine) on 15/04/16.
@@ -63,7 +64,7 @@ public class InboxTask {
 
     // TODO: 15/04/16 Combine two callback function into one with success and error status
     public interface Callback {
-        public void callback(ParcelableMessage[] messages);
+        public void callback(List<ParcelableMessage> messages);
         public void callbackError(VolleyError error);
     }
 
@@ -86,16 +87,12 @@ public class InboxTask {
                         Log.i(LOG_TAG, response.toString());
 
                         // TODO: 29/03/16 do in worker thread
-                        final ParcelableMessage[] messages = new ParcelableMessage[response.length()];
+                        List<ParcelableMessage> messages;
                         try {
-                            for (int i = 0; i < response.length(); i++) {
-                                messages[i] = LoganSquare.parse(response.getJSONObject(i).toString(), ParcelableMessage.class);
-                            }
+                             messages = LoganSquare.parseList(response.toString(), ParcelableMessage.class);
+
 
                         } catch (IOException e) {
-                            e.printStackTrace();
-                            return;
-                        } catch (JSONException e) {
                             e.printStackTrace();
                             return;
                         }

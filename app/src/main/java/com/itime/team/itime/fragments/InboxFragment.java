@@ -39,6 +39,8 @@ import com.itime.team.itime.utils.DateUtil;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created by Xuhui Chen (yorkfine) on 22/03/16.
@@ -64,7 +66,7 @@ public class InboxFragment extends Fragment {
         //setTitle();
 
         messageListView = (ListView) view.findViewById(R.id.inbox_message_list);
-        mAdapter = new MessageAdapter(getActivity(), new ParcelableMessage[0]);
+        mAdapter = new MessageAdapter(getActivity(), new ArrayList<ParcelableMessage>());
         messageListView.setAdapter(mAdapter);
         return view;
     }
@@ -123,7 +125,7 @@ public class InboxFragment extends Fragment {
         InboxTask inboxTask = InboxTask.getInstance(getActivity());
         InboxTask.Callback callback = new InboxTask.Callback() {
             @Override
-            public void callback(ParcelableMessage[] messages) {
+            public void callback(List<ParcelableMessage> messages) {
                 mAdapter.loadMessages(messages);
             }
 
@@ -137,30 +139,30 @@ public class InboxFragment extends Fragment {
 
     public class MessageAdapter extends BaseAdapter {
 
-        private ParcelableMessage [] messageData = null;
+        private List<ParcelableMessage> messageData = null;
         private Context mContext;
 
         /* show unread or all messages */
         private boolean showAll = false;
 
-        public MessageAdapter(Context context, ParcelableMessage [] messages) {
+        public MessageAdapter(Context context, List<ParcelableMessage> messages) {
             mContext = context;
             messageData = messages;
         }
 
-        public void loadMessages(ParcelableMessage [] messageData) {
+        public void loadMessages(List<ParcelableMessage> messageData) {
             this.messageData = messageData;
             notifyDataSetChanged();
         }
 
         @Override
         public int getCount() {
-            return messageData.length;
+            return messageData.size();
         }
 
         @Override
         public Object getItem(int position) {
-            return messageData[position];
+            return messageData.get(position);
         }
 
         @Override
@@ -175,23 +177,24 @@ public class InboxFragment extends Fragment {
                 LayoutInflater inflater = LayoutInflater.from(mContext);
                 convertView = inflater.inflate(R.layout.view_message_list_cell, null);
                 holder = new ViewHolder();
-                holder.mMessageSubTitle = (TextView) convertView.findViewById(R.id.message_subtitle);
+                holder.mMessageTitle = (TextView) convertView.findViewById(R.id.message_title);
                 holder.mMessageTime = (TextView) convertView.findViewById(R.id.message_time);
                 holder.mMessageBody = (TextView) convertView.findViewById(R.id.message_body);
                 convertView.setTag(holder);
             } else {
                 holder = (ViewHolder) convertView.getTag();
             }
-            holder.mMessageSubTitle.setText(messageData[position].messageSubtitle);
+            ParcelableMessage message = (ParcelableMessage) getItem(position);
+            holder.mMessageTitle.setText(message.messageTitle);
             DateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-            String createTime = formatter.format(messageData[position].createdTime);
+            String createTime = formatter.format(message.createdTime);
             holder.mMessageTime.setText(createTime);
-            holder.mMessageBody.setText(messageData[position].messageBody);
+            holder.mMessageBody.setText(message.messageSubtitle);
             return convertView;
         }
 
         private final class ViewHolder {
-            private TextView mMessageSubTitle = null;
+            private TextView mMessageTitle = null;
             private TextView mMessageTime = null;
             private TextView mMessageBody = null;
         }

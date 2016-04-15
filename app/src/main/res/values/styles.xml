@@ -144,6 +144,18 @@
         <item name="android:padding">16dp</item>
         <item name="android:layout_marginBottom">1dp</item>
     </style>
+    
+    <style name="InboxMessageTitle">
+        <item name="android:textSize">18dp</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:singleLine">true</item>
+        <item name="android:ellipsize">end</item>
+    </style>
+
+    <style name="InboxMessageBody">
+        <item name="android:singleLine">true</item>
+        <item name="android:ellipsize">end</item>
+    </style>
 
 
 </resources>

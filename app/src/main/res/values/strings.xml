@@ -147,6 +147,8 @@
     <!-- inbox strings -->
     <string name="inbox_mark_all_read">Mark all read</string>
     <string name="inbox_delete_all">Delete all</string>
+    <string name="show_detail">Show Detail</string>
+    <string name="later">Later</string>
 
 
 </resources>

@@ -24,6 +24,7 @@ import com.android.volley.Request;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonArrayRequest;
+import com.android.volley.toolbox.JsonObjectRequest;
 import com.bluelinelabs.logansquare.LoganSquare;
 import com.itime.team.itime.bean.URLs;
 import com.itime.team.itime.model.ParcelableMessage;
@@ -66,6 +67,10 @@ public class InboxTask {
     public interface Callback {
         public void callback(List<ParcelableMessage> messages);
         public void callbackError(VolleyError error);
+    }
+
+    public interface ResultCallBack<T> {
+        public void callback(T result);
     }
 
     public void loadMessage(String userId, final Callback callback) {
@@ -112,6 +117,43 @@ public class InboxTask {
                         }
                     }
                 });
+        MySingleton.getInstance(mContext).addToRequestQueue(request);
+    }
+
+    public void getUnreadMessageCount(String userId, final ResultCallBack<Integer> callback) {
+        JSONObject jsonObject = new JSONObject();
+
+        try {
+            jsonObject.put("user_id", userId);
+        } catch (JSONException e) {
+            e.printStackTrace();
+            return;
+        }
+
+        String url = URLs.UNREAD_MESSAGE_COUNT;
+        JsonObjectRequest request = new JsonObjectRequest(
+                Request.Method.POST, url, jsonObject.toString(),
+                new Response.Listener<JSONObject>() {
+                    @Override
+                    public void onResponse(JSONObject response) {
+                        int unreadMessageCount = -1; // invalid count
+                        try {
+                            unreadMessageCount = response.getInt("unread_message_count");
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+                        if (callback != null) {
+                            callback.callback(new Integer(unreadMessageCount));
+                        }
+                    }
+                },
+                new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+
+                    }
+                }
+        );
         MySingleton.getInstance(mContext).addToRequestQueue(request);
     }
 

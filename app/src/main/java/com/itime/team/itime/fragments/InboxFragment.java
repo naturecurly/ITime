@@ -16,24 +16,32 @@
 
 package com.itime.team.itime.fragments;
 
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
+import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
 import android.os.Parcel;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.BaseAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
 
 import com.android.volley.VolleyError;
 import com.itime.team.itime.R;
+import com.itime.team.itime.activities.MeetingDetailActivity;
 import com.itime.team.itime.bean.User;
 import com.itime.team.itime.model.ParcelableMessage;
 import com.itime.team.itime.task.InboxTask;
@@ -43,6 +51,8 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Timer;
+import java.util.TimerTask;
 
 /**
  * Created by Xuhui Chen (yorkfine) on 22/03/16.
@@ -60,6 +70,29 @@ public class InboxFragment extends Fragment {
     private ListView messageListView;
     private MessageAdapter mAdapter;
 
+    /* Timer and Task for repeated load inbox messages */
+    public static final int HAS_NEW_MESSAGES = 1;
+    private Timer mTimer = new Timer();
+    private Handler mHandler = new Handler() {
+        @Override
+        public void handleMessage(Message msg) {
+            switch (msg.what) {
+                case HAS_NEW_MESSAGES:
+                    // load messages on the main thread, so the onResponse will be handled in main
+                    // thread
+                    setMessages();
+                    break;
+            }
+        }
+    };
+
+    private TimerTask mTimerTask = new TimerTask() {
+        @Override
+        public void run() {
+            checkNewMessages();
+        }
+    };
+
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -70,6 +103,12 @@ public class InboxFragment extends Fragment {
         messageListView = (ListView) view.findViewById(R.id.inbox_message_list);
         mAdapter = new MessageAdapter(getActivity(), new ArrayList<ParcelableMessage>(), mStatus == ALL);
         messageListView.setAdapter(mAdapter);
+        messageListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                showItemClickDialog(view, position);
+            }
+        });
         return view;
     }
 
@@ -89,6 +128,40 @@ public class InboxFragment extends Fragment {
         }
         return super.onOptionsItemSelected(item);
     }
+
+    private void showItemClickDialog(View view, int position) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+        final ParcelableMessage message = (ParcelableMessage) mAdapter.getItem(position);
+
+        // common dialog attributes
+        builder.setTitle(message.messageTitle)
+                .setMessage(message.messageBody)
+                .setNegativeButton(R.string.later, null);
+
+        String messageType = message.messageType;
+        switch (messageType) {
+            case "NEW_MEETING_INVITATION":
+                builder.setPositiveButton(R.string.show_detail,
+                        new DialogInterface.OnClickListener() {
+
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                // pass meeting information to meeting detail
+                                Intent intent = new Intent(getActivity(), MeetingDetailActivity.class);
+                                intent.putExtra(MeetingDetailActivity.ARG_MEETING_ID, message.meetingId);
+                                getActivity().startActivity(intent);
+                            }
+                        });
+                break;
+            case "SOMEONE_CANCEL_THE_MEETING":
+                break;
+            case "ALL_PEOPLE_ACCEPTED_THE_MEETING":
+                break;
+        }
+
+        builder.show();
+    }
+
 
     private void setItemTitle(MenuItem item) {
         switch (mStatus) {
@@ -120,6 +193,16 @@ public class InboxFragment extends Fragment {
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
         setMessages();
+
+        // schedule timer, start after 100ms and repeat every 5s
+        mTimer.scheduleAtFixedRate(mTimerTask, 100, 5000);
+    }
+
+    @Override
+    public void onDetach() {
+        super.onDetach();
+        Log.i(LOG_TAG, "detach and cancel timer");
+        mTimer.cancel();
     }
 
     public void setMessages() {
@@ -138,6 +221,30 @@ public class InboxFragment extends Fragment {
         inboxTask.loadMessage(User.ID, callback);
     }
 
+    /**
+     * this method is called in the timer task thread, so do not modify data through adapter here
+     * because the UI thread also access to it. Adapter may be not thread-safe.
+     */
+    public void checkNewMessages() {
+        InboxTask inboxTask = InboxTask.getInstance(getActivity());
+        InboxTask.ResultCallBack<Integer> callback = new InboxTask.ResultCallBack<Integer>() {
+            @Override
+            public void callback(Integer result) {
+                Log.i(LOG_TAG, "unread message count: " + result);
+
+                // it is fine to just get value
+                // if count is not consistent, load all the message
+                if (mAdapter.getUnreadMessageCount() != result.intValue()) {
+                    // do not call setMessage to load messages directly
+                    Message message = new Message();
+                    message.what = HAS_NEW_MESSAGES;
+                    mHandler.sendMessage(message);
+                }
+            }
+        };
+        inboxTask.getUnreadMessageCount(User.ID, callback);
+    }
+
     public class MessageAdapter extends BaseAdapter {
 
         private List<ParcelableMessage> messageData = null;
@@ -146,6 +253,9 @@ public class InboxFragment extends Fragment {
 
         /* show unread or all messages */
         private boolean showAll = false;
+
+        /* unread message count */
+        private int unreadMessageCount;
 
         public MessageAdapter(Context context, List<ParcelableMessage> messages, boolean showAll) {
             mContext = context;
@@ -156,15 +266,22 @@ public class InboxFragment extends Fragment {
 
         private void setUnReadMessageData(List<ParcelableMessage> messageData) {
             unReadMessageData = new ArrayList<>();
+            unreadMessageCount = 0;
             for (ParcelableMessage m : messageData) {
-                if (m.ifRead) {
+                if (!m.ifRead) {
                     unReadMessageData.add(m);
+                    unreadMessageCount++;
                 }
             }
         }
 
+        public int getUnreadMessageCount() {
+            return unreadMessageCount;
+        }
+
         public void loadMessages(List<ParcelableMessage> messageData) {
             this.messageData = messageData;
+            setUnReadMessageData(messageData);
             notifyDataSetChanged();
         }
 

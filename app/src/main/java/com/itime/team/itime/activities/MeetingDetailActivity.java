@@ -27,6 +27,7 @@ import com.google.android.gms.maps.model.MarkerOptions;
 import com.itime.team.itime.R;
 import com.itime.team.itime.bean.MeetingInfo;
 import com.itime.team.itime.bean.URLs;
+import com.itime.team.itime.bean.User;
 import com.itime.team.itime.fragments.MeetingDetailReasonDialogFragment;
 import com.itime.team.itime.utils.DateUtil;
 import com.itime.team.itime.utils.JsonObjectFormRequest;
@@ -121,8 +122,8 @@ public class MeetingDetailActivity extends AppCompatActivity implements OnMapRea
     }
 
     private void loadMap(){
-        mLat = mMeetingInfo.getLatitude() == "" ? 144 : Float.valueOf(mMeetingInfo.getLatitude());
-        mLog = mMeetingInfo.getLongitude() == "" ? -37 : Float.valueOf(mMeetingInfo.getLatitude());
+        mLat = mMeetingInfo.getLatitude().equals("") ? 144 : Float.valueOf(mMeetingInfo.getLatitude());
+        mLog = mMeetingInfo.getLongitude().equals("") ? -37 : Float.valueOf(mMeetingInfo.getLatitude());
         mMapFragment = (MapFragment) getFragmentManager()
                 .findFragmentById(R.id.meeting_map);
         mMapFragment.getMapAsync(this);
@@ -132,7 +133,7 @@ public class MeetingDetailActivity extends AppCompatActivity implements OnMapRea
         JSONObject jsonObject = new JSONObject();
         try {
             jsonObject.put("meeting_id", mMeetingId);
-            jsonObject.put("user_id", "1@2.com");
+            jsonObject.put("user_id", User.ID);
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -213,8 +214,8 @@ public class MeetingDetailActivity extends AppCompatActivity implements OnMapRea
     private void responseMeeting(String status){
         JSONObject jsonObject = new JSONObject();
         try {
-            jsonObject.put("meeting_id", "23C5D415-91E1-4E50-BDF9-26AECFE28506");
-            jsonObject.put("user_id", "1@2.com");
+            jsonObject.put("meeting_id", mMeetingId);
+            jsonObject.put("user_id", User.ID);
             jsonObject.put("meeting_status", status);
         } catch (JSONException e) {
             e.printStackTrace();
@@ -263,7 +264,7 @@ public class MeetingDetailActivity extends AppCompatActivity implements OnMapRea
             mMaybe.setBackgroundColor(getResources().getColor(R.color.white));
             mDecline.setBackgroundColor(getResources().getColor(R.color.grey));
 
-            MeetingDetailReasonDialogFragment dialog = new MeetingDetailReasonDialogFragment();
+            MeetingDetailReasonDialogFragment dialog = new MeetingDetailReasonDialogFragment(mMeetingId);
             dialog.show(getSupportFragmentManager(),"reasonDialog");
         }
     }

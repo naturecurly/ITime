@@ -16,6 +16,7 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.itime.team.itime.R;
 import com.itime.team.itime.bean.URLs;
+import com.itime.team.itime.bean.User;
 import com.itime.team.itime.utils.JsonObjectFormRequest;
 import com.itime.team.itime.utils.MySingleton;
 
@@ -32,6 +33,11 @@ public class MeetingDetailReasonDialogFragment extends DialogFragment implements
     private View mView;
     private EditText mNote;
     private Button mSend,mCancel;
+    private String meetingID;
+
+    public MeetingDetailReasonDialogFragment(String meetingID){
+        this.meetingID = meetingID;
+    }
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -61,8 +67,8 @@ public class MeetingDetailReasonDialogFragment extends DialogFragment implements
     private void send() {
         JSONObject jsonObject = new JSONObject();
         try {
-            jsonObject.put("meeting_id", "23C5D415-91E1-4E50-BDF9-26AECFE28506");
-            jsonObject.put("user_id", "1@2.com");
+            jsonObject.put("meeting_id", meetingID);
+            jsonObject.put("user_id", User.ID);
             jsonObject.put("meeting_status","Reject");
             jsonObject.put("reason",mNote.getText());
         } catch (JSONException e) {

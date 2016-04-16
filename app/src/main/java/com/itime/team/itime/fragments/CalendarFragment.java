@@ -138,6 +138,7 @@ public class CalendarFragment extends Fragment {
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
         fetchEvents(mUserId);
+        fetchIgnoredEvents(mUserId);
         //analyseEvents(mResponse);
     }
 
@@ -479,7 +480,7 @@ public class CalendarFragment extends Fragment {
                     Toast.makeText(getActivity(), cal.get(Calendar.DAY_OF_MONTH) + "", Toast.LENGTH_SHORT).show();
                     flag = true;
                 }
-                if (eventDateList.contains(cal.get(Calendar.DAY_OF_MONTH) + "-" + (cal.get(Calendar.MONTH) + 1) + "-" + cal.get(Calendar.YEAR))) {
+                if (Events.response != null && EventUtil.getEventFromDate(cal.get(Calendar.DAY_OF_MONTH), cal.get(Calendar.MONTH) + 1, cal.get(Calendar.YEAR)).size() > 0) {
                     ifEvents[i] = true;
                     Log.d("testdate", eventDateList.size() + "");
                 } else if (Events.repeatEvent != null) {
@@ -538,7 +539,6 @@ public class CalendarFragment extends Fragment {
                     calendarView.invalidate();
                     Calendar now = Calendar.getInstance();
                     final List<Integer> eventGroup = new ArrayList<Integer>();
-                    List<Integer[]> eventTimeRagne = new ArrayList<Integer[]>();
                     CalendarView.Row row = calendarView.getRows()[0];
                     int day = Integer.valueOf(row.getCells()[DateUtil.analysePosition(x, rowHeight)].text);
                     int month = row.getCells()[DateUtil.analysePosition(x, rowHeight)].month;
@@ -555,7 +555,7 @@ public class CalendarFragment extends Fragment {
                         addLowerViews(relativeLayout);
                         //relativeLayout.invalidate();
                         Toast.makeText(getActivity(), "has event", Toast.LENGTH_SHORT).show();
-                        objectList = EventUtil.getEventFromDate(day + "-" + month + "-" + year);
+                        objectList = EventUtil.getEventFromDate(day, month, year);
                         objectList = EventUtil.sortEvents(objectList);
 
                         JSONObject firstObject = objectList.get(0);
@@ -578,15 +578,6 @@ public class CalendarFragment extends Fragment {
 
                         String start = null;
                         String end = null;
-//                        for (int i = 0; i < objectList.size(); i++) {
-//                            try {
-//                                Date tempStart = DateUtil.getLocalDateObject(objectList.get(i).getString("event_starts_datetime"));
-//                                Date tempEnd = DateUtil.getLocalDateObject(objectList.get(i).getString("event_ends_datetime"));
-//                                eventTimeRagne.add(new Integer[]{tempStart.ge})
-//                            } catch (JSONException e) {
-//                                e.printStackTrace();
-//                            }
-//                        }
                         try {
                             start = objectList.get(0).getString("event_starts_datetime");
                             end = objectList.get(0).getString("event_ends_datetime");
@@ -679,13 +670,17 @@ public class CalendarFragment extends Fragment {
                                     @Override
                                     public void onClick(View v) {
                                         try {
-                                            String id =  objectList.get(eventGroup.get(flag)).getString("event_id");
-                                            Bundle bundle = new Bundle();
-                                            bundle.putString("event_id",id);
-                                            /*
+                                            String meeting_id = objectList.get(eventGroup.get(flag)).getString("meeting_id");
+                                            Boolean isHost = objectList.get(eventGroup.get(flag)).getBoolean("is_host");
+                                            String user_id = objectList.get(eventGroup.get(flag)).getString("user_id");
+                                            if (!meeting_id.equals("")) {
+                                                Bundle bundle = new Bundle();
+                                                bundle.putString("meeting_id", meeting_id);
+                                                bundle.putString("user_id", user_id);
+                                             /*
                                             * add intent to start activity here
                                             * */
-
+                                            }
                                         } catch (JSONException e) {
                                             e.printStackTrace();
                                         }
@@ -728,16 +723,26 @@ public class CalendarFragment extends Fragment {
 
                                     try {
                                         eventView.setText(objectList.get(num).getString("event_name"));
-                                        final String id = objectList.get(num).getString("event_id");
+                                        final String meeting_id = objectList.get(eventGroup.get(num)).getString("meeting_id");
+                                        final Boolean isHost = objectList.get(eventGroup.get(num)).getBoolean("is_host");
+                                        final String user_id = objectList.get(eventGroup.get(num)).getString("user_id");
+
                                         eventView.setOnClickListener(new View.OnClickListener() {
                                             @Override
                                             public void onClick(View v) {
-                                                Bundle bundle = new Bundle();
-                                                bundle.putString("event_id",id);
-                                            /*
+                                                if (!meeting_id.equals("")) {
+
+
+                                                    Bundle bundle = new Bundle();
+                                                    bundle.putString("meeting_id", meeting_id);
+                                                    bundle.putString("user_id", user_id);
+                                             /*
                                             * add intent to start activity here
                                             * */
+                                                }
                                             }
+
+
                                         });
                                     } catch (JSONException e) {
                                         e.printStackTrace();
@@ -896,10 +901,6 @@ public class CalendarFragment extends Fragment {
         JSONObject jsonObject = new JSONObject();
         try {
             jsonObject.put("user_id", userId);
-//            jsonObject.put("if_sync_event", 1);
-//            jsonObject.put("if_sync_event_ignore", 0);
-//            jsonObject.put("if_sync_preference", 0);
-//            jsonObject.put("if_sync_calendar_type", 0);
             jsonObject.put("local_events", "");
 
         } catch (JSONException e) {
@@ -917,7 +918,7 @@ public class CalendarFragment extends Fragment {
 
                 //mResponse = response;
                 Events.response = response;
-                analyseEvents(response);
+//                analyseEvents(response);
                 Events.repeatEvent = EventUtil.getRepeatEventsFromEvents(response);
                 recyclerView.getAdapter().notifyDataSetChanged();
                 Log.i("Event_response", response.toString());
@@ -932,25 +933,61 @@ public class CalendarFragment extends Fragment {
         MySingleton.getInstance(getContext()).addToRequestQueue(request);
     }
 
-    public void analyseEvents(JSONArray response) {
-        for (int i = 0; i < response.length(); i++) {
-            JSONObject jsonObject = null;
-            try {
-                jsonObject = response.getJSONObject(i);
-                String time = (String) jsonObject.get("event_starts_datetime");
-                Date date = DateUtil.getLocalDateObject(time);
-                Calendar cal = Calendar.getInstance();
-                cal.setTime(date);
-                Log.d("testdate", cal.get(Calendar.DAY_OF_MONTH) + "-" + (cal.get(Calendar.MONTH) + 1) + "-" + cal.get(Calendar.YEAR));
-                eventDateList.add(cal.get(Calendar.DAY_OF_MONTH) + "-" + (cal.get(Calendar.MONTH) + 1) + "-" + cal.get(Calendar.YEAR));
+    public void fetchIgnoredEvents(String userId) {
+        JSONObject jsonObject = new JSONObject();
+        try {
+            jsonObject.put("user_id", userId);
+            jsonObject.put("local_events_ignored", "");
 
-                //Log.d("Event_name", name);
-            } catch (JSONException e) {
-                e.printStackTrace();
-            }
-
+        } catch (JSONException e) {
+            e.printStackTrace();
         }
+
+        final String url = URLs.SYNC_IGNORED;
+        Map<String, String> params = new HashMap();
+        params.put("json", jsonObject.toString());
+
+        JsonArrayFormRequest request = new JsonArrayFormRequest(Request.Method.POST, url, params, new Response.Listener<JSONArray>() {
+            @Override
+            public void onResponse(JSONArray response) {
+                //System.out.print("ttttttttttttttt");
+
+                //mResponse = response;
+//                Events.response = response;
+//                analyseEvents(response);
+                EventUtil.getIgnoredEventsFromResponse(response);
+                recyclerView.getAdapter().notifyDataSetChanged();
+                Log.i("Event_response_ignored", response.toString());
+//                System.out.println(response.toString());
+            }
+        }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+
+            }
+        });
+        MySingleton.getInstance(getContext()).addToRequestQueue(request);
     }
+
+//    public void analyseEvents(JSONArray response) {
+//        for (int i = 0; i < response.length(); i++) {
+//            JSONObject jsonObject = null;
+//            try {
+//                jsonObject = response.getJSONObject(i);
+//                String time = (String) jsonObject.get("event_starts_datetime");
+//                Date date = DateUtil.getLocalDateObject(time);
+//                Calendar cal = Calendar.getInstance();
+//                cal.setTime(date);
+//                Log.d("testdate", cal.get(Calendar.DAY_OF_MONTH) + "-" + (cal.get(Calendar.MONTH) + 1) + "-" + cal.get(Calendar.YEAR));
+//                eventDateList.add(cal.get(Calendar.DAY_OF_MONTH) + "-" + (cal.get(Calendar.MONTH) + 1) + "-" + cal.get(Calendar.YEAR));
+//
+//                //Log.d("Event_name", name);
+//            } catch (JSONException e) {
+//                e.printStackTrace();
+//            }
+//
+//        }
+//    }
 
 
     public void paintLowerPanel(int day, int month, int year) {
@@ -960,7 +997,7 @@ public class CalendarFragment extends Fragment {
         addLowerViews(relativeLayout);
         //relativeLayout.invalidate();
         Toast.makeText(getActivity(), "has event", Toast.LENGTH_SHORT).show();
-        List<JSONObject> objectList = EventUtil.getEventFromDate(day + "-" + month + "-" + year);
+        List<JSONObject> objectList = EventUtil.getEventFromDate(day, month, year);
         objectList = EventUtil.sortEvents(objectList);
 
         JSONObject firstObject = objectList.get(0);

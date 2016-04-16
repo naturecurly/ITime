@@ -311,4 +311,10 @@ public class DateUtil {
         return formatter.format(c.getTime());
     }
 
+    public static Calendar getCalendarFromInteger(int day, int month, int year) {
+        Calendar cal = Calendar.getInstance();
+        cal.set(year, month - 1, day, 0, 0);
+        return cal;
+    }
+
 }

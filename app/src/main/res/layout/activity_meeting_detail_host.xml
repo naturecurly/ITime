@@ -33,51 +33,26 @@
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal"
+                android:orientation="vertical"
                 android:layout_marginTop="20dp"
                 >
-                <RadioGroup
+                <Button
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:orientation="horizontal"
-                    android:id="@+id/meeting_detail_radio_group"
+                    android:text="@string/confirm"
+                    android:textColor="@color/green_level4"
+                    android:gravity="center"
                     android:background="@color/white"
-                    android:padding="5dp">
-                    <RadioButton
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:button="@null"
-                        android:text="@string/meeting_detail_accept"
-                        android:textColor="@color/green_level4"
-                        android:gravity="center"
-                        android:layout_weight="1"
-                        android:textStyle="bold"
-                        android:id="@+id/meeting_detail_radio_accept"
-                        android:checked="false"
-                        />
-                    <RadioButton
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:button="@null"
-                        android:text="@string/meeting_detail_Maybe"
-                        android:textColor="@color/orange"
-                        android:gravity="center"
-                        android:textStyle="bold"
-                        android:checked="false"
-                        android:id="@+id/meeting_detail_radio_maybe"/>
-                    <RadioButton
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:button="@null"
-                        android:text="@string/meeting_detail_Decline"
-                        android:textColor="@color/red"
-                        android:gravity="center"
-                        android:textStyle="bold"
-                        android:checked="false"
-                        android:id="@+id/meeting_detail_radio_decline"/>
-                </RadioGroup>
+                    android:layout_marginBottom="5dp"
+                    android:id="@+id/meeting_detail_confirm"/>
+                <Button
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/reset"
+                    android:textColor="@color/darkblue"
+                    android:gravity="center"
+                    android:background="@color/white"
+                    android:id="@+id/meeting_detail_reset"/>
             </LinearLayout>
 
             <LinearLayout
@@ -167,50 +142,7 @@
                         android:layout_marginLeft="10dp"
                         android:text="new"/>
                 </LinearLayout>
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="horizontal"
-                    android:background="@color/white"
-                    android:layout_marginBottom="1dp">
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="50dp"
-                        android:text="@string/meeting_detail_invite"
-                        android:gravity="center_vertical"
-                        android:textColor="@color/black"
-                        android:paddingLeft="10dp"/>
-                    <LinearLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:orientation="horizontal"
-                        android:gravity="right">
-                        <LinearLayout
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:orientation="vertical">
-                            <TextView
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:id="@+id/meeting_detail_name"
-                                android:textColor="@color/black"
-                                android:text="cai"/>
-                            <TextView
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:id="@+id/meeting_detail_id"
-                                android:textColor="@color/black"
-                                android:text="cai"/>
-                        </LinearLayout>
-                        <ImageView
-                            android:layout_width="50dp"
-                            android:layout_height="50dp"
-                            android:src="@drawable/default_profile_image"
-                            android:id="@+id/meeting_detail_image"
-                            android:layout_gravity="right"/>
-                    </LinearLayout>
 
-                </LinearLayout>
 
                 <Button
                     android:layout_width="match_parent"

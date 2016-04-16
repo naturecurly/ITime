@@ -33,6 +33,8 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.itime.team.itime.R;
 import com.itime.team.itime.activities.EventsActivity;
+import com.itime.team.itime.activities.MeetingDetaiHostlActivity;
+import com.itime.team.itime.activities.MeetingDetailActivity;
 import com.itime.team.itime.activities.NewEventActivity;
 import com.itime.team.itime.activities.WeeklyActivity;
 import com.itime.team.itime.activities.YearViewActivity;
@@ -671,12 +673,23 @@ public class CalendarFragment extends Fragment {
                                     public void onClick(View v) {
                                         try {
                                             String meeting_id = objectList.get(eventGroup.get(flag)).getString("meeting_id");
-                                            Boolean isHost = objectList.get(eventGroup.get(flag)).getBoolean("is_host");
+                                            //boolean isHost = objectList.get(eventGroup.get(flag)).getBoolean("is_host");
                                             String user_id = objectList.get(eventGroup.get(flag)).getString("user_id");
+                                            String hostID = objectList.get(eventGroup.get(flag)).getString("host_id");
                                             if (!meeting_id.equals("")) {
                                                 Bundle bundle = new Bundle();
                                                 bundle.putString("meeting_id", meeting_id);
                                                 bundle.putString("user_id", user_id);
+                                                if (hostID.equals(User.ID)){
+                                                    Intent intent = new Intent(getActivity(), MeetingDetaiHostlActivity.class);
+                                                    intent.putExtra("arg_meeting_id",meeting_id);
+                                                    startActivity(intent);
+                                                } else {
+                                                    Intent intent = new Intent(getActivity(), MeetingDetailActivity.class);
+                                                    intent.putExtra("arg_meeting_id",meeting_id);
+                                                    Log.i("userId", user_id);
+                                                    startActivity(intent);
+                                                }
                                              /*
                                             * add intent to start activity here
                                             * */
@@ -726,7 +739,7 @@ public class CalendarFragment extends Fragment {
                                         final String meeting_id = objectList.get(eventGroup.get(num)).getString("meeting_id");
                                         final Boolean isHost = objectList.get(eventGroup.get(num)).getBoolean("is_host");
                                         final String user_id = objectList.get(eventGroup.get(num)).getString("user_id");
-
+                                        final String hostID = objectList.get(eventGroup.get(flag)).getString("host_id");
                                         eventView.setOnClickListener(new View.OnClickListener() {
                                             @Override
                                             public void onClick(View v) {
@@ -736,6 +749,15 @@ public class CalendarFragment extends Fragment {
                                                     Bundle bundle = new Bundle();
                                                     bundle.putString("meeting_id", meeting_id);
                                                     bundle.putString("user_id", user_id);
+                                                    if (hostID.equals(User.ID)){
+                                                        Intent intent = new Intent(getActivity(), MeetingDetaiHostlActivity.class);
+                                                        intent.putExtra("arg_meeting_id",meeting_id);
+                                                        startActivity(intent);
+                                                    } else {
+                                                        Intent intent = new Intent(getActivity(), MeetingDetailActivity.class);
+                                                        intent.putExtra("arg_meeting_id", meeting_id);
+                                                        startActivity(intent);
+                                                    }
                                              /*
                                             * add intent to start activity here
                                             * */

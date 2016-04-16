@@ -11,8 +11,6 @@ import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.RadioButton;
-import android.widget.RadioGroup;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -29,7 +27,6 @@ import com.itime.team.itime.R;
 import com.itime.team.itime.bean.MeetingInfo;
 import com.itime.team.itime.bean.URLs;
 import com.itime.team.itime.bean.User;
-import com.itime.team.itime.fragments.MeetingDetailReasonDialogFragment;
 import com.itime.team.itime.utils.DateUtil;
 import com.itime.team.itime.utils.JsonObjectFormRequest;
 import com.itime.team.itime.utils.MySingleton;
@@ -45,12 +42,10 @@ import java.util.Map;
 /**
  * Created by mac on 16/4/5.
  */
-public class MeetingDetailActivity extends AppCompatActivity implements OnMapReadyCallback, RadioGroup.OnCheckedChangeListener,View.OnClickListener {
+public class MeetingDetaiHostlActivity extends AppCompatActivity implements OnMapReadyCallback,View.OnClickListener {
     private MapFragment mMapFragment;
-    private RadioGroup mRadioGroup;
-    private RadioButton mAccept, mMaybe, mDecline;
     private MeetingInfo mMeetingInfo;
-    private TextView mMeetingName, mMeetingAddress, mMeetingCity, mName,mID;
+    private TextView mMeetingName, mMeetingAddress, mMeetingCity;
     private TextView mNewMeetingName, mNewMeetingAddress;
     private Button mAttendee;
     private TextView mDeparture, mStart, mEnd, mRepeat;
@@ -60,6 +55,7 @@ public class MeetingDetailActivity extends AppCompatActivity implements OnMapRea
     private EditText mNewNote;
     private Button mEmail, mQuit;
     private ImageView mImage;
+    private Button mConfirm, mReset;
 
     private LinearLayout mLNewName, mLNewVenue, mLNewStart, mLNewEnd, mLNewRepeat, mLNewPunctual, mLNewNote;
 
@@ -71,7 +67,7 @@ public class MeetingDetailActivity extends AppCompatActivity implements OnMapRea
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_meeting_detail);
+        setContentView(R.layout.activity_meeting_detail_host);
         init();
         loadMeetingInfo();
     }
@@ -93,17 +89,11 @@ public class MeetingDetailActivity extends AppCompatActivity implements OnMapRea
 
         mMeetingId = getIntent().getStringExtra(ARG_MEETING_ID);
 
-        mRadioGroup = (RadioGroup) findViewById(R.id.meeting_detail_radio_group);
-        mAccept = (RadioButton) findViewById(R.id.meeting_detail_radio_accept);
-        mMaybe = (RadioButton) findViewById(R.id.meeting_detail_radio_maybe);
-        mDecline = (RadioButton) findViewById(R.id.meeting_detail_radio_decline);
-        mRadioGroup.setOnCheckedChangeListener(this);
+
 
         mMeetingName = (TextView) findViewById(R.id.meeting_detail_event_name);
         mMeetingAddress = (TextView) findViewById(R.id.meeting_detail_address);
         mMeetingCity = (TextView) findViewById(R.id.meeting_detail_city);
-        mName = (TextView) findViewById(R.id.meeting_detail_name);
-        mID = (TextView) findViewById(R.id.meeting_detail_id);
         mAttendee = (Button) findViewById(R.id.meeting_detail_attendee);
         mDeparture = (TextView) findViewById(R.id.meeting_detail_depture);
         mStart = (TextView) findViewById(R.id.meeting_detail_starts);
@@ -112,6 +102,11 @@ public class MeetingDetailActivity extends AppCompatActivity implements OnMapRea
         mPunctual = (CheckBox) findViewById(R.id.meeting_detail_punctual);
         mEmail = (Button) findViewById(R.id.meeting_detail_email);
         mQuit = (Button) findViewById(R.id.quit);
+
+        mConfirm = (Button) findViewById(R.id.meeting_detail_confirm);
+        mConfirm.setOnClickListener(this);
+        mReset = (Button) findViewById(R.id.meeting_detail_reset);
+        mReset.setOnClickListener(this);
 
         mNote = (EditText) findViewById(R.id.meeting_detail_note);
         mNote.clearFocus();
@@ -134,6 +129,7 @@ public class MeetingDetailActivity extends AppCompatActivity implements OnMapRea
         mLNewPunctual = (LinearLayout) findViewById(R.id.meeting_detail_event_punctual_layout);
         mLNewRepeat = (LinearLayout) findViewById(R.id.meeting_detail_event_repeat_layout);
         mLNewNote = (LinearLayout) findViewById(R.id.meeting_detail_note_layout);
+
     }
 
     private void showLayout(MeetingInfo meetingInfo){
@@ -232,8 +228,6 @@ public class MeetingDetailActivity extends AppCompatActivity implements OnMapRea
             mMeetingName.setText(mMeetingInfo.getName());
             mMeetingCity.setText(mMeetingInfo.getLocation());
             mMeetingAddress.setText(mMeetingInfo.getVenue());
-            mID.setText(mMeetingInfo.getHostID());
-            mName.setText(mMeetingInfo.getHostID());
             mDeparture.setText(dateOutputFormat(mMeetingInfo.getStart()));
             mStart.setText(dateOutputFormat(mMeetingInfo.getStart()));
             mEnd.setText(dateOutputFormat(mMeetingInfo.getEnd()));
@@ -300,28 +294,72 @@ public class MeetingDetailActivity extends AppCompatActivity implements OnMapRea
         MySingleton.getInstance(this).addToRequestQueue(request);
     }
 
-    @Override
-    public void onCheckedChanged(RadioGroup group, int checkedId) {
-        if (checkedId == mAccept.getId()){
-            mAccept.setBackgroundColor(getResources().getColor(R.color.grey));
-            mMaybe.setBackgroundColor(getResources().getColor(R.color.white));
-            mDecline.setBackgroundColor(getResources().getColor(R.color.white));
-
-            responseMeeting("Accept");
-        } else if(checkedId == mMaybe.getId()){
-            mAccept.setBackgroundColor(getResources().getColor(R.color.white));
-            mMaybe.setBackgroundColor(getResources().getColor(R.color.grey));
-            mDecline.setBackgroundColor(getResources().getColor(R.color.white));
-
-            responseMeeting("Maybe");
-        } else if(checkedId == mDecline.getId()){
-            mAccept.setBackgroundColor(getResources().getColor(R.color.white));
-            mMaybe.setBackgroundColor(getResources().getColor(R.color.white));
-            mDecline.setBackgroundColor(getResources().getColor(R.color.grey));
-
-            MeetingDetailReasonDialogFragment dialog = new MeetingDetailReasonDialogFragment(mMeetingId);
-            dialog.show(getSupportFragmentManager(),"reasonDialog");
+    private void confirm(){
+        JSONObject jsonObject = new JSONObject();
+        try {
+            jsonObject.put("meeting_id", mMeetingId);
+            jsonObject.put("user_id", User.ID);
+            jsonObject.put("meeting_valid_token", mMeetingInfo.getToken());
+        } catch (JSONException e) {
+            e.printStackTrace();
         }
+
+        final String url = URLs.HOST_SEND_CONFIRM_MEETING_ANYWAY;
+        Map<String, String> params = new HashMap();
+        params.put("json", jsonObject.toString());
+
+        JsonObjectFormRequest request = new JsonObjectFormRequest(Request.Method.POST, url, params, new Response.Listener<JSONObject>() {
+            @Override
+            public void onResponse(JSONObject response) {
+                try {
+                    if (!response.getString("result").equals("success")){
+                        Toast.makeText(getApplicationContext(), getString(R.string.time_out), Toast.LENGTH_LONG);
+                    }
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
+        }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+
+            }
+        });
+        MySingleton.getInstance(this).addToRequestQueue(request);
+    }
+
+    private void reset(){
+        JSONObject jsonObject = new JSONObject();
+        try {
+            jsonObject.put("meeting_id", mMeetingId);
+            jsonObject.put("user_id", User.ID);
+            jsonObject.put("meeting_valid_token", mMeetingInfo.getToken());
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+        final String url = URLs.HOST_SEND_RESET_MEETING_ANYWAY;
+        Map<String, String> params = new HashMap();
+        params.put("json", jsonObject.toString());
+
+        JsonObjectFormRequest request = new JsonObjectFormRequest(Request.Method.POST, url, params, new Response.Listener<JSONObject>() {
+            @Override
+            public void onResponse(JSONObject response) {
+                try {
+                    if (!response.getString("result").equals("success")){
+                        Toast.makeText(getApplicationContext(), getString(R.string.time_out), Toast.LENGTH_LONG);
+                    }
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
+        }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+
+            }
+        });
+        MySingleton.getInstance(this).addToRequestQueue(request);
     }
 
     @Override
@@ -330,6 +368,10 @@ public class MeetingDetailActivity extends AppCompatActivity implements OnMapRea
             Intent intent = new Intent(this, MeetingAttendeesActivity.class);
             intent.putExtra("arg_meeting_id", mMeetingId);
             startActivity(intent);
+        } else if (v.getId() == mConfirm.getId()) {
+            confirm();
+        } else if (v.getId() == mReset.getId()) {
+            reset();
         }
     }
 }

@@ -75,10 +75,6 @@
                         android:textStyle="bold"
                         android:id="@+id/meeting_detail_radio_decline"/>
                 </RadioGroup>
-                <!--<EditText-->
-                    <!--android:layout_width="0dp"-->
-                    <!--android:layout_height="0dp"-->
-                    <!--android:focusable="true"/>-->
             </LinearLayout>
 
             <LinearLayout
@@ -96,6 +92,27 @@
                     android:text="New event"
                     android:textColor="@color/black"
                     android:paddingLeft="10dp"/>
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="30dp"
+                    android:background="@color/white"
+                    android:layout_marginBottom="1dp"
+                    android:orientation="horizontal"
+                    android:visibility="gone"
+                    android:id="@+id/meeting_detail_event_name_layout">
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/meeting_detail_new_name"
+                        android:layout_marginLeft="30dp"
+                        android:textColor="@color/red"/>
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:id="@+id/meeting_detail_event_name_new"
+                        android:layout_marginLeft="10dp"
+                        android:text="new"/>
+                </LinearLayout>
                 <TextView
                     android:layout_width="match_parent"
                     android:layout_height="30dp"
@@ -105,6 +122,7 @@
                     android:text="Melbourne"
                     android:textColor="@color/black"
                     android:paddingLeft="10dp"/>
+
                 <TextView
                     android:layout_width="match_parent"
                     android:layout_height="30dp"
@@ -116,6 +134,36 @@
                     android:textSize="13dp"
                     android:paddingLeft="10dp"
                     />
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="30dp"
+                    android:gravity="center_vertical"
+                    android:background="@color/white"
+                    android:id="@+id/meeting_detail_city_new"
+                    android:text="Melbourne"
+                    android:textColor="@color/black"
+                    android:paddingLeft="10dp"/>
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="@color/white"
+                    android:layout_marginBottom="1dp"
+                    android:orientation="horizontal"
+                    android:visibility="gone"
+                    android:id="@+id/meeting_detail_event_venue_layout">
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/meeting_detail_new_venue"
+                        android:layout_marginLeft="30dp"
+                        android:textColor="@color/red"/>
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:id="@+id/meeting_detail_event_venue_new"
+                        android:layout_marginLeft="10dp"
+                        android:text="new"/>
+                </LinearLayout>
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -179,12 +227,14 @@
                 android:orientation="vertical">
                 <LinearLayout
                     android:layout_width="match_parent"
-                    android:layout_height="30dp"
+                    android:layout_height="wrap_content"
                     android:layout_marginBottom="1dp"
                     android:background="@color/white"
                     android:orientation="horizontal"
                     android:paddingLeft="10dp"
                     android:paddingRight="10dp"
+                    android:paddingTop="3dp"
+                    android:paddingBottom="3dp"
                     >
                     <TextView
                         android:layout_width="wrap_content"
@@ -205,12 +255,14 @@
 
                 <LinearLayout
                     android:layout_width="match_parent"
-                    android:layout_height="30dp"
+                    android:layout_height="wrap_content"
                     android:layout_marginBottom="1dp"
                     android:background="@color/white"
                     android:orientation="horizontal"
                     android:paddingLeft="10dp"
                     android:paddingRight="10dp"
+                    android:paddingTop="3dp"
+                    android:paddingBottom="3dp"
                     >
                     <TextView
                         android:layout_width="wrap_content"
@@ -228,15 +280,38 @@
                         />
 
                 </LinearLayout>
-
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="30dp"
+                    android:background="@color/white"
+                    android:layout_marginBottom="1dp"
+                    android:orientation="horizontal"
+                    android:visibility="gone"
+                    android:id="@+id/meeting_detail_event_start_layout">
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/meeting_detail_new_start_time"
+                        android:layout_marginLeft="30dp"
+                        android:textColor="@color/red"/>
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:id="@+id/meeting_detail_event_start_new"
+                        android:layout_marginLeft="10dp"
+                        android:text="new"/>
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
                     android:layout_marginBottom="1dp"
                     android:background="@color/white"
                     android:orientation="horizontal"
                     android:paddingLeft="10dp"
                     android:paddingRight="10dp"
+                    android:paddingTop="3dp"
+                    android:paddingBottom="3dp"
                     >
                     <TextView
                         android:layout_width="wrap_content"
@@ -252,7 +327,28 @@
                         android:id="@+id/meeting_detail_ends"
                         android:gravity="center_vertical|right"
                         />
+                </LinearLayout>
 
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="30dp"
+                    android:background="@color/white"
+                    android:layout_marginBottom="1dp"
+                    android:orientation="horizontal"
+                    android:visibility="gone"
+                    android:id="@+id/meeting_detail_event_end_layout">
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/meeting_detail_new_end_time"
+                        android:layout_marginLeft="30dp"
+                        android:textColor="@color/red"/>
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:id="@+id/meeting_detail_event_end_new"
+                        android:layout_marginLeft="10dp"
+                        android:text="new"/>
                 </LinearLayout>
 
                 <LinearLayout
@@ -278,8 +374,30 @@
                         android:id="@+id/meeting_detail_repeats"
                         android:gravity="center_vertical|right"
                         />
-
                 </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="30dp"
+                    android:background="@color/white"
+                    android:layout_marginBottom="1dp"
+                    android:orientation="horizontal"
+                    android:visibility="gone"
+                    android:id="@+id/meeting_detail_event_repeat_layout">
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/meeting_detail_new_repeat"
+                        android:layout_marginLeft="30dp"
+                        android:textColor="@color/red"/>
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:id="@+id/meeting_detail_event_repeat_new"
+                        android:layout_marginLeft="10dp"
+                        android:text="new"/>
+                </LinearLayout>
+
 
                 <LinearLayout
                     android:layout_width="match_parent"
@@ -306,6 +424,29 @@
                         android:id="@+id/meeting_detail_punctual"
                         />
                 </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="30dp"
+                    android:background="@color/white"
+                    android:layout_marginBottom="1dp"
+                    android:orientation="horizontal"
+                    android:visibility="gone"
+                    android:id="@+id/meeting_detail_event_punctual_layout">
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/meeting_detail_new_Punctual"
+                        android:layout_marginLeft="30dp"
+                        android:textColor="@color/red"/>
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:id="@+id/meeting_detail_event_punctual_new"
+                        android:layout_marginLeft="10dp"
+                        android:text="new"/>
+                </LinearLayout>
+
             </LinearLayout>
 
             <fragment xmlns:android="http://schemas.android.com/apk/res/android"
@@ -330,6 +471,30 @@
                 android:id="@+id/meeting_detail_note"
                 android:gravity="top"
                 />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:visibility="gone"
+                android:id="@+id/meeting_detail_note_layout">
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/meeting_detail_new_note"
+                    android:textColor="@color/red"/>
+                <EditText
+                    android:layout_width="match_parent"
+                    android:layout_height="200dp"
+                    android:scrollbars="vertical"
+                    android:background="@color/white"
+                    android:layout_marginBottom="20dp"
+                    android:singleLine="false"
+                    android:id="@+id/meeting_detail_note_new"
+                    android:gravity="top"
+                    />
+            </LinearLayout>
+
             <Button
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"

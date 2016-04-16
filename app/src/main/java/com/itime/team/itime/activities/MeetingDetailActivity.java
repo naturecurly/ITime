@@ -10,6 +10,7 @@ import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.TextView;
@@ -50,12 +51,17 @@ public class MeetingDetailActivity extends AppCompatActivity implements OnMapRea
     private RadioButton mAccept, mMaybe, mDecline;
     private MeetingInfo mMeetingInfo;
     private TextView mMeetingName, mMeetingAddress, mMeetingCity, mName,mID;
+    private TextView mNewMeetingName, mNewMeetingAddress;
     private Button mAttendee;
     private TextView mDeparture, mStart, mEnd, mRepeat;
+    private TextView mNewStart, mNewEnd, mNewRepeat, mNewPunctual;
     private CheckBox mPunctual;
     private EditText mNote;
+    private EditText mNewNote;
     private Button mEmail, mQuit;
     private ImageView mImage;
+
+    private LinearLayout mLNewName, mLNewVenue, mLNewStart, mLNewEnd, mLNewRepeat, mLNewPunctual, mLNewNote;
 
     private float mLat;
     private float mLog;
@@ -112,8 +118,47 @@ public class MeetingDetailActivity extends AppCompatActivity implements OnMapRea
 
         mImage = (ImageView) findViewById(R.id.meeting_detail_image);
         mAttendee.setOnClickListener(this);
+
+        mNewNote = (EditText) findViewById(R.id.meeting_detail_note_new);
+        mNewEnd = (TextView) findViewById(R.id.meeting_detail_event_end_new);
+        mNewStart = (TextView) findViewById(R.id.meeting_detail_event_start_new);
+        mNewRepeat = (TextView) findViewById(R.id.meeting_detail_event_repeat_new);
+        mNewMeetingAddress = (TextView) findViewById(R.id.meeting_detail_event_venue_new);
+        mNewMeetingName = (TextView) findViewById(R.id.meeting_detail_event_name_new);
+        mNewPunctual = (TextView) findViewById(R.id.meeting_detail_event_punctual_new);
+
+        mLNewName = (LinearLayout) findViewById(R.id.meeting_detail_event_name_layout);
+        mLNewVenue = (LinearLayout) findViewById(R.id.meeting_detail_event_venue_layout);
+        mLNewStart = (LinearLayout) findViewById(R.id.meeting_detail_event_start_layout);
+        mLNewEnd = (LinearLayout) findViewById(R.id.meeting_detail_event_end_layout);
+        mLNewPunctual = (LinearLayout) findViewById(R.id.meeting_detail_event_punctual_layout);
+        mLNewRepeat = (LinearLayout) findViewById(R.id.meeting_detail_event_repeat_layout);
+        mLNewNote = (LinearLayout) findViewById(R.id.meeting_detail_note_layout);
     }
 
+    private void showLayout(MeetingInfo meetingInfo){
+        if (!meetingInfo.getName().equals(meetingInfo.getNewName())){
+            mLNewName.setVisibility(View.VISIBLE);
+        }
+        if(!meetingInfo.getVenue().equals(meetingInfo.getNewVenue()) || !meetingInfo.getLocation().equals(meetingInfo.getNewLocation())){
+            mLNewVenue.setVisibility(View.VISIBLE);
+        }
+        if(!dateOutputFormat(meetingInfo.getStart()).equals(dateOutputFormat(meetingInfo.getNewStart()))){
+            mLNewStart.setVisibility(View.VISIBLE);
+        }
+        if(!dateOutputFormat(meetingInfo.getEnd()).equals(dateOutputFormat(meetingInfo.getNewEnd()))){
+            mLNewEnd.setVisibility(View.VISIBLE);
+        }
+        if(!meetingInfo.getRepeat().equals(meetingInfo.getNewRepeat())){
+            mLNewRepeat.setVisibility(View.VISIBLE);
+        }
+        if(meetingInfo.getPunctual() != meetingInfo.getNewPunctual()){
+            mLNewPunctual.setVisibility(View.VISIBLE);
+        }
+        if(!meetingInfo.getComment().equals(meetingInfo.getNewComment())){
+            mLNewNote.setVisibility(View.VISIBLE);
+        }
+    }
     @Override
     public void onMapReady(GoogleMap googleMap) {
         LatLng sydney = new LatLng(mLog, mLat);
@@ -194,7 +239,17 @@ public class MeetingDetailActivity extends AppCompatActivity implements OnMapRea
             mEnd.setText(dateOutputFormat(mMeetingInfo.getEnd()));
             mRepeat.setText(mMeetingInfo.getRepeat());
             mPunctual.setChecked(mMeetingInfo.getPunctual());
+            mNote.setText(mMeetingInfo.getComment());
 
+            mNewMeetingName.setText(mMeetingInfo.getNewName());
+            mNewMeetingAddress.setText(mMeetingInfo.getNewLocation() + mMeetingInfo.getNewVenue());
+            mNewRepeat.setText(mMeetingInfo.getNewRepeat());
+            mNewStart.setText(dateOutputFormat(mMeetingInfo.getNewStart()));
+            mNewEnd.setText(dateOutputFormat(mMeetingInfo.getNewEnd()));
+            mNewNote.setText(mMeetingInfo.getNewComment());
+            mNewPunctual.setText(mMeetingInfo.getPunctual() ? getString(R.string.yes) : getString(R.string.no));
+
+            showLayout(mMeetingInfo);
             loadMap();
         } catch (JSONException e) {
             e.printStackTrace();

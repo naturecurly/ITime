@@ -47,6 +47,7 @@ import com.itime.team.itime.model.ParcelableMessage;
 import com.itime.team.itime.task.InboxTask;
 import com.itime.team.itime.utils.DateUtil;
 
+import java.lang.ref.WeakReference;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -73,18 +74,25 @@ public class InboxFragment extends Fragment {
     /* Timer and Task for repeated load inbox messages */
     public static final int HAS_NEW_MESSAGES = 1;
     private Timer mTimer = new Timer();
-    private Handler mHandler = new Handler() {
+    private static class ReloadMessageHandler extends Handler {
+        // a weak reference to this activity
+        private final WeakReference<InboxFragment> mInboxFragment;
+
+        public ReloadMessageHandler(InboxFragment fragment) {
+            mInboxFragment = new WeakReference<InboxFragment>(fragment);
+        }
         @Override
         public void handleMessage(Message msg) {
             switch (msg.what) {
                 case HAS_NEW_MESSAGES:
                     // load messages on the main thread, so the onResponse will be handled in main
                     // thread
-                    setMessages();
+                    mInboxFragment.get().setMessages();
                     break;
             }
         }
-    };
+    }
+    private Handler mHandler = new ReloadMessageHandler(this);
 
     private TimerTask mTimerTask = new TimerTask() {
         @Override

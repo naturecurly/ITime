@@ -12,4 +12,6 @@ public class Events {
     public static JSONArray response;
 
     public static List<JSONObject> repeatEvent;
+
+    public static List<JSONObject> ignoredEvent;
 }

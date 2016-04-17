@@ -336,11 +336,18 @@ public class DateUtil {
         return formatter.format(calendar.getTime());
     }
 
+    public static String getDateStringFromCalendarGMT(Calendar calendar){
+        DateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss Z");
+        formatter.setTimeZone(TimeZone.getTimeZone("GMT"));
+//        calendar.setTimeZone(TimeZone.getTimeZone("GMT"));
+        return formatter.format(calendar.getTime());
+    }
+
     public static Calendar getCalendarFromInteger(int day, int month, int year) {
         String dateString = getDateWithTimeZone(year, month, day, 0, 0);
         Date date = getGMTDate(dateString);
         Calendar cal = Calendar.getInstance();
-        cal.setTimeZone(TimeZone.getTimeZone("GMT"));
+//        cal.setTimeZone(TimeZone.getTimeZone("GMT"));
         cal.setTime(date);
         return cal;
     }

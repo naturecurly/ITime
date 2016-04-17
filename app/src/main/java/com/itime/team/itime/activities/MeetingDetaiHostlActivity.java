@@ -5,6 +5,8 @@ import android.os.Bundle;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.CheckBox;
@@ -64,6 +66,7 @@ public class MeetingDetaiHostlActivity extends AppCompatActivity implements OnMa
 
     public static final String ARG_MEETING_ID = "arg_meeting_id";
     private String mMeetingId;
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -71,6 +74,23 @@ public class MeetingDetaiHostlActivity extends AppCompatActivity implements OnMa
         init();
         loadMeetingInfo();
     }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.meeting_detail_host, menu);
+        return true;
+    }
+
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        if(item.getItemId() == R.id.meeting_detail_edit){
+            Intent intent = new Intent(this, MeetingDetailUpdateActivity.class);
+            startActivity(intent);
+        }
+        return super.onOptionsItemSelected(item);
+    }
+
 
     private void init(){
         Toolbar toolbar = (Toolbar) findViewById(R.id.meeting_detail_toolbar);

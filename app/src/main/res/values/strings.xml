@@ -18,6 +18,7 @@
     <string name="no">No</string>
     <string name="confirm">Confirm</string>
     <string name="reset">Reset</string>
+    <string name="edit">Edit</string>
     <string name="settings_meeting_preference">Meeting Preferences</string>
     <string name="settings_import_calendar">Import Calendars</string>
     <string name="settings_default_alert_time">Default Alert Time</string>

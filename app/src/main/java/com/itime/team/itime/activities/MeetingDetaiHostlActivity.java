@@ -86,6 +86,23 @@ public class MeetingDetaiHostlActivity extends AppCompatActivity implements OnMa
     public boolean onOptionsItemSelected(MenuItem item) {
         if(item.getItemId() == R.id.meeting_detail_edit){
             Intent intent = new Intent(this, MeetingDetailUpdateActivity.class);
+            if(!mMeetingInfo.getName().equals("")) {
+                intent.putExtra("year", mMeetingInfo.getStart().get(Calendar.YEAR));
+                intent.putExtra("month", mMeetingInfo.getStart().get(Calendar.MONTH));
+                intent.putExtra("day", mMeetingInfo.getStart().get(Calendar.DATE));
+                intent.putExtra("hour", mMeetingInfo.getStart().get(Calendar.HOUR));
+                intent.putExtra("min", mMeetingInfo.getStart().get(Calendar.MINUTE));
+                intent.putExtra("e_year", mMeetingInfo.getEnd().get(Calendar.YEAR));
+                intent.putExtra("e_month", mMeetingInfo.getEnd().get(Calendar.MONTH));
+                intent.putExtra("e_day", mMeetingInfo.getEnd().get(Calendar.DATE));
+                intent.putExtra("e_hour", mMeetingInfo.getEnd().get(Calendar.HOUR));
+                intent.putExtra("e_min", mMeetingInfo.getEnd().get(Calendar.MINUTE));
+                intent.putExtra("name",mMeetingInfo.getName());
+                intent.putExtra("location",mMeetingInfo.getLocation() + " " + mMeetingInfo.getVenue());
+                intent.putExtra("repeat", mMeetingInfo.getRepeat());
+                intent.putExtra("punctual", mMeetingInfo.getPunctual());
+                intent.putExtra("note", mMeetingInfo.getComment());
+            }
             startActivity(intent);
         }
         return super.onOptionsItemSelected(item);

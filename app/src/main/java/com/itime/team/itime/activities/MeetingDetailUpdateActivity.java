@@ -123,7 +123,7 @@ public class MeetingDetailUpdateActivity extends AppCompatActivity implements Vi
             actionBar.setDisplayHomeAsUpEnabled(true);
         }
 
-        setEndTime();
+
 
         mMessage = (EditText) findViewById(R.id.new_meeting_message);
         mMessage.setOnTouchListener(this);
@@ -147,6 +147,8 @@ public class MeetingDetailUpdateActivity extends AppCompatActivity implements Vi
         mAlert.setOnClickListener(this);
         mVeune.setOnClickListener(this);
 
+        setEndTime();
+
         mStartTime.setText(timeFormat(mStartHour, mStartMin));
         mEndTime.setText(timeFormat(mEndHour, mEndMin));
         mStartDate.setText(dateFormat(mStartDay, mStartMonth, mStartYear));
@@ -156,8 +158,6 @@ public class MeetingDetailUpdateActivity extends AppCompatActivity implements Vi
         mAlertValue = new ArrayList();
         mRpeatValue.add("One-time event");
         mAlertValue.add(1);
-
-
         //simpleRequest();
     }
 
@@ -172,23 +172,36 @@ public class MeetingDetailUpdateActivity extends AppCompatActivity implements Vi
         mStartHour = receiver.getIntExtra("hour",0);
         mStartMin = receiver.getIntExtra("min",0);
         mFriendIDs = receiver.getStringArrayExtra("friendids");
-        int currentDay = receiver.getIntExtra("currentDay",0);
-        date = DateUtil.plusDay(mStartYear, mStartMonth, mStartDay, mStartHour, mStartMin, currentDay);
-        mStartYear = date.getYear() + 1900;
-        mStartMonth = date.getMonth();
-        mStartDay = date.getDate();
-        mStartHour = date.getHours();
-        mStartMin = date.getMinutes();
+//        int currentDay = receiver.getIntExtra("currentDay",0);
+//        date = DateUtil.plusDay(mStartYear, mStartMonth, mStartDay, mStartHour, mStartMin, currentDay);
+//        mStartYear = date.getYear() + 1900;
+//        mStartMonth = date.getMonth();
+//        mStartDay = date.getDate();
+//        mStartHour = date.getHours();
+//        mStartMin = date.getMinutes();
         return date;
     }
 
     private void setEndTime(){
-        Date endTime = DateUtil.plusMinute(getCurrentDate(), mDuration);
-        mEndYear = endTime.getYear() + 1900;
-        mEndMonth = endTime.getMonth();
-        mEndDay = endTime.getDate();
-        mEndHour = endTime.getHours();
-        mEndMin = endTime.getMinutes();
+        getCurrentDate();
+//        Date endTime = DateUtil.plusMinute(getCurrentDate(), mDuration);
+//        mEndYear = endTime.getYear() + 1900;
+//        mEndMonth = endTime.getMonth();
+//        mEndDay = endTime.getDate();
+//        mEndHour = endTime.getHours();
+//        mEndMin = endTime.getMinutes();
+        Intent receiver = getIntent();
+        Calendar calendar = Calendar.getInstance();
+        mEndYear = receiver.getIntExtra("e_year",calendar.get(Calendar.YEAR));
+        mEndMonth = receiver.getIntExtra("e_month",calendar.get(Calendar.MONTH));
+        mEndDay = receiver.getIntExtra("e_day",calendar.get(Calendar.DATE));
+        mEndHour = receiver.getIntExtra("e_hour",calendar.get(Calendar.HOUR));
+        mEndMin = receiver.getIntExtra("e_min",calendar.get(Calendar.MINUTE));
+        mRepeat.setText(receiver.getStringExtra("repeat"));
+        mPunctual.setChecked(receiver.getBooleanExtra("punctual", false));
+        mName.setText(receiver.getStringExtra("name"));
+        mVeune.setText(receiver.getStringExtra("location"));
+        mMessage.setText(receiver.getStringExtra("note"));
     }
 
     private String timeFormat(int hour, int min){

@@ -242,10 +242,10 @@ public class CalendarFragment extends Fragment {
                     animator.setInterpolator(new DecelerateInterpolator());
                     animator.start();
                 }
-                if (scroll_flag) {
-                    scrollToDate(selectedCalendar);
-                    scroll_flag = false;
-                }
+//                if (scroll_flag) {
+//                    scrollToDate(selectedCalendar);
+//                    scroll_flag = false;
+//                }
             }
         });
         imageButton = (ImageButton) getActivity().findViewById(R.id.event_list);
@@ -484,11 +484,11 @@ public class CalendarFragment extends Fragment {
                     ifEvents[i] = true;
                     Log.d("testdate", eventDateList.size() + "");
                 } else if (Events.repeatEvent != null) {
-                    try {
-                        ifEvents[i] = EventUtil.hasRepeatEvent(cal);
-                    } catch (JSONException e) {
-                        e.printStackTrace();
-                    }
+//                    try {
+//                        ifEvents[i] = EventUtil.hasRepeatEvent(cal);
+//                    } catch (JSONException e) {
+//                        e.printStackTrace();
+//                    }
                 }
 
 
@@ -917,9 +917,9 @@ public class CalendarFragment extends Fragment {
                 //System.out.print("ttttttttttttttt");
 
                 //mResponse = response;
-                Events.response = response;
+                Events.response = EventUtil.initialEvents(response);
 //                analyseEvents(response);
-                Events.repeatEvent = EventUtil.getRepeatEventsFromEvents(response);
+                Events.repeatEvent = EventUtil.getRepeatEventsFromEvents(Events.response);
                 recyclerView.getAdapter().notifyDataSetChanged();
                 Log.i("Event_response", response.toString());
 //                System.out.println(response.toString());

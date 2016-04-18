@@ -12,6 +12,7 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.itime.team.itime.R;
 import com.itime.team.itime.bean.URLs;
+import com.itime.team.itime.bean.User;
 import com.itime.team.itime.utils.JsonArrayFormRequest;
 import com.itime.team.itime.utils.MySingleton;
 import com.itime.team.itime.views.adapters.AttendeesAdapter;
@@ -25,12 +26,15 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * Created by mac on 16/4/12.
+ * Created by Weiwei Cai on 16/4/12.
+ * The activity is responsible for showing all attendees and their status.
  */
 public class MeetingAttendeesActivity extends AppCompatActivity{
     private ListView mAttendees;
     private AttendeesAdapter mAdapter;
     private ArrayList<HashMap<String,String>> mItems;
+    public static final String ARG_MEETING_ID = "arg_meeting_id";
+    private String mMeetingId;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -54,7 +58,7 @@ public class MeetingAttendeesActivity extends AppCompatActivity{
         if (actionBar != null) {
             actionBar.setDisplayHomeAsUpEnabled(true);
         }
-
+        mMeetingId = getIntent().getStringExtra(ARG_MEETING_ID);
         mAttendees = (ListView) findViewById(R.id.meeting_detail_attendee_listview);
         mItems = new ArrayList<>();
     }
@@ -81,8 +85,8 @@ public class MeetingAttendeesActivity extends AppCompatActivity{
     private void loadAttendees() {
         JSONObject jsonObject = new JSONObject();
         try {
-            jsonObject.put("meeting_id", "23C5D415-91E1-4E50-BDF9-26AECFE28506");
-            jsonObject.put("user_id", "1@2.com");
+            jsonObject.put("meeting_id", mMeetingId);
+            jsonObject.put("user_id", User.ID);
         } catch (JSONException e) {
             e.printStackTrace();
         }

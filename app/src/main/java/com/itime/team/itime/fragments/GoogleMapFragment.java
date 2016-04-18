@@ -11,7 +11,7 @@ import com.google.android.gms.maps.model.MarkerOptions;
 import com.itime.team.itime.R;
 
 /**
- * Created by mac on 16/4/11.
+ * Created by Weiwei Cai on 16/4/11.
  */
 public class GoogleMapFragment extends FragmentActivity implements OnMapReadyCallback {
 

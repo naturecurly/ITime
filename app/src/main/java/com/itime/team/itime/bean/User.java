@@ -1,11 +1,12 @@
 package com.itime.team.itime.bean;
 
 /**
- * Created by mac on 16/1/12.
+ * Created by Weiwei Cai on 16/1/12.
  */
 public class User {
     public static String ID = "cai";
     public static boolean isRemembered = false;
+    public static boolean hasNewFriend = false;
 
 //    private String profilePicture = "";
 //

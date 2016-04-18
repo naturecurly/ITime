@@ -14,6 +14,11 @@
     <string name="send">Send</string>
     <string name="Logout">Log Out</string>
     <string name="warning">Warning</string>
+    <string name="yes">Yes</string>
+    <string name="no">No</string>
+    <string name="confirm">Confirm</string>
+    <string name="reset">Reset</string>
+    <string name="edit">Edit</string>
     <string name="settings_meeting_preference">Meeting Preferences</string>
     <string name="settings_import_calendar">Import Calendars</string>
     <string name="settings_default_alert_time">Default Alert Time</string>
@@ -99,6 +104,14 @@
     <string name="meeting_detail_reason_content">Why do you reject the meeting?</string>
     <string name="meeting_detail_title">Meeting Detail</string>
     <string name="meeting_attendees_title">Attendees</string>
+    <string name="meeting_detail_new_name">New Meeting Name</string>
+    <string name="meeting_detail_new_venue">New Venue</string>
+    <string name="meeting_detail_new_start_time">New Start Time</string>
+    <string name="meeting_detail_new_end_time">New End Time</string>
+    <string name="meeting_detail_new_repeat">New Repeat Type</string>
+    <string name="meeting_detail_new_Punctual">If Punctual</string>
+    <string name="meeting_detail_new_note">New Note</string>
+
 
     <string name="check_login_timeout">Timeout, please check your internet</string>
 

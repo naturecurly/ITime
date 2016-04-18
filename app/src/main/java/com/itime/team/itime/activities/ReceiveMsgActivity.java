@@ -9,7 +9,7 @@ import android.util.Log;
 import com.itime.team.itime.R;
 
 /**
- * Created by mac on 16/3/13.
+ * Created by Weiwei Cai on 16/3/13.
  */
 public class ReceiveMsgActivity extends AppCompatActivity {
     @Override

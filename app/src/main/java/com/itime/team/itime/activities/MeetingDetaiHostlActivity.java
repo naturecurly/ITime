@@ -5,14 +5,14 @@ import android.os.Bundle;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.RadioButton;
-import android.widget.RadioGroup;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -29,7 +29,6 @@ import com.itime.team.itime.R;
 import com.itime.team.itime.bean.MeetingInfo;
 import com.itime.team.itime.bean.URLs;
 import com.itime.team.itime.bean.User;
-import com.itime.team.itime.fragments.MeetingDetailReasonDialogFragment;
 import com.itime.team.itime.utils.DateUtil;
 import com.itime.team.itime.utils.JsonObjectFormRequest;
 import com.itime.team.itime.utils.MySingleton;
@@ -44,20 +43,15 @@ import java.util.Map;
 
 /**
  * Created by Weiwei Cai on 16/4/5.
- * This activity shows all meeting details for meeting attendees.
+ * This activity shows all meeting details for meeting hosts.
  * The most of information has two types, the first one the current information, the second one is
  * new information. If the current information and new information is the same, then the new information
  * will not be represented.
- * Since the the majority of the code is the same as MeetingDetailHostActivity, the details can refer
- * it.
- *
  */
-public class MeetingDetailActivity extends AppCompatActivity implements OnMapReadyCallback, RadioGroup.OnCheckedChangeListener,View.OnClickListener {
+public class MeetingDetaiHostlActivity extends AppCompatActivity implements OnMapReadyCallback,View.OnClickListener {
     private MapFragment mMapFragment;
-    private RadioGroup mRadioGroup;
-    private RadioButton mAccept, mMaybe, mDecline;
     private MeetingInfo mMeetingInfo;
-    private TextView mMeetingName, mMeetingAddress, mMeetingCity, mName,mID;
+    private TextView mMeetingName, mMeetingAddress, mMeetingCity;
     private TextView mNewMeetingName, mNewMeetingAddress;
     private Button mAttendee;
     private TextView mDeparture, mStart, mEnd, mRepeat;
@@ -67,6 +61,7 @@ public class MeetingDetailActivity extends AppCompatActivity implements OnMapRea
     private EditText mNewNote;
     private Button mEmail, mQuit;
     private ImageView mImage;
+    private Button mConfirm, mReset;
 
     private LinearLayout mLNewName, mLNewVenue, mLNewStart, mLNewEnd, mLNewRepeat, mLNewPunctual, mLNewNote;
 
@@ -75,13 +70,48 @@ public class MeetingDetailActivity extends AppCompatActivity implements OnMapRea
 
     public static final String ARG_MEETING_ID = "arg_meeting_id";
     private String mMeetingId;
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_meeting_detail);
+        setContentView(R.layout.activity_meeting_detail_host);
         init();
         loadMeetingInfo();
     }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.meeting_detail_host, menu);
+        return true;
+    }
+
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        if(item.getItemId() == R.id.meeting_detail_edit){
+            Intent intent = new Intent(this, MeetingDetailUpdateActivity.class);
+            if(!mMeetingInfo.getName().equals("")) {
+                intent.putExtra("year", mMeetingInfo.getStart().get(Calendar.YEAR));
+                intent.putExtra("month", mMeetingInfo.getStart().get(Calendar.MONTH));
+                intent.putExtra("day", mMeetingInfo.getStart().get(Calendar.DATE));
+                intent.putExtra("hour", mMeetingInfo.getStart().get(Calendar.HOUR));
+                intent.putExtra("min", mMeetingInfo.getStart().get(Calendar.MINUTE));
+                intent.putExtra("e_year", mMeetingInfo.getEnd().get(Calendar.YEAR));
+                intent.putExtra("e_month", mMeetingInfo.getEnd().get(Calendar.MONTH));
+                intent.putExtra("e_day", mMeetingInfo.getEnd().get(Calendar.DATE));
+                intent.putExtra("e_hour", mMeetingInfo.getEnd().get(Calendar.HOUR));
+                intent.putExtra("e_min", mMeetingInfo.getEnd().get(Calendar.MINUTE));
+                intent.putExtra("name",mMeetingInfo.getName());
+                intent.putExtra("location",mMeetingInfo.getLocation() + " " + mMeetingInfo.getVenue());
+                intent.putExtra("repeat", mMeetingInfo.getRepeat());
+                intent.putExtra("punctual", mMeetingInfo.getPunctual());
+                intent.putExtra("note", mMeetingInfo.getComment());
+            }
+            startActivity(intent);
+        }
+        return super.onOptionsItemSelected(item);
+    }
+
 
     private void init(){
         Toolbar toolbar = (Toolbar) findViewById(R.id.meeting_detail_toolbar);
@@ -100,17 +130,11 @@ public class MeetingDetailActivity extends AppCompatActivity implements OnMapRea
 
         mMeetingId = getIntent().getStringExtra(ARG_MEETING_ID);
 
-        mRadioGroup = (RadioGroup) findViewById(R.id.meeting_detail_radio_group);
-        mAccept = (RadioButton) findViewById(R.id.meeting_detail_radio_accept);
-        mMaybe = (RadioButton) findViewById(R.id.meeting_detail_radio_maybe);
-        mDecline = (RadioButton) findViewById(R.id.meeting_detail_radio_decline);
-        mRadioGroup.setOnCheckedChangeListener(this);
+
 
         mMeetingName = (TextView) findViewById(R.id.meeting_detail_event_name);
         mMeetingAddress = (TextView) findViewById(R.id.meeting_detail_address);
         mMeetingCity = (TextView) findViewById(R.id.meeting_detail_city);
-        mName = (TextView) findViewById(R.id.meeting_detail_name);
-        mID = (TextView) findViewById(R.id.meeting_detail_id);
         mAttendee = (Button) findViewById(R.id.meeting_detail_attendee);
         mDeparture = (TextView) findViewById(R.id.meeting_detail_depture);
         mStart = (TextView) findViewById(R.id.meeting_detail_starts);
@@ -119,6 +143,11 @@ public class MeetingDetailActivity extends AppCompatActivity implements OnMapRea
         mPunctual = (CheckBox) findViewById(R.id.meeting_detail_punctual);
         mEmail = (Button) findViewById(R.id.meeting_detail_email);
         mQuit = (Button) findViewById(R.id.quit);
+
+        mConfirm = (Button) findViewById(R.id.meeting_detail_confirm);
+        mConfirm.setOnClickListener(this);
+        mReset = (Button) findViewById(R.id.meeting_detail_reset);
+        mReset.setOnClickListener(this);
 
         mNote = (EditText) findViewById(R.id.meeting_detail_note);
         mNote.clearFocus();
@@ -143,7 +172,16 @@ public class MeetingDetailActivity extends AppCompatActivity implements OnMapRea
         mLNewNote = (LinearLayout) findViewById(R.id.meeting_detail_note_layout);
     }
 
+    // Before setting which Layout should be shown, just hiding all relative layout. If the new
+    // information and old information are the different, then set the layouts as visible.
     private void showLayout(MeetingInfo meetingInfo){
+        mLNewName.setVisibility(View.GONE);
+        mLNewVenue.setVisibility(View.GONE);
+        mLNewStart.setVisibility(View.GONE);
+        mLNewEnd.setVisibility(View.GONE);
+        mLNewRepeat.setVisibility(View.GONE);
+        mLNewPunctual.setVisibility(View.GONE);
+        mLNewNote.setVisibility(View.GONE);
         if (!meetingInfo.getName().equals(meetingInfo.getNewName())){
             mLNewName.setVisibility(View.VISIBLE);
         }
@@ -165,7 +203,20 @@ public class MeetingDetailActivity extends AppCompatActivity implements OnMapRea
         if(!meetingInfo.getComment().equals(meetingInfo.getNewComment())){
             mLNewNote.setVisibility(View.VISIBLE);
         }
+
+        if(meetingInfo.getStatus().equals("NO CONFIRM NEW MEETING")){
+            mConfirm.setVisibility(View.VISIBLE);
+            mReset.setVisibility(View.GONE);
+        }else if(meetingInfo.getStatus().equals("NO CONFIRM UPDATE MEETING")){
+            mConfirm.setVisibility(View.VISIBLE);
+            mReset.setVisibility(View.VISIBLE);
+        }else{
+            mConfirm.setVisibility(View.GONE);
+            mReset.setVisibility(View.GONE);
+        }
     }
+
+    // Dealing with google Map.
     @Override
     public void onMapReady(GoogleMap googleMap) {
         LatLng sydney = new LatLng(mLog, mLat);
@@ -181,6 +232,7 @@ public class MeetingDetailActivity extends AppCompatActivity implements OnMapRea
         mMapFragment.getMapAsync(this);
     }
 
+    // Load meeting information from the server.
     private void loadMeetingInfo() {
         JSONObject jsonObject = new JSONObject();
         try {
@@ -208,6 +260,7 @@ public class MeetingDetailActivity extends AppCompatActivity implements OnMapRea
         MySingleton.getInstance(this).addToRequestQueue(request);
     }
 
+    // Set contents for each component.
     private void handleMeetingInfo(JSONObject json){
         mMeetingInfo = new MeetingInfo();
         try {
@@ -239,8 +292,6 @@ public class MeetingDetailActivity extends AppCompatActivity implements OnMapRea
             mMeetingName.setText(mMeetingInfo.getName());
             mMeetingCity.setText(mMeetingInfo.getLocation());
             mMeetingAddress.setText(mMeetingInfo.getVenue());
-            mID.setText(mMeetingInfo.getHostID());
-            mName.setText(mMeetingInfo.getHostID());
             mDeparture.setText(dateOutputFormat(mMeetingInfo.getStart()));
             mStart.setText(dateOutputFormat(mMeetingInfo.getStart()));
             mEnd.setText(dateOutputFormat(mMeetingInfo.getEnd()));
@@ -307,28 +358,74 @@ public class MeetingDetailActivity extends AppCompatActivity implements OnMapRea
         MySingleton.getInstance(this).addToRequestQueue(request);
     }
 
-    @Override
-    public void onCheckedChanged(RadioGroup group, int checkedId) {
-        if (checkedId == mAccept.getId()){
-            mAccept.setBackgroundColor(getResources().getColor(R.color.grey));
-            mMaybe.setBackgroundColor(getResources().getColor(R.color.white));
-            mDecline.setBackgroundColor(getResources().getColor(R.color.white));
-
-            responseMeeting("Accept");
-        } else if(checkedId == mMaybe.getId()){
-            mAccept.setBackgroundColor(getResources().getColor(R.color.white));
-            mMaybe.setBackgroundColor(getResources().getColor(R.color.grey));
-            mDecline.setBackgroundColor(getResources().getColor(R.color.white));
-
-            responseMeeting("Maybe");
-        } else if(checkedId == mDecline.getId()){
-            mAccept.setBackgroundColor(getResources().getColor(R.color.white));
-            mMaybe.setBackgroundColor(getResources().getColor(R.color.white));
-            mDecline.setBackgroundColor(getResources().getColor(R.color.grey));
-
-            MeetingDetailReasonDialogFragment dialog = new MeetingDetailReasonDialogFragment(mMeetingId);
-            dialog.show(getSupportFragmentManager(),"reasonDialog");
+    // Confirm a meeting
+    private void confirm(){
+        JSONObject jsonObject = new JSONObject();
+        try {
+            jsonObject.put("meeting_id", mMeetingId);
+            jsonObject.put("user_id", User.ID);
+            jsonObject.put("meeting_valid_token", mMeetingInfo.getToken());
+        } catch (JSONException e) {
+            e.printStackTrace();
         }
+
+        final String url = URLs.HOST_SEND_CONFIRM_MEETING_ANYWAY;
+        Map<String, String> params = new HashMap();
+        params.put("json", jsonObject.toString());
+
+        JsonObjectFormRequest request = new JsonObjectFormRequest(Request.Method.POST, url, params, new Response.Listener<JSONObject>() {
+            @Override
+            public void onResponse(JSONObject response) {
+                try {
+                    if (!response.getString("result").equals("success")){
+                        Toast.makeText(getApplicationContext(), getString(R.string.time_out), Toast.LENGTH_LONG);
+                    }
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
+        }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+
+            }
+        });
+        MySingleton.getInstance(this).addToRequestQueue(request);
+    }
+
+    // Reset a meeting
+    private void reset(){
+        JSONObject jsonObject = new JSONObject();
+        try {
+            jsonObject.put("meeting_id", mMeetingId);
+            jsonObject.put("user_id", User.ID);
+            jsonObject.put("meeting_valid_token", mMeetingInfo.getToken());
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+        final String url = URLs.HOST_SEND_RESET_MEETING_ANYWAY;
+        Map<String, String> params = new HashMap();
+        params.put("json", jsonObject.toString());
+
+        JsonObjectFormRequest request = new JsonObjectFormRequest(Request.Method.POST, url, params, new Response.Listener<JSONObject>() {
+            @Override
+            public void onResponse(JSONObject response) {
+                try {
+                    if (!response.getString("result").equals("success")){
+                        Toast.makeText(getApplicationContext(), getString(R.string.time_out), Toast.LENGTH_LONG);
+                    }
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
+        }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+
+            }
+        });
+        MySingleton.getInstance(this).addToRequestQueue(request);
     }
 
     @Override
@@ -337,6 +434,18 @@ public class MeetingDetailActivity extends AppCompatActivity implements OnMapRea
             Intent intent = new Intent(this, MeetingAttendeesActivity.class);
             intent.putExtra("arg_meeting_id", mMeetingId);
             startActivity(intent);
+        } else if (v.getId() == mConfirm.getId()) {
+            confirm();
+            loadMeetingInfo();
+        } else if (v.getId() == mReset.getId()) {
+            reset();
+            loadMeetingInfo();
         }
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        loadMeetingInfo();
     }
 }

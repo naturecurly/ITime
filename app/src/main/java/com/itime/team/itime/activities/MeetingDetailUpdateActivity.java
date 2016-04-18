@@ -1,9 +1,7 @@
 package com.itime.team.itime.activities;
 
-import android.app.AlertDialog;
 import android.app.DatePickerDialog;
 import android.app.TimePickerDialog;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.ActionBar;
@@ -41,6 +39,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
@@ -48,9 +47,9 @@ import java.util.UUID;
 
 /**
  * Created by Weiwei Cai on 16/2/17.
- * This activity creates new meeting.
+ *
  */
-public class NewMeetingActivity extends AppCompatActivity implements View.OnTouchListener, View.OnClickListener, CompoundButton.OnCheckedChangeListener{
+public class MeetingDetailUpdateActivity extends AppCompatActivity implements View.OnTouchListener, View.OnClickListener, CompoundButton.OnCheckedChangeListener{
     private EditText mMessage;
     private Button mStartDate, mStartTime, mEndDate, mEndTime;
     private Button mRepeat;
@@ -97,31 +96,15 @@ public class NewMeetingActivity extends AppCompatActivity implements View.OnTouc
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.new_meeting, menu);
+        getMenuInflater().inflate(R.menu.meeting_detail_update, menu);
         return true;
     }
 
 
-    // To allow users to make sure whether wanting to create a new meeting.
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         if(item.getItemId() == R.id.new_meeting_menu_send){
-            AlertDialog.Builder builder = new AlertDialog.Builder(this);
-            builder.setMessage(getString(R.string.new_meeting_confirm_content));
-            builder.setIcon(R.mipmap.ic_launcher);
-            builder.setTitle(getString(R.string.new_meeting_confirm_title));
-            builder.setNegativeButton("No", new DialogInterface.OnClickListener() {
-                @Override
-                public void onClick(DialogInterface dialog, int which) {
-                }
-            });
-            builder.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
-                @Override
-                public void onClick(DialogInterface dialog, int which) {
-                    postInformation();
-                }
-            });
-            builder.show();
+
         }
         return super.onOptionsItemSelected(item);
     }
@@ -141,7 +124,7 @@ public class NewMeetingActivity extends AppCompatActivity implements View.OnTouc
             actionBar.setDisplayHomeAsUpEnabled(true);
         }
 
-        setEndTime();
+
 
         mMessage = (EditText) findViewById(R.id.new_meeting_message);
         mMessage.setOnTouchListener(this);
@@ -165,6 +148,8 @@ public class NewMeetingActivity extends AppCompatActivity implements View.OnTouc
         mAlert.setOnClickListener(this);
         mVeune.setOnClickListener(this);
 
+        setEndTime();
+
         mStartTime.setText(timeFormat(mStartHour, mStartMin));
         mEndTime.setText(timeFormat(mEndHour, mEndMin));
         mStartDate.setText(dateFormat(mStartDay, mStartMonth, mStartYear));
@@ -174,39 +159,50 @@ public class NewMeetingActivity extends AppCompatActivity implements View.OnTouc
         mAlertValue = new ArrayList();
         mRpeatValue.add("One-time event");
         mAlertValue.add(1);
-
-
         //simpleRequest();
     }
 
     private Date getCurrentDate(){
         Date date = null;
         Intent receiver = getIntent();
-        mStartYear = receiver.getIntExtra("year",0);
-        mStartMonth = receiver.getIntExtra("month",0);
-        mStartDay = receiver.getIntExtra("day",0);
-        mDuration = receiver.getIntExtra("duration",0);
+        Calendar calendar = Calendar.getInstance();
+        mStartYear = receiver.getIntExtra("year", calendar.get(Calendar.YEAR));
+        mStartMonth = receiver.getIntExtra("month",calendar.get(Calendar.MONTH));
+        mStartDay = receiver.getIntExtra("day",calendar.get(Calendar.DATE));
+        mDuration = receiver.getIntExtra("duration",60);
         mStartHour = receiver.getIntExtra("hour",0);
         mStartMin = receiver.getIntExtra("min",0);
         mFriendIDs = receiver.getStringArrayExtra("friendids");
-        int currentDay = receiver.getIntExtra("currentDay",0);
-        date = DateUtil.plusDay(mStartYear, mStartMonth, mStartDay, mStartHour, mStartMin, currentDay);
-        mStartYear = date.getYear() + 1900;
-        mStartMonth = date.getMonth();
-        mStartDay = date.getDate();
-        mStartHour = date.getHours();
-        mStartMin = date.getMinutes();
+//        int currentDay = receiver.getIntExtra("currentDay",0);
+//        date = DateUtil.plusDay(mStartYear, mStartMonth, mStartDay, mStartHour, mStartMin, currentDay);
+//        mStartYear = date.getYear() + 1900;
+//        mStartMonth = date.getMonth();
+//        mStartDay = date.getDate();
+//        mStartHour = date.getHours();
+//        mStartMin = date.getMinutes();
         return date;
     }
 
-    // The end time equals the start time plus the duration of a meeting.
     private void setEndTime(){
-        Date endTime = DateUtil.plusMinute(getCurrentDate(), mDuration);
-        mEndYear = endTime.getYear() + 1900;
-        mEndMonth = endTime.getMonth();
-        mEndDay = endTime.getDate();
-        mEndHour = endTime.getHours();
-        mEndMin = endTime.getMinutes();
+        getCurrentDate();
+//        Date endTime = DateUtil.plusMinute(getCurrentDate(), mDuration);
+//        mEndYear = endTime.getYear() + 1900;
+//        mEndMonth = endTime.getMonth();
+//        mEndDay = endTime.getDate();
+//        mEndHour = endTime.getHours();
+//        mEndMin = endTime.getMinutes();
+        Intent receiver = getIntent();
+        Calendar calendar = Calendar.getInstance();
+        mEndYear = receiver.getIntExtra("e_year",calendar.get(Calendar.YEAR));
+        mEndMonth = receiver.getIntExtra("e_month",calendar.get(Calendar.MONTH));
+        mEndDay = receiver.getIntExtra("e_day",calendar.get(Calendar.DATE));
+        mEndHour = receiver.getIntExtra("e_hour",calendar.get(Calendar.HOUR));
+        mEndMin = receiver.getIntExtra("e_min",calendar.get(Calendar.MINUTE));
+        mRepeat.setText(receiver.getStringExtra("repeat"));
+        mPunctual.setChecked(receiver.getBooleanExtra("punctual", false));
+        mName.setText(receiver.getStringExtra("name"));
+        mVeune.setText(receiver.getStringExtra("location"));
+        mMessage.setText(receiver.getStringExtra("note"));
     }
 
     private String timeFormat(int hour, int min){
@@ -220,8 +216,6 @@ public class NewMeetingActivity extends AppCompatActivity implements View.OnTouc
         return  DateUtil.weekNameStandardTwo[DateUtil.getDateOfWeek(year,month,day) - 1] +
                 ", " + dayReturn + " " + DateUtil.month[month] + " " + year;
     }
-
-    // The end time is not allow earlier than start time.
     private void checkTime(){
         if(DateUtil.isFeasible(mStartYear,mStartMonth,mStartDay,mStartHour,mStartMin,mEndYear,mEndMonth,
                 mEndDay,mEndHour,mEndMin)) {
@@ -235,7 +229,6 @@ public class NewMeetingActivity extends AppCompatActivity implements View.OnTouc
         }
     }
 
-    // Handling the EditView get focus problem.
     @Override
     public boolean onTouch(View v, MotionEvent event) {
         if(v.getId() == R.id.new_meeting_message && mMessage.isFocused()){
@@ -306,7 +299,6 @@ public class NewMeetingActivity extends AppCompatActivity implements View.OnTouc
         }
     }
 
-    // Get results from GooglePlacesAutoCompleteActivity.
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (requestCode == 1){
@@ -344,21 +336,47 @@ public class NewMeetingActivity extends AppCompatActivity implements View.OnTouc
         }
         JSONObject json = new JSONObject();
         try {
-            json.put("event_is_punctual",punctual);
+            json.put("event_id","");    //?
+            json.put("event_venue_location_new","");    // ?
+            json.put("event_repeats_type_new","");
+            json.put("event_last_sug_dep_time",""); //?
+            json.put("is_long_repeat",1);   //?
+            json.put("event_starts_datetime_new","");
+            json.put("is_host","");
+            json.put("event_longitude_new",-37);
+            json.put("event_latitude_new","");
+            json.put("event_last_sug_dep_time_new",""); //?
+            json.put("event_ends_datetime_new","");
+            json.put("event_name_new","");
+            json.put("event_last_distance_in_meter_new","");    //?
+            json.put("event_is_punctual_new",1);    //?
+            json.put("host_id","");
+            json.put("event_last_time_on_way_in_second_new","");    //?
+            json.put("is_meeting",1);   //?
+            json.put("event_venue_show_new","");
+            json.put("event_last_time_on_way_in_second",0); //?
+            json.put("event_alert","");
+            json.put("if_deleted",0);   //?
+            json.put("event_last_distance_in_meter",0); //?
+            json.put("event_comment_new","");
+            json.put("event_repeat_to_date","");    //?
+            json.put("calendar_id","");
+            json.put("event_last_update_datetime","");  //?
+            json.put("event_is_punctual",punctual); //?
             json.put("event_starts_datetime", startDateForPost);
             json.put("event_ends_datetime", endDateForPost);
             json.put("event_comment",comment);
             json.put("event_name",name.equals("") ? getString(R.string.new_meeting) : name);
-            json.put("friends_id",friendID);
             json.put("event_repeats_type",repeative);
             json.put("event_latitude",mLat);
             json.put("event_longitude", mLng);
-            json.put("event_venue_location", location);
-            json.put("meeting_id",meetingID);
-            json.put("meeting_valid_token",meetingToken);
+            json.put("event_venue_location", location); //?
+            json.put("meeting_id",meetingID);   //?
+            json.put("meeting_valid_token",meetingToken);   //?
             json.put("user_id", User.ID);
-            json.put("meeting_status", status);
-            json.put("event_venue_show",showLocation);
+            json.put("meeting_status", "");
+            json.put("event_venue_show",showLocation);  //?
+
             Log.i("resu",json.toString());
 
         } catch (JSONException e) {
@@ -394,8 +412,6 @@ public class NewMeetingActivity extends AppCompatActivity implements View.OnTouc
 
     }
 
-    // get coordinate based on address. The method is that post address name to the url, then it will
-    // return the coordinate.
     private void getCoordinate(String address){
         StringBuffer buffer = new StringBuffer();
         buffer.append("https://maps.googleapis.com/maps/api/geocode/json?address=");

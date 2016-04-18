@@ -27,7 +27,6 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.itime.team.itime.R;
 import com.itime.team.itime.activities.DateSelectionActivity;
-import com.itime.team.itime.activities.MeetingDetailActivity;
 import com.itime.team.itime.bean.URLs;
 import com.itime.team.itime.bean.User;
 import com.itime.team.itime.listener.ScrollMeetingViewListener;
@@ -86,6 +85,8 @@ public class MeetingFragment extends Fragment implements View.OnClickListener,Se
     private int mEndHour;
     private int mEndMin;
 
+    private HashMap<String,Boolean> checkBoxKeeper;
+
     //private JsonManager mJsonManager;
     private MeetingScrollView mScrollView;
 
@@ -97,7 +98,7 @@ public class MeetingFragment extends Fragment implements View.OnClickListener,Se
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         setHasOptionsMenu(true);
-
+        checkBoxKeeper = new HashMap<>();
 
         mmeeting = inflater.inflate(R.layout.fragment_meeting,null);
         initData();
@@ -208,8 +209,14 @@ public class MeetingFragment extends Fragment implements View.OnClickListener,Se
         fetchEvents();
     }
 
+    // There are two listItem to store friends' information, the listItem stores the information from
+    // the server, and the listItemForPresent just get information from the listItem and then represent
+    // it. The reason creating two listItem is that user is allowed to search his friends, and the
+    // listItemForPresent shows these friends who are searched.
     private void doInitListView(JSONArray mUserInfo){
         try {
+            listItem.clear();
+            listItemForPresent.clear();
             for(int i = 0; i < mUserInfo.length(); i ++){
                 JSONObject jsonObject = (JSONObject) mUserInfo.get(i);
                 HashMap<String, Object> map = new HashMap<String, Object>();
@@ -231,7 +238,7 @@ public class MeetingFragment extends Fragment implements View.OnClickListener,Se
             e.printStackTrace();
         }
         DynamicListViewAdapter listItemAdapter = new DynamicListViewAdapter(getActivity(),
-                listItemForPresent,mInvitedFriend,getResources(),this);
+                listItemForPresent,mInvitedFriend,getResources(),this, checkBoxKeeper);
         listView.setAdapter(listItemAdapter);
         //reset height
         setListViewHeightBasedOnChildren(listView);
@@ -241,13 +248,14 @@ public class MeetingFragment extends Fragment implements View.OnClickListener,Se
         listItemForPresent.clear();
         for(HashMap<String, Object> map : listItem){
             if(map.get("ItemID").toString().contains(query)){
+                map.put("CheckBox",checkBoxKeeper.get(map.get("ItemID").toString()));
                 listItemForPresent.add(map);
             }else if(query == null || query.equals("")){
                 listItemForPresent.add(map);
             }
         }
         DynamicListViewAdapter listItemAdapter = new DynamicListViewAdapter(getActivity(),
-                listItemForPresent,mInvitedFriend, getResources(),this);
+                listItemForPresent,mInvitedFriend, getResources(),this,checkBoxKeeper);
         listView.setAdapter(listItemAdapter);
 
         //reset height
@@ -384,8 +392,6 @@ public class MeetingFragment extends Fragment implements View.OnClickListener,Se
             }else{
                 Toast.makeText(getContext(),"Please select a friend at least", Toast.LENGTH_LONG)
                         .show();
-                Intent intent = new Intent(getActivity(), MeetingDetailActivity.class);
-                startActivity(intent);
             }
         }else{
             Toast.makeText(getActivity(), "the Start Time should be earlier than End Time",
@@ -405,6 +411,8 @@ public class MeetingFragment extends Fragment implements View.OnClickListener,Se
     }
 
     public void fetchEvents() {
+        checkBoxKeeper.clear();
+        User.hasNewFriend = false;
         JSONObject jsonObject = new JSONObject();
         try {
             jsonObject.put("user_id", User.ID);

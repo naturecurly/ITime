@@ -143,6 +143,16 @@
             android:theme="@style/SettingTheme"></activity>
 
         <activity
+            android:name=".activities.MeetingDetaiHostlActivity"
+            android:screenOrientation="portrait"
+            android:theme="@style/SettingTheme"></activity>
+
+        <activity
+            android:name=".activities.MeetingDetailUpdateActivity"
+            android:screenOrientation="portrait"
+            android:theme="@style/SettingTheme"></activity>
+
+        <activity
             android:name=".activities.NewEventActivity"
             android:screenOrientation="portrait"
             android:theme="@style/SettingTheme"></activity>

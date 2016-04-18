@@ -3,7 +3,7 @@ package com.itime.team.itime.bean;
 import com.itime.team.itime.views.MeetingSelectionScrollView;
 
 /**
- * Created by mac on 16/2/5.
+ * Created by Weiwei Cai on 16/2/5.
  */
 public class TopAndCenterMeetingFragmentScrollViews {
     private MeetingSelectionScrollView topScollView;

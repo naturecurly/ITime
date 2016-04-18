@@ -27,7 +27,8 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * Created by mac on 16/4/12.
+ * Created by Weiwei Cai on 16/4/12.
+ * Writing a reason to reject a meeting through this fragment.
  */
 public class MeetingDetailReasonDialogFragment extends DialogFragment implements View.OnClickListener{
     private View mView;

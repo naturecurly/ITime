@@ -39,7 +39,9 @@ import java.util.TimerTask;
 import io.fabric.sdk.android.Fabric;
 
 /**
- * Created by mac on 16/2/26.
+ * Created by Weiwei Cai on 16/2/26.
+ * This activity handles user Login function.
+ *
  */
 public class CheckLoginActivity extends AppCompatActivity{
     private Animation mIn;
@@ -57,6 +59,7 @@ public class CheckLoginActivity extends AppCompatActivity{
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        // This is a tool that can detect crashes of the App and send the details to developers.
         Fabric.with(this, new Crashlytics());
 
         setContentView(R.layout.activity_checklogin);
@@ -75,7 +78,7 @@ public class CheckLoginActivity extends AppCompatActivity{
 
         getUserInfo();
 
-
+        // Welcome UI, after a second, user can enter into main UI.
         Timer timer=new Timer();
         TimerTask tast=new TimerTask()
         {
@@ -85,6 +88,8 @@ public class CheckLoginActivity extends AppCompatActivity{
 //                    User.ID = mUsernameStr;
 //                    startActivity(MainIntent);
                 }else{
+                    // If cannot login directly, then enter into the UI which provides inputing
+                    // password and username function.
                     LoginIntent.putExtra("username",mUsernameStr);
                     LoginIntent.putExtra("password",mPasswordStr);
                     LoginIntent.putExtra("lastlogintime",mLastLoginTime);
@@ -98,6 +103,7 @@ public class CheckLoginActivity extends AppCompatActivity{
         timer.schedule(tast, 1000);
     }
 
+    // Get Users' information from database.
     private void getUserInfo(){
         UserTableHelper dbHelper = new UserTableHelper(CheckLoginActivity.this, "userbase1");
         SQLiteDatabase db = dbHelper.getReadableDatabase();
@@ -148,6 +154,7 @@ public class CheckLoginActivity extends AppCompatActivity{
         AppEventsLogger.deactivateApp(this);
     }
 
+    // Upload username, password and other relative information to the server.
     private void login(){
         JSONObject json = new JSONObject();
         try {
@@ -194,6 +201,7 @@ public class CheckLoginActivity extends AppCompatActivity{
         MySingleton.getInstance(this).addToRequestQueue(request);
     }
 
+    // GetDeviceID from database, if it is the first time to login, then the ID should be "".
     private String getDeviceID(){
         String id = "";
         DeviceTableHelper dbHelper = new DeviceTableHelper(CheckLoginActivity.this, "deviceidbase");
@@ -210,6 +218,7 @@ public class CheckLoginActivity extends AppCompatActivity{
         return id;
     }
 
+    // a Dialog to tell user that the internet is bad.
     private void handleTimeout(){
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setMessage(getString(R.string.check_login_timeout));
@@ -223,6 +232,7 @@ public class CheckLoginActivity extends AppCompatActivity{
         });
         builder.show();
     }
+
 
     private void getInvitation(){
         Intent i_getvalue = getIntent();

@@ -5,7 +5,7 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
 /**
- * Created by mac on 16/2/25.
+ * Created by Weiwei Cai on 16/2/25.
  */
 public class DeviceTableHelper extends SQLiteOpenHelper {
     private static final int VERSION = 1;

@@ -336,21 +336,47 @@ public class MeetingDetailUpdateActivity extends AppCompatActivity implements Vi
         }
         JSONObject json = new JSONObject();
         try {
-            json.put("event_is_punctual",punctual);
+            json.put("event_id","");    //?
+            json.put("event_venue_location_new","");    // ?
+            json.put("event_repeats_type_new","");
+            json.put("event_last_sug_dep_time",""); //?
+            json.put("is_long_repeat",1);   //?
+            json.put("event_starts_datetime_new","");
+            json.put("is_host","");
+            json.put("event_longitude_new",-37);
+            json.put("event_latitude_new","");
+            json.put("event_last_sug_dep_time_new",""); //?
+            json.put("event_ends_datetime_new","");
+            json.put("event_name_new","");
+            json.put("event_last_distance_in_meter_new","");    //?
+            json.put("event_is_punctual_new",1);    //?
+            json.put("host_id","");
+            json.put("event_last_time_on_way_in_second_new","");    //?
+            json.put("is_meeting",1);   //?
+            json.put("event_venue_show_new","");
+            json.put("event_last_time_on_way_in_second",0); //?
+            json.put("event_alert","");
+            json.put("if_deleted",0);   //?
+            json.put("event_last_distance_in_meter",0); //?
+            json.put("event_comment_new","");
+            json.put("event_repeat_to_date","");    //?
+            json.put("calendar_id","");
+            json.put("event_last_update_datetime","");  //?
+            json.put("event_is_punctual",punctual); //?
             json.put("event_starts_datetime", startDateForPost);
             json.put("event_ends_datetime", endDateForPost);
             json.put("event_comment",comment);
             json.put("event_name",name.equals("") ? getString(R.string.new_meeting) : name);
-            json.put("friends_id",friendID);
             json.put("event_repeats_type",repeative);
             json.put("event_latitude",mLat);
             json.put("event_longitude", mLng);
-            json.put("event_venue_location", location);
-            json.put("meeting_id",meetingID);
-            json.put("meeting_valid_token",meetingToken);
+            json.put("event_venue_location", location); //?
+            json.put("meeting_id",meetingID);   //?
+            json.put("meeting_valid_token",meetingToken);   //?
             json.put("user_id", User.ID);
-            json.put("meeting_status", status);
-            json.put("event_venue_show",showLocation);
+            json.put("meeting_status", "");
+            json.put("event_venue_show",showLocation);  //?
+
             Log.i("resu",json.toString());
 
         } catch (JSONException e) {

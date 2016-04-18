@@ -480,7 +480,7 @@ public class CalendarFragment extends Fragment {
                     Toast.makeText(getActivity(), cal.get(Calendar.DAY_OF_MONTH) + "", Toast.LENGTH_SHORT).show();
                     flag = true;
                 }
-                if (Events.response != null && EventUtil.getEventFromDate(cal.get(Calendar.DAY_OF_MONTH), cal.get(Calendar.MONTH) + 1, cal.get(Calendar.YEAR)).size() > 0) {
+                if (Events.response != null && Events.daysHaveEvents.contains(cal.get(Calendar.DAY_OF_MONTH) + "-" + (cal.get(Calendar.MONTH) + 1) + "-" + cal.get(Calendar.YEAR))) {
                     ifEvents[i] = true;
                     Log.d("testdate", eventDateList.size() + "");
                 } else if (Events.repeatEvent != null) {
@@ -648,6 +648,8 @@ public class CalendarFragment extends Fragment {
                                 final int flag = i;
                                 int starthour = 0;
                                 int endhour = 0;
+                                JSONObject jsonObject = objectList.get(eventGroup.get(i));
+
                                 try {
                                     String dateString = objectList.get(eventGroup.get(i)).getString("event_starts_datetime");
                                     String dateStringEnd = objectList.get(eventGroup.get(i)).getString("event_ends_datetime");
@@ -664,7 +666,16 @@ public class CalendarFragment extends Fragment {
                                 }
                                 TextView eventView = new TextView(getActivity());
                                 RelativeLayout.LayoutParams eventParam = new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
-                                eventView.setBackgroundColor(Color.CYAN);
+                                try {
+                                    if (!jsonObject.getString("meeting_id").equals("")) {
+                                        eventView.setBackgroundColor(Color.RED);
+                                    } else {
+                                        eventView.setBackgroundColor(Color.CYAN);
+
+                                    }
+                                } catch (JSONException e) {
+                                    e.printStackTrace();
+                                }
 
                                 eventView.setOnClickListener(new View.OnClickListener() {
                                     @Override
@@ -723,9 +734,9 @@ public class CalendarFragment extends Fragment {
 
                                     try {
                                         eventView.setText(objectList.get(num).getString("event_name"));
-                                        final String meeting_id = objectList.get(eventGroup.get(num)).getString("meeting_id");
-                                        final Boolean isHost = objectList.get(eventGroup.get(num)).getBoolean("is_host");
-                                        final String user_id = objectList.get(eventGroup.get(num)).getString("user_id");
+                                        final String meeting_id = objectList.get(num).getString("meeting_id");
+                                        final Boolean isHost = objectList.get(num).getBoolean("is_host");
+                                        final String user_id = objectList.get(num).getString("user_id");
 
                                         eventView.setOnClickListener(new View.OnClickListener() {
                                             @Override
@@ -749,7 +760,16 @@ public class CalendarFragment extends Fragment {
                                     }
 
                                     RelativeLayout.LayoutParams eventParamOverlap = new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
-                                    eventView.setBackgroundColor(Color.CYAN);
+                                    try {
+                                        if (!objectList.get(num).getString("meeting_id").equals("")) {
+                                            eventView.setBackgroundColor(Color.RED);
+                                        } else {
+                                            eventView.setBackgroundColor(Color.CYAN);
+
+                                        }
+                                    } catch (JSONException e) {
+                                        e.printStackTrace();
+                                    }
                                     TextView view = (TextView) relativeLayout.findViewById(1);
                                     float length = screenWidth - (view.getWidth() + DensityUtil.dip2px(getActivity(), 12));
 //                                    eventParamOverlap.height = DensityUtil.dip2px(getActivity(), 30);

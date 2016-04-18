@@ -43,6 +43,7 @@ import com.itime.team.itime.R;
 import com.itime.team.itime.activities.MeetingDetailActivity;
 import com.itime.team.itime.bean.User;
 import com.itime.team.itime.model.ParcelableMessage;
+import com.itime.team.itime.model.utils.MessageType;
 import com.itime.team.itime.task.InboxTask;
 
 import java.lang.ref.WeakReference;
@@ -144,9 +145,9 @@ public class InboxFragment extends Fragment {
                 .setMessage(message.messageBody)
                 .setNegativeButton(R.string.later, null);
 
-        String messageType = message.messageType;
+        MessageType messageType = message.messageType;
         switch (messageType) {
-            case "NEW_MEETING_INVITATION":
+            case NEW_MEETING_INVITATION:
                 builder.setPositiveButton(R.string.show_detail,
                         new DialogInterface.OnClickListener() {
 
@@ -159,9 +160,9 @@ public class InboxFragment extends Fragment {
                             }
                         });
                 break;
-            case "SOMEONE_CANCEL_THE_MEETING":
+            case SOMEONE_CANCEL_THE_MEETING:
                 break;
-            case "ALL_PEOPLE_ACCEPTED_THE_MEETING":
+            case ALL_PEOPLE_ACCEPTED_THE_MEETING:
                 break;
         }
 
@@ -212,7 +213,7 @@ public class InboxFragment extends Fragment {
     }
 
     public void setMessages() {
-        InboxTask inboxTask = InboxTask.getInstance(getActivity());
+        InboxTask inboxTask = InboxTask.getInstance(getActivity().getApplicationContext());
         InboxTask.Callback callback = new InboxTask.Callback() {
             @Override
             public void callback(List<ParcelableMessage> messages) {
@@ -232,7 +233,7 @@ public class InboxFragment extends Fragment {
      * because the UI thread also access to it. Adapter may be not thread-safe.
      */
     public void checkNewMessages() {
-        InboxTask inboxTask = InboxTask.getInstance(getActivity());
+        InboxTask inboxTask = InboxTask.getInstance(getActivity().getApplicationContext());
         InboxTask.ResultCallBack<Integer> callback = new InboxTask.ResultCallBack<Integer>() {
             @Override
             public void callback(Integer result) {

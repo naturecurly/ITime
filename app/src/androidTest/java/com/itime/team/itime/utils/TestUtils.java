@@ -93,4 +93,19 @@ public class TestUtils extends AndroidTestCase {
             e.printStackTrace();
         }
     }
+
+    public enum TestEnum {
+        VALUE_1, VALUE_2, VALUE_3
+    }
+
+    public void testEnumType() {
+        TestEnum te1 = TestEnum.VALUE_1;
+        TestEnum te2 = TestEnum.VALUE_2;
+        TestEnum te3 = TestEnum.VALUE_3;
+
+        assertEquals("VALUE_1", te1.toString());
+        assertEquals("VALUE_2", te2.toString());
+        assertEquals("VALUE_3", te3.toString());
+
+    }
 }

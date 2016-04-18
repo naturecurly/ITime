@@ -25,7 +25,7 @@ import com.itime.team.itime.views.adapters.PhotoContactsAdapter;
 import java.util.ArrayList;
 
 /**
- * Created by mac on 16/2/6.
+ * Created by Weiwei Cai on 16/2/6.
  */
 public class PhoneContactActivity extends AppCompatActivity implements AdapterView.OnItemClickListener{
     private ArrayList<Contact> mContact;

@@ -26,7 +26,8 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * Created by mac on 16/4/12.
+ * Created by Weiwei Cai on 16/4/12.
+ * The activity is responsible for showing all attendees and their status.
  */
 public class MeetingAttendeesActivity extends AppCompatActivity{
     private ListView mAttendees;

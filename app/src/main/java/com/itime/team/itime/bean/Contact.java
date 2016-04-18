@@ -3,7 +3,7 @@ package com.itime.team.itime.bean;
 import java.util.ArrayList;
 
 /**
- * Created by mac on 16/2/6.
+ * Created by Weiwei Cai on 16/2/6.
  */
 public class Contact {
     private String name;

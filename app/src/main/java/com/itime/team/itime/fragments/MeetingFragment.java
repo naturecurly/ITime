@@ -209,6 +209,10 @@ public class MeetingFragment extends Fragment implements View.OnClickListener,Se
         fetchEvents();
     }
 
+    // There are two listItem to store friends' information, the listItem stores the information from
+    // the server, and the listItemForPresent just get information from the listItem and then represent
+    // it. The reason creating two listItem is that user is allowed to search his friends, and the
+    // listItemForPresent shows these friends who are searched.
     private void doInitListView(JSONArray mUserInfo){
         try {
             listItem.clear();

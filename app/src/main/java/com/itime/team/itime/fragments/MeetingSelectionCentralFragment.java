@@ -45,6 +45,8 @@ import java.util.HashMap;
 //import com.itime.team.itime.activities.R;
 
 /**
+ * Created by Weiwei Cai on 15/12/28.
+ *
  * The function of this fragment is to present the friends' preferences of meeting time.
  * Each Green View is an ImageView which is contained by a LinearLayout (container) to control the
  * padding of the view. The invisible part of the fragment (we call this part as default), is

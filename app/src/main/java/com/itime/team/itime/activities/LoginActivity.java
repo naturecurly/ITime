@@ -45,7 +45,8 @@ import java.util.Map;
 import java.util.UUID;
 
 /**
- * Created by mac on 16/2/24.
+ * Created by Weiwei Cai on 16/2/24.
+ * This activity supports the UI that provides inputting username and password function.
  */
 public class LoginActivity extends FragmentActivity implements View.OnClickListener{
     private Toast mToast;
@@ -230,6 +231,8 @@ public class LoginActivity extends FragmentActivity implements View.OnClickListe
         db.close();
     }
 
+    // Judge whether it is the first time to login for a user. The judge method is to search whether
+    // the database has records.
     private boolean isFirstLogin(){
         UserTableHelper dbHelper = new UserTableHelper(LoginActivity.this, "userbase1");
         SQLiteDatabase db = dbHelper.getReadableDatabase();
@@ -246,8 +249,7 @@ public class LoginActivity extends FragmentActivity implements View.OnClickListe
         }
     }
 
-
-
+    //Submit user's information to the server.
     private void login(){
         if(isTextNull()){
             return;
@@ -284,7 +286,7 @@ public class LoginActivity extends FragmentActivity implements View.OnClickListe
         MySingleton.getInstance(this).addToRequestQueue(request);
     }
 
-
+    // If Login successfully, then set the UserId and enter into the Main Activity.
     private void doLogin(JSONObject json){
         try {
             if(json.get("result").toString().equals("success")){

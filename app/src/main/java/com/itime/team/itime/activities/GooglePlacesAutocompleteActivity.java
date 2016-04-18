@@ -28,7 +28,9 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 
 /**
- * Created by mac on 16/3/6.
+ * Created by Weiwei Cai on 16/3/6.
+ * The activity UI contains a ListView which get Locations from Google Map, the locations are based
+ * on users' query.
  */
 public class GooglePlacesAutocompleteActivity extends AppCompatActivity implements SearchView.OnQueryTextListener{
     private static final String LOG_TAG = "Google Places Autocomplete";
@@ -84,6 +86,9 @@ public class GooglePlacesAutocompleteActivity extends AppCompatActivity implemen
 
     }
 
+    // the parameter is the query, this function will get location names from Google Map based on
+    // the parameter. Here just support Aus location, if want to support more, then set the parameter
+    // &components=country:XXX
     private void postData(String input){
         StringBuilder sb = new StringBuilder(PLACES_API_BASE + TYPE_AUTOCOMPLETE + OUT_JSON);
         sb.append("?key=" + API_KEY);

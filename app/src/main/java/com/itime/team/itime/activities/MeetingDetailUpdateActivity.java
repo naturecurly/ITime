@@ -46,7 +46,8 @@ import java.util.Map;
 import java.util.UUID;
 
 /**
- * Created by mac on 16/2/17.
+ * Created by Weiwei Cai on 16/2/17.
+ *
  */
 public class MeetingDetailUpdateActivity extends AppCompatActivity implements View.OnTouchListener, View.OnClickListener, CompoundButton.OnCheckedChangeListener{
     private EditText mMessage;

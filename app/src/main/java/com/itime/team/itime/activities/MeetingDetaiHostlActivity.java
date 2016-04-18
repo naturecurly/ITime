@@ -42,7 +42,11 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * Created by mac on 16/4/5.
+ * Created by Weiwei Cai on 16/4/5.
+ * This activity shows all meeting details for meeting hosts.
+ * The most of information has two types, the first one the current information, the second one is
+ * new information. If the current information and new information is the same, then the new information
+ * will not be represented.
  */
 public class MeetingDetaiHostlActivity extends AppCompatActivity implements OnMapReadyCallback,View.OnClickListener {
     private MapFragment mMapFragment;
@@ -166,9 +170,10 @@ public class MeetingDetaiHostlActivity extends AppCompatActivity implements OnMa
         mLNewPunctual = (LinearLayout) findViewById(R.id.meeting_detail_event_punctual_layout);
         mLNewRepeat = (LinearLayout) findViewById(R.id.meeting_detail_event_repeat_layout);
         mLNewNote = (LinearLayout) findViewById(R.id.meeting_detail_note_layout);
-
     }
 
+    // Before setting which Layout should be shown, just hiding all relative layout. If the new
+    // information and old information are the different, then set the layouts as visible.
     private void showLayout(MeetingInfo meetingInfo){
         mLNewName.setVisibility(View.GONE);
         mLNewVenue.setVisibility(View.GONE);
@@ -198,6 +203,7 @@ public class MeetingDetaiHostlActivity extends AppCompatActivity implements OnMa
         if(!meetingInfo.getComment().equals(meetingInfo.getNewComment())){
             mLNewNote.setVisibility(View.VISIBLE);
         }
+
         if(meetingInfo.getStatus().equals("NO CONFIRM NEW MEETING")){
             mConfirm.setVisibility(View.VISIBLE);
             mReset.setVisibility(View.GONE);
@@ -209,6 +215,8 @@ public class MeetingDetaiHostlActivity extends AppCompatActivity implements OnMa
             mReset.setVisibility(View.GONE);
         }
     }
+
+    // Dealing with google Map.
     @Override
     public void onMapReady(GoogleMap googleMap) {
         LatLng sydney = new LatLng(mLog, mLat);
@@ -224,6 +232,7 @@ public class MeetingDetaiHostlActivity extends AppCompatActivity implements OnMa
         mMapFragment.getMapAsync(this);
     }
 
+    // Load meeting information from the server.
     private void loadMeetingInfo() {
         JSONObject jsonObject = new JSONObject();
         try {
@@ -251,6 +260,7 @@ public class MeetingDetaiHostlActivity extends AppCompatActivity implements OnMa
         MySingleton.getInstance(this).addToRequestQueue(request);
     }
 
+    // Set contents for each component.
     private void handleMeetingInfo(JSONObject json){
         mMeetingInfo = new MeetingInfo();
         try {
@@ -348,6 +358,7 @@ public class MeetingDetaiHostlActivity extends AppCompatActivity implements OnMa
         MySingleton.getInstance(this).addToRequestQueue(request);
     }
 
+    // Confirm a meeting
     private void confirm(){
         JSONObject jsonObject = new JSONObject();
         try {
@@ -382,6 +393,7 @@ public class MeetingDetaiHostlActivity extends AppCompatActivity implements OnMa
         MySingleton.getInstance(this).addToRequestQueue(request);
     }
 
+    // Reset a meeting
     private void reset(){
         JSONObject jsonObject = new JSONObject();
         try {

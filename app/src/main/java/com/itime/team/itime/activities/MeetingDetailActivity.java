@@ -43,7 +43,14 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * Created by mac on 16/4/5.
+ * Created by Weiwei Cai on 16/4/5.
+ * This activity shows all meeting details for meeting attendees.
+ * The most of information has two types, the first one the current information, the second one is
+ * new information. If the current information and new information is the same, then the new information
+ * will not be represented.
+ * Since the the majority of the code is the same as MeetingDetailHostActivity, the details can refer
+ * it.
+ *
  */
 public class MeetingDetailActivity extends AppCompatActivity implements OnMapReadyCallback, RadioGroup.OnCheckedChangeListener,View.OnClickListener {
     private MapFragment mMapFragment;

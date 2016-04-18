@@ -47,7 +47,8 @@ import java.util.Map;
 import java.util.UUID;
 
 /**
- * Created by mac on 16/2/17.
+ * Created by Weiwei Cai on 16/2/17.
+ * This activity creates new meeting.
  */
 public class NewMeetingActivity extends AppCompatActivity implements View.OnTouchListener, View.OnClickListener, CompoundButton.OnCheckedChangeListener{
     private EditText mMessage;
@@ -101,6 +102,7 @@ public class NewMeetingActivity extends AppCompatActivity implements View.OnTouc
     }
 
 
+    // To allow users to make sure whether wanting to create a new meeting.
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         if(item.getItemId() == R.id.new_meeting_menu_send){
@@ -197,6 +199,7 @@ public class NewMeetingActivity extends AppCompatActivity implements View.OnTouc
         return date;
     }
 
+    // The end time equals the start time plus the duration of a meeting.
     private void setEndTime(){
         Date endTime = DateUtil.plusMinute(getCurrentDate(), mDuration);
         mEndYear = endTime.getYear() + 1900;
@@ -217,6 +220,8 @@ public class NewMeetingActivity extends AppCompatActivity implements View.OnTouc
         return  DateUtil.weekNameStandardTwo[DateUtil.getDateOfWeek(year,month,day) - 1] +
                 ", " + dayReturn + " " + DateUtil.month[month] + " " + year;
     }
+
+    // The end time is not allow earlier than start time.
     private void checkTime(){
         if(DateUtil.isFeasible(mStartYear,mStartMonth,mStartDay,mStartHour,mStartMin,mEndYear,mEndMonth,
                 mEndDay,mEndHour,mEndMin)) {
@@ -230,6 +235,7 @@ public class NewMeetingActivity extends AppCompatActivity implements View.OnTouc
         }
     }
 
+    // Handling the EditView get focus problem.
     @Override
     public boolean onTouch(View v, MotionEvent event) {
         if(v.getId() == R.id.new_meeting_message && mMessage.isFocused()){
@@ -300,6 +306,7 @@ public class NewMeetingActivity extends AppCompatActivity implements View.OnTouc
         }
     }
 
+    // Get results from GooglePlacesAutoCompleteActivity.
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (requestCode == 1){
@@ -387,44 +394,8 @@ public class NewMeetingActivity extends AppCompatActivity implements View.OnTouc
 
     }
 
-//    @Override
-//    public void handleJSON(JsonManager manager) {
-//        MySingleton.getInstance(this).getRequestQueue().addRequestFinishedListener(
-//                new RequestQueue.RequestFinishedListener<String>() {
-//                    @Override
-//                    public void onRequestFinished(Request<String> request) {
-//                        JSONObject jsonObject;
-//                        JSONArray jsonArray;
-//                        HashMap map;
-//                        while ((map = mJsonManager.getJsonQueue().poll()) != null) {
-//                            if ((jsonObject = (JSONObject) map.get("invitation")) != null) {
-//                                try {
-//                                    if(jsonObject.getString("result").equals("success")){
-//                                        setResult(RESULT_OK);
-//                                        Toast.makeText(getApplicationContext(),
-//                                                getString(R.string.new_meeting_send_invitation_successful), Toast.LENGTH_SHORT).show();
-//                                        finish();
-//                                    }
-//                                } catch (JSONException e) {
-//                                    e.printStackTrace();
-//                                }
-//                            }
-//                        }
-//                    }
-//                }
-//        );
-//    }
-//
-//    @Override
-//    public void requestJSONObject(JsonManager manager, JSONObject jsonObject, String url, String tag) {
-//        manager.postForJsonObject(url, jsonObject, this, tag);
-//    }
-//
-//    @Override
-//    public void requestJSONArray(JsonManager manager, JSONObject jsonObject, String url, String tag) {
-//        manager.postForJsonArray(url, jsonObject, this, tag);
-//    }
-
+    // get coordinate based on address. The method is that post address name to the url, then it will
+    // return the coordinate.
     private void getCoordinate(String address){
         StringBuffer buffer = new StringBuffer();
         buffer.append("https://maps.googleapis.com/maps/api/geocode/json?address=");

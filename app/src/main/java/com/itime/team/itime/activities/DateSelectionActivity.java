@@ -16,7 +16,10 @@ import com.itime.team.itime.utils.DateUtil;
 import java.util.ArrayList;
 
 /**
- * Created by mac on 16/1/4.
+ * Created by Weiwei Cai on 16/1/4.
+ *
+ * This Activity handles the UI that users can find friends' available time and choose a time
+ * to hold a meeting.
  */
 public class DateSelectionActivity extends AppCompatActivity {
     private MeetingSelectionCentralFragment centralFragment;
@@ -34,6 +37,7 @@ public class DateSelectionActivity extends AppCompatActivity {
     private int ENDDAY;
     private int ENDHOUR;
     private int ENDMIN;
+    // To store all friends' IDs who are invited in the meeting.
     private ArrayList<String> mFriendIDs;
 
     public int DURATION = 60;
@@ -92,6 +96,7 @@ public class DateSelectionActivity extends AppCompatActivity {
         topMSG.putInt("endday", ENDDAY);
         topFragment.setArguments(topMSG);
 
+        // The activity is divided into two fragments.
         getFragmentManager().beginTransaction().add(R.id.meeting_selection_top,
                 topFragment).commit();
         getFragmentManager().beginTransaction().add(R.id.meeting_selection_scroll,
@@ -116,6 +121,7 @@ public class DateSelectionActivity extends AppCompatActivity {
         mFriendIDs = intent.getStringArrayListExtra("friendIDs");
     }
 
+    // If a meeting request has been sent, then close this activity.
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (requestCode == 1){
@@ -124,20 +130,4 @@ public class DateSelectionActivity extends AppCompatActivity {
             }
         }
     }
-
-//    private String getDateWithTimeZone(int year, int month, int day, int hour, int min){
-//        Date date = new Date();
-//        String timeZone = "+" + date.toString().split(" ")[4].split(":")[0].split("\\+")[1] +
-//                 date.toString().split(" ")[4].split(":")[1];
-//        String dateStr = year + "-" + month + "-" + day + " " + hour + ":" + min;
-//        DateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm");
-//        try {
-//            date = formatter.parse(dateStr);
-//        } catch (ParseException e) {
-//            e.printStackTrace();
-//        }
-//        String dataForReturn = year + "-" + month + "-" + day + " " + date.toString().split(" ")[3]
-//                + " " + timeZone;
-//        return dataForReturn;
-//    }
 }

@@ -37,7 +37,9 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 /**
- * Created by mac on 15/12/15.
+ * Created by Weiwei Cai on 15/12/15.
+ * This Dialog Fragment provides many ways to add friends, including searching detail, contact number
+ * , contact email, facebook, wechat.
  */
 public class MeetingAddDialogFragment extends DialogFragment implements DataRequest{
     private ListView listView;
@@ -128,18 +130,18 @@ public class MeetingAddDialogFragment extends DialogFragment implements DataRequ
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                if(position == 0){
+                if(position == 0){ // Search Friends
                     Intent intent = new Intent(getActivity(), SearchFriendActivity.class);
                     intent.putStringArrayListExtra("friendIDs",getFriendIDs());
                     startActivity(intent);
-                }else if (position == 1){
+                }else if (position == 1){   // Add friend by SMS
 //                    Intent intent = new Intent(getActivity(), PhoneContactActivity.class);
 //                    startActivity(intent);
                     Intent intent = new Intent(Intent.ACTION_VIEW);
                     intent.setType("vnd.android-dir/mms-sms");
                     intent.putExtra("sms_body", Html.fromHtml(invitationContent).toString());
                     startActivity(intent);
-                }else if(position == 2){
+                }else if(position == 2){    // Add friend by Email
                     String mySbuject = "Add Friend";
                     String myCc = "cc";
                     Intent myIntent = new Intent(android.content.Intent.ACTION_SEND, Uri.fromParts("mailto", "", null));
@@ -149,10 +151,10 @@ public class MeetingAddDialogFragment extends DialogFragment implements DataRequ
                     myIntent.putExtra(Intent.EXTRA_TEXT, Html.fromHtml(invitationContent));
 
                     startActivity(Intent.createChooser(myIntent, "mail"));
-                }else if (position == 3){
+                }else if (position == 3){   // Add friend by QR code
                     Intent intent = new Intent(getActivity(), CaptureActivity.class);
                     startActivityForResult(intent, 0);
-                }else if (position == 4){
+                }else if (position == 4){   // Add friend by FaceBook
 //                    StringBuffer info = new StringBuffer();
 //                    info.append("Hello, this is ").append(User.ID).append(", please click the link ")
 //                            .append(Html.fromHtml("<a>http://itime.app/openwith?id=" + User.ID + "</a>")).append(" to be my iTime firend. If you do not install the iTime yet, please click following ")
@@ -179,7 +181,7 @@ public class MeetingAddDialogFragment extends DialogFragment implements DataRequ
                         });
                         builder.show();
                     }
-                }else if(position == 5){
+                }else if(position == 5){    // Add friend by WeChat
 //                    StringBuffer info = new StringBuffer();
 //                    info.append("Hello, this is ").append(User.ID).append(", please click the link ")
 //                            .append(Html.fromHtml("<a>http://54.200.31.237:8000/openwith?id=" + User.ID + "</a>").toString()).append(" to be my iTime firend. If you do not install the iTime yet, please click following ")

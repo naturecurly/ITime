@@ -6,7 +6,7 @@ import java.util.Calendar;
 import java.util.Date;
 
 /**
- * Created by mac on 16/4/11.
+ * Created by Weiwei Cai on 16/4/11.
  */
 public class MeetingInfo {
     private String latitude;

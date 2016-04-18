@@ -14,7 +14,8 @@ import com.itime.team.itime.R;
 
 
 /**
- * Created by mac on 15/12/18.
+ * Created by Weiwei Cai on 15/12/18.
+ * Setting meeting duration.
  */
 public class MeetingDurationDialogFragment extends DialogFragment implements RadioGroup.OnCheckedChangeListener {
     private View durationDialog;

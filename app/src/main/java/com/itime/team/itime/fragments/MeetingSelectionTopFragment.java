@@ -20,7 +20,7 @@ import com.itime.team.itime.views.MeetingSelectionScrollView;
 //import com.itime.team.itime.activities.R;
 
 /**
- * Created by mac on 15/12/28.
+ * Created by Weiwei Cai on 15/12/28.
  */
 public class MeetingSelectionTopFragment extends Fragment implements ScrollViewListener {
     private LinearLayout mChild;

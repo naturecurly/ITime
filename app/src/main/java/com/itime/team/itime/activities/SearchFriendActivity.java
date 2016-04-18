@@ -32,7 +32,9 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * Created by mac on 16/2/1.
+ * Created by Weiwei Cai on 16/2/1.
+ * Users can search other users' information and add them as friends. The same friends will not be
+ * added twice.
  */
 public class SearchFriendActivity extends AppCompatActivity implements SearchView.OnQueryTextListener, AdapterView.OnItemClickListener{
     private SearchView mSearch;
@@ -140,6 +142,7 @@ public class SearchFriendActivity extends AppCompatActivity implements SearchVie
         }
     }
 
+    // The same friends will not be added twice.
     private void allowSendReuqest(final int position){
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setMessage("Do you want to add '" + mListItem.get(position).get("ItemID") + "' as your " +

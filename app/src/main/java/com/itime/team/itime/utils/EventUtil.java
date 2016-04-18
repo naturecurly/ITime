@@ -30,6 +30,7 @@ public class EventUtil {
     public static JSONArray initialEvents(JSONArray response) {
         Set<String> stringSet = new HashSet<>();
         JSONArray array = new JSONArray();
+        List<JSONObject> repeatEvents = new ArrayList<>();
 //        JSONArray response = Events.response;
         for (int i = 0; i < response.length(); i++) {
             try {
@@ -39,6 +40,9 @@ public class EventUtil {
                 if (isValidEvent(object)) {
                     if (!decideWhetherMultiDays(object)) {
                         array.put(object);
+                        if (isRepeat(object)) {
+                            repeatEvents.add(object);
+                        }
                         String dateString = object.getString("event_starts_datetime");
                         Calendar dateCal = DateUtil.getLocalDateObjectToCalendar(DateUtil.getLocalDateObject(dateString));
                         stringSet.add(dateCal.get(Calendar.DAY_OF_MONTH) + "-" + (dateCal.get(Calendar.MONTH) + 1) + "-" + dateCal.get(Calendar.YEAR));
@@ -64,6 +68,9 @@ public class EventUtil {
                                     Log.d("how many days", objectStart.toString());
                                     if (isValidEvent(objectStart)) {
                                         array.put(objectStart);
+                                        if (isRepeat(objectStart)) {
+                                            repeatEvents.add(objectStart);
+                                        }
                                         String dateString = objectStart.getString("event_starts_datetime");
                                         Calendar dateCal = DateUtil.getLocalDateObjectToCalendar(DateUtil.getLocalDateObject(dateString));
                                         stringSet.add(dateCal.get(Calendar.DAY_OF_MONTH) + "-" + (dateCal.get(Calendar.MONTH) + 1) + "-" + dateCal.get(Calendar.YEAR));
@@ -79,6 +86,9 @@ public class EventUtil {
                                     Log.d("how many days", objectEnd.toString());
                                     if (isValidEvent(objectEnd)) {
                                         array.put(objectEnd);
+                                        if (isRepeat(objectEnd)) {
+                                            repeatEvents.add(objectEnd);
+                                        }
                                         String dateString = objectEnd.getString("event_starts_datetime");
                                         Calendar dateCal = DateUtil.getLocalDateObjectToCalendar(DateUtil.getLocalDateObject(dateString));
                                         stringSet.add(dateCal.get(Calendar.DAY_OF_MONTH) + "-" + (dateCal.get(Calendar.MONTH) + 1) + "-" + dateCal.get(Calendar.YEAR));
@@ -99,6 +109,9 @@ public class EventUtil {
                                     objectDuration.put("event_ends_datetime", DateUtil.getDateStringFromCalendarGMT(temp));
                                     if (isValidEvent(objectDuration)) {
                                         array.put(objectDuration);
+                                        if (isRepeat(objectDuration)) {
+                                            repeatEvents.add(objectDuration);
+                                        }
                                         String dateString = objectDuration.getString("event_starts_datetime");
                                         Calendar dateCal = DateUtil.getLocalDateObjectToCalendar(DateUtil.getLocalDateObject(dateString));
                                         stringSet.add(dateCal.get(Calendar.DAY_OF_MONTH) + "-" + (dateCal.get(Calendar.MONTH) + 1) + "-" + dateCal.get(Calendar.YEAR));
@@ -115,6 +128,7 @@ public class EventUtil {
         }
         Log.d("length", array.length() + "");
         Events.daysHaveEvents = stringSet;
+        Events.repeatEvent = repeatEvents;
         return array;
     }
 
@@ -287,50 +301,42 @@ public class EventUtil {
         return day;
     }
 
-//    public static boolean hasRepeatEvent(Calendar calendar) throws JSONException {
-//        List<JSONObject> list = Events.repeatEvent;
-//        for (int i = 0; i < list.size(); i++) {
-//            JSONObject object = list.get(i);
-//            String type = object.getString("event_repeats_type");
-//            Boolean isLong = object.getBoolean("is_long_repeat");
-//            Calendar eventCal = DateUtil.getLocalDateObjectToCalendar(DateUtil.getLocalDateObject(object.getString("event_starts_datetime")));
-////            Calendar new_cal = (Calendar) calendar.clone();
-////            new_cal.set(Calendar.HOUR_OF_DAY, 0);
-////            new_cal.set(Calendar.MINUTE, 0);
-////            Calendar new_eventCal = (Calendar) eventCal.clone();
-////            new_eventCal.set(Calendar.HOUR_OF_DAY, 0);
-////            new_eventCal.set(Calendar.MINUTE, 0);
-////            int day = (int) TimeUnit.MILLISECONDS.toDays(Math.abs(new_cal.getTimeInMillis() - new_eventCal.getTimeInMillis()));
-////            int day = calendar.get(Calendar.DAY_OF_YEAR) - eventCal.get(Calendar.DAY_OF_YEAR);
-//            int day = calDurationDays(calendar, eventCal);
-//            if (type.equals("Daily") && isLong) {
-//                if (calendar.compareTo(eventCal) > 0) {
-//                    return true;
-//                }
-//            } else if (type.equals("Weekly") && isLong) {
-//                if (day > 0 && day % 7 == 0) {
-//                    return true;
-//                }
-//            } else if (type.equals("Bi-Weekly") && isLong) {
-//                if (day > 0 && day % 14 == 0) {
-//                    return true;
-//                }
-//            } else if (type.equals("Monthly") && isLong) {
-//                if (calendar.compareTo(eventCal) > 0) {
-//                    if (calendar.get(Calendar.DAY_OF_MONTH) == eventCal.get(Calendar.DAY_OF_MONTH)) {
-//                        return true;
-//                    }
-//                }
-//            } else if (type.equals("Yearly") && isLong) {
-//                if (calendar.compareTo(eventCal) > 0) {
-//                    if (calendar.get(Calendar.DAY_OF_MONTH) == eventCal.get(Calendar.DAY_OF_MONTH) && calendar.get(Calendar.MONTH) == eventCal.get(Calendar.MONTH)) {
-//                        return true;
-//                    }
-//                }
-//            }
-//        }
-//        return false;
-//    }
+    public static boolean hasRepeatEvent(Calendar calendar) throws JSONException {
+        List<JSONObject> list = Events.repeatEvent;
+        for (int i = 0; i < list.size(); i++) {
+            JSONObject object = list.get(i);
+            String type = object.getString("event_repeats_type");
+            Boolean isLong = object.getBoolean("is_long_repeat");
+            Calendar eventCal = DateUtil.getLocalDateObjectToCalendar(DateUtil.getLocalDateObject(object.getString("event_starts_datetime")));
+            int day = calDuration(calendar, eventCal);
+            if (type.equals("Daily") && isLong) {
+                if (calendar.compareTo(eventCal) > 0) {
+                    return true;
+                }
+            } else if (type.equals("Weekly") && isLong) {
+                if (calendar.compareTo(eventCal) > 0 && day > 0 && day % 7 == 0) {
+                    return true;
+                }
+            } else if (type.equals("Bi-Weekly") && isLong) {
+                if (calendar.compareTo(eventCal) > 0 && day > 0 && day % 14 == 0) {
+                    return true;
+                }
+            } else if (type.equals("Monthly") && isLong) {
+                if (calendar.compareTo(eventCal) > 0) {
+                    if (calendar.get(Calendar.DAY_OF_MONTH) == eventCal.get(Calendar.DAY_OF_MONTH)) {
+                        return true;
+                    }
+                }
+            } else if (type.equals("Yearly") && isLong) {
+                if (calendar.compareTo(eventCal) > 0) {
+                    if (calendar.get(Calendar.DAY_OF_MONTH) == eventCal.get(Calendar.DAY_OF_MONTH) && calendar.get(Calendar.MONTH) == eventCal.get(Calendar.MONTH)) {
+                        return true;
+                    }
+                }
+            }
+        }
+        return false;
+    }
 
 
     public static void getIgnoredEventsFromResponse(JSONArray events) {
@@ -423,5 +429,18 @@ public class EventUtil {
         return false;
     }
 
+
+    public static boolean isRepeat(JSONObject object) {
+        try {
+            String type = object.getString("event_repeats_type");
+            boolean isLong = object.getBoolean("is_long_repeat");
+            if (!type.equals("One-time event") && isLong) {
+                return true;
+            }
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
 
 }

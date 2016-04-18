@@ -486,11 +486,11 @@ public class CalendarFragment extends Fragment {
                     ifEvents[i] = true;
                     Log.d("testdate", eventDateList.size() + "");
                 } else if (Events.repeatEvent != null) {
-//                    try {
-//                        ifEvents[i] = EventUtil.hasRepeatEvent(cal);
-//                    } catch (JSONException e) {
-//                        e.printStackTrace();
-//                    }
+                    try {
+                        ifEvents[i] = EventUtil.hasRepeatEvent(cal);
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
                 }
 
 
@@ -961,7 +961,7 @@ public class CalendarFragment extends Fragment {
                 //mResponse = response;
                 Events.response = EventUtil.initialEvents(response);
 //                analyseEvents(response);
-                Events.repeatEvent = EventUtil.getRepeatEventsFromEvents(Events.response);
+//                Events.repeatEvent = EventUtil.getRepeatEventsFromEvents(Events.response);
                 recyclerView.getAdapter().notifyDataSetChanged();
                 Log.i("Event_response", response.toString());
 //                System.out.println(response.toString());

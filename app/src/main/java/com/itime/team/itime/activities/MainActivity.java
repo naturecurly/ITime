@@ -21,11 +21,11 @@ import android.widget.TextView;
 
 import com.bugtags.library.Bugtags;
 import com.itime.team.itime.R;
+import com.itime.team.itime.bean.User;
 import com.itime.team.itime.fragments.CalendarFragment;
 import com.itime.team.itime.fragments.InboxFragment;
 import com.itime.team.itime.fragments.MeetingFragment;
 import com.itime.team.itime.fragments.SettingsFragment;
-import com.itime.team.itime.fragments.YearViewFragment;
 
 public class MainActivity extends AppCompatActivity implements
         PreferenceFragmentCompat.OnPreferenceStartScreenCallback {
@@ -109,6 +109,9 @@ public class MainActivity extends AppCompatActivity implements
             fragmentManager.beginTransaction().hide(settingsFragment).commit();
             fragmentManager.beginTransaction().hide(inboxFragment).commit();
             fragmentManager.beginTransaction().show(meetingFragment).commit();
+
+            if(User.hasNewFriend)
+                meetingFragment.fetchEvents();
         } else if (me == inboxFragment) {
             fragmentManager.beginTransaction().hide(calendarFragment).commit();
             fragmentManager.beginTransaction().hide(settingsFragment).commit();

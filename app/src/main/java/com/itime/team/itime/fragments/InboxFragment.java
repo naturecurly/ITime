@@ -24,7 +24,6 @@ import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
-import android.os.Parcel;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.util.Log;
@@ -45,7 +44,6 @@ import com.itime.team.itime.activities.MeetingDetailActivity;
 import com.itime.team.itime.bean.User;
 import com.itime.team.itime.model.ParcelableMessage;
 import com.itime.team.itime.task.InboxTask;
-import com.itime.team.itime.utils.DateUtil;
 
 import java.lang.ref.WeakReference;
 import java.text.DateFormat;

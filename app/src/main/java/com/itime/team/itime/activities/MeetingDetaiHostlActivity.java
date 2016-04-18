@@ -170,6 +170,13 @@ public class MeetingDetaiHostlActivity extends AppCompatActivity implements OnMa
     }
 
     private void showLayout(MeetingInfo meetingInfo){
+        mLNewName.setVisibility(View.GONE);
+        mLNewVenue.setVisibility(View.GONE);
+        mLNewStart.setVisibility(View.GONE);
+        mLNewEnd.setVisibility(View.GONE);
+        mLNewRepeat.setVisibility(View.GONE);
+        mLNewPunctual.setVisibility(View.GONE);
+        mLNewNote.setVisibility(View.GONE);
         if (!meetingInfo.getName().equals(meetingInfo.getNewName())){
             mLNewName.setVisibility(View.VISIBLE);
         }
@@ -190,6 +197,16 @@ public class MeetingDetaiHostlActivity extends AppCompatActivity implements OnMa
         }
         if(!meetingInfo.getComment().equals(meetingInfo.getNewComment())){
             mLNewNote.setVisibility(View.VISIBLE);
+        }
+        if(meetingInfo.getStatus().equals("NO CONFIRM NEW MEETING")){
+            mConfirm.setVisibility(View.VISIBLE);
+            mReset.setVisibility(View.GONE);
+        }else if(meetingInfo.getStatus().equals("NO CONFIRM UPDATE MEETING")){
+            mConfirm.setVisibility(View.VISIBLE);
+            mReset.setVisibility(View.VISIBLE);
+        }else{
+            mConfirm.setVisibility(View.GONE);
+            mReset.setVisibility(View.GONE);
         }
     }
     @Override
@@ -407,8 +424,16 @@ public class MeetingDetaiHostlActivity extends AppCompatActivity implements OnMa
             startActivity(intent);
         } else if (v.getId() == mConfirm.getId()) {
             confirm();
+            loadMeetingInfo();
         } else if (v.getId() == mReset.getId()) {
             reset();
+            loadMeetingInfo();
         }
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        loadMeetingInfo();
     }
 }

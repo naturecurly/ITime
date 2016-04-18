@@ -137,15 +137,15 @@
                     android:textSize="13dp"
                     android:paddingLeft="10dp"
                     />
-                <TextView
-                    android:layout_width="match_parent"
-                    android:layout_height="30dp"
-                    android:gravity="center_vertical"
-                    android:background="@color/white"
-                    android:id="@+id/meeting_detail_city_new"
-                    android:text="Melbourne"
-                    android:textColor="@color/black"
-                    android:paddingLeft="10dp"/>
+                <!--<TextView-->
+                    <!--android:layout_width="match_parent"-->
+                    <!--android:layout_height="30dp"-->
+                    <!--android:gravity="center_vertical"-->
+                    <!--android:background="@color/white"-->
+                    <!--android:id="@+id/meeting_detail_city_new"-->
+                    <!--android:text="Melbourne"-->
+                    <!--android:textColor="@color/black"-->
+                    <!--android:paddingLeft="10dp"/>-->
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"

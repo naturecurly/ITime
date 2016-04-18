@@ -219,6 +219,8 @@ public class DynamicListViewAdapter extends BaseAdapter implements DataRequest{
                                 try {
                                     if(jsonObject.get("result").toString().equals("success")){
                                         mMeetingFragment.initListView();
+                                        checkBoxKeeper.clear();
+                                        mLinearLayout.removeAllViews();
                                     }
                                 } catch (JSONException e) {
                                     e.printStackTrace();

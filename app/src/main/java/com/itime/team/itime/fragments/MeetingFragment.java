@@ -407,6 +407,8 @@ public class MeetingFragment extends Fragment implements View.OnClickListener,Se
     }
 
     public void fetchEvents() {
+        checkBoxKeeper.clear();
+        User.hasNewFriend = false;
         JSONObject jsonObject = new JSONObject();
         try {
             jsonObject.put("user_id", User.ID);

@@ -291,8 +291,26 @@ public class DateUtil {
         return date;
     }
 
+    public static Date getGMTDate(String data) {
+        Date date = null;
+        DateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss Z");
+        try {
+            date = formatter.parse(data);
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+        return date;
+    }
+
     public static Calendar getLocalDateObjectToCalendar(Date date) {
         Calendar cal = Calendar.getInstance();
+        cal.setTime(date);
+        return cal;
+    }
+
+    public static Calendar getGMTDateToCalendar(Date date) {
+        Calendar cal = Calendar.getInstance();
+        cal.setTimeZone(TimeZone.getTimeZone("GMT"));
         cal.setTime(date);
         return cal;
     }
@@ -311,9 +329,26 @@ public class DateUtil {
         return formatter.format(c.getTime());
     }
 
+
+    public static String getDateStringFromCalendar(Calendar calendar) {
+        DateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss Z");
+        calendar.setTimeZone(TimeZone.getDefault());
+        return formatter.format(calendar.getTime());
+    }
+
+    public static String getDateStringFromCalendarGMT(Calendar calendar){
+        DateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss Z");
+        formatter.setTimeZone(TimeZone.getTimeZone("GMT"));
+//        calendar.setTimeZone(TimeZone.getTimeZone("GMT"));
+        return formatter.format(calendar.getTime());
+    }
+
     public static Calendar getCalendarFromInteger(int day, int month, int year) {
+        String dateString = getDateWithTimeZone(year, month, day, 0, 0);
+        Date date = getGMTDate(dateString);
         Calendar cal = Calendar.getInstance();
-        cal.set(year, month - 1, day, 0, 0);
+//        cal.setTimeZone(TimeZone.getTimeZone("GMT"));
+        cal.setTime(date);
         return cal;
     }
 

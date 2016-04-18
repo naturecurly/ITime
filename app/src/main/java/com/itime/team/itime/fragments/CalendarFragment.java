@@ -747,10 +747,10 @@ public class CalendarFragment extends Fragment {
 
                                     try {
                                         eventView.setText(objectList.get(num).getString("event_name"));
-                                        final String meeting_id = objectList.get(eventGroup.get(num)).getString("meeting_id");
-                                        final Boolean isHost = objectList.get(eventGroup.get(num)).getBoolean("is_host");
-                                        final String user_id = objectList.get(eventGroup.get(num)).getString("user_id");
-                                        final String hostID = objectList.get(eventGroup.get(flag)).getString("host_id");
+                                        final String meeting_id = objectList.get(num).getString("meeting_id");
+                                        final Boolean isHost = objectList.get(num).getBoolean("is_host");
+                                        final String user_id = objectList.get(num).getString("user_id");
+                                        final String hostID = objectList.get(num).getString("host_id");
                                         eventView.setOnClickListener(new View.OnClickListener() {
                                             @Override
                                             public void onClick(View v) {

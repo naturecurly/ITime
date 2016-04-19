@@ -40,7 +40,7 @@ public enum MessageType {
 
     // friend
     MAKE_FRIEND_FAIL_INFO,
-    REJECT_FRIEND_REQUES,
+    REJECT_FRIEND_REQUEST,
 
     // others
     OTHER_DEVICE_LOGIN

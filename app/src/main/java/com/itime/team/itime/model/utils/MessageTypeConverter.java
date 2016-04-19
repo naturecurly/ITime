@@ -21,6 +21,9 @@ import com.bluelinelabs.logansquare.typeconverters.StringBasedTypeConverter;
 public class MessageTypeConverter extends StringBasedTypeConverter<MessageType> {
     @Override
     public MessageType getFromString(String s) {
+        if (s.equalsIgnoreCase("YOU SENT A NEW INVITATION")) {
+            s = "YOU_SENT_A_NEW_INVITATION";
+        }
         return MessageType.valueOf(s);
     }
 

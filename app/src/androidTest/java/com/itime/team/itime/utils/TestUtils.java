@@ -21,6 +21,8 @@ import android.util.Log;
 
 import com.bluelinelabs.logansquare.LoganSquare;
 import com.itime.team.itime.model.ParcelableMessage;
+import com.itime.team.itime.model.utils.MessageType;
+import com.itime.team.itime.model.utils.MessageTypeConverter;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -106,6 +108,16 @@ public class TestUtils extends AndroidTestCase {
         assertEquals("VALUE_1", te1.toString());
         assertEquals("VALUE_2", te2.toString());
         assertEquals("VALUE_3", te3.toString());
+
+        MessageType mt1 = MessageType.NEW_MEETING_INVITATION;
+        MessageType mt2 = MessageType.YOU_SENT_A_NEW_INVITATION;
+        MessageTypeConverter converter = new MessageTypeConverter();
+        MessageType mt3 = converter.getFromString("YOU SENT A NEW INVITATION");
+
+
+        assertEquals("NEW_MEETING_INVITATION", mt1.toString());
+        assertEquals("YOU_SENT_A_NEW_INVITATION", mt2.toString());
+        assertEquals("YOU_SENT_A_NEW_INVITATION", mt3.toString());
 
     }
 }

@@ -286,7 +286,7 @@ public class InboxFragment extends Fragment {
             return unreadMessageCount;
         }
 
-        public void loadMessages(List<ParcelableMessage> messageData) {
+        public synchronized void loadMessages(List<ParcelableMessage> messageData) {
             this.messageData = messageData;
             setUnReadMessageData(messageData);
             notifyDataSetChanged();
@@ -335,6 +335,8 @@ public class InboxFragment extends Fragment {
             ParcelableMessage message = (ParcelableMessage) getItem(position);
             if (message.ifRead) {
                 convertView.setBackgroundColor(Color.GRAY);
+            } else {
+                convertView.setBackgroundColor(Color.WHITE);
             }
 
             holder.mMessageTitle.setText(message.messageTitle);

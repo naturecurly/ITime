@@ -649,7 +649,9 @@ public class CalendarFragment extends Fragment {
                             if (eventGroup.get(i) == eventGroup.get(i + 1)) {
                                 final int flag = i;
                                 int starthour = 0;
+                                int startmin = 0;
                                 int endhour = 0;
+                                int endmin = 0;
                                 JSONObject jsonObject = objectList.get(eventGroup.get(i));
 
                                 try {
@@ -658,21 +660,24 @@ public class CalendarFragment extends Fragment {
                                     Calendar cal = DateUtil.getLocalDateObjectToCalendar(DateUtil.getLocalDateObject(dateString));
                                     Calendar calEnd = DateUtil.getLocalDateObjectToCalendar(DateUtil.getLocalDateObject(dateStringEnd));
                                     starthour = cal.get(Calendar.HOUR_OF_DAY);
-                                    if (calEnd.get(Calendar.DAY_OF_MONTH) > cal.get(Calendar.DAY_OF_MONTH)) {
-                                        endhour = 23;
-                                    } else {
-                                        endhour = calEnd.get(Calendar.HOUR_OF_DAY);
-                                    }
+                                    startmin = cal.get(Calendar.MINUTE);
+//                                    if (calEnd.get(Calendar.DAY_OF_MONTH) > cal.get(Calendar.DAY_OF_MONTH)) {
+//                                        endhour = 23;
+//                                    } else {
+                                    endhour = calEnd.get(Calendar.HOUR_OF_DAY);
+                                    endmin = calEnd.get(Calendar.MINUTE);
+//                                    }
                                 } catch (JSONException e) {
                                     e.printStackTrace();
                                 }
+                                int durationMin = (60 * endhour + endmin) - (60 * starthour + startmin);
                                 TextView eventView = new TextView(getActivity());
-                                RelativeLayout.LayoutParams eventParam = new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+                                RelativeLayout.LayoutParams eventParam = new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, DensityUtil.dip2px(getActivity(), (float) (4.0 / 6.0 * durationMin)));
                                 try {
                                     if (!jsonObject.getString("meeting_id").equals("")) {
-                                        eventView.setBackgroundColor(Color.RED);
+                                        eventView.setBackgroundColor(ContextCompat.getColor(getActivity(), R.color.event_color_02));
                                     } else {
-                                        eventView.setBackgroundColor(Color.CYAN);
+                                        eventView.setBackgroundColor(ContextCompat.getColor(getActivity(), R.color.event_color_01));
 
                                     }
                                 } catch (JSONException e) {
@@ -691,13 +696,13 @@ public class CalendarFragment extends Fragment {
                                                 Bundle bundle = new Bundle();
                                                 bundle.putString("meeting_id", meeting_id);
                                                 bundle.putString("user_id", user_id);
-                                                if (hostID.equals(User.ID)){
+                                                if (hostID.equals(User.ID)) {
                                                     Intent intent = new Intent(getActivity(), MeetingDetaiHostlActivity.class);
-                                                    intent.putExtra("arg_meeting_id",meeting_id);
+                                                    intent.putExtra("arg_meeting_id", meeting_id);
                                                     startActivity(intent);
                                                 } else {
                                                     Intent intent = new Intent(getActivity(), MeetingDetailActivity.class);
-                                                    intent.putExtra("arg_meeting_id",meeting_id);
+                                                    intent.putExtra("arg_meeting_id", meeting_id);
                                                     Log.i("userId", user_id);
                                                     startActivity(intent);
                                                 }
@@ -718,13 +723,13 @@ public class CalendarFragment extends Fragment {
 //                                eventParam.height = DensityUtil.dip2px(getActivity(), 30);
 //                                eventParam.width = DensityUtil.dip2px(getActivity(), 50);
                                 eventParam.addRule(RelativeLayout.ALIGN_TOP, 100 + starthour);
-                                eventParam.addRule(RelativeLayout.ALIGN_BOTTOM, 100 + endhour);
+//                                eventParam.addRule(RelativeLayout.ALIGN_BOTTOM, 100 + endhour);
                                 eventParam.addRule(RelativeLayout.ALIGN_START, 100 + starthour);
                                 eventParam.addRule(RelativeLayout.ALIGN_LEFT, 100 + starthour);
                                 eventParam.addRule(RelativeLayout.ALIGN_RIGHT, 100 + starthour);
                                 eventParam.addRule(RelativeLayout.ALIGN_END, 100 + starthour);
 
-                                eventParam.setMargins(DensityUtil.dip2px(getActivity(), 1), DensityUtil.dip2px(getActivity(), 1), DensityUtil.dip2px(getActivity(), 1), DensityUtil.dip2px(getActivity(), 1));
+                                eventParam.setMargins(DensityUtil.dip2px(getActivity(), 1), DensityUtil.dip2px(getActivity(), (float) (startmin * 4.0 / 6.0)), DensityUtil.dip2px(getActivity(), 0), DensityUtil.dip2px(getActivity(), 1));
                                 relativeLayout.addView(eventView, eventParam);
                             } else {
                                 int overlapNumber = eventGroup.get(i + 1) - eventGroup.get(i) + 1;
@@ -732,7 +737,9 @@ public class CalendarFragment extends Fragment {
                                 int flag = 0;
                                 for (int num = eventGroup.get(i); num <= eventGroup.get(i + 1); num++) {
                                     int starthour = 0;
+                                    int startmin = 0;
                                     int endhour = 0;
+                                    int endmin = 0;
                                     try {
                                         String dateString = objectList.get(num).getString("event_starts_datetime");
                                         String dateStringEnd = objectList.get(num).getString("event_ends_datetime");
@@ -760,9 +767,9 @@ public class CalendarFragment extends Fragment {
                                                     Bundle bundle = new Bundle();
                                                     bundle.putString("meeting_id", meeting_id);
                                                     bundle.putString("user_id", user_id);
-                                                    if (hostID.equals(User.ID)){
+                                                    if (hostID.equals(User.ID)) {
                                                         Intent intent = new Intent(getActivity(), MeetingDetaiHostlActivity.class);
-                                                        intent.putExtra("arg_meeting_id",meeting_id);
+                                                        intent.putExtra("arg_meeting_id", meeting_id);
                                                         startActivity(intent);
                                                     } else {
                                                         Intent intent = new Intent(getActivity(), MeetingDetailActivity.class);
@@ -780,24 +787,27 @@ public class CalendarFragment extends Fragment {
                                     } catch (JSONException e) {
                                         e.printStackTrace();
                                     }
+                                    int durationMin = (60 * endhour + endmin) - (60 * starthour + startmin);
+                                    RelativeLayout.LayoutParams eventParamOverlap = new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, DensityUtil.dip2px(getActivity(), (float) (4.0 / 6.0 * durationMin)));
 
-                                    RelativeLayout.LayoutParams eventParamOverlap = new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
                                     try {
                                         if (!objectList.get(num).getString("meeting_id").equals("")) {
-                                            eventView.setBackgroundColor(Color.RED);
+                                            eventView.setBackgroundColor(ContextCompat.getColor(getActivity(), R.color.event_color_02));
                                         } else {
-                                            eventView.setBackgroundColor(Color.CYAN);
+                                            eventView.setBackgroundColor(ContextCompat.getColor(getActivity(), R.color.event_color_01));
 
                                         }
                                     } catch (JSONException e) {
                                         e.printStackTrace();
                                     }
-                                    TextView view = (TextView) relativeLayout.findViewById(1);
-                                    float length = screenWidth - (view.getWidth() + DensityUtil.dip2px(getActivity(), 12));
+//                                    TextView view = (TextView) relativeLayout.findViewById(1);
+//                                    View lview = relativeLayout.findViewById(100);
+                                    float length = screenWidth - (DensityUtil.dip2px(getActivity(), 50));
+//                                    float length = lview.getWidth();
 //                                    eventParamOverlap.height = DensityUtil.dip2px(getActivity(), 30);
                                     eventParamOverlap.width = (int) (length / overlapNumber);
                                     eventParamOverlap.addRule(RelativeLayout.ALIGN_TOP, 100 + starthour);
-                                    eventParamOverlap.addRule(RelativeLayout.ALIGN_BOTTOM, 100 + endhour);
+//                                    eventParamOverlap.addRule(RelativeLayout.ALIGN_BOTTOM, 100 + endhour);
                                     eventParamOverlap.addRule(RelativeLayout.ALIGN_START, 100 + starthour);
                                     eventParamOverlap.addRule(RelativeLayout.ALIGN_LEFT, 100 + starthour);
 
@@ -805,7 +815,7 @@ public class CalendarFragment extends Fragment {
 //                                    eventParam.addRule(RelativeLayout.ALIGN_END, 100 + starthour);
                                     int leftMargin = (int) (flag * (length / overlapNumber));
                                     Log.d("leftMargin", leftMargin + "");
-                                    eventParamOverlap.setMargins(leftMargin, DensityUtil.dip2px(getActivity(), 1), DensityUtil.dip2px(getActivity(), 1), DensityUtil.dip2px(getActivity(), 1));
+                                    eventParamOverlap.setMargins(leftMargin, DensityUtil.dip2px(getActivity(), (float) (startmin * 4.0 / 6.0)), DensityUtil.dip2px(getActivity(), 0), DensityUtil.dip2px(getActivity(), 1));
                                     relativeLayout.addView(eventView, eventParamOverlap);
                                     flag++;
                                 }

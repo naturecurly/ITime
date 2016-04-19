@@ -51,13 +51,11 @@
     <View
         android:id="@+id/occupied_space"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:background="@color/black"
-        android:layout_alignTop="@+id/textView"
-        android:layout_alignParentRight="true"
-        android:layout_alignParentEnd="true"
-        android:layout_alignBottom="@+id/textView2"
-        android:layout_toRightOf="@+id/textView"
-        android:layout_toEndOf="@+id/textView"></View>
+        android:layout_height="50dp"
+        android:background="@color/red"
+        android:layout_toRightOf="@+id/textView2"
+        android:layout_alignTop="@+id/separator1"
+        android:layout_marginTop="50dp"
+        android:backgroundTint="#7cbc3939"></View>
 
 </RelativeLayout>

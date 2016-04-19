@@ -17,7 +17,6 @@
 package com.itime.team.itime.task;
 
 import android.content.Context;
-import android.support.annotation.Nullable;
 import android.util.Log;
 
 import com.android.volley.Request;
@@ -28,7 +27,6 @@ import com.android.volley.toolbox.JsonObjectRequest;
 import com.bluelinelabs.logansquare.LoganSquare;
 import com.itime.team.itime.bean.URLs;
 import com.itime.team.itime.model.ParcelableMessage;
-import com.itime.team.itime.model.ParcelablePreference;
 import com.itime.team.itime.utils.MySingleton;
 
 import org.json.JSONArray;
@@ -157,5 +155,188 @@ public class InboxTask {
         MySingleton.getInstance(mContext).addToRequestQueue(request);
     }
 
+    public void markMessageToRead(String messageId, final ResultCallBack<String> callback) {
+        JSONObject jsonObject = new JSONObject();
 
+        try {
+            jsonObject.put("message_id", messageId);
+        } catch (JSONException e) {
+            e.printStackTrace();
+            return;
+        }
+
+        String url = URLs.MARK_MESSAGE_TO_READ;
+        JsonObjectRequest request = new JsonObjectRequest(
+                Request.Method.POST, url, jsonObject.toString(),
+                new Response.Listener<JSONObject>() {
+                    @Override
+                    public void onResponse(JSONObject response) {
+                        String result = "failed";
+                        try {
+                            result = response.getString("result");
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+                        if (callback != null) {
+                            callback.callback(result);
+                        }
+                    }
+                },
+                new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+
+                    }
+                }
+        );
+        MySingleton.getInstance(mContext).addToRequestQueue(request);
+    }
+
+    public void markMessageToUseless(String messageId, final ResultCallBack<String> callback) {
+        JSONObject jsonObject = new JSONObject();
+
+        try {
+            jsonObject.put("message_id", messageId);
+        } catch (JSONException e) {
+            e.printStackTrace();
+            return;
+        }
+
+        String url = URLs.MARK_MESSAGE_TO_USELESS;
+        JsonObjectRequest request = new JsonObjectRequest(
+                Request.Method.POST, url, jsonObject.toString(),
+                new Response.Listener<JSONObject>() {
+                    @Override
+                    public void onResponse(JSONObject response) {
+                        String result = "failed";
+                        try {
+                            result = response.getString("result");
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+                        if (callback != null) {
+                            callback.callback(result);
+                        }
+                    }
+                },
+                new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+
+                    }
+                }
+        );
+        MySingleton.getInstance(mContext).addToRequestQueue(request);
+    }
+
+    public void markAllMessagesToRead(String userId, final ResultCallBack<String> callback) {
+        JSONObject jsonObject = new JSONObject();
+
+        try {
+            jsonObject.put("user_id", userId);
+        } catch (JSONException e) {
+            e.printStackTrace();
+            return;
+        }
+
+        String url = URLs.MARK_ALL_MESSAGES_TO_READ;
+        JsonObjectRequest request = new JsonObjectRequest(
+                Request.Method.POST, url, jsonObject.toString(),
+                new Response.Listener<JSONObject>() {
+                    @Override
+                    public void onResponse(JSONObject response) {
+                        String result = "failed";
+                        try {
+                            result = response.getString("result");
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+                        if (callback != null) {
+                            callback.callback(result);
+                        }
+                    }
+                },
+                new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+
+                    }
+                }
+        );
+        MySingleton.getInstance(mContext).addToRequestQueue(request);
+    }
+
+    public void deleteMessage(String messageId, final ResultCallBack<String> callback) {
+        JSONObject jsonObject = new JSONObject();
+
+        try {
+            jsonObject.put("message_id", messageId);
+        } catch (JSONException e) {
+            e.printStackTrace();
+            return;
+        }
+
+        String url = URLs.DELETE_ALL_MESSAGES;
+        JsonObjectRequest request = new JsonObjectRequest(
+                Request.Method.POST, url, jsonObject.toString(),
+                new Response.Listener<JSONObject>() {
+                    @Override
+                    public void onResponse(JSONObject response) {
+                        String result = "failed";
+                        try {
+                            result = response.getString("result");
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+                        if (callback != null) {
+                            callback.callback(result);
+                        }
+                    }
+                },
+                new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+
+                    }
+                }
+        );
+        MySingleton.getInstance(mContext).addToRequestQueue(request);
+    }
+
+    public void deleteAllMessages(String userId, final ResultCallBack<String> callback) {
+        JSONObject jsonObject = new JSONObject();
+
+        try {
+            jsonObject.put("user_id", userId);
+        } catch (JSONException e) {
+            e.printStackTrace();
+            return;
+        }
+
+        String url = URLs.DELETE_MESSAGE;
+        JsonObjectRequest request = new JsonObjectRequest(
+                Request.Method.POST, url, jsonObject.toString(),
+                new Response.Listener<JSONObject>() {
+                    @Override
+                    public void onResponse(JSONObject response) {
+                        String result = "failed";
+                        try {
+                            result = response.getString("result");
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+                        if (callback != null) {
+                            callback.callback(result);
+                        }
+                    }
+                },
+                new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+
+                    }
+                }
+        );
+        MySingleton.getInstance(mContext).addToRequestQueue(request);
+    }
 }

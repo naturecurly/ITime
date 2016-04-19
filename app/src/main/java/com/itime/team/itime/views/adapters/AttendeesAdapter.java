@@ -14,15 +14,14 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 /**
- * Created by mac on 16/4/12.
+ * Created by Weiwei Cai on 16/4/12.
+ * This is listView adapter, which shows all attendees of a meeting and their status (Accept, Reject
+ * , No Response).
  */
 public class AttendeesAdapter extends BaseAdapter {
     private ArrayList<HashMap<String,String>> mItems;
     private Context mContext;
     private LayoutInflater inflater;
-    private ImageView mImage;
-    private TextView mName;
-    private TextView mId;
 
     public AttendeesAdapter(Context mContext, ArrayList<HashMap<String,String>> mItems){
         this.mContext = mContext;

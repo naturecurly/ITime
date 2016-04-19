@@ -84,6 +84,7 @@ public class NewMeetingActivity extends AppCompatActivity implements View.OnTouc
 
     private ArrayList<String> mRpeatValue;
     private ArrayList<Integer> mAlertValue;
+    private String mAddress;
 
 //    private JsonManager mJsonManager;
 
@@ -143,6 +144,7 @@ public class NewMeetingActivity extends AppCompatActivity implements View.OnTouc
 
         setEndTime();
 
+        mAddress = "";
         mMessage = (EditText) findViewById(R.id.new_meeting_message);
         mMessage.setOnTouchListener(this);
         mStartDate = (Button) findViewById(R.id.new_meeting_start_date);
@@ -311,11 +313,10 @@ public class NewMeetingActivity extends AppCompatActivity implements View.OnTouc
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (requestCode == 1){
             if(resultCode == RESULT_OK){
-                String address = "";
-                address = data.getStringExtra("address");
-                mVeune.setText(address);
+                mAddress = data.getStringExtra("address");
+                mVeune.setText(mAddress);
                 mVeune.setTextSize(12);
-                getCoordinate(address);
+                getCoordinate(mAddress);
             }
         }
     }
@@ -333,8 +334,10 @@ public class NewMeetingActivity extends AppCompatActivity implements View.OnTouc
         String repeative = mRpeatValue.get(0);
 
         String status = "NO CONFIRM NEW MEETING";
-        String location = "Melbourne";
-        String showLocation = "Melbourne";
+
+        String[] address = mAddress.split(",");
+        String location = mAddress;
+        String showLocation = address[0];
         String meetingID = UUID.randomUUID().toString();
         String meetingToken = UUID.randomUUID().toString();
 

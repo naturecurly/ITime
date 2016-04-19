@@ -21,6 +21,7 @@ import com.itime.team.itime.views.MeetingSelectionScrollView;
 
 /**
  * Created by Weiwei Cai on 15/12/28.
+ * This activity handles the top view of Meeting Selection UI. This UI shows the date of a meeting.
  */
 public class MeetingSelectionTopFragment extends Fragment implements ScrollViewListener {
     private LinearLayout mChild;
@@ -75,6 +76,7 @@ public class MeetingSelectionTopFragment extends Fragment implements ScrollViewL
         mChild = (LinearLayout) mParent.findViewById(R.id.meeting_selection_top_scroll_child);
         DisplayMetrics dm = new DisplayMetrics();
         getActivity().getWindowManager().getDefaultDisplay().getMetrics(dm);
+        // Set the width based on different situations. When the the number of dates is between 0 and 6, then:
         MeetingSelectionCentralFragment.WIDTHOFCENTERLAYOUT = dm.widthPixels - WIDTHOFMONTHVIEW - 150;
         if(DATE < 6 && DATE > 0){
             WIDTH = MeetingSelectionCentralFragment.WIDTHOFCENTERLAYOUT / DATE + 10;
@@ -93,8 +95,10 @@ public class MeetingSelectionTopFragment extends Fragment implements ScrollViewL
         currentDay[0] = STARTYEAR;
         currentDay[1] = STARTMONTH;
         currentDay[2] = STARTDAY;
+        // Just initialize 12 columns (if the total days is more than 12, otherwise initialize all columns)
         mInitDays = DATE > 12 ? 12 : DATE;
         for(int i = 0; i < mInitDays; i ++){
+            // Show the current month
             show = DateUtil.weekName[DateUtil.getDateOfWeek(currentDay[0], currentDay[1], currentDay[2]) - 1] + "\n"
                         + currentDay[2];
             mDates[i] = new TextView(getActivity());
@@ -109,6 +113,7 @@ public class MeetingSelectionTopFragment extends Fragment implements ScrollViewL
         }
     }
 
+    // Dynamically adding components, and reset the current month
     private void addView(){
         if(mInitDays < DATE){
             mDates[mInitDays] = new TextView(getActivity());
@@ -124,6 +129,8 @@ public class MeetingSelectionTopFragment extends Fragment implements ScrollViewL
     }
 
 
+    // When the top view scrolls, then centre view also needs to scroll. Here is to set the location of
+    // the center view.
     @Override
     public void onScrollChanged(MeetingSelectionScrollView scrollView, int x, int y, int oldx, int oldy) {
         if (scrollView == mScrollView.getTopScollView()) {

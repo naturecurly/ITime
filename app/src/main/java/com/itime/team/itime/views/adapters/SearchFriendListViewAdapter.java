@@ -15,7 +15,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 /**
- * Created by mac on 16/2/2.
+ * Created by Weiwei Cai on 16/2/2.
+ * The adapter displays all users who are searched.
  */
 public class SearchFriendListViewAdapter extends BaseAdapter {
     private ArrayList<HashMap<String, Object>> list;

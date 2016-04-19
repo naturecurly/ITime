@@ -16,7 +16,7 @@ import com.itime.team.itime.R;
 import java.util.ArrayList;
 
 /**
- * Created by mac on 16/2/17.
+ * Created by Weiwei Cai on 16/2/17.
  */
 public class NewMeetingAlertDialogFragment extends DialogFragment implements RadioGroup.OnCheckedChangeListener {
     private View mView;

@@ -36,7 +36,8 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * Created by mac on 16/1/12.
+ * Created by Weiwei Cai on 16/1/12.
+ * This adapter displays all friends of a user.
  */
 public class DynamicListViewAdapter extends BaseAdapter implements DataRequest{
     private ArrayList<HashMap<String, Object>> list;
@@ -92,6 +93,8 @@ public class DynamicListViewAdapter extends BaseAdapter implements DataRequest{
         TextView name = (TextView) itemView.findViewById(R.id.meeting_name);
         mBackgroud = itemView.getBackground();
 
+        // If a user has set his profile picture, then show it. Otherwise, displaying the default
+        // picture.
         if(list.get(position).get("url") != null) {
             jsonManager.postForImage(list.get(position).get("url").toString(), imageView, context);
         }
@@ -100,6 +103,8 @@ public class DynamicListViewAdapter extends BaseAdapter implements DataRequest{
         final String textName = (String) list.get(position).get("ItemName");
         name.setText(textName);
 
+        // Reset the friend searching view, if the checkbox is selected, then add its image to the
+        // ScrollView.
         if(list.get(position).get("CheckBox") != null && (Boolean)list.get(position).get("CheckBox") == true){
 //        if((Boolean)checkBoxKeeper.get(list.get(position).get("ItemID"))){
             checkBox.setChecked(true);
@@ -112,7 +117,7 @@ public class DynamicListViewAdapter extends BaseAdapter implements DataRequest{
             }
         }
 
-
+        // Change the status when the checkbox is changed.
         checkBox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
@@ -127,6 +132,8 @@ public class DynamicListViewAdapter extends BaseAdapter implements DataRequest{
                 }
             }
         });
+
+        // Clicking the view also selects the friends rather than can only click the checkbox.
         itemView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -139,6 +146,8 @@ public class DynamicListViewAdapter extends BaseAdapter implements DataRequest{
                 }
             }
         });
+
+        //Long Click the item can delete a friend.
         itemView.setOnLongClickListener(new View.OnLongClickListener() {
             @Override
             public boolean onLongClick(View v) {
@@ -190,6 +199,7 @@ public class DynamicListViewAdapter extends BaseAdapter implements DataRequest{
         imageView.startAnimation(mScale);
         mLinearLayout.addView(imageView);
 
+        // Clicking the image means delete it from the view, and also reset the checkbox.
         imageView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

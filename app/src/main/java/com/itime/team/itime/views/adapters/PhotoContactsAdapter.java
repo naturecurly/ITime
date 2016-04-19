@@ -17,7 +17,8 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * Created by mac on 16/2/6.
+ * Created by Weiwei Cai on 16/2/6.
+ * This adapter is not used right now.
  */
 public class PhotoContactsAdapter extends BaseAdapter {
     private ArrayList<Contact> mContact;
@@ -25,8 +26,6 @@ public class PhotoContactsAdapter extends BaseAdapter {
     private Boolean[] mIsChecked;
     private LayoutInflater inflater;
     Map<Integer, Boolean> isCheckMap;
-
-
 
     public PhotoContactsAdapter(Activity mContext, ArrayList<Contact> contact, Boolean[] isChecked){
         this.mContact = contact;

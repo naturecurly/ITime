@@ -67,8 +67,17 @@ public class MeetingDetailUpdateActivity extends AppCompatActivity implements Vi
     private int mEndDay;
     private int mEndHour;
     private int mEndMin;
-    private int mDuration;
-    private String[] mFriendIDs;
+
+    private int mOldStartYear;
+    private int mOldStartMonth;
+    private int mOldStartDay;
+    private int mOldStartHour;
+    private int mOldStartMin;
+    private int mOldEndYear;
+    private int mOldEndMonth;
+    private int mOldEndDay;
+    private int mOldEndHour;
+    private int mOldEndMin;
 
 
     private TimePickerDialog mTimePicker1;
@@ -83,6 +92,8 @@ public class MeetingDetailUpdateActivity extends AppCompatActivity implements Vi
 
     private ArrayList<String> mRpeatValue;
     private ArrayList<Integer> mAlertValue;
+
+    private String mAddress;
 
 //    private JsonManager mJsonManager;
 
@@ -125,7 +136,7 @@ public class MeetingDetailUpdateActivity extends AppCompatActivity implements Vi
         }
 
 
-
+        mAddress = "";
         mMessage = (EditText) findViewById(R.id.new_meeting_message);
         mMessage.setOnTouchListener(this);
         mStartDate = (Button) findViewById(R.id.new_meeting_start_date);
@@ -169,28 +180,13 @@ public class MeetingDetailUpdateActivity extends AppCompatActivity implements Vi
         mStartYear = receiver.getIntExtra("year", calendar.get(Calendar.YEAR));
         mStartMonth = receiver.getIntExtra("month",calendar.get(Calendar.MONTH));
         mStartDay = receiver.getIntExtra("day",calendar.get(Calendar.DATE));
-        mDuration = receiver.getIntExtra("duration",60);
         mStartHour = receiver.getIntExtra("hour",0);
         mStartMin = receiver.getIntExtra("min",0);
-        mFriendIDs = receiver.getStringArrayExtra("friendids");
-//        int currentDay = receiver.getIntExtra("currentDay",0);
-//        date = DateUtil.plusDay(mStartYear, mStartMonth, mStartDay, mStartHour, mStartMin, currentDay);
-//        mStartYear = date.getYear() + 1900;
-//        mStartMonth = date.getMonth();
-//        mStartDay = date.getDate();
-//        mStartHour = date.getHours();
-//        mStartMin = date.getMinutes();
         return date;
     }
 
     private void setEndTime(){
         getCurrentDate();
-//        Date endTime = DateUtil.plusMinute(getCurrentDate(), mDuration);
-//        mEndYear = endTime.getYear() + 1900;
-//        mEndMonth = endTime.getMonth();
-//        mEndDay = endTime.getDate();
-//        mEndHour = endTime.getHours();
-//        mEndMin = endTime.getMinutes();
         Intent receiver = getIntent();
         Calendar calendar = Calendar.getInstance();
         mEndYear = receiver.getIntExtra("e_year",calendar.get(Calendar.YEAR));
@@ -203,6 +199,17 @@ public class MeetingDetailUpdateActivity extends AppCompatActivity implements Vi
         mName.setText(receiver.getStringExtra("name"));
         mVeune.setText(receiver.getStringExtra("location"));
         mMessage.setText(receiver.getStringExtra("note"));
+
+        mOldStartDay = mStartDay;
+        mOldEndDay = mEndDay;
+        mOldStartHour = mStartHour;
+        mOldStartMin = mStartMin;
+        mOldStartYear = mStartYear;
+        mOldStartMonth = mStartMonth;
+        mOldEndYear = mEndYear;
+        mOldEndMonth = mEndMonth;
+        mOldEndHour = mEndHour;
+        mOldEndMin = mEndMin;
     }
 
     private String timeFormat(int hour, int min){
@@ -303,11 +310,10 @@ public class MeetingDetailUpdateActivity extends AppCompatActivity implements Vi
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (requestCode == 1){
             if(resultCode == RESULT_OK){
-                String address = "";
-                address = data.getStringExtra("address");
-                mVeune.setText(address);
+                mAddress = data.getStringExtra("address");
+                mVeune.setText(mAddress);
                 mVeune.setTextSize(12);
-                getCoordinate(address);
+                getCoordinate(mAddress);
             }
         }
     }
@@ -325,15 +331,12 @@ public class MeetingDetailUpdateActivity extends AppCompatActivity implements Vi
         String repeative = mRpeatValue.get(0);
 
         String status = "NO CONFIRM NEW MEETING";
-        String location = "Melbourne";
-        String showLocation = "Melbourne";
+        String[] address = mAddress.split(",");
+        String location = mAddress;
+        String showLocation = address[0];
         String meetingID = UUID.randomUUID().toString();
         String meetingToken = UUID.randomUUID().toString();
 
-        JSONArray friendID = new JSONArray();
-        for(String ids : mFriendIDs){
-            friendID.put(ids);
-        }
         JSONObject json = new JSONObject();
         try {
             json.put("event_id","");    //?

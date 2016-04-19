@@ -5,9 +5,10 @@ import android.view.animation.CycleInterpolator;
 import android.view.animation.TranslateAnimation;
 
 /**
- * Created by mac on 16/2/25.
+ * Created by Weiwei Cai on 16/2/25.
  */
 public class Animations {
+    // This a shake animation.
     public static Animation shakeAnimation(int counts){
         Animation translateAnimation = new TranslateAnimation(0, 10, 0, 0);
         translateAnimation.setInterpolator(new CycleInterpolator(counts));

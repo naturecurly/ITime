@@ -12,7 +12,8 @@ import com.itime.team.itime.R;
 import java.util.ArrayList;
 
 /**
- * Created by mac on 16/3/6.
+ * Created by Weiwei Cai on 16/3/6.
+ * This adapter shows all locations searched from google Map.
  */
 public class AutoCompleteAdapter extends BaseAdapter {
     private ArrayList<String> mList;

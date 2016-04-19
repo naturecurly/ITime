@@ -27,6 +27,8 @@ import com.hannesdorfmann.parcelableplease.annotation.ParcelableThisPlease;
 import com.itime.team.itime.api.model.Preference;
 import com.itime.team.itime.api.model.utils.ITimeDateTypeConverter;
 import com.itime.team.itime.database.ITimeDataStore;
+import com.itime.team.itime.model.utils.MessageType;
+import com.itime.team.itime.model.utils.MessageTypeConverter;
 import com.itime.team.itime.utils.DateUtil;
 
 import java.util.Date;
@@ -58,8 +60,8 @@ public class ParcelableMessage implements Parcelable {
     public boolean ifUseful;
 
     @ParcelableThisPlease
-    @JsonField(name = "message_type")
-    public String messageType;
+    @JsonField(name = "message_type", typeConverter = MessageTypeConverter.class)
+    public MessageType messageType;
 
     @ParcelableThisPlease
     @JsonField(name = "message_title")

@@ -44,6 +44,7 @@ import com.itime.team.itime.bean.User;
 import com.itime.team.itime.listener.OnDateSelectedListener;
 import com.itime.team.itime.listener.RecyclerItemClickListener;
 import com.itime.team.itime.listener.ScrollMeetingViewListener;
+import com.itime.team.itime.task.ReadMonthEventTask;
 import com.itime.team.itime.utils.DateUtil;
 import com.itime.team.itime.utils.DensityUtil;
 import com.itime.team.itime.utils.EventUtil;
@@ -107,6 +108,9 @@ public class CalendarFragment extends Fragment {
     private CalendarView todayCalendarView = null;
     private TextView title;
     private Calendar selectedCalendar = Calendar.getInstance();
+    private boolean isStop = false;
+    private int loadNum = 0;
+
 
     public static CalendarFragment newInstance(Bundle bundle) {
 
@@ -141,6 +145,8 @@ public class CalendarFragment extends Fragment {
         super.onActivityCreated(savedInstanceState);
         fetchEvents(mUserId);
         fetchIgnoredEvents(mUserId);
+
+
         //analyseEvents(mResponse);
     }
 
@@ -292,19 +298,25 @@ public class CalendarFragment extends Fragment {
                     animator.start();
 
                 }
+                if (newState == 0) {
+                    isStop = true;
+                    recyclerView.getAdapter().notifyDataSetChanged();
+
+                }
 
             }
 
             @Override
             public void onScrolled(final RecyclerView recyclerView, int dx, int dy) {
                 super.onScrolled(recyclerView, dx, dy);
-
-                CalendarView firstVisibleView = (CalendarView) (recyclerView.getChildAt(0)).findViewById(R.id.calendar_view);
+                isStop = false;
+                CalendarView firstVisibleView = (CalendarView) (recyclerView.getChildAt(2)).findViewById(R.id.calendar_view);
                 if (firstVisibleView.whetherHasFirstDay()) {
                     CalendarView.Row[] rows = firstVisibleView.getRows();
                     TextView textView = (TextView) getActivity().findViewById(R.id.toolbar_title);
 //                    CalendarView.Cell[] cells = rows[0].getCells();
 //                    cells
+                    excuteAsyncTask(firstVisibleView.getmShowMonth(), firstVisibleView.getmShowYear());
                     textView.setText(firstVisibleView.getmShowYear() + "-" + firstVisibleView.getmShowMonth());
                 }
 
@@ -482,18 +494,21 @@ public class CalendarFragment extends Fragment {
                     Toast.makeText(getActivity(), cal.get(Calendar.DAY_OF_MONTH) + "", Toast.LENGTH_SHORT).show();
                     flag = true;
                 }
-                if (Events.response != null && Events.daysHaveEvents.contains(cal.get(Calendar.DAY_OF_MONTH) + "-" + (cal.get(Calendar.MONTH) + 1) + "-" + cal.get(Calendar.YEAR))) {
-                    ifEvents[i] = true;
-                    Log.d("testdate", eventDateList.size() + "");
-                } else if (Events.repeatEvent != null) {
-                    try {
-                        ifEvents[i] = EventUtil.hasRepeatEvent(cal);
-                    } catch (JSONException e) {
-                        e.printStackTrace();
+
+                if (isStop || loadNum < 64) {
+                    loadNum += 1;
+                    if (Events.response != null && Events.daysHaveEvents.contains(cal.get(Calendar.DAY_OF_MONTH) + "-" + (cal.get(Calendar.MONTH) + 1) + "-" + cal.get(Calendar.YEAR))) {
+                        ifEvents[i] = true;
+                        Log.d("testdate", eventDateList.size() + "");
+                    } else if (Events.repeatEvent != null) {
+                        try {
+                            ifEvents[i] = EventUtil.hasRepeatEvent(cal);
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
                     }
+                    Log.d("load_num", loadNum + "");
                 }
-
-
                 cal.add(Calendar.DAY_OF_MONTH, 1);
 
             }
@@ -545,6 +560,7 @@ public class CalendarFragment extends Fragment {
                     int day = Integer.valueOf(row.getCells()[DateUtil.analysePosition(x, rowHeight)].text);
                     int month = row.getCells()[DateUtil.analysePosition(x, rowHeight)].month;
                     int year = row.getCells()[DateUtil.analysePosition(x, rowHeight)].year;
+                    excuteAsyncTask(month, year);
                     selectedCalendar.set(year, month - 1, day);
                     if (now.get(Calendar.YEAR) == year && now.get(Calendar.MONTH) == month - 1 && now.get(Calendar.DAY_OF_MONTH) == day) {
                         int nowHour = now.get(Calendar.HOUR_OF_DAY);
@@ -559,7 +575,10 @@ public class CalendarFragment extends Fragment {
                         Toast.makeText(getActivity(), "has event", Toast.LENGTH_SHORT).show();
                         objectList = EventUtil.getEventFromDate(day, month, year);
                         objectList = EventUtil.sortEvents(objectList);
-
+//                        Log.d("68",objectList.size()+"");
+//                        for (int f = 0; f < objectList.size(); f++) {
+//                            Log.d("68", objectList.get(f).toString());
+//                        }
                         JSONObject firstObject = objectList.get(0);
                         Calendar firstTimeCal = Calendar.getInstance();
                         try {
@@ -838,16 +857,20 @@ public class CalendarFragment extends Fragment {
 //                        ft.replace(R.id.realtab_content, new WeeklyFragment());
 //                        ft.addToBackStack(null);
 //                        ft.commit();
-                        clickedDay = 0;
-                        clickedMonth = 0;
-                        clickedYear = 0;
-                        Intent intent = new Intent(getActivity(), WeeklyActivity.class);
-                        Bundle bundle = new Bundle();
-                        bundle.putInt("year", year);
-                        bundle.putInt("month", month);
-                        bundle.putInt("day", day);
-                        intent.putExtras(bundle);
-                        startActivity(intent);
+                        if (ifFinishAsyncTask(clickedMonth, clickedYear)) {
+                            clickedDay = 0;
+                            clickedMonth = 0;
+                            clickedYear = 0;
+                            Intent intent = new Intent(getActivity(), WeeklyActivity.class);
+                            Bundle bundle = new Bundle();
+                            bundle.putInt("year", year);
+                            bundle.putInt("month", month);
+                            bundle.putInt("day", day);
+                            intent.putExtras(bundle);
+                            startActivity(intent);
+                        } else {
+                            Toast.makeText(getActivity(), "Please wait...", Toast.LENGTH_SHORT).show();
+                        }
 
                     } else {
                         clickedDay = day;
@@ -972,6 +995,10 @@ public class CalendarFragment extends Fragment {
 
                 //mResponse = response;
                 Events.response = EventUtil.initialEvents(response);
+//                new ReadMonthEventTask().execute(today.get(Calendar.MONTH) + 1, today.get(Calendar.YEAR));
+//                new ReadMonthEventTask().execute(today.get(Calendar.MONTH), today.get(Calendar.YEAR));
+//                new ReadMonthEventTask().execute(today.get(Calendar.MONTH) + 2, today.get(Calendar.YEAR));
+                excuteAsyncTask(today.get(Calendar.MONTH) + 1, today.get(Calendar.YEAR));
 //                analyseEvents(response);
 //                Events.repeatEvent = EventUtil.getRepeatEventsFromEvents(Events.response);
                 recyclerView.getAdapter().notifyDataSetChanged();
@@ -1254,6 +1281,39 @@ public class CalendarFragment extends Fragment {
         linearLayoutManager.scrollToPositionWithOffset(5, 0);
         recyclerView.getAdapter().notifyDataSetChanged();
 
+    }
+
+    public void excuteAsyncTask(int month, int year) {
+        new ReadMonthEventTask().execute(month, year);
+        if (month - 1 == 0) {
+            new ReadMonthEventTask().execute(12, year - 1);
+        } else {
+            new ReadMonthEventTask().execute(month - 1, year);
+        }
+
+        if (month + 1 > 12) {
+            new ReadMonthEventTask().execute(1, year + 1);
+        } else {
+            new ReadMonthEventTask().execute(month + 1, year);
+        }
+    }
+
+    public boolean ifFinishAsyncTask(int month, int year) {
+        if (month - 1 == 0) {
+            if (Events.eventsMonth.containsKey(12 + "-" + (year - 1)) && Events.eventsMonth.containsKey(month + "-" + year) && Events.eventsMonth.containsKey((month + 1) + "-" + year)) {
+                return true;
+            }
+
+        } else if (month + 1 > 12) {
+            if (Events.eventsMonth.containsKey((month - 1) + "-" + year) && Events.eventsMonth.containsKey(month + "-" + year) && Events.eventsMonth.containsKey(1 + "-" + year)) {
+                return true;
+            }
+        } else {
+            if (Events.eventsMonth.containsKey((month - 1) + "-" + year) && Events.eventsMonth.containsKey(month + "-" + year) && Events.eventsMonth.containsKey((month + 1) + "-" + year)) {
+                return true;
+            }
+        }
+        return false;
     }
 }
 

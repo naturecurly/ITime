@@ -27,13 +27,18 @@ public class WeeklyActivity extends WeeklyBaseActivity {
     private int flag = 0;
 
 
-
     @Override
     public List<? extends WeekViewEvent> onMonthChange(int newYear, int newMonth) {
         // Populate the week view with some events.
         List<WeekViewEvent> events = new ArrayList<WeekViewEvent>();
         Log.d("how many times", "times");
-        List<JSONObject> objects = EventUtil.getEventsByMonth(newYear, newMonth);
+        List<JSONObject> objects = null;
+//        try {
+//            objects = EventUtil.getEventsByMonth(newYear, newMonth);
+        objects = Events.eventsMonth.get(newMonth + "-" + newYear);
+//        } catch (JSONException e) {
+//            e.printStackTrace();
+//        }
 //        if (flag == 0) {
         for (int i = 0; i < objects.size(); i++) {
             JSONObject object = new JSONObject();

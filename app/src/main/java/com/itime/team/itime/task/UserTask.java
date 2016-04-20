@@ -264,4 +264,40 @@ public class UserTask {
 
 
     }
+
+    public void syncGcmRegistrationToken(String userId, String registrationToken, CallBackResult<String> callback) {
+        JSONObject jsonObject = new JSONObject();
+        try {
+            jsonObject.put("user_id", userId);
+            jsonObject.put("gcm_registration_token", registrationToken);
+        } catch (JSONException e) {
+            e.printStackTrace();
+            return;
+        }
+
+        final String url = URLs.SYNC_GCM_REGISTRATION_TOKEN;
+        JsonObjectRequest request = new JsonObjectRequest(Request.Method.POST, url, jsonObject.toString(),
+                new Response.Listener<JSONObject>() {
+                    @Override
+                    public void onResponse(JSONObject response) {
+                        Log.i(LOG_TAG, response.toString());
+                        String result = "failed";
+                        try {
+                            result = response.getString("result");
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+                        if (callback != null) {
+                            callback.callback(result);
+                        }
+                    }
+                },
+                new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+
+                    }
+                }
+        );
+    }
 }

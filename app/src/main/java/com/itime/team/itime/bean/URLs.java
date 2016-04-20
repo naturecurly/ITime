@@ -4,7 +4,7 @@ package com.itime.team.itime.bean;
  * Created by mac on 16/1/19.
  */
 public class URLs {
-    public static final String HEAD = "http://54.200.31.237:8000/";
+    public static final String HEAD = "http://127.0.0.1:8000/";
     public static final String ADD_FRIEND_REQUEST = HEAD + "adding_friend_request";
     public static final String LOAD_FRIEND = HEAD + "load_friends";
     public static final String LOAD_FRDS_PERFER_PREFERENCES = HEAD + "load_frds_prefer_preferences";
@@ -43,4 +43,5 @@ public class URLs {
     public static final String CANCEL_MEETING = HEAD + "cancel_meeting";
     public static final String SEND_AGREE_FRIEND_REQUEST = HEAD + "send_agree_friend_request";
     public static final String SEND_REJECT_FRIEND_REQUEST = HEAD + "send_agree_friend_request";
+    public static final String SYNC_GCM_REGISTRATION_TOKEN = HEAD + "sync_gcm_registration_token";
 }

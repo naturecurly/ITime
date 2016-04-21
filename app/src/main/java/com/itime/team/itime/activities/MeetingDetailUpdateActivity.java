@@ -43,7 +43,6 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.UUID;
 
 /**
  * Created by Weiwei Cai on 16/2/17.
@@ -94,6 +93,25 @@ public class MeetingDetailUpdateActivity extends AppCompatActivity implements Vi
     private ArrayList<Integer> mAlertValue;
 
     private String mAddress;
+    private String mMeetingID;
+    private String mEventID;
+    private String mToken;
+    private Boolean mMPunctual;
+    private String mMRepeat;
+    private String mNote;
+
+
+    private String mMeetingName;
+    private String mLocation;
+    private String mShow;
+    private String mOldMeetingName;
+    private String mOldLocation;
+    private String mOldShow;
+    private Boolean mOldMPunctual;
+    private String mOldMRepeat;
+    private String mOldNote;
+
+    private String mHostID;
 
 //    private JsonManager mJsonManager;
 
@@ -114,8 +132,8 @@ public class MeetingDetailUpdateActivity extends AppCompatActivity implements Vi
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        if(item.getItemId() == R.id.new_meeting_menu_send){
-
+        if(item.getItemId() == R.id.update_meeting){
+            postInformation();
         }
         return super.onOptionsItemSelected(item);
     }
@@ -136,7 +154,6 @@ public class MeetingDetailUpdateActivity extends AppCompatActivity implements Vi
         }
 
 
-        mAddress = "";
         mMessage = (EditText) findViewById(R.id.new_meeting_message);
         mMessage.setOnTouchListener(this);
         mStartDate = (Button) findViewById(R.id.new_meeting_start_date);
@@ -170,6 +187,8 @@ public class MeetingDetailUpdateActivity extends AppCompatActivity implements Vi
         mAlertValue = new ArrayList();
         mRpeatValue.add("One-time event");
         mAlertValue.add(1);
+
+        mAddress = mVeune.getText().toString();
         //simpleRequest();
     }
 
@@ -193,12 +212,26 @@ public class MeetingDetailUpdateActivity extends AppCompatActivity implements Vi
         mEndMonth = receiver.getIntExtra("e_month",calendar.get(Calendar.MONTH));
         mEndDay = receiver.getIntExtra("e_day",calendar.get(Calendar.DATE));
         mEndHour = receiver.getIntExtra("e_hour",calendar.get(Calendar.HOUR));
-        mEndMin = receiver.getIntExtra("e_min",calendar.get(Calendar.MINUTE));
-        mRepeat.setText(receiver.getStringExtra("repeat"));
-        mPunctual.setChecked(receiver.getBooleanExtra("punctual", false));
-        mName.setText(receiver.getStringExtra("name"));
-        mVeune.setText(receiver.getStringExtra("location"));
-        mMessage.setText(receiver.getStringExtra("note"));
+        mEndMin = receiver.getIntExtra("e_min", calendar.get(Calendar.MINUTE));
+
+        mMRepeat = receiver.getStringExtra("repeat");
+        mMPunctual = receiver.getBooleanExtra("punctual", false);
+        mMeetingName = receiver.getStringExtra("name");
+        mLocation = receiver.getStringExtra("location");
+        mShow = receiver.getStringExtra("show");
+        mNote = receiver.getStringExtra("note");
+        mHostID = receiver.getStringExtra("host_id");
+
+        mRepeat.setText(mMRepeat);
+        mPunctual.setChecked(mMPunctual);
+        mName.setText(mMeetingName);
+        mVeune.setText(mShow);
+        mMessage.setText(mNote);
+
+        mMeetingID = receiver.getStringExtra("meeting_id");
+        mEventID = receiver.getStringExtra("event_id");
+        mToken = receiver.getStringExtra("token");
+
 
         mOldStartDay = mStartDay;
         mOldEndDay = mEndDay;
@@ -210,6 +243,12 @@ public class MeetingDetailUpdateActivity extends AppCompatActivity implements Vi
         mOldEndMonth = mEndMonth;
         mOldEndHour = mEndHour;
         mOldEndMin = mEndMin;
+        mOldMRepeat = mMRepeat;
+        mOldMPunctual = mMPunctual;
+        mOldMeetingName = mMeetingName;
+        mOldLocation = mLocation;
+        mOldShow = mShow;
+        mOldNote = mNote;
     }
 
     private String timeFormat(int hour, int min){
@@ -323,8 +362,8 @@ public class MeetingDetailUpdateActivity extends AppCompatActivity implements Vi
     }
 
     private void postInformation(){
-        String startDateForPost = DateUtil.getDateWithTimeZone(mStartYear, mStartMonth + 1, mStartDay, mStartHour, mStartMin);
-        String endDateForPost = DateUtil.getDateWithTimeZone(mEndYear, mEndMonth + 1, mEndDay, mEndHour, mEndMin);
+        String startDateForPost = DateUtil.getDateWithTimeZone(mOldStartYear, mOldStartMonth + 1, mOldStartDay, mOldStartHour, mOldStartMin);
+        String endDateForPost = DateUtil.getDateWithTimeZone(mOldEndYear, mOldEndMonth + 1, mOldEndDay, mOldEndHour, mOldEndMin);
         String comment = mMessage.getText().toString();
         String name = mName.getText().toString();
         String punctual = mPunctual.isChecked() ? "true" : "false";
@@ -332,53 +371,53 @@ public class MeetingDetailUpdateActivity extends AppCompatActivity implements Vi
 
         String status = "NO CONFIRM NEW MEETING";
         String[] address = mAddress.split(",");
-        String location = mAddress;
-        String showLocation = address[0];
-        String meetingID = UUID.randomUUID().toString();
-        String meetingToken = UUID.randomUUID().toString();
+        mLocation = mAddress;
+        mShow = address[0];
 
         JSONObject json = new JSONObject();
         try {
-            json.put("event_id","");    //
-            json.put("event_venue_location_new","");    // 下面
-            json.put("event_repeats_type_new","");
-            json.put("event_last_sug_dep_time",""); //?X
+            String currentTime = DateUtil.formatLocalDateObject(new Date());
+            Log.i("currentTime",currentTime);
+            json.put("event_id", mEventID);    //
+            json.put("event_venue_location_new", mLocation);    // 下面
+            json.put("event_repeats_type_new",mMRepeat);
+            json.put("event_last_sug_dep_time",currentTime); //?X
             json.put("is_long_repeat",1);   //  默认是1
-            json.put("event_starts_datetime_new","");
+            json.put("event_starts_datetime_new",DateUtil.getDateWithTimeZone(mStartYear,mStartMonth + 1,mStartDay,mStartHour,mStartMin));
             json.put("is_host","");
-            json.put("event_longitude_new",-37);
-            json.put("event_latitude_new","");
-            json.put("event_last_sug_dep_time_new",""); //  X
-            json.put("event_ends_datetime_new","");
-            json.put("event_name_new","");
-            json.put("event_last_distance_in_meter_new","");    //  X
-            json.put("event_is_punctual_new",1);    //1 是， 0否
-            json.put("host_id","");
-            json.put("event_last_time_on_way_in_second_new","");    // X
+            json.put("event_longitude_new",mLng);
+            json.put("event_latitude_new",mLat);
+            json.put("event_last_sug_dep_time_new",currentTime); //  X
+            json.put("event_ends_datetime_new",DateUtil.getDateWithTimeZone(mEndYear,mEndMonth + 1,mEndDay,mEndHour,mEndMin));
+            json.put("event_name_new", mName.getText());
+            json.put("event_last_distance_in_meter_new",currentTime);    //  X
+            json.put("event_is_punctual_new", mPunctual.isChecked() ? 1 : 0);    //1 是， 0否
+            json.put("host_id",mHostID);
+            json.put("event_last_time_on_way_in_second_new",currentTime);    // X
             json.put("is_meeting",1);   //1 是， 0否
-            json.put("event_venue_show_new","");
-            json.put("event_last_time_on_way_in_second",0); //  X
-            json.put("event_alert","");
+            json.put("event_venue_show_new", mShow);
+            json.put("event_last_time_on_way_in_second",currentTime); //  X
+            json.put("event_alert", mAlert.getText().toString().split(" -- ")[1]); //Need to be changed
             json.put("if_deleted",0);   //1 是， 0否
             json.put("event_last_distance_in_meter",0); //  X
-            json.put("event_comment_new","");
-            json.put("event_repeat_to_date","");    //  传end date
+            json.put("event_comment_new",mMessage.getText());
+            json.put("event_repeat_to_date",DateUtil.getDateWithTimeZone(mEndYear, mEndMonth, mEndDay, mEndHour, mEndMin));    //  传end date
             json.put("calendar_id","");
-            json.put("event_last_update_datetime","");  //  当前时间
-            json.put("event_is_punctual",punctual); //?
+            json.put("event_last_update_datetime",currentTime);  //  当前时间
+            json.put("event_is_punctual",mOldMPunctual ? 1 : 0); //?
             json.put("event_starts_datetime", startDateForPost);
             json.put("event_ends_datetime", endDateForPost);
-            json.put("event_comment",comment);
-            json.put("event_name",name.equals("") ? getString(R.string.new_meeting) : name);
-            json.put("event_repeats_type",repeative);
+            json.put("event_comment",mOldNote);
+            json.put("event_name",mOldMeetingName);
+            json.put("event_repeats_type",mOldMRepeat);
             json.put("event_latitude",mLat);
             json.put("event_longitude", mLng);
-            json.put("event_venue_location", location); //?
-            json.put("meeting_id",meetingID);   //?
-            json.put("meeting_valid_token",meetingToken);   //?
+            json.put("event_venue_location", mOldLocation); //?
+            json.put("meeting_id",mMeetingID);   //?
+            json.put("meeting_valid_token",mToken);   //?
             json.put("user_id", User.ID);
-            json.put("meeting_status", "");
-            json.put("event_venue_show",showLocation);  //?
+            json.put("meeting_status", "NO CONFIRM UPDATE MEETING"); //Neet to add
+            json.put("event_venue_show", mOldShow);  //?
 
             Log.i("resu",json.toString());
 
@@ -386,7 +425,7 @@ public class MeetingDetailUpdateActivity extends AppCompatActivity implements Vi
             e.printStackTrace();
         }
 
-        final String url = URLs.MEETING_INVITATION;
+        final String url = URLs.MEETING_INFO_UPDATE_REQUEST;
         Map<String, String> params = new HashMap();
         params.put("json", json.toString());
 
@@ -397,7 +436,7 @@ public class MeetingDetailUpdateActivity extends AppCompatActivity implements Vi
                     if(response.getString("result").equals("success")){
                         setResult(RESULT_OK);
                         Toast.makeText(getApplicationContext(),
-                                getString(R.string.new_meeting_send_invitation_successful), Toast.LENGTH_SHORT).show();
+                                getString(R.string.meeting_update), Toast.LENGTH_SHORT).show();
                         finish();
                     }
                 } catch (JSONException e) {

@@ -692,6 +692,8 @@ public class CalendarFragment extends Fragment {
                                             //boolean isHost = objectList.get(eventGroup.get(flag)).getBoolean("is_host");
                                             String user_id = objectList.get(eventGroup.get(flag)).getString("user_id");
                                             String hostID = objectList.get(eventGroup.get(flag)).getString("host_id");
+                                            String eventID = objectList.get(eventGroup.get(flag)).getString("event_id");
+                                            Log.i("event",eventID);
                                             if (!meeting_id.equals("")) {
                                                 Bundle bundle = new Bundle();
                                                 bundle.putString("meeting_id", meeting_id);
@@ -699,10 +701,14 @@ public class CalendarFragment extends Fragment {
                                                 if (hostID.equals(User.ID)) {
                                                     Intent intent = new Intent(getActivity(), MeetingDetaiHostlActivity.class);
                                                     intent.putExtra("arg_meeting_id", meeting_id);
+                                                    intent.putExtra("event_id",eventID);
+                                                    intent.putExtra("host_id",hostID);
                                                     startActivity(intent);
                                                 } else {
                                                     Intent intent = new Intent(getActivity(), MeetingDetailActivity.class);
                                                     intent.putExtra("arg_meeting_id", meeting_id);
+                                                    intent.putExtra("event_id",eventID);
+                                                    intent.putExtra("host_id",hostID);
                                                     Log.i("userId", user_id);
                                                     startActivity(intent);
                                                 }
@@ -758,6 +764,8 @@ public class CalendarFragment extends Fragment {
                                         final Boolean isHost = objectList.get(num).getBoolean("is_host");
                                         final String user_id = objectList.get(num).getString("user_id");
                                         final String hostID = objectList.get(num).getString("host_id");
+                                        final String eventID = objectList.get(num).getString("event_id");
+                                        Log.i("evnetID",eventID);
                                         eventView.setOnClickListener(new View.OnClickListener() {
                                             @Override
                                             public void onClick(View v) {
@@ -770,10 +778,12 @@ public class CalendarFragment extends Fragment {
                                                     if (hostID.equals(User.ID)) {
                                                         Intent intent = new Intent(getActivity(), MeetingDetaiHostlActivity.class);
                                                         intent.putExtra("arg_meeting_id", meeting_id);
+                                                        intent.putExtra("event_id",eventID);
                                                         startActivity(intent);
                                                     } else {
                                                         Intent intent = new Intent(getActivity(), MeetingDetailActivity.class);
                                                         intent.putExtra("arg_meeting_id", meeting_id);
+                                                        intent.putExtra("event_id",eventID);
                                                         startActivity(intent);
                                                     }
                                              /*

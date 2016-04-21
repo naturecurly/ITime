@@ -61,7 +61,7 @@ public class MeetingDetaiHostlActivity extends AppCompatActivity implements OnMa
     private EditText mNewNote;
     private Button mEmail, mQuit;
     private ImageView mImage;
-    private Button mConfirm, mReset;
+    private Button mConfirm, mReset, mConfirmUpdate;
 
     private LinearLayout mLNewName, mLNewVenue, mLNewStart, mLNewEnd, mLNewRepeat, mLNewPunctual, mLNewNote;
 
@@ -70,6 +70,7 @@ public class MeetingDetaiHostlActivity extends AppCompatActivity implements OnMa
 
     public static final String ARG_MEETING_ID = "arg_meeting_id";
     private String mMeetingId;
+    private String mEventId;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -102,10 +103,17 @@ public class MeetingDetaiHostlActivity extends AppCompatActivity implements OnMa
                 intent.putExtra("e_hour", mMeetingInfo.getEnd().get(Calendar.HOUR));
                 intent.putExtra("e_min", mMeetingInfo.getEnd().get(Calendar.MINUTE));
                 intent.putExtra("name",mMeetingInfo.getName());
-                intent.putExtra("location",mMeetingInfo.getLocation() + " " + mMeetingInfo.getVenue());
+//                intent.putExtra("location",mMeetingInfo.getLocation() + " " + mMeetingInfo.getVenue());
+                intent.putExtra("location",mMeetingInfo.getVenue());
+                intent.putExtra("show", mMeetingInfo.getLocation());
                 intent.putExtra("repeat", mMeetingInfo.getRepeat());
                 intent.putExtra("punctual", mMeetingInfo.getPunctual());
                 intent.putExtra("note", mMeetingInfo.getComment());
+                intent.putExtra("token", mMeetingInfo.getToken());
+                intent.putExtra("meeting_id",mMeetingInfo.getId());
+                intent.putExtra("event_id", mEventId);
+
+
             }
             startActivity(intent);
         }
@@ -129,6 +137,7 @@ public class MeetingDetaiHostlActivity extends AppCompatActivity implements OnMa
         }
 
         mMeetingId = getIntent().getStringExtra(ARG_MEETING_ID);
+        mEventId = getIntent().getStringExtra("event_id");
 
 
 
@@ -170,6 +179,8 @@ public class MeetingDetaiHostlActivity extends AppCompatActivity implements OnMa
         mLNewPunctual = (LinearLayout) findViewById(R.id.meeting_detail_event_punctual_layout);
         mLNewRepeat = (LinearLayout) findViewById(R.id.meeting_detail_event_repeat_layout);
         mLNewNote = (LinearLayout) findViewById(R.id.meeting_detail_note_layout);
+        mConfirmUpdate= (Button) findViewById(R.id.meeting_detail_confirm_update);
+        mConfirmUpdate.setOnClickListener(this);
     }
 
     // Before setting which Layout should be shown, just hiding all relative layout. If the new
@@ -182,6 +193,7 @@ public class MeetingDetaiHostlActivity extends AppCompatActivity implements OnMa
         mLNewRepeat.setVisibility(View.GONE);
         mLNewPunctual.setVisibility(View.GONE);
         mLNewNote.setVisibility(View.GONE);
+        mConfirmUpdate.setVisibility(View.GONE);
         if (!meetingInfo.getName().equals(meetingInfo.getNewName())){
             mLNewName.setVisibility(View.VISIBLE);
         }
@@ -207,12 +219,15 @@ public class MeetingDetaiHostlActivity extends AppCompatActivity implements OnMa
         if(meetingInfo.getStatus().equals("NO CONFIRM NEW MEETING")){
             mConfirm.setVisibility(View.VISIBLE);
             mReset.setVisibility(View.GONE);
+            mConfirmUpdate.setVisibility(View.GONE);
         }else if(meetingInfo.getStatus().equals("NO CONFIRM UPDATE MEETING")){
-            mConfirm.setVisibility(View.VISIBLE);
+            mConfirm.setVisibility(View.GONE);
             mReset.setVisibility(View.VISIBLE);
+            mConfirmUpdate.setVisibility(View.VISIBLE);
         }else{
             mConfirm.setVisibility(View.GONE);
             mReset.setVisibility(View.GONE);
+            mConfirmUpdate.setVisibility(View.GONE);
         }
     }
 
@@ -296,8 +311,8 @@ public class MeetingDetaiHostlActivity extends AppCompatActivity implements OnMa
             mMeetingInfo.setNewComment(json.getString("event_comment_new"));
 
             mMeetingName.setText(mMeetingInfo.getName());
-            mMeetingCity.setText(mMeetingInfo.getLocation());
-            mMeetingAddress.setText(mMeetingInfo.getVenue());
+            mMeetingCity.setText(mMeetingInfo.getVenue());
+            mMeetingAddress.setText(mMeetingInfo.getLocation());
             mDeparture.setText(dateOutputFormat(mMeetingInfo.getStart()));
             mStart.setText(dateOutputFormat(mMeetingInfo.getStart()));
             mEnd.setText(dateOutputFormat(mMeetingInfo.getEnd()));
@@ -306,7 +321,7 @@ public class MeetingDetaiHostlActivity extends AppCompatActivity implements OnMa
             mNote.setText(mMeetingInfo.getComment());
 
             mNewMeetingName.setText(mMeetingInfo.getNewName());
-            mNewMeetingAddress.setText(mMeetingInfo.getNewLocation() + mMeetingInfo.getNewVenue());
+            mNewMeetingAddress.setText(mMeetingInfo.getNewLocation());
             mNewRepeat.setText(mMeetingInfo.getNewRepeat());
             mNewStart.setText(dateOutputFormat(mMeetingInfo.getNewStart()));
             mNewEnd.setText(dateOutputFormat(mMeetingInfo.getNewEnd()));
@@ -399,6 +414,40 @@ public class MeetingDetaiHostlActivity extends AppCompatActivity implements OnMa
         MySingleton.getInstance(this).addToRequestQueue(request);
     }
 
+    private void update(){
+        JSONObject jsonObject = new JSONObject();
+        try {
+            jsonObject.put("meeting_id", mMeetingId);
+            jsonObject.put("user_id", User.ID);
+            jsonObject.put("meeting_valid_token", mMeetingInfo.getToken());
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+        final String url = URLs.HOST_SEND_CONFIRN_MEETING_UPDATE_ANYWAY;
+        Map<String, String> params = new HashMap();
+        params.put("json", jsonObject.toString());
+
+        JsonObjectFormRequest request = new JsonObjectFormRequest(Request.Method.POST, url, params, new Response.Listener<JSONObject>() {
+            @Override
+            public void onResponse(JSONObject response) {
+                try {
+                    if (!response.getString("result").equals("success")){
+                        Toast.makeText(getApplicationContext(), getString(R.string.time_out), Toast.LENGTH_LONG);
+                    }
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
+        }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+
+            }
+        });
+        MySingleton.getInstance(this).addToRequestQueue(request);
+    }
+
     // Reset a meeting
     private void reset(){
         JSONObject jsonObject = new JSONObject();
@@ -445,6 +494,9 @@ public class MeetingDetaiHostlActivity extends AppCompatActivity implements OnMa
             loadMeetingInfo();
         } else if (v.getId() == mReset.getId()) {
             reset();
+            loadMeetingInfo();
+        } else if(v.getId() == mConfirmUpdate.getId()) {
+            update();
             loadMeetingInfo();
         }
     }

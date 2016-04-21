@@ -50,6 +50,8 @@ import java.lang.ref.WeakReference;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -63,6 +65,15 @@ public class InboxFragment extends Fragment {
 
     private static final int UNREAD = 0;
     private static final int ALL = 1;
+
+    /* message create time comparator used for sorting message time in reverse order */
+    public static final Comparator<ParcelableMessage> MESSAGE_TIME_ORDER =
+            new Comparator<ParcelableMessage>() {
+                public int compare(ParcelableMessage m1, ParcelableMessage m2) {
+                    return m2.createdTime.compareTo(m1.createdTime);
+                }
+            };
+
 
     /* Status: UNREAD or ALL */
     private int mStatus = UNREAD;
@@ -217,6 +228,7 @@ public class InboxFragment extends Fragment {
         InboxTask.Callback callback = new InboxTask.Callback() {
             @Override
             public void callback(List<ParcelableMessage> messages) {
+                Collections.sort(messages, MESSAGE_TIME_ORDER);
                 mAdapter.loadMessages(messages);
             }
 

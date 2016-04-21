@@ -17,6 +17,7 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
 
 /**
@@ -27,13 +28,31 @@ public class WeeklyActivity extends WeeklyBaseActivity {
     private int flag = 0;
 
 
-
     @Override
     public List<? extends WeekViewEvent> onMonthChange(int newYear, int newMonth) {
         // Populate the week view with some events.
         List<WeekViewEvent> events = new ArrayList<WeekViewEvent>();
         Log.d("how many times", "times");
-        List<JSONObject> objects = EventUtil.getEventsByMonth(newYear, newMonth);
+        List<JSONObject> objects = null;
+//        try {
+//
+        if (Events.eventsMonthMap.containsKey(newMonth + "-" + newYear)) {
+//            objects = ;
+            for (List<JSONObject> j : Events.eventsMonthMap.get(newMonth + "-" + newYear)) {
+                objects = j;
+            }
+        } else {
+            try {
+                objects = EventUtil.getEventsByMonth(newYear, newMonth);
+                Events.eventsMonthMap.put(newMonth + "-" + newYear, new HashSet<List<JSONObject>>());
+                Events.eventsMonthMap.get(newMonth + "-" + newYear).add(objects);
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+        }
+//        } catch (JSONException e) {
+//            e.printStackTrace();
+//        }
 //        if (flag == 0) {
         for (int i = 0; i < objects.size(); i++) {
             JSONObject object = new JSONObject();
@@ -200,4 +219,5 @@ public class WeeklyActivity extends WeeklyBaseActivity {
 
         return events;
     }
+
 }

@@ -159,8 +159,8 @@
 
         <activity
             android:name=".activities.MeetingAttendeesActivity"
-            android:theme="@style/SettingTheme"
-            android:screenOrientation="portrait"></activity>
+            android:screenOrientation="portrait"
+            android:theme="@style/SettingTheme"></activity>
 
         <activity
             android:name=".activities.ReceiveMsgActivity"
@@ -198,6 +198,7 @@
 
         <activity
             android:name=".activities.WeeklyActivity"
+            android:parentActivityName=".activities.MainActivity"
             android:screenOrientation="portrait" />
         <activity
             android:name=".activities.EventsActivity"

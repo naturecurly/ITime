@@ -30,6 +30,8 @@
     <color name="tab_original_color">#afafaf</color>
 
     <color name="event_color_01">#bc59dbe0</color>
+    <color name="event_color_01_line">#bc117bcc</color>
+
     <color name="event_color_02">#bcf57f68</color>
     <color name="event_color_03">#87d288</color>
     <color name="event_color_04">#f8b552</color>

@@ -294,6 +294,7 @@ public class DateUtil {
     public static Date getGMTDate(String data) {
         Date date = null;
         DateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss Z");
+        formatter.setTimeZone(TimeZone.getTimeZone("GMT"));
         try {
             date = formatter.parse(data);
         } catch (ParseException e) {
@@ -336,7 +337,7 @@ public class DateUtil {
         return formatter.format(calendar.getTime());
     }
 
-    public static String getDateStringFromCalendarGMT(Calendar calendar){
+    public static String getDateStringFromCalendarGMT(Calendar calendar) {
         DateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss Z");
         formatter.setTimeZone(TimeZone.getTimeZone("GMT"));
 //        calendar.setTimeZone(TimeZone.getTimeZone("GMT"));

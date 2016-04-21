@@ -320,7 +320,12 @@ public class EventUtil {
 //        return objects;
         List<JSONObject> allevents = new ArrayList<>();
         List<JSONObject> events = Events.eventsByMonth.get(month + "-" + year);
-        allevents.addAll(Events.eventsByMonth.get(month+"-"+year));
+        if (events != null) {
+            for (JSONObject t : events) {
+                allevents.add(t);
+            }
+        }
+//        allevents.addAll(Events.eventsByMonth.get(month + "-" + year));
         List<JSONObject> rEvents = Events.repeatEvent;
         for (int j = 0; j <= DateUtil.getMonthDays(year, month); j++) {
             Calendar calendar = Calendar.getInstance();

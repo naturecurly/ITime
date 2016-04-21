@@ -8,6 +8,7 @@ import android.support.v7.widget.Toolbar;
 import android.util.TypedValue;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.alamkanak.weekview.DateTimeInterpreter;
@@ -34,6 +35,7 @@ public abstract class WeeklyBaseActivity extends AppCompatActivity implements We
     private Menu mMenu;
     private boolean isLoaded = false;
     private Calendar calendar;
+    private TextView title;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -50,7 +52,9 @@ public abstract class WeeklyBaseActivity extends AppCompatActivity implements We
         Toolbar toolbar = (Toolbar) findViewById(R.id.week_toolbar);
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayShowTitleEnabled(false);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
+        title = (TextView) findViewById(R.id.weekview_title);
         // Get a reference for the week view in the layout.
         mWeekView = (WeekView) findViewById(R.id.weekView);
         mWeekView.setNumberOfVisibleDays(5);
@@ -74,6 +78,13 @@ public abstract class WeeklyBaseActivity extends AppCompatActivity implements We
         // Set long press listener for empty view
         mWeekView.setEmptyViewLongPressListener(this);
 
+        mWeekView.setScrollListener(new WeekView.ScrollListener() {
+            @Override
+            public void onFirstVisibleDayChanged(Calendar newFirstVisibleDay, Calendar oldFirstVisibleDay) {
+//                Toast.makeText(getApplicationContext(), newFirstVisibleDay.get(Calendar.MONTH) + "", Toast.LENGTH_SHORT).show();
+                title.setText(newFirstVisibleDay.get(Calendar.YEAR) + "-" + (newFirstVisibleDay.get(Calendar.MONTH) + 1));
+            }
+        });
         // Set up a date time interpreter to interpret how the date and time will be formatted in
         // the week view. This is optional.
         setupDateTimeInterpreter(false);
@@ -93,9 +104,9 @@ public abstract class WeeklyBaseActivity extends AppCompatActivity implements We
         int id = item.getItemId();
         //setupDateTimeInterpreter(id == R.id.action_week_view);
         switch (id) {
-//            case R.id.action_today:
-//                mWeekView.goToToday();
-//                return true;
+            case R.id.action_today:
+                mWeekView.goToToday();
+                return true;
             case R.id.action_day_view:
                 if (isWeekView == true) {
                     isLoaded = true;
@@ -112,7 +123,7 @@ public abstract class WeeklyBaseActivity extends AppCompatActivity implements We
                         mWeekView.goToDate(calendar);
                         Calendar now = Calendar.getInstance();
                         Calendar visibleDay = mWeekView.getFirstVisibleDay();
-                        if (visibleDay.get(Calendar.YEAR)==now.get(Calendar.YEAR)&&visibleDay.get(Calendar.MONTH)==now.get(Calendar.MONTH)&&visibleDay.get(Calendar.DAY_OF_MONTH)==now.get(Calendar.DAY_OF_MONTH)){
+                        if (visibleDay.get(Calendar.YEAR) == now.get(Calendar.YEAR) && visibleDay.get(Calendar.MONTH) == now.get(Calendar.MONTH) && visibleDay.get(Calendar.DAY_OF_MONTH) == now.get(Calendar.DAY_OF_MONTH)) {
                             mWeekView.goToHour(now.get(Calendar.HOUR_OF_DAY));
                         }
 
@@ -228,12 +239,14 @@ public abstract class WeeklyBaseActivity extends AppCompatActivity implements We
         Toast.makeText(this, "Long pressed event: " + event.getName(), Toast.LENGTH_SHORT).show();
     }
 
+
     @Override
     public void onEmptyViewLongPress(Calendar time) {
         Toast.makeText(this, "Empty view long pressed: " + getEventTitle(time), Toast.LENGTH_SHORT).show();
         Intent intent = new Intent(this, NewEventActivity.class);
         startActivity(intent);
     }
+
 
     public WeekView getWeekView() {
         return mWeekView;

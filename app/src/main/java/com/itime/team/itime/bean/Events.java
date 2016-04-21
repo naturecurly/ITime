@@ -24,4 +24,6 @@ public class Events {
     public static Map<String, List<JSONObject>> eventsByMonth;
 
     public static Map<String, List<JSONObject>> eventsMonth = new HashMap<>();
+
+    public static Map<String, Set<List<JSONObject>>> eventsMonthMap = new HashMap<>();
 }

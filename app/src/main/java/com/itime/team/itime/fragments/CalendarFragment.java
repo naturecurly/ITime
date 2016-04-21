@@ -1300,16 +1300,16 @@ public class CalendarFragment extends Fragment {
 
     public boolean ifFinishAsyncTask(int month, int year) {
         if (month - 1 == 0) {
-            if (Events.eventsMonth.containsKey(12 + "-" + (year - 1)) && Events.eventsMonth.containsKey(month + "-" + year) && Events.eventsMonth.containsKey((month + 1) + "-" + year)) {
+            if (Events.eventsMonthMap.containsKey(12 + "-" + (year - 1)) && Events.eventsMonthMap.containsKey(month + "-" + year) && Events.eventsMonthMap.containsKey((month + 1) + "-" + year)) {
                 return true;
             }
 
         } else if (month + 1 > 12) {
-            if (Events.eventsMonth.containsKey((month - 1) + "-" + year) && Events.eventsMonth.containsKey(month + "-" + year) && Events.eventsMonth.containsKey(1 + "-" + year)) {
+            if (Events.eventsMonthMap.containsKey((month - 1) + "-" + year) && Events.eventsMonthMap.containsKey(month + "-" + year) && Events.eventsMonthMap.containsKey(1 + "-" + year)) {
                 return true;
             }
         } else {
-            if (Events.eventsMonth.containsKey((month - 1) + "-" + year) && Events.eventsMonth.containsKey(month + "-" + year) && Events.eventsMonth.containsKey((month + 1) + "-" + year)) {
+            if (Events.eventsMonthMap.containsKey((month - 1) + "-" + year) && Events.eventsMonthMap.containsKey(month + "-" + year) && Events.eventsMonthMap.containsKey((month + 1) + "-" + year)) {
                 return true;
             }
         }

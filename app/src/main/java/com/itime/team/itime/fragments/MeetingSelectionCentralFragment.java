@@ -207,7 +207,7 @@ public class MeetingSelectionCentralFragment extends Fragment implements ScrollV
         //12 means that we initialize 12 days' data at beginning
         mInitDays = DAYS > 12 ? 12 : DAYS;
         for(int i = 0; i < mInitDays; i ++){
-            addView(i, true);
+            addView(i, true, true,12);
         }
     }
     /*
@@ -215,12 +215,13 @@ public class MeetingSelectionCentralFragment extends Fragment implements ScrollV
         are programmed together.
         If isInit is true means that initializing 12 views, otherwise, do add view operation.
      */
-    private void addView(int i, boolean isInit){
+    private void addView(int i, boolean isInit, boolean isRefresh, int currentDay){
 
         double parts = 60.0 / DURATION;
         int size = (int) (HIGHTOFCOLORSQUARE/parts);
         if(isInit == false){
             i = mInitDays;
+//            i = (mInitDays + currentDay) >= DAYS ? (DAYS - 1) : (mInitDays + currentDay);
         }
         mColumn[i] = new LinearLayout(getActivity());
         mColumn[i].setOrientation(LinearLayout.VERTICAL);
@@ -232,66 +233,71 @@ public class MeetingSelectionCentralFragment extends Fragment implements ScrollV
         int part = DURATION > 60 ? 1 : 60 / DURATION;
         int index = 0;
 
-        //Calculate the number of periods of time which cannot match the target data, it contributes
-        //to calculate the height of default view. Once one item matches, then this variable should be
-        //cleared.
-        int unMatchedNumber = 0;
-        for(int j = 0; j <= 24 * part; j ++){
-            LinearLayout container = new LinearLayout(getActivity());
-            ImageView imageView = new ImageView(getActivity());
-            ImageView defaultView = new ImageView(getActivity());
-            //Change the current values j to current time, we should the formula below.
-            final int hour = j / part;
-            final int min = DURATION > 60 ? 0 : j % part * DURATION;
-            mIsAvailable = mEachEndDate == null ? false : priorityCheckAvailability(hour, min, i);
-            if(mIsAvailable || checkAvailability(hour, min, DURATION, i)){
-                //Since after each loop, the value j is increased by 1. In order to use j correctly,
-                //just minus 1 temporarily. The meaning of this statement is that: Since some ImageView
-                //is bigger that 1 hour's length, it has to be done that increase j to match the current
-                //time.
-                j += (DURATION/60 == 0 ? 1: DURATION/60) - 1;
-                if(j + 1 <= 24 * part) {
-                    mDefaultImagePara = new LinearLayout.LayoutParams(WIDTHOFCOLORSQUARE,
-                            DURATION >= 60 ? TOTALHEIGHT / 24 * unMatchedNumber :
-                                    unMatchedNumber * (2 * PADDDINGOFSQAURE + size));
-                    defaultView.setLayoutParams(mDefaultImagePara);
+        if (isRefresh == true) {
+            Log.i("i", String.valueOf(i));
+            //Calculate the number of periods of time which cannot match the target data, it contributes
+            //to calculate the height of default view. Once one item matches, then this variable should be
+            //cleared.
+            int unMatchedNumber = 0;
+            for (int j = 0; j <= 24 * part; j++) {
+                LinearLayout container = new LinearLayout(getActivity());
+                ImageView imageView = new ImageView(getActivity());
+                ImageView defaultView = new ImageView(getActivity());
+                //Change the current values j to current time, we should the formula below.
+                final int hour = j / part;
+                final int min = DURATION > 60 ? 0 : j % part * DURATION;
+                mIsAvailable = mEachEndDate == null ? false : priorityCheckAvailability(hour, min, i);
+                if (mIsAvailable || checkAvailability(hour, min, DURATION, i)) {
+                    //Since after each loop, the value j is increased by 1. In order to use j correctly,
+                    //just minus 1 temporarily. The meaning of this statement is that: Since some ImageView
+                    //is bigger that 1 hour's length, it has to be done that increase j to match the current
+                    //time.
+                    j += (DURATION / 60 == 0 ? 1 : DURATION / 60) - 1;
+                    if (j + 1 <= 24 * part) {
+                        mDefaultImagePara = new LinearLayout.LayoutParams(WIDTHOFCOLORSQUARE,
+                                DURATION >= 60 ? TOTALHEIGHT / 24 * unMatchedNumber :
+                                        unMatchedNumber * (2 * PADDDINGOFSQAURE + size));
+                        defaultView.setLayoutParams(mDefaultImagePara);
 
-                    imageView.setBackgroundColor(getCOLOROFTABLE(i,hour,min));
+                        imageView.setBackgroundColor(getCOLOROFTABLE(i, hour, min));
 
-                    imageView.setLayoutParams(mImagepara);
-                    mColors[i].add(imageView);
+                        imageView.setLayoutParams(mImagepara);
+                        mColors[i].add(imageView);
 
-                    container.setPadding(0, PADDDINGOFSQAURE, 0, PADDDINGOFSQAURE);
-                    container.addView(mColors[i].get(index++));
-                    final int finalI = i;
-                    mColors[i].get(index - 1).setOnClickListener(new View.OnClickListener() {
-                        @Override
-                        public void onClick(View v) {
-                            //Toast.makeText(getActivity(), hour + " :" + min, Toast.LENGTH_SHORT).show();
-                            Intent intent = new Intent(getActivity(), NewMeetingActivity.class);
-                            intent.putExtra("hour",hour);
-                            intent.putExtra("min",min);
-                            intent.putExtra("duration", DURATION);
-                            intent.putExtra("currentDay", finalI);
-                            intent.putExtra("year",mStartYear);
-                            intent.putExtra("month", mStartMonth);
-                            intent.putExtra("day", mStartDay);
-                            String[] ids = new String[mFriendIDS.size()];
-                            for(int i = 0; i < ids.length; i ++){
-                                ids[i] = mFriendIDS.get(i);
+                        container.setPadding(0, PADDDINGOFSQAURE, 0, PADDDINGOFSQAURE);
+                        container.addView(mColors[i].get(index++));
+                        final int finalI = i;
+                        mColors[i].get(index - 1).setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View v) {
+                                //Toast.makeText(getActivity(), hour + " :" + min, Toast.LENGTH_SHORT).show();
+                                Intent intent = new Intent(getActivity(), NewMeetingActivity.class);
+                                intent.putExtra("hour", hour);
+                                intent.putExtra("min", min);
+                                intent.putExtra("duration", DURATION);
+                                intent.putExtra("currentDay", finalI);
+                                intent.putExtra("year", mStartYear);
+                                intent.putExtra("month", mStartMonth);
+                                intent.putExtra("day", mStartDay);
+                                String[] ids = new String[mFriendIDS.size()];
+                                for (int i = 0; i < ids.length; i++) {
+                                    ids[i] = mFriendIDS.get(i);
+                                }
+                                intent.putExtra("friendids", ids);
+                                getActivity().startActivityForResult(intent, 1);
                             }
-                            intent.putExtra("friendids",ids);
-                            getActivity().startActivityForResult(intent,1);
-                        }
-                    });
-                    mColumn[i].addView(defaultView);
-                    mColumn[i].addView(container);
-                    unMatchedNumber = 0;
+                        });
+                        mColumn[i].addView(defaultView);
+                        mColumn[i].addView(container);
+                        unMatchedNumber = 0;
+                    }
+                } else {
+                    unMatchedNumber++;
                 }
-            }else{
-                unMatchedNumber ++;
             }
         }
+
+        //When refresh view, these two should not be here. (including New XX)
         mColorsContainer.addView(mColumn[i]);
         mColorsContainer.addView(mLines[i]);
         if(isInit == false) {
@@ -657,11 +663,25 @@ public class MeetingSelectionCentralFragment extends Fragment implements ScrollV
     @Override
     public void onScrollChanged(MeetingSelectionScrollView scrollView, int x, int y, int oldx, int oldy) {
         if (scrollView == mScrollView.getCenterScollView()) {
-            if(mInitDays * WIDTHFOREACH <= x + (12 * WIDTHFOREACH) && mInitDays < DAYS){
-                addView(0,false);
+            if(x > oldx) {
+                if (mInitDays * WIDTHFOREACH <= x + (12 * WIDTHFOREACH) && mInitDays < DAYS) {
+                    // The current day can get from Meeting SelectionTopFragment.
+//                    addView(0, false, false, TopAndCenterMeetingFragmentScrollViews.CURRENTDAY);
+                    addView(0, false, true, TopAndCenterMeetingFragmentScrollViews.CURRENTDAY);
+                }
+            }else{
+//                if(oldx - x > WIDTHFOREACH / 1.5)
+//                    Log.i("day", String.valueOf(TopAndCenterMeetingFragmentScrollViews.CURRENTDAY));
             }
             mScrollView.setTopScollViewPosition(x,y);
+
+
         }
+
+//        if((oldx - x < 10 && oldx - x > 0)){
+//            addView(0, false, true, TopAndCenterMeetingFragmentScrollViews.CURRENTDAY);
+//            Log.i("a", "b");
+//        }
     }
 
     @Override

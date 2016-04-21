@@ -219,17 +219,23 @@ public class MeetingDetaiHostlActivity extends AppCompatActivity implements OnMa
     // Dealing with google Map.
     @Override
     public void onMapReady(GoogleMap googleMap) {
-        LatLng sydney = new LatLng(mLog, mLat);
-        googleMap.addMarker(new MarkerOptions().position(sydney).title("Marker in Sydney"));
-        googleMap.moveCamera(CameraUpdateFactory.newLatLng(sydney));
+        try {
+            LatLng sydney = new LatLng(mLog, mLat);
+            googleMap.addMarker(new MarkerOptions().position(sydney).title("Marker in Sydney"));
+            googleMap.moveCamera(CameraUpdateFactory.newLatLng(sydney));
+        } catch (Exception e){}
+
     }
 
     private void loadMap(){
-        mLat = mMeetingInfo.getLatitude().equals("") ? 144 : Float.valueOf(mMeetingInfo.getLatitude());
-        mLog = mMeetingInfo.getLongitude().equals("") ? -37 : Float.valueOf(mMeetingInfo.getLatitude());
-        mMapFragment = (MapFragment) getFragmentManager()
-                .findFragmentById(R.id.meeting_map);
-        mMapFragment.getMapAsync(this);
+        try {
+            mLat = mMeetingInfo.getLatitude().equals("") ? 144 : Float.valueOf(mMeetingInfo.getLatitude());
+            mLog = mMeetingInfo.getLongitude().equals("") ? -37 : Float.valueOf(mMeetingInfo.getLatitude());
+            mMapFragment = (MapFragment) getFragmentManager()
+                    .findFragmentById(R.id.meeting_map);
+            mMapFragment.getMapAsync(this);
+        } catch (Exception e){}
+
     }
 
     // Load meeting information from the server.

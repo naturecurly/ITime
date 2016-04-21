@@ -339,32 +339,32 @@ public class MeetingDetailUpdateActivity extends AppCompatActivity implements Vi
 
         JSONObject json = new JSONObject();
         try {
-            json.put("event_id","");    //?
-            json.put("event_venue_location_new","");    // ?
+            json.put("event_id","");    //
+            json.put("event_venue_location_new","");    // 下面
             json.put("event_repeats_type_new","");
-            json.put("event_last_sug_dep_time",""); //?
-            json.put("is_long_repeat",1);   //?
+            json.put("event_last_sug_dep_time",""); //?X
+            json.put("is_long_repeat",1);   //  默认是1
             json.put("event_starts_datetime_new","");
             json.put("is_host","");
             json.put("event_longitude_new",-37);
             json.put("event_latitude_new","");
-            json.put("event_last_sug_dep_time_new",""); //?
+            json.put("event_last_sug_dep_time_new",""); //  X
             json.put("event_ends_datetime_new","");
             json.put("event_name_new","");
-            json.put("event_last_distance_in_meter_new","");    //?
-            json.put("event_is_punctual_new",1);    //?
+            json.put("event_last_distance_in_meter_new","");    //  X
+            json.put("event_is_punctual_new",1);    //1 是， 0否
             json.put("host_id","");
-            json.put("event_last_time_on_way_in_second_new","");    //?
-            json.put("is_meeting",1);   //?
+            json.put("event_last_time_on_way_in_second_new","");    // X
+            json.put("is_meeting",1);   //1 是， 0否
             json.put("event_venue_show_new","");
-            json.put("event_last_time_on_way_in_second",0); //?
+            json.put("event_last_time_on_way_in_second",0); //  X
             json.put("event_alert","");
-            json.put("if_deleted",0);   //?
-            json.put("event_last_distance_in_meter",0); //?
+            json.put("if_deleted",0);   //1 是， 0否
+            json.put("event_last_distance_in_meter",0); //  X
             json.put("event_comment_new","");
-            json.put("event_repeat_to_date","");    //?
+            json.put("event_repeat_to_date","");    //  传end date
             json.put("calendar_id","");
-            json.put("event_last_update_datetime","");  //?
+            json.put("event_last_update_datetime","");  //  当前时间
             json.put("event_is_punctual",punctual); //?
             json.put("event_starts_datetime", startDateForPost);
             json.put("event_ends_datetime", endDateForPost);

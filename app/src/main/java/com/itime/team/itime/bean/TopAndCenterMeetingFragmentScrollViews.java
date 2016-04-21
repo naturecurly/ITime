@@ -8,6 +8,7 @@ import com.itime.team.itime.views.MeetingSelectionScrollView;
 public class TopAndCenterMeetingFragmentScrollViews {
     private MeetingSelectionScrollView topScollView;
     private MeetingSelectionScrollView centerScollView;
+    public static int CURRENTDAY;
 
     public MeetingSelectionScrollView getCenterScollView() {
         return centerScollView;
@@ -32,6 +33,4 @@ public class TopAndCenterMeetingFragmentScrollViews {
     public void setCenterScollViewPosition(int x, int y){
         centerScollView.scrollTo(x,y);
     }
-
-
 }

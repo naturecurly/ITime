@@ -138,7 +138,8 @@ public class MeetingSelectionTopFragment extends Fragment implements ScrollViewL
                 addView();
             }
             mMonth.setText(DateUtil.month[DateUtil.plusDay(STARTYEAR,STARTMONTH, STARTDAY,x / WIDTH).getMonth()]);
-            mScrollView.setCenterScollViewPosition(x,y);
+            mScrollView.setCenterScollViewPosition(x, y);
+            TopAndCenterMeetingFragmentScrollViews.CURRENTDAY = x / WIDTH;
         }
     }
 }

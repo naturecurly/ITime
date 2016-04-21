@@ -16,6 +16,7 @@ import com.alamkanak.weekview.MonthLoader;
 import com.alamkanak.weekview.WeekView;
 import com.alamkanak.weekview.WeekViewEvent;
 import com.itime.team.itime.R;
+import com.itime.team.itime.utils.EventUtil;
 
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -82,6 +83,9 @@ public abstract class WeeklyBaseActivity extends AppCompatActivity implements We
             @Override
             public void onFirstVisibleDayChanged(Calendar newFirstVisibleDay, Calendar oldFirstVisibleDay) {
 //                Toast.makeText(getApplicationContext(), newFirstVisibleDay.get(Calendar.MONTH) + "", Toast.LENGTH_SHORT).show();
+                if (newFirstVisibleDay.get(Calendar.DAY_OF_MONTH) == 1) {
+                    EventUtil.excuteAsyncTask(newFirstVisibleDay.get(Calendar.MONTH) + 1, newFirstVisibleDay.get(Calendar.YEAR));
+                }
                 title.setText(newFirstVisibleDay.get(Calendar.YEAR) + "-" + (newFirstVisibleDay.get(Calendar.MONTH) + 1));
             }
         });

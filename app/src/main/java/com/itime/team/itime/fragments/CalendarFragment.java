@@ -51,6 +51,7 @@ import com.itime.team.itime.utils.EventUtil;
 import com.itime.team.itime.utils.JsonArrayFormRequest;
 import com.itime.team.itime.utils.MySingleton;
 import com.itime.team.itime.views.CalendarView;
+import com.itime.team.itime.views.CustomizedTextView;
 import com.itime.team.itime.views.MeetingScrollView;
 
 import org.json.JSONArray;
@@ -301,6 +302,9 @@ public class CalendarFragment extends Fragment {
                 if (newState == 0) {
                     isStop = true;
                     recyclerView.getAdapter().notifyDataSetChanged();
+                    CalendarView firstVisibleView = (CalendarView) (recyclerView.getChildAt(2)).findViewById(R.id.calendar_view);
+                    EventUtil.excuteAsyncTask(firstVisibleView.getmShowMonth(), firstVisibleView.getmShowYear());
+
 
                 }
 
@@ -316,7 +320,6 @@ public class CalendarFragment extends Fragment {
                     TextView textView = (TextView) getActivity().findViewById(R.id.toolbar_title);
 //                    CalendarView.Cell[] cells = rows[0].getCells();
 //                    cells
-                    excuteAsyncTask(firstVisibleView.getmShowMonth(), firstVisibleView.getmShowYear());
                     textView.setText(firstVisibleView.getmShowYear() + "-" + firstVisibleView.getmShowMonth());
                 }
 
@@ -507,7 +510,7 @@ public class CalendarFragment extends Fragment {
                             e.printStackTrace();
                         }
                     }
-                    Log.d("load_num", loadNum + "");
+//                    Log.d("load_num", loadNum + "");
                 }
                 cal.add(Calendar.DAY_OF_MONTH, 1);
 
@@ -560,7 +563,7 @@ public class CalendarFragment extends Fragment {
                     int day = Integer.valueOf(row.getCells()[DateUtil.analysePosition(x, rowHeight)].text);
                     int month = row.getCells()[DateUtil.analysePosition(x, rowHeight)].month;
                     int year = row.getCells()[DateUtil.analysePosition(x, rowHeight)].year;
-                    excuteAsyncTask(month, year);
+//                    excuteAsyncTask(month, year);
                     selectedCalendar.set(year, month - 1, day);
                     if (now.get(Calendar.YEAR) == year && now.get(Calendar.MONTH) == month - 1 && now.get(Calendar.DAY_OF_MONTH) == day) {
                         int nowHour = now.get(Calendar.HOUR_OF_DAY);
@@ -579,7 +582,10 @@ public class CalendarFragment extends Fragment {
 //                        for (int f = 0; f < objectList.size(); f++) {
 //                            Log.d("68", objectList.get(f).toString());
 //                        }
-                        JSONObject firstObject = objectList.get(0);
+                        JSONObject firstObject = null;
+                        if (objectList.size() != 0) {
+                            firstObject = objectList.get(0);
+                        }
                         Calendar firstTimeCal = Calendar.getInstance();
                         try {
                             String firstTimeString = firstObject.getString("event_starts_datetime");
@@ -690,7 +696,9 @@ public class CalendarFragment extends Fragment {
                                     e.printStackTrace();
                                 }
                                 int durationMin = (60 * endhour + endmin) - (60 * starthour + startmin);
-                                TextView eventView = new TextView(getActivity());
+                                CustomizedTextView eventView = new CustomizedTextView(getActivity());
+                                eventView.setIncludeFontPadding(true);
+                                eventView.setPadding(DensityUtil.dip2px(getActivity(), 4), 0, 0, 0);
                                 RelativeLayout.LayoutParams eventParam = new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, DensityUtil.dip2px(getActivity(), (float) (4.0 / 6.0 * durationMin)));
                                 try {
                                     if (!jsonObject.getString("meeting_id").equals("")) {
@@ -736,6 +744,7 @@ public class CalendarFragment extends Fragment {
                                 });
                                 try {
                                     eventView.setText(objectList.get(eventGroup.get(i)).getString("event_name"));
+
                                 } catch (JSONException e) {
                                     e.printStackTrace();
                                 }
@@ -771,7 +780,8 @@ public class CalendarFragment extends Fragment {
                                     } catch (JSONException e) {
                                         e.printStackTrace();
                                     }
-                                    TextView eventView = new TextView(getActivity());
+                                    CustomizedTextView eventView = new CustomizedTextView(getActivity());
+                                    eventView.setPadding(DensityUtil.dip2px(getActivity(), 4), 0, 0, 0);
 
                                     try {
                                         eventView.setText(objectList.get(num).getString("event_name"));
@@ -998,7 +1008,7 @@ public class CalendarFragment extends Fragment {
 //                new ReadMonthEventTask().execute(today.get(Calendar.MONTH) + 1, today.get(Calendar.YEAR));
 //                new ReadMonthEventTask().execute(today.get(Calendar.MONTH), today.get(Calendar.YEAR));
 //                new ReadMonthEventTask().execute(today.get(Calendar.MONTH) + 2, today.get(Calendar.YEAR));
-                excuteAsyncTask(today.get(Calendar.MONTH) + 1, today.get(Calendar.YEAR));
+                EventUtil.excuteAsyncTask(today.get(Calendar.MONTH) + 1, today.get(Calendar.YEAR));
 //                analyseEvents(response);
 //                Events.repeatEvent = EventUtil.getRepeatEventsFromEvents(Events.response);
                 recyclerView.getAdapter().notifyDataSetChanged();
@@ -1283,29 +1293,29 @@ public class CalendarFragment extends Fragment {
 
     }
 
-    public void excuteAsyncTask(int month, int year) {
-        new ReadMonthEventTask().execute(month, year);
-        if (month - 1 == 0) {
-            new ReadMonthEventTask().execute(12, year - 1);
-        } else {
-            new ReadMonthEventTask().execute(month - 1, year);
-        }
 
-        if (month + 1 > 12) {
-            new ReadMonthEventTask().execute(1, year + 1);
-        } else {
-            new ReadMonthEventTask().execute(month + 1, year);
-        }
-    }
+//    public void excuteOneYearAsyncTask(int month, int year) {
+//        if (month != 1 && month != 12) {
+//            for (int i = month; i > 0; i--) {
+//                new ReadMonthEventTask().execute(i, year);
+//            }
+//            for (int j = month + 1; j < 13; j++) {
+//                new ReadMonthEventTask().execute(j, year);
+//            }
+//        }else if (month==1){
+//            for (int x = 1)
+//        }
+//    }
 
     public boolean ifFinishAsyncTask(int month, int year) {
+
         if (month - 1 == 0) {
             if (Events.eventsMonthMap.containsKey(12 + "-" + (year - 1)) && Events.eventsMonthMap.containsKey(month + "-" + year) && Events.eventsMonthMap.containsKey((month + 1) + "-" + year)) {
                 return true;
             }
 
         } else if (month + 1 > 12) {
-            if (Events.eventsMonthMap.containsKey((month - 1) + "-" + year) && Events.eventsMonthMap.containsKey(month + "-" + year) && Events.eventsMonthMap.containsKey(1 + "-" + year)) {
+            if (Events.eventsMonthMap.containsKey((month - 1) + "-" + year) && Events.eventsMonthMap.containsKey(month + "-" + year) && Events.eventsMonthMap.containsKey(1 + "-" + (year + 1))) {
                 return true;
             }
         } else {

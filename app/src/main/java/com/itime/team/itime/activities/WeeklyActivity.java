@@ -35,7 +35,7 @@ public class WeeklyActivity extends WeeklyBaseActivity {
         Log.d("how many times", "times");
         List<JSONObject> objects = null;
 //        try {
-//            objects = EventUtil.getEventsByMonth(newYear, newMonth);
+//
         if (Events.eventsMonthMap.containsKey(newMonth + "-" + newYear)) {
 //            objects = ;
             for (List<JSONObject> j : Events.eventsMonthMap.get(newMonth + "-" + newYear)) {

@@ -23,12 +23,12 @@ public class ReadMonthEventTask extends AsyncTask<Integer, Void, Void> {
         try {
             if (Events.eventsMonth.size() == 0 || !Events.eventsMonth.containsKey(month + "-" + year)) {
                 List<JSONObject> list = EventUtil.getEventsByMonth(year, month);
+
                 Set<List<JSONObject>> set = new HashSet<>();
 
 //                Events.eventsMonth.put(month + "-" + year, list);
                 Events.eventsMonthMap.put(month + "-" + year, set);
-                Events.eventsMonthMap.get(month + "-" + year).add(list);
-            }
+                Events.eventsMonthMap.get(month + "-" + year).add(list);            }
 
         } catch (JSONException e) {
             e.printStackTrace();

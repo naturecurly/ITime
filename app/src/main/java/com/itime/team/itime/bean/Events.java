@@ -5,6 +5,7 @@ import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -26,4 +27,6 @@ public class Events {
     public static Map<String, List<JSONObject>> eventsMonth = new HashMap<>();
 
     public static Map<String, Set<List<JSONObject>>> eventsMonthMap = new HashMap<>();
+
+    public static Set<String> loadingMonth = new HashSet<>();
 }

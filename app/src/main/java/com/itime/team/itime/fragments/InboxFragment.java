@@ -45,6 +45,8 @@ import com.itime.team.itime.bean.User;
 import com.itime.team.itime.model.ParcelableMessage;
 import com.itime.team.itime.model.utils.MessageType;
 import com.itime.team.itime.task.InboxTask;
+import com.itime.team.itime.task.MessageHandler;
+import com.itime.team.itime.utils.AlertUtil;
 
 import java.lang.ref.WeakReference;
 import java.text.DateFormat;
@@ -59,7 +61,7 @@ import java.util.TimerTask;
 /**
  * Created by Xuhui Chen (yorkfine) on 22/03/16.
  */
-public class InboxFragment extends Fragment {
+public class InboxFragment extends Fragment implements View.OnClickListener {
 
     private static final String LOG_TAG = InboxFragment.class.getSimpleName();
 
@@ -127,7 +129,31 @@ public class InboxFragment extends Fragment {
                 showItemClickDialog(view, position);
             }
         });
+        view.findViewById(R.id.inbox_mark_all_read).setOnClickListener(this);
+        view.findViewById(R.id.inbox_delete_all).setOnClickListener(this);
         return view;
+    }
+
+    @Override
+    public void onClick(View v) {
+        final int id = v.getId();
+        InboxTask inboxTask = InboxTask.getInstance(getActivity().getApplicationContext());
+        InboxTask.ResultCallBack reloadMessageCallback = new InboxTask.ResultCallBack<String>() {
+            @Override
+            public void callback(String result) {
+                if (result.equals("success")) {
+                    setMessages();
+                }
+            }
+        };
+        switch (id) {
+            case R.id.inbox_mark_all_read:
+                inboxTask.markAllMessagesToRead(User.ID, reloadMessageCallback);
+                break;
+            case R.id.inbox_delete_all:
+                inboxTask.deleteAllMessages(User.ID, reloadMessageCallback);
+                break;
+        }
     }
 
     @Override
@@ -148,36 +174,24 @@ public class InboxFragment extends Fragment {
     }
 
     private void showItemClickDialog(View view, int position) {
-        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
         final ParcelableMessage message = (ParcelableMessage) mAdapter.getItem(position);
-
-        // common dialog attributes
-        builder.setTitle(message.messageTitle)
-                .setMessage(message.messageBody)
-                .setNegativeButton(R.string.later, null);
-
-        MessageType messageType = message.messageType;
-        switch (messageType) {
-            case NEW_MEETING_INVITATION:
-                builder.setPositiveButton(R.string.show_detail,
-                        new DialogInterface.OnClickListener() {
-
-                            @Override
-                            public void onClick(DialogInterface dialog, int which) {
-                                // pass meeting information to meeting detail
-                                Intent intent = new Intent(getActivity(), MeetingDetailActivity.class);
-                                intent.putExtra(MeetingDetailActivity.ARG_MEETING_ID, message.meetingId);
-                                getActivity().startActivity(intent);
-                            }
-                        });
-                break;
-            case SOMEONE_CANCEL_THE_MEETING:
-                break;
-            case ALL_PEOPLE_ACCEPTED_THE_MEETING:
-                break;
+        if (message.ifUseful || ParcelableMessage.isLongTermUsefulMessage(message)) {
+            MessageHandler.handleMessage(getContext(), message);
+        } else {
+            AlertUtil.showMessageDialog(getContext(), message.messageTitle, message.messageBody);
         }
-
-        builder.show();
+        if (!message.ifRead) {
+            InboxTask inboxTask = InboxTask.getInstance(getActivity().getApplicationContext());
+            InboxTask.ResultCallBack callback = new InboxTask.ResultCallBack<String>() {
+                @Override
+                public void callback(String result) {
+                    if (result.equals("success")) {
+                        mAdapter.unRead(message);
+                    }
+                }
+            };
+            inboxTask.markMessageToRead(message.messageId, callback);
+        }
     }
 
 
@@ -292,16 +306,29 @@ public class InboxFragment extends Fragment {
                     unreadMessageCount++;
                 }
             }
+            unReadMessageData.remove(null);
         }
 
         public int getUnreadMessageCount() {
-            return unreadMessageCount;
+            return unReadMessageData.size();
         }
 
         public synchronized void loadMessages(List<ParcelableMessage> messageData) {
             this.messageData = messageData;
             setUnReadMessageData(messageData);
             notifyDataSetChanged();
+        }
+
+        public boolean unRead(ParcelableMessage message) {
+            boolean isRemove = false;
+            if (unReadMessageData != null) {
+                isRemove = unReadMessageData.remove(message);
+                if (isRemove) {
+                    message.ifRead = true;
+                    notifyDataSetChanged();
+                }
+            }
+            return isRemove;
         }
 
         public boolean isShowAll() {

@@ -276,7 +276,7 @@ public class InboxTask {
             return;
         }
 
-        String url = URLs.DELETE_ALL_MESSAGES;
+        String url = URLs.DELETE_MESSAGE;
         JsonObjectRequest request = new JsonObjectRequest(
                 Request.Method.POST, url, jsonObject.toString(),
                 new Response.Listener<JSONObject>() {
@@ -313,7 +313,7 @@ public class InboxTask {
             return;
         }
 
-        String url = URLs.DELETE_MESSAGE;
+        String url = URLs.DELETE_ALL_MESSAGES;
         JsonObjectRequest request = new JsonObjectRequest(
                 Request.Method.POST, url, jsonObject.toString(),
                 new Response.Listener<JSONObject>() {

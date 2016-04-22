@@ -1,6 +1,7 @@
 package com.itime.team.itime.activities;
 
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
@@ -30,12 +31,15 @@ import com.itime.team.itime.bean.MeetingInfo;
 import com.itime.team.itime.bean.URLs;
 import com.itime.team.itime.bean.User;
 import com.itime.team.itime.utils.DateUtil;
+import com.itime.team.itime.utils.ICS;
+import com.itime.team.itime.utils.Invitation;
 import com.itime.team.itime.utils.JsonObjectFormRequest;
 import com.itime.team.itime.utils.MySingleton;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.File;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.HashMap;
@@ -151,6 +155,7 @@ public class MeetingDetaiHostlActivity extends AppCompatActivity implements OnMa
         mRepeat = (TextView) findViewById(R.id.meeting_detail_repeats);
         mPunctual = (CheckBox) findViewById(R.id.meeting_detail_punctual);
         mEmail = (Button) findViewById(R.id.meeting_detail_email);
+        mEmail.setOnClickListener(this);
         mQuit = (Button) findViewById(R.id.quit);
 
         mConfirm = (Button) findViewById(R.id.meeting_detail_confirm);
@@ -271,6 +276,7 @@ public class MeetingDetaiHostlActivity extends AppCompatActivity implements OnMa
             @Override
             public void onResponse(JSONObject response) {
                 handleMeetingInfo(response);
+                createICS();
             }
         }, new Response.ErrorListener() {
             @Override
@@ -483,6 +489,35 @@ public class MeetingDetaiHostlActivity extends AppCompatActivity implements OnMa
         MySingleton.getInstance(this).addToRequestQueue(request);
     }
 
+    private void email(){
+        File file = new File("./NewMeeing.ics");
+        String mySbuject = getString(R.string.add_friend);
+        String myCc = "cc";
+        Intent myIntent = new Intent(android.content.Intent.ACTION_SEND, Uri.fromParts("mailto", "", null));
+        myIntent.setType("text/html");
+        myIntent.putExtra(android.content.Intent.EXTRA_CC, myCc);
+        myIntent.putExtra(android.content.Intent.EXTRA_SUBJECT, mySbuject);
+        myIntent.putExtra(Intent.EXTRA_TEXT, getString(R.string.meeting_detail_email_content));
+        myIntent.putExtra(Intent.EXTRA_STREAM, Uri.fromFile(file));
+        startActivity(Intent.createChooser(myIntent, "mail"));
+    }
+
+    private void createICS(){
+        String eventID = mEventId;
+        String eventName = mMeetingName.getText().toString();
+        String description = mNote.getText().toString();
+        String start = "";
+        String end = "";
+        if(!mMeetingInfo.getName().equals("")){
+            start = DateUtil.getICSTime(mMeetingInfo.getStart());
+            end = DateUtil.getICSTime(mMeetingInfo.getEnd());
+        }
+        ICS ics = new ICS(eventID, eventName, description, start, end);
+        Invitation host = new Invitation(User.ID, User.ID);
+        ics.attachInvitation(host);
+        ics.createICS("./NewMeeing.ics");
+    }
+
     @Override
     public void onClick(View v) {
         if (v.getId() == mAttendee.getId()){
@@ -498,6 +533,8 @@ public class MeetingDetaiHostlActivity extends AppCompatActivity implements OnMa
         } else if(v.getId() == mConfirmUpdate.getId()) {
             update();
             loadMeetingInfo();
+        } else if (v.getId() == mEmail.getId()) {
+            email();
         }
     }
 

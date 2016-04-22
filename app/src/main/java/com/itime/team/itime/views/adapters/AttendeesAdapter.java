@@ -1,17 +1,31 @@
 package com.itime.team.itime.views.adapters;
 
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import com.android.volley.Request;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
 import com.itime.team.itime.R;
+import com.itime.team.itime.bean.URLs;
+import com.itime.team.itime.bean.User;
+import com.itime.team.itime.utils.JsonObjectFormRequest;
+import com.itime.team.itime.utils.MySingleton;
+
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Created by Weiwei Cai on 16/4/12.
@@ -64,10 +78,65 @@ public class AttendeesAdapter extends BaseAdapter {
         viewHolder.name.setText(map.get("name"));
         viewHolder.id.setText(map.get("id"));
         viewHolder.status.setText(map.get("status"));
-        if(!Boolean.valueOf(map.get("isFriend"))){
+        boolean isGrey = !Boolean.valueOf(map.get("isFriend")) && !User.ID.equals(viewHolder.name.getText().toString());
+        if(isGrey){
             convertView.setBackgroundColor(mContext.getResources().getColor(R.color.grey));
+            final ViewHolder finalViewHolder = viewHolder;
+            convertView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    AlertDialog.Builder builder = new AlertDialog.Builder(mContext);
+                    builder.setMessage("Do you want to add '" + finalViewHolder.name.getText() + "' as your " +
+                            "new iTIME friend?");
+                    builder.setIcon(R.mipmap.ic_launcher);
+                    builder.setTitle("Add New Friend");
+                    final ViewHolder finalViewHolder1 = finalViewHolder;
+                    builder.setNegativeButton("No", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                        }
+                    });
+                    builder.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            addFriend(finalViewHolder1.id.getText().toString());
+                        }
+                    });
+                    builder.show();
+                }
+            });
+
+        } else {
+
         }
         return convertView;
+    }
+
+    private void addFriend(String name){
+        JSONObject object = new JSONObject();
+        try {
+            object.put("user_id", User.ID);
+            object.put("friend_id", name);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+        final String url = URLs.ADD_FRIEND_REQUEST;
+        Map<String, String> params = new HashMap();
+        params.put("json", object.toString());
+
+        JsonObjectFormRequest request = new JsonObjectFormRequest(Request.Method.POST, url, params, new Response.Listener<JSONObject>() {
+            @Override
+            public void onResponse(JSONObject response) {
+                Toast.makeText(mContext, mContext.
+                        getString(R.string.search_friend_added_friend_info), Toast.LENGTH_SHORT).show();
+            }
+        }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+            }
+        });
+        MySingleton.getInstance(mContext).addToRequestQueue(request);
     }
 
     private class ViewHolder{

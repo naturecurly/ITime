@@ -330,6 +330,11 @@ public class DateUtil {
         return formatter.format(c.getTime());
     }
 
+    public static String getICSTime(Calendar calendar){
+        SimpleDateFormat formatter = new SimpleDateFormat("yyyyMMdd'T'HHmmss'Z'");
+        return formatter.format(calendar.getTime());
+    }
+
 
     public static String getDateStringFromCalendar(Calendar calendar) {
         DateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss Z");

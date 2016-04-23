@@ -33,6 +33,8 @@ import com.itime.team.itime.utils.DateUtil;
 
 import java.util.Date;
 
+import static com.itime.team.itime.model.utils.MessageType.*;
+
 /**
  * Created by Xuhui Chen (yorkfine) on 28/03/16.
  * Parcelable Model aims to change the api model to parcelable and flattens the field into
@@ -117,5 +119,25 @@ public class ParcelableMessage implements Parcelable {
     @Override
     public void writeToParcel(Parcel dest, int flags) {
         ParcelableMessageParcelablePlease.writeToParcel(this, dest, flags);
+    }
+
+    public static boolean isLongTermUsefulMessage(ParcelableMessage message) {
+
+        switch (message.messageType) {
+
+            case NEW_MEETING_INVITATION:
+            case MEETING_UPDATED:
+            case SOMEONE_CANCEL_THE_MEETING:
+            case MEETING_UPDATED_CONFIRM:
+            case MEETING_UPDATED_RESET:
+            case CONFIRMED_NEW_INVITATION:
+            case ALL_PEOPLE_ACCEPTED_THE_MEETING:
+            case YOU_SENT_A_NEW_INVITATION:
+            case MEETING_STATUS_CHANGE:
+            case SOMEONE_QUIT_MEETING:
+                return true;
+            default:
+                return false;
+        }
     }
 }

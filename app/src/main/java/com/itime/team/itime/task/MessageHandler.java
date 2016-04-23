@@ -20,13 +20,26 @@ import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.widget.Toast;
 
+import com.android.volley.Request;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
 import com.itime.team.itime.R;
 import com.itime.team.itime.activities.MeetingDetailActivity;
+import com.itime.team.itime.bean.URLs;
 import com.itime.team.itime.bean.User;
 import com.itime.team.itime.model.ParcelableMessage;
 import com.itime.team.itime.model.utils.MessageType;
 import com.itime.team.itime.utils.AlertUtil;
+import com.itime.team.itime.utils.JsonObjectFormRequest;
+import com.itime.team.itime.utils.MySingleton;
+
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Created by Xuhui Chen (yorkfine) on 21/04/16.
@@ -137,6 +150,38 @@ public class MessageHandler {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         // TODO: implement your accept logic
+                        JSONObject jsonObject = new JSONObject();
+                        try {
+                            jsonObject.put("meeting_id", message.meetingId);
+                            jsonObject.put("user_id", User.ID);
+                            jsonObject.put("meeting_status", "Accept");
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+
+                        final String url = URLs.MEETING_STATUS_CHANGE;
+                        Map<String, String> params = new HashMap();
+                        params.put("json", jsonObject.toString());
+
+                        JsonObjectFormRequest request = new JsonObjectFormRequest(Request.Method.POST, url, params, new Response.Listener<JSONObject>() {
+                            @Override
+                            public void onResponse(JSONObject response) {
+                                try {
+                                    if (!response.getString("result").equals("success")){
+                                        Toast.makeText(context, context.getString(R.string.time_out), Toast.LENGTH_LONG);
+                                    }
+                                } catch (JSONException e) {
+                                    e.printStackTrace();
+                                }
+                            }
+                        }, new Response.ErrorListener() {
+                            @Override
+                            public void onErrorResponse(VolleyError error) {
+
+                            }
+                        });
+                        MySingleton.getInstance(context).addToRequestQueue(request);
+
                     }
                 });
 

@@ -19,12 +19,7 @@ import android.widget.Toast;
 import com.android.volley.Request;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
-import com.google.android.gms.maps.CameraUpdateFactory;
-import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapFragment;
-import com.google.android.gms.maps.OnMapReadyCallback;
-import com.google.android.gms.maps.model.LatLng;
-import com.google.android.gms.maps.model.MarkerOptions;
 import com.itime.team.itime.R;
 import com.itime.team.itime.bean.MeetingInfo;
 import com.itime.team.itime.bean.URLs;
@@ -52,7 +47,7 @@ import java.util.Map;
  * it.
  *
  */
-public class MeetingDetailActivity extends AppCompatActivity implements OnMapReadyCallback, RadioGroup.OnCheckedChangeListener,View.OnClickListener {
+public class MeetingDetailActivity extends AppCompatActivity implements RadioGroup.OnCheckedChangeListener,View.OnClickListener {
     private MapFragment mMapFragment;
     private RadioGroup mRadioGroup;
     private RadioButton mAccept, mMaybe, mDecline;
@@ -166,20 +161,20 @@ public class MeetingDetailActivity extends AppCompatActivity implements OnMapRea
             mLNewNote.setVisibility(View.VISIBLE);
         }
     }
-    @Override
-    public void onMapReady(GoogleMap googleMap) {
-        LatLng sydney = new LatLng(mLog, mLat);
-        googleMap.addMarker(new MarkerOptions().position(sydney).title("Marker in Sydney"));
-        googleMap.moveCamera(CameraUpdateFactory.newLatLng(sydney));
-    }
-
-    private void loadMap(){
-        mLat = mMeetingInfo.getLatitude().equals("") ? 144 : Float.valueOf(mMeetingInfo.getLatitude());
-        mLog = mMeetingInfo.getLongitude().equals("") ? -37 : Float.valueOf(mMeetingInfo.getLatitude());
-        mMapFragment = (MapFragment) getFragmentManager()
-                .findFragmentById(R.id.meeting_map);
-        mMapFragment.getMapAsync(this);
-    }
+//    @Override
+//    public void onMapReady(GoogleMap googleMap) {
+//        LatLng sydney = new LatLng(mLog, mLat);
+//        googleMap.addMarker(new MarkerOptions().position(sydney).title("Marker in Sydney"));
+//        googleMap.moveCamera(CameraUpdateFactory.newLatLng(sydney));
+//    }
+//
+//    private void loadMap(){
+//        mLat = mMeetingInfo.getLatitude().equals("") ? 144 : Float.valueOf(mMeetingInfo.getLatitude());
+//        mLog = mMeetingInfo.getLongitude().equals("") ? -37 : Float.valueOf(mMeetingInfo.getLatitude());
+//        mMapFragment = (MapFragment) getFragmentManager()
+//                .findFragmentById(R.id.meeting_map);
+//        mMapFragment.getMapAsync(this);
+//    }
 
     private void loadMeetingInfo() {
         JSONObject jsonObject = new JSONObject();
@@ -257,7 +252,7 @@ public class MeetingDetailActivity extends AppCompatActivity implements OnMapRea
             mNewPunctual.setText(mMeetingInfo.getPunctual() ? getString(R.string.yes) : getString(R.string.no));
 
             showLayout(mMeetingInfo);
-            loadMap();
+            //loadMap();
         } catch (JSONException e) {
             e.printStackTrace();
         }

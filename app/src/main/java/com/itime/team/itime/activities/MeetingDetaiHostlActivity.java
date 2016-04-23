@@ -20,16 +20,12 @@ import android.widget.Toast;
 import com.android.volley.Request;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
-import com.google.android.gms.maps.CameraUpdateFactory;
-import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapFragment;
-import com.google.android.gms.maps.OnMapReadyCallback;
-import com.google.android.gms.maps.model.LatLng;
-import com.google.android.gms.maps.model.MarkerOptions;
 import com.itime.team.itime.R;
 import com.itime.team.itime.bean.MeetingInfo;
 import com.itime.team.itime.bean.URLs;
 import com.itime.team.itime.bean.User;
+import com.itime.team.itime.fragments.MeetingDetailQuitReasonDialogFragment;
 import com.itime.team.itime.utils.DateUtil;
 import com.itime.team.itime.utils.ICS;
 import com.itime.team.itime.utils.Invitation;
@@ -52,7 +48,7 @@ import java.util.Map;
  * new information. If the current information and new information is the same, then the new information
  * will not be represented.
  */
-public class MeetingDetaiHostlActivity extends AppCompatActivity implements OnMapReadyCallback,View.OnClickListener {
+public class MeetingDetaiHostlActivity extends AppCompatActivity implements View.OnClickListener {
     private MapFragment mMapFragment;
     private MeetingInfo mMeetingInfo;
     private TextView mMeetingName, mMeetingAddress, mMeetingCity;
@@ -156,7 +152,8 @@ public class MeetingDetaiHostlActivity extends AppCompatActivity implements OnMa
         mPunctual = (CheckBox) findViewById(R.id.meeting_detail_punctual);
         mEmail = (Button) findViewById(R.id.meeting_detail_email);
         mEmail.setOnClickListener(this);
-        mQuit = (Button) findViewById(R.id.quit);
+        mQuit = (Button) findViewById(R.id.meeting_detail_quit);
+        mQuit.setOnClickListener(this);
 
         mConfirm = (Button) findViewById(R.id.meeting_detail_confirm);
         mConfirm.setOnClickListener(this);
@@ -202,7 +199,7 @@ public class MeetingDetaiHostlActivity extends AppCompatActivity implements OnMa
         if (!meetingInfo.getName().equals(meetingInfo.getNewName())){
             mLNewName.setVisibility(View.VISIBLE);
         }
-        if(!meetingInfo.getVenue().equals(meetingInfo.getNewVenue()) || !meetingInfo.getLocation().equals(meetingInfo.getNewLocation())){
+        if(!meetingInfo.getVenue().equals(meetingInfo.getNewVenue())){
             mLNewVenue.setVisibility(View.VISIBLE);
         }
         if(!dateOutputFormat(meetingInfo.getStart()).equals(dateOutputFormat(meetingInfo.getNewStart()))){
@@ -236,27 +233,27 @@ public class MeetingDetaiHostlActivity extends AppCompatActivity implements OnMa
         }
     }
 
-    // Dealing with google Map.
-    @Override
-    public void onMapReady(GoogleMap googleMap) {
-        try {
-            LatLng sydney = new LatLng(mLog, mLat);
-            googleMap.addMarker(new MarkerOptions().position(sydney).title("Marker in Sydney"));
-            googleMap.moveCamera(CameraUpdateFactory.newLatLng(sydney));
-        } catch (Exception e){}
+//    // Dealing with google Map.
+//    @Override
+//    public void onMapReady(GoogleMap googleMap) {
+//        try {
+//            LatLng sydney = new LatLng(mLog, mLat);
+//            googleMap.addMarker(new MarkerOptions().position(sydney).title("Marker in Sydney"));
+//            googleMap.moveCamera(CameraUpdateFactory.newLatLng(sydney));
+//        } catch (Exception e){}
+//
+//    }
 
-    }
-
-    private void loadMap(){
-        try {
-            mLat = mMeetingInfo.getLatitude().equals("") ? 144 : Float.valueOf(mMeetingInfo.getLatitude());
-            mLog = mMeetingInfo.getLongitude().equals("") ? -37 : Float.valueOf(mMeetingInfo.getLatitude());
-            mMapFragment = (MapFragment) getFragmentManager()
-                    .findFragmentById(R.id.meeting_map);
-            mMapFragment.getMapAsync(this);
-        } catch (Exception e){}
-
-    }
+//    private void loadMap(){
+//        try {
+//            mLat = mMeetingInfo.getLatitude().equals("") ? 144 : Float.valueOf(mMeetingInfo.getLatitude());
+//            mLog = mMeetingInfo.getLongitude().equals("") ? -37 : Float.valueOf(mMeetingInfo.getLatitude());
+//            mMapFragment = (MapFragment) getFragmentManager()
+//                    .findFragmentById(R.id.meeting_map);
+//            mMapFragment.getMapAsync(this);
+//        } catch (Exception e){}
+//
+//    }
 
     // Load meeting information from the server.
     private void loadMeetingInfo() {
@@ -335,7 +332,7 @@ public class MeetingDetaiHostlActivity extends AppCompatActivity implements OnMa
             mNewPunctual.setText(mMeetingInfo.getPunctual() ? getString(R.string.yes) : getString(R.string.no));
 
             showLayout(mMeetingInfo);
-            loadMap();
+            //loadMap();
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -518,6 +515,12 @@ public class MeetingDetaiHostlActivity extends AppCompatActivity implements OnMa
         ics.createICS("./NewMeeing.ics");
     }
 
+    private void deleteMeeting(){
+        MeetingDetailQuitReasonDialogFragment dialog
+                = new MeetingDetailQuitReasonDialogFragment(mMeetingId);
+        dialog.show(getSupportFragmentManager(),"reasonQuitDialog");
+    }
+
     @Override
     public void onClick(View v) {
         if (v.getId() == mAttendee.getId()){
@@ -535,6 +538,8 @@ public class MeetingDetaiHostlActivity extends AppCompatActivity implements OnMa
             loadMeetingInfo();
         } else if (v.getId() == mEmail.getId()) {
             email();
+        } else if (v.getId() == mQuit.getId()) {
+            deleteMeeting();
         }
     }
 

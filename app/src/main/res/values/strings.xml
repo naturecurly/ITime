@@ -114,6 +114,8 @@
     <string name="meeting_detail_new_note">New Note</string>
     <string name="meeting_update">Update Meeting Successful</string>
     <string name="meeting_detail_email_content">Hi, please check this meeting.</string>
+    <string name="meeting_detail_quit_reason_title">Quit Reason</string>
+    <string name="meeting_detail_quit_reason">Please Type the Reason</string>
 
 
     <string name="check_login_timeout">Timeout, please check your internet</string>

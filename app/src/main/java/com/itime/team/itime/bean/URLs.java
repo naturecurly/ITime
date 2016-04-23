@@ -39,4 +39,5 @@ public class URLs {
     public static final String HOST_SEND_CONFIRN_MEETING_UPDATE_ANYWAY = HEAD + "host_send_confirm_meeting_update_anyway";
     public static final String MEETING_INFO_UPDATE_REQUEST = HEAD + "meeting_info_update_request";
     public static final String HOST_SEND_RESET_MEETING_ANYWAY = HEAD + "host_send_reset_meeting_anyway";
+    public static final String QUIT_MEETING = HEAD + "quit_meeting";
 }

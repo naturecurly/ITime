@@ -4,7 +4,10 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical">
-
+    <android.support.design.widget.AppBarLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:theme="@style/AppTheme.AppBarOverlay">
     <android.support.v7.widget.Toolbar
         android:id="@+id/year_toolbar"
         android:layout_width="match_parent"
@@ -18,11 +21,12 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
-            android:text="Years" />
+            android:text="Years"
+            android:textColor="@color/white" />
 
     </android.support.v7.widget.Toolbar>
 
-
+    </android.support.design.widget.AppBarLayout>
     <LinearLayout
         android:id="@+id/year_content"
         android:layout_width="match_parent"

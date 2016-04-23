@@ -22,7 +22,7 @@ public class Events {
 
     public static Set<String> daysHaveEvents;
 
-    public static Map<String, List<JSONObject>> eventsByMonth;
+    public static Map<String, List<JSONObject>> eventsByMonth = new HashMap<>();
 
     public static Map<String, List<JSONObject>> eventsMonth = new HashMap<>();
 

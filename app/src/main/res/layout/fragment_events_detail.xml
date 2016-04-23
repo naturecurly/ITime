@@ -1,0 +1,283 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+
+    <ScrollView
+        android:id="@+id/new_meeting_main_layout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:scrollbars="none">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:divider="@drawable/separator"
+            android:orientation="vertical"
+            android:weightSum="1">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="40dp"
+                android:background="#ececec"></LinearLayout>
+
+            <ImageView
+                android:layout_width="match_parent"
+                android:layout_height="1px"
+                android:layout_gravity="bottom"
+                android:background="#000000" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:divider="@drawable/separator"
+                android:orientation="vertical">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:divider="@drawable/separator"
+                    android:orientation="vertical"
+                    android:showDividers="end">
+
+                    <EditText
+                        android:id="@+id/event_name"
+                        android:layout_width="match_parent"
+                        android:layout_height="40dp"
+                        android:layout_marginBottom="1dp"
+
+                        android:background="@color/white"
+                        android:editable="false"
+                        android:hint="@string/new_meeting_namehit"
+                        android:paddingLeft="12dp"
+                        android:textSize="16sp" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical">
+
+                    <EditText
+                        android:id="@+id/event_venue"
+                        android:layout_width="match_parent"
+                        android:layout_height="40dp"
+                        android:background="@color/white"
+                        android:editable="false"
+                        android:focusable="false"
+                        android:hint="@string/new_meeting_venuehit"
+                        android:minHeight="35dp"
+                        android:paddingLeft="12dp"
+                        android:textSize="16sp" />
+                </LinearLayout>
+            </LinearLayout>
+
+            <ImageView
+                android:layout_width="match_parent"
+                android:layout_height="1px"
+                android:layout_gravity="bottom"
+                android:background="#000000" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="60dp"
+                android:background="#ececec"></LinearLayout>
+
+            <ImageView
+                android:layout_width="match_parent"
+                android:layout_height="1px"
+                android:layout_gravity="bottom"
+                android:background="#000000" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:divider="@drawable/separator"
+                android:orientation="vertical"
+                android:showDividers="middle">
+
+                <LinearLayout
+                    style="@style/MeetingTimeLayout"
+                    android:layout_height="40dp"
+
+                    android:weightSum="3">
+
+                    <TextView
+                        style="@style/MeetingText"
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:layout_marginLeft="12dp"
+                        android:layout_weight="1"
+                        android:gravity="center_vertical"
+                        android:text="@string/departure_time"
+                        android:textSize="16sp" />
+
+                    <TextView
+                        android:id="@+id/dep_text"
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:layout_weight="2"
+                        android:gravity="center_vertical"
+                        android:paddingRight="12dp"
+                        android:text="test"
+                        android:textAlignment="viewEnd" />
+
+                </LinearLayout>
+
+
+                <LinearLayout
+                    style="@style/MeetingTimeLayout"
+                    android:layout_height="40dp"
+                    android:weightSum="3">
+
+                    <TextView
+                        style="@style/MeetingText"
+                        android:layout_width="0dp"
+                        android:layout_marginLeft="12dp"
+                        android:layout_weight="1"
+                        android:text="@string/meeting_start_time"
+                        android:textSize="16sp" />
+
+                    <TextView
+                        android:id="@+id/start_text"
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:layout_weight="2"
+                        android:gravity="center"
+                        android:paddingRight="12dp"
+                        android:text="test"
+                        android:textAlignment="textEnd" />
+
+                </LinearLayout>
+
+                <LinearLayout
+                    style="@style/MeetingTimeLayout"
+                    android:layout_height="40dp"
+                    android:weightSum="3">
+
+                    <TextView
+                        style="@style/MeetingText"
+                        android:layout_width="0dp"
+                        android:layout_marginLeft="12dp"
+                        android:layout_weight="1"
+                        android:text="@string/meeting_end_time"
+                        android:textSize="16sp" />
+
+                    <TextView
+                        android:id="@+id/end_text"
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:layout_weight="2"
+                        android:gravity="center"
+                        android:paddingRight="12dp"
+                        android:text="test"
+                        android:textAlignment="viewEnd" />
+
+                </LinearLayout>
+
+                <LinearLayout
+                    style="@style/MeetingTimeLayout"
+                    android:layout_height="40dp"
+                    android:weightSum="3">
+
+                    <TextView
+                        style="@style/MeetingText"
+                        android:layout_width="0dp"
+                        android:layout_marginLeft="12dp"
+                        android:layout_weight="1"
+                        android:text="@string/new_meeting_repeat"
+                        android:textSize="16sp" />
+
+                    <TextView
+                        android:id="@+id/rep_text"
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:layout_weight="2"
+                        android:gravity="center_vertical"
+                        android:paddingRight="12dp"
+                        android:text="test"
+                        android:textAlignment="textEnd" />
+
+                </LinearLayout>
+
+                <LinearLayout
+                    style="@style/MeetingTimeLayout"
+                    android:layout_height="40dp">
+
+                    <TextView
+                        style="@style/MeetingText"
+                        android:layout_marginLeft="12dp"
+                        android:text="@string/new_meeting_punctual"
+                        android:textSize="16sp" />
+
+                    <LinearLayout
+                        style="@style/MeetingTimeLayout"
+                        android:gravity="right">
+
+                        <CheckBox
+                            android:id="@+id/event_punctual"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginRight="5dp"
+                            android:clickable="false" />
+                    </LinearLayout>
+                </LinearLayout>
+
+            </LinearLayout>
+
+            <ImageView
+                android:layout_width="match_parent"
+                android:layout_height="1px"
+                android:layout_gravity="bottom"
+                android:background="#000000" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="40dp"
+                android:background="#ececec"></LinearLayout>
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="#ececec"
+                android:paddingBottom="8dp"
+                android:paddingLeft="12dp"
+                android:text="Note"
+                android:textSize="16sp" />
+
+            <ImageView
+                android:layout_width="match_parent"
+                android:layout_height="1px"
+                android:layout_gravity="bottom"
+                android:background="#000000" />
+
+            <EditText
+                android:id="@+id/new_meeting_message"
+                android:layout_width="match_parent"
+                android:layout_height="200dp"
+                android:background="@color/white"
+                android:editable="false"
+                android:gravity="top"
+                android:scrollbars="vertical"
+                android:singleLine="false"
+                android:textSize="16sp" />
+
+            <ImageView
+                android:layout_width="match_parent"
+                android:layout_height="1px"
+                android:layout_gravity="bottom"
+                android:background="#000000" />
+
+            <!--<Button-->
+            <!--android:id="@+id/new_meeting_alert"-->
+            <!--android:layout_width="match_parent"-->
+            <!--android:layout_height="wrap_content"-->
+            <!--android:text="@string/new_meeting_alert" />-->
+        </LinearLayout>
+    </ScrollView>
+
+</LinearLayout>

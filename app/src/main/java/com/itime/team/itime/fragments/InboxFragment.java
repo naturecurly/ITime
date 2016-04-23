@@ -16,16 +16,13 @@
 
 package com.itime.team.itime.fragments;
 
-import android.app.AlertDialog;
-import android.content.Context;
-import android.content.DialogInterface;
-import android.content.Intent;
-import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -33,24 +30,19 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
-import android.widget.BaseAdapter;
-import android.widget.ListView;
 import android.widget.TextView;
 
 import com.android.volley.VolleyError;
+import com.daimajia.swipe.util.Attributes;
 import com.itime.team.itime.R;
-import com.itime.team.itime.activities.MeetingDetailActivity;
 import com.itime.team.itime.bean.User;
 import com.itime.team.itime.model.ParcelableMessage;
-import com.itime.team.itime.model.utils.MessageType;
 import com.itime.team.itime.task.InboxTask;
 import com.itime.team.itime.task.MessageHandler;
 import com.itime.team.itime.utils.AlertUtil;
+import com.itime.team.itime.views.adapters.MessageAdapter;
 
 import java.lang.ref.WeakReference;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -80,7 +72,7 @@ public class InboxFragment extends Fragment implements View.OnClickListener {
     /* Status: UNREAD or ALL */
     private int mStatus = UNREAD;
 
-    private ListView messageListView;
+    private RecyclerView messageRecyclerView;
     private MessageAdapter mAdapter;
 
     /* Timer and Task for repeated load inbox messages */
@@ -120,15 +112,31 @@ public class InboxFragment extends Fragment implements View.OnClickListener {
         setHasOptionsMenu(true);
         //setTitle();
 
-        messageListView = (ListView) view.findViewById(R.id.inbox_message_list);
+        messageRecyclerView = (RecyclerView) view.findViewById(R.id.inbox_message_recycler_list);
+        // Layout Managers:
+        messageRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
+
+        // Item Decorator:
+        //messageRecyclerView.addItemDecoration(new DividerItemDecoration(getResources().getDrawable(R.drawable.divider)));
+        //messageRecyclerView.setItemAnimator(new FadeInLeftAnimator());
+
         mAdapter = new MessageAdapter(getActivity(), new ArrayList<ParcelableMessage>(), mStatus == ALL);
-        messageListView.setAdapter(mAdapter);
-        messageListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+        mAdapter.setMode(Attributes.Mode.Single);
+        messageRecyclerView.setAdapter(mAdapter);
+
+        // Item Click Listener
+        mAdapter.setOnItemClickListener(new MessageAdapter.OnItemClickListener() {
             @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+            public void onItemClick(View view, int position) {
                 showItemClickDialog(view, position);
             }
+
+            @Override
+            public void onItemDeleteClick(View view, int position) {
+                deleteMessage(view, position);
+            }
         });
+
         view.findViewById(R.id.inbox_mark_all_read).setOnClickListener(this);
         view.findViewById(R.id.inbox_delete_all).setOnClickListener(this);
         return view;
@@ -174,7 +182,7 @@ public class InboxFragment extends Fragment implements View.OnClickListener {
     }
 
     private void showItemClickDialog(View view, int position) {
-        final ParcelableMessage message = (ParcelableMessage) mAdapter.getItem(position);
+        final ParcelableMessage message = (ParcelableMessage) view.getTag();
         if (message.ifUseful || ParcelableMessage.isLongTermUsefulMessage(message)) {
             MessageHandler.handleMessage(getContext(), message);
         } else {
@@ -192,6 +200,21 @@ public class InboxFragment extends Fragment implements View.OnClickListener {
             };
             inboxTask.markMessageToRead(message.messageId, callback);
         }
+    }
+
+    private void deleteMessage(View view, final int position) {
+        final ParcelableMessage message = (ParcelableMessage) view.getTag();
+        InboxTask inboxTask = InboxTask.getInstance(getActivity().getApplicationContext());
+        InboxTask.ResultCallBack callback = new InboxTask.ResultCallBack<String>() {
+            @Override
+            public void callback(String result) {
+                if (result.equals("success")) {
+                    mAdapter.deleteMessage(message);
+                }
+            }
+        };
+        inboxTask.deleteMessage(message.messageId, callback);
+
     }
 
 
@@ -278,118 +301,4 @@ public class InboxFragment extends Fragment implements View.OnClickListener {
         inboxTask.getUnreadMessageCount(User.ID, callback);
     }
 
-    public class MessageAdapter extends BaseAdapter {
-
-        private List<ParcelableMessage> messageData = null;
-        private List<ParcelableMessage> unReadMessageData = null;
-        private Context mContext;
-
-        /* show unread or all messages */
-        private boolean showAll = false;
-
-        /* unread message count */
-        private int unreadMessageCount;
-
-        public MessageAdapter(Context context, List<ParcelableMessage> messages, boolean showAll) {
-            mContext = context;
-            messageData = messages;
-            this.showAll = showAll;
-            setUnReadMessageData(messageData);
-        }
-
-        private void setUnReadMessageData(List<ParcelableMessage> messageData) {
-            unReadMessageData = new ArrayList<>();
-            unreadMessageCount = 0;
-            for (ParcelableMessage m : messageData) {
-                if (!m.ifRead) {
-                    unReadMessageData.add(m);
-                    unreadMessageCount++;
-                }
-            }
-            unReadMessageData.remove(null);
-        }
-
-        public int getUnreadMessageCount() {
-            return unReadMessageData.size();
-        }
-
-        public synchronized void loadMessages(List<ParcelableMessage> messageData) {
-            this.messageData = messageData;
-            setUnReadMessageData(messageData);
-            notifyDataSetChanged();
-        }
-
-        public boolean unRead(ParcelableMessage message) {
-            boolean isRemove = false;
-            if (unReadMessageData != null) {
-                isRemove = unReadMessageData.remove(message);
-                if (isRemove) {
-                    message.ifRead = true;
-                    notifyDataSetChanged();
-                }
-            }
-            return isRemove;
-        }
-
-        public boolean isShowAll() {
-            return showAll;
-        }
-
-        public void setShowAll(boolean showAll) {
-            this.showAll = showAll;
-            notifyDataSetChanged();
-        }
-
-        @Override
-        public int getCount() {
-            return showAll ? messageData.size() : unReadMessageData.size();
-        }
-
-        @Override
-        public Object getItem(int position) {
-            return showAll ? messageData.get(position) : unReadMessageData.get(position);
-        }
-
-        @Override
-        public long getItemId(int position) {
-            return position;
-        }
-
-        @Override
-        public View getView(int position, View convertView, ViewGroup parent) {
-
-            ViewHolder holder;
-            if (convertView == null) {
-                LayoutInflater inflater = LayoutInflater.from(mContext);
-                convertView = inflater.inflate(R.layout.view_message_list_cell, null);
-                holder = new ViewHolder();
-                holder.mMessageTitle = (TextView) convertView.findViewById(R.id.message_title);
-                holder.mMessageTime = (TextView) convertView.findViewById(R.id.message_time);
-                holder.mMessageBody = (TextView) convertView.findViewById(R.id.message_body);
-                convertView.setTag(holder);
-            } else {
-                holder = (ViewHolder) convertView.getTag();
-            }
-
-            ParcelableMessage message = (ParcelableMessage) getItem(position);
-            if (message.ifRead) {
-                convertView.setBackgroundColor(Color.GRAY);
-            } else {
-                convertView.setBackgroundColor(Color.WHITE);
-            }
-
-            holder.mMessageTitle.setText(message.messageTitle);
-            DateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-            String createTime = formatter.format(message.createdTime);
-            holder.mMessageTime.setText(createTime);
-            holder.mMessageBody.setText(message.messageSubtitle);
-            return convertView;
-        }
-
-        private final class ViewHolder {
-            private TextView mMessageTitle = null;
-            private TextView mMessageTime = null;
-            private TextView mMessageBody = null;
-        }
-    }
 }

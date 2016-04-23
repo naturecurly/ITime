@@ -157,5 +157,18 @@
         <item name="android:ellipsize">end</item>
     </style>
 
+    <style name="InboxMessageDelete">
+        <item name="android:textSize">20dp</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:textColor">@color/white</item>
+        <item name="background">@drawable/red</item>
+    </style>
+
+    <style name="InboxMessageBottomButton">
+        <item name="android:textSize">18dp</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:textColor">@color/skyblue</item>
+    </style>
+
 
 </resources>

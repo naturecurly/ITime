@@ -170,6 +170,7 @@
     <string name="reject">Reject</string>
     <string name="show_detail">Show Detail</string>
     <string name="later">Later</string>
+    <string name="departure_time">Departure at</string>
 
 
 </resources>

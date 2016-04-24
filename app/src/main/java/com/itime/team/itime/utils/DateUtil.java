@@ -358,4 +358,10 @@ public class DateUtil {
         return cal;
     }
 
+
+    public static String formatToReadable(String dateString) {
+        DateFormat formatter = new SimpleDateFormat("EEE, dd MMM yyyy HH:mm");
+        Date date = getLocalDateObject(dateString);
+        return formatter.format(date);
+    }
 }

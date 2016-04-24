@@ -314,8 +314,11 @@ public class EventUtil {
 
     public static List<JSONObject> getEventsByMonth(int year, int month) throws JSONException {
         List<JSONObject> allevents = new ArrayList<>();
+//        if (Events.eventsMonth)
+//        List<JSONObject> events = new ArrayList<>();
+//        if (Events.eventsByMonth != null) {
         List<JSONObject> events = Events.eventsByMonth.get(month + "-" + year);
-
+//        }
         if (events != null) {
             for (JSONObject t : events) {
                 if (t.getString("event_repeats_type").equals("One-time event")) {

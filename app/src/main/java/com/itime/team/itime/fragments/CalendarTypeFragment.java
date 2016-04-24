@@ -16,13 +16,10 @@
 
 package com.itime.team.itime.fragments;
 
-import android.content.Context;
 import android.content.Intent;
-import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -30,29 +27,21 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
-import android.widget.BaseAdapter;
-import android.widget.FrameLayout;
-import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
-import com.android.volley.Request;
-import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.itime.team.itime.R;
 import com.itime.team.itime.activities.SettingsActivity;
-import com.itime.team.itime.bean.URLs;
 import com.itime.team.itime.bean.User;
-import com.itime.team.itime.utils.JsonArrayFormRequest;
-import com.itime.team.itime.utils.MySingleton;
+import com.itime.team.itime.model.ParcelableCalendarType;
+import com.itime.team.itime.task.UserTask;
+import com.itime.team.itime.views.adapters.CalendarTypeAdapter;
 
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
-
-import java.util.HashMap;
-import java.util.Map;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.UUID;
 
 /**
  * Created by Xuhui Chen (yorkfine) on 22/03/16.
@@ -63,13 +52,13 @@ public class CalendarTypeFragment extends Fragment {
 
     private static final String SETTINGS = "Settings";
     private static final String SETTINGS_DATA = "Settings_data";
-    private static final int REQUEST_ADD_CALENDAR_TYPE = 1;
+    private static final int REQUEST_EDIT_CALENDAR_TYPE = 1;
     public static final int CALENDAR_TYPE_SUB_SETTINGS = 9;
 
     private View mCalendarTypeView;
     private ListView  mCalendarTypeListView;
     private CalendarTypeAdapter mAdapter;
-    private JSONArray mData;
+    private List<ParcelableCalendarType> mData;
 
     private String mUserId;
 
@@ -84,14 +73,31 @@ public class CalendarTypeFragment extends Fragment {
 
 
         if (mData == null) {
-            mData = new JSONArray();
+            mData = new ArrayList<>();
         }
         mAdapter = new CalendarTypeAdapter(getContext(), mData);
         mCalendarTypeListView.setAdapter(mAdapter);
+        // click
         mCalendarTypeListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                // TODO: 22/03/16 change if show
+                ParcelableCalendarType calType = (ParcelableCalendarType) mAdapter.getItem(position);
+                toggleIfShow(calType);
+            }
+        });
+        // long click
+        mCalendarTypeListView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
+            @Override
+            public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
+                ParcelableCalendarType calType = (ParcelableCalendarType) mAdapter.getItem(position);
+                editCalendarType(calType);
+                return false;
+            }
+        });
+        // delete button click
+        mAdapter.setOnDeleteClickListener(new CalendarTypeAdapter.OnDeleteClickListener() {
+            @Override
+            public void onDeleteClickListener(View view, int position) {
 
             }
         });
@@ -100,10 +106,26 @@ public class CalendarTypeFragment extends Fragment {
         return mCalendarTypeView;
     }
 
+    private void toggleIfShow(final ParcelableCalendarType calendarType) {
+        calendarType.ifShow = !calendarType.ifShow;
+        UserTask userTask = UserTask.getInstance(getContext().getApplicationContext());
+        UserTask.CallBackResult<String> callback = new UserTask.CallBackResult<String>() {
+            @Override
+            public void callback(String data) {
+                if (data.equalsIgnoreCase("success")) {
+                    final String s = calendarType.calendarName + (calendarType.ifShow ? " shows" : " does not show");
+                    Toast.makeText(getContext(), s, Toast.LENGTH_SHORT).show();
+                    mAdapter.notifyDataSetChanged();
+                }
+            }
+        };
+        userTask.updateCalendarType(calendarType, callback);
+    }
+
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        fetchCalendarType();
+        loadCalendarType();
     }
 
     @Override
@@ -117,7 +139,9 @@ public class CalendarTypeFragment extends Fragment {
         int id = item.getItemId();
 
         if (id == R.id.action_add) {
-            addNewCalendarType(null);
+            ParcelableCalendarType calType = new ParcelableCalendarType(mUserId);
+            calType.calendarId = UUID.randomUUID().toString();
+            editCalendarType(calType);
             return true;
         }
         return super.onOptionsItemSelected(item);
@@ -125,133 +149,42 @@ public class CalendarTypeFragment extends Fragment {
 
     /**
      *
-     * @param data JSONObject data in String, null for add new calendar type
+     * @param data ParcelableCalendarType data
      */
-    private void addNewCalendarType(String data) {
+    private void editCalendarType(ParcelableCalendarType data) {
         Intent intent = new Intent(getActivity(), SettingsActivity.class);
         intent.putExtra(SETTINGS, CALENDAR_TYPE_SUB_SETTINGS);
         if (data != null) {
             intent.putExtra(SETTINGS_DATA, data);
         }
-        startActivityForResult(intent, REQUEST_ADD_CALENDAR_TYPE);
+        startActivityForResult(intent, REQUEST_EDIT_CALENDAR_TYPE);
     }
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if (requestCode == REQUEST_ADD_CALENDAR_TYPE) {
+        if (requestCode == REQUEST_EDIT_CALENDAR_TYPE) {
             if (resultCode == CalendarTypeSubFragment.RESULT_ADD_CALENDAR_TYPE) {
                 if (data != null && data.getBooleanExtra(CalendarTypeSubFragment.RETURN_IF_ADDED, false)) {
                     // reload data from server
-                    fetchCalendarType();
+                    loadCalendarType();
                 }
             }
         }
     }
 
-    /**
-     * local_calendar_types
-     */
-    private void fetchCalendarType() {
-        JSONObject jsonObject = new JSONObject();
-        try {
-            jsonObject.put("user_id", mUserId);
-            jsonObject.put("local_preferences", new JSONArray());
-        } catch (JSONException e) {
-            e.printStackTrace();
-            return;
-        }
-
-        final String url = URLs.LOAD_USER_CALENDAR_TYPES;
-        Map<String, String> params = new HashMap();
-        params.put("json", jsonObject.toString());
-
-        JsonArrayFormRequest request = new JsonArrayFormRequest(Request.Method.POST, url, params,
-                new Response.Listener<JSONArray>() {
-                    @Override
-                    public void onResponse(JSONArray response) {
-                        Log.i(LOG_TAG, response.toString());
-                        //mAdapter.notifyDataSetChanged();
-                        mAdapter.refresh(response);
-                    }
-                },
-                new Response.ErrorListener() {
-                    @Override
-                    public void onErrorResponse(VolleyError error) {
-                        Log.e(LOG_TAG, error.toString());
-                    }
-                }
-        );
-        MySingleton.getInstance(getContext()).addToRequestQueue(request);
-    }
-
-    private class CalendarTypeAdapter extends BaseAdapter {
-
-        private JSONArray mData;
-        private Context mContext;
-
-        public CalendarTypeAdapter(Context context, JSONArray data) {
-            this.mContext = context;
-            this.mData = data;
-        }
-
-        public void refresh(JSONArray data) {
-            mData = data;
-            notifyDataSetChanged();
-        }
-
-        @Override
-        public int getCount() {
-            return mData.length();
-        }
-
-        @Override
-        public Object getItem(int position) {
-            try {
-                return mData.get(position);
-            } catch (JSONException e) {
-                e.printStackTrace();
-                return null;
+    private void loadCalendarType() {
+        UserTask userTask = UserTask.getInstance(getActivity().getApplicationContext());
+        UserTask.CallBackCalType callback = new UserTask.CallBackCalType() {
+            @Override
+            public void callback(List<ParcelableCalendarType> calendarType) {
+                mAdapter.refresh(calendarType);
             }
-        }
 
-        @Override
-        public long getItemId(int position) {
-            return position;
-        }
-
-        @Override
-        public View getView(int position, View convertView, ViewGroup parent) {
-            ViewHolder holder = null;
-            if (convertView == null) {
-                LayoutInflater inflater = LayoutInflater.from(mContext);
-                convertView = inflater.inflate(R.layout.view_setting_list, null);
-                LinearLayout linearLayout = (LinearLayout) convertView.findViewById(R.id.setting_list_right);
-                ImageView isShowImage = new ImageView(mContext);
-                linearLayout.addView(isShowImage);
-                holder = new ViewHolder();
-                holder.mCalTypeText = (TextView)convertView.findViewById(R.id.setting_list_left_text);
-                holder.mIsShow = isShowImage;
-                convertView.setTag(holder);
-            } else {
-                holder = (ViewHolder) convertView.getTag();
+            @Override
+            public void callbackError(VolleyError error) {
+                Toast.makeText(getContext(), "Can not load calendars", Toast.LENGTH_SHORT).show();
             }
-            try {
-                final JSONObject item = (JSONObject) getItem(position);
-                holder.mCalTypeText.setText(item.getString("calendar_name"));
-                if (item.getBoolean("if_show")) {
-                    holder.mIsShow.setImageResource(R.drawable.com_facebook_button_like_icon_selected);
-                }
-
-
-            } catch (JSONException e) {
-                e.printStackTrace();
-            }
-            return convertView;
-        }
-
-        private class ViewHolder {
-            private TextView mCalTypeText = null;
-            private ImageView mIsShow = null;
-        }
+        };
+        userTask.loadCalendarType(mUserId, callback);
     }
 }

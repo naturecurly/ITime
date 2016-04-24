@@ -163,6 +163,11 @@
     <string name="title_activity_asynchronous">Asynchronous Events</string>
     <string name="async_error">Could not download events from the internet</string>
 
+    <!-- calendar type strings -->
+    <string name="calendar_type_delete">Delete</string>
+    <string name="new_calendar_type_title">New Calendar Type</string>
+    <string name="edit_calendar_type_title">Edit Calendar Type</string>
+
     <!-- inbox strings -->
     <string name="inbox_mark_all_read">Mark all read</string>
     <string name="inbox_delete_all">Delete all</string>

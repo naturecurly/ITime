@@ -20,7 +20,6 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -31,19 +30,9 @@ import android.view.WindowManager;
 import android.widget.EditText;
 import android.widget.TextView;
 
-import com.android.volley.Request;
-import com.android.volley.Response;
-import com.android.volley.VolleyError;
-import com.android.volley.toolbox.JsonObjectRequest;
 import com.itime.team.itime.R;
-import com.itime.team.itime.bean.URLs;
-import com.itime.team.itime.bean.User;
-import com.itime.team.itime.utils.MySingleton;
-
-import org.json.JSONException;
-import org.json.JSONObject;
-
-import java.util.UUID;
+import com.itime.team.itime.model.ParcelableCalendarType;
+import com.itime.team.itime.task.UserTask;
 
 /**
  * Created by Xuhui Chen (yorkfine) on 22/03/16.
@@ -53,9 +42,11 @@ public class CalendarTypeSubFragment extends Fragment {
     private static final String LOG_TAG = CalendarTypeSubFragment.class.getSimpleName();
 
     public static final int RESULT_ADD_CALENDAR_TYPE = 1;
+    private static final String SETTINGS_DATA = "Settings_data";
     public static final String RETURN_IF_ADDED = "return_if_added";
 
     private EditText mCalendarType;
+    private ParcelableCalendarType calendarType;
 
     @Nullable
     @Override
@@ -63,9 +54,16 @@ public class CalendarTypeSubFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_calendar_type_sub, null);
         mCalendarType = (EditText) view.findViewById(R.id.edit_calendar_type);
 
+        calendarType = getActivity().getIntent().getParcelableExtra(SETTINGS_DATA);
+
         setHasOptionsMenu(true);
         TextView title = (TextView) getActivity().findViewById(R.id.setting_toolbar_title);
-        title.setText("New Calendar Type");
+        if (calendarType.calendarName.isEmpty()) {
+            title.setText(getString(R.string.new_calendar_type_title));
+        } else {
+            title.setText(getString(R.string.edit_calendar_type_title));
+            mCalendarType.setText(calendarType.calendarName);
+        }
 
         /*
         // Method1: show explicitly, but need show toggle off while this activity is back
@@ -93,7 +91,6 @@ public class CalendarTypeSubFragment extends Fragment {
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
         if (id == R.id.action_save) {
-            // TODO: Save new calendar tpe and update server
             updateCanlendarType();
             return true;
         }
@@ -101,44 +98,21 @@ public class CalendarTypeSubFragment extends Fragment {
     }
 
     private void updateCanlendarType() {
-        JSONObject jsonObject = new JSONObject();
-        try {
-            jsonObject.put("calendar_id", UUID.randomUUID().toString());
-            jsonObject.put("user_id", User.ID);
-            jsonObject.put("calendar_name", mCalendarType.getText());
-            jsonObject.put("calendar_owner_id", User.ID);
-            jsonObject.put("calendar_owner_name", User.ID);
-            jsonObject.put("if_show", true);
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-
-        final String url = URLs.INSERT_OR_UPDATE_USER_CALENDAR_TYPE;
-        JsonObjectRequest request = new JsonObjectRequest(Request.Method.POST, url, jsonObject.toString(),
-                new Response.Listener<JSONObject>() {
-                    @Override
-                    public void onResponse(JSONObject response) {
-                        Log.i(LOG_TAG, response.toString());
-                        try {
-                            if (response.getString("result").equals("success")) {
-                                final Intent intent = new Intent();
-                                intent.putExtra(RETURN_IF_ADDED, true);
-                                getActivity().setResult(RESULT_ADD_CALENDAR_TYPE, intent);
-                                getActivity().finish();
-                            }
-                        } catch (JSONException e) {
-                            e.printStackTrace();
-                        }
-                    }
-                },
-                new Response.ErrorListener() {
-                    @Override
-                    public void onErrorResponse(VolleyError error) {
-
-                    }
+        calendarType.calendarName = mCalendarType.getText().toString();
+        UserTask userTask = UserTask.getInstance(getContext().getApplicationContext());
+        UserTask.CallBackResult<String> callback = new UserTask.CallBackResult<String>() {
+            @Override
+            public void callback(String data) {
+                if (data.equalsIgnoreCase("success")) {
+                    final Intent intent = new Intent();
+                    intent.putExtra(RETURN_IF_ADDED, true);
+                    getActivity().setResult(RESULT_ADD_CALENDAR_TYPE, intent);
+                    getActivity().finish();
                 }
-        );
-        MySingleton.getInstance(getContext()).addToRequestQueue(request);
+            }
+        };
+        userTask.updateCalendarType(calendarType, callback);
+
 
     }
 }

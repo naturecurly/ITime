@@ -17,30 +17,63 @@
   -->
 
 <!-- view of listview in setting that is a list -->
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<com.daimajia.swipe.SwipeLayout xmlns:swipe="http://schemas.android.com/apk/res-auto"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/swipe"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:orientation="horizontal"
-    android:background="@color/white"
-    android:padding="16dp">
-
-    <!-- left part-->
-    <TextView
-        android:id="@+id/setting_list_left_text"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_centerVertical="true"/>
-
-    <!-- right part-->
+    swipe:leftEdgeSwipeOffset="0dp"
+    swipe:rightEdgeSwipeOffset="0dp">
+    <!-- Bottom View Start-->
     <LinearLayout
-        android:id="@+id/setting_list_right"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:layout_alignParentRight="true"
-        android:gravity="right">
-        <!-- to be implemented according to requirement -->
+        android:background="@color/red"
+        android:gravity="center"
+        android:tag="delete_bottom">
+
+        <TextView
+            android:id="@+id/delete"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:paddingLeft="5dp"
+            android:paddingRight="5dp"
+            android:text="@string/calendar_type_delete"
+            style="@style/CalendarTypeDelete"
+            />
+
+
     </LinearLayout>
+    <!-- Bottom View End-->
+
+    <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:background="@color/white"
+        android:padding="10dp">
+
+        <!-- left part-->
+        <TextView
+            android:id="@+id/setting_list_left_text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="20dp"
+            android:textStyle="bold"
+            android:layout_centerVertical="true"/>
+
+        <!-- right part-->
+        <LinearLayout
+            android:id="@+id/setting_list_right"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:layout_alignParentRight="true"
+            android:gravity="right">
+            <!-- to be implemented according to requirement -->
+        </LinearLayout>
 
 
-</RelativeLayout>
+    </RelativeLayout>
+
+</com.daimajia.swipe.SwipeLayout>

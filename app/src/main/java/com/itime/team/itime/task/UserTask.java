@@ -25,22 +25,22 @@ import android.util.Log;
 import com.android.volley.Request;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
+import com.android.volley.toolbox.JsonArrayRequest;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.bluelinelabs.logansquare.LoganSquare;
 import com.itime.team.itime.bean.URLs;
 import com.itime.team.itime.database.ITimeDataStore;
-import com.itime.team.itime.model.ParcelablePreference;
+import com.itime.team.itime.model.ParcelableCalendarType;
 import com.itime.team.itime.model.ParcelableUser;
 import com.itime.team.itime.utils.ContentValuesCreator;
-import com.itime.team.itime.utils.JsonObjectFormRequest;
 import com.itime.team.itime.utils.MySingleton;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.List;
 
 /**
  * Created by Xuhui Chen (yorkfine) on 29/03/16.
@@ -66,6 +66,15 @@ public class UserTask {
         public void callback(ParcelableUser user);
 
         public void callbackError(VolleyError error);
+    }
+
+    public interface CallBackCalType {
+        void callback(List<ParcelableCalendarType> calendarType);
+        void callbackError(VolleyError error);
+    }
+
+    public interface CallBackResult<T> {
+        void callback(T data);
     }
 
     public void loadUserInfo(final String userId, final Callback callback) {
@@ -176,5 +185,83 @@ public class UserTask {
         } else {
             mContext.getContentResolver().insert(userInfoByIdUri, values);
         }
+    }
+
+    public void loadCalendarType(String userId, final CallBackCalType callback) {
+        JSONObject jsonObject = new JSONObject();
+        try {
+            jsonObject.put("user_id", userId);
+            jsonObject.put("local_preferences", new JSONArray()); // ?
+        } catch (JSONException e) {
+            e.printStackTrace();
+            return;
+        }
+
+        final String url = URLs.LOAD_USER_CALENDAR_TYPES;
+
+        JsonArrayRequest request = new JsonArrayRequest(Request.Method.POST, url, jsonObject.toString(),
+                new Response.Listener<JSONArray>() {
+                    @Override
+                    public void onResponse(JSONArray response) {
+                        Log.i(LOG_TAG, response.toString());
+                        if (callback != null) {
+                            List<ParcelableCalendarType> calTypeList;
+                            try {
+                                calTypeList = LoganSquare.parseList(response.toString(), ParcelableCalendarType.class);
+                            } catch (IOException e) {
+                                e.printStackTrace();
+                                return;
+                            }
+                            callback.callback(calTypeList);
+                        }
+                    }
+                },
+                new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        Log.e(LOG_TAG, error.toString());
+                        if (callback != null) {
+                            callback.callbackError(error);
+                        }
+                    }
+                }
+        );
+        MySingleton.getInstance(mContext).addToRequestQueue(request);
+    }
+
+    public void updateCalendarType(ParcelableCalendarType calendarType, final CallBackResult<String> callback) {
+        try {
+            String calType = LoganSquare.serialize(calendarType);
+            final String url = URLs.INSERT_OR_UPDATE_USER_CALENDAR_TYPE;
+            JsonObjectRequest request = new JsonObjectRequest(Request.Method.POST, url, calType,
+                    new Response.Listener<JSONObject>() {
+                        @Override
+                        public void onResponse(JSONObject response) {
+                            Log.i(LOG_TAG, response.toString());
+                            String result = "failed";
+                            try {
+                                result = response.getString("result");
+                            } catch (JSONException e) {
+                                e.printStackTrace();
+                            }
+                            if (callback != null) {
+                                callback.callback(result);
+                            }
+                        }
+                    },
+                    new Response.ErrorListener() {
+                        @Override
+                        public void onErrorResponse(VolleyError error) {
+
+                        }
+                    }
+            );
+            MySingleton.getInstance(mContext).addToRequestQueue(request);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+
+
     }
 }

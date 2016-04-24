@@ -202,14 +202,14 @@ public class InboxFragment extends Fragment implements View.OnClickListener {
         }
     }
 
-    private void deleteMessage(View view, final int position) {
+    private void deleteMessage(final View view, final int position) {
         final ParcelableMessage message = (ParcelableMessage) view.getTag();
         InboxTask inboxTask = InboxTask.getInstance(getActivity().getApplicationContext());
         InboxTask.ResultCallBack callback = new InboxTask.ResultCallBack<String>() {
             @Override
             public void callback(String result) {
                 if (result.equals("success")) {
-                    mAdapter.deleteMessage(message);
+                    mAdapter.deleteMessage(view, position);
                 }
             }
         };

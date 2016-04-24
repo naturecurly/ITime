@@ -137,11 +137,18 @@ public class MessageAdapter extends RecyclerSwipeAdapter<MessageAdapter.SimpleVi
 
     // called when message is successfully deleted in the server
     // do not call under other conditions since it just remove the view and data locally.
-    public void deleteMessage(ParcelableMessage message) {
+    public void deleteMessage(View view, int position) {
+        // use message object in the view to get the position because position parameter maybe
+        // invalidated due to asynchronous called of this method
+        final ParcelableMessage message = (ParcelableMessage) view.getTag();
         int pos1 = messageData.indexOf(message);
         int pos2 = unReadMessageData.indexOf(message);
         messageData.remove(message);
         unReadMessageData.remove(message);
+        // even though the postion from the parameter is invalidated, getSwipeLayoutResourceId return
+        // the same id that matches tag object in the view. In another word, The swipeLayout is
+        // independent to the position.
+        mItemManger.removeShownLayouts((SwipeLayout) view.getTag(getSwipeLayoutResourceId(position)));
         if (isShowAll) {
             if (pos1 >= 0) {
                 notifyItemRemoved(pos1);
@@ -206,8 +213,8 @@ public class MessageAdapter extends RecyclerSwipeAdapter<MessageAdapter.SimpleVi
                 public void onClick(View v) {
                     int pos = viewHolder.getLayoutPosition();
                     viewHolder.itemView.setTag(message);
+                    viewHolder.itemView.setTag(getSwipeLayoutResourceId(pos), viewHolder.swipeLayout);
                     mOnItemClickListener.onItemDeleteClick(viewHolder.itemView, pos);
-                    mItemManger.removeShownLayouts(viewHolder.swipeLayout);
                 }
             });
         }

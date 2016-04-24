@@ -1,12 +1,16 @@
 package com.itime.team.itime.utils;
 
+import android.content.Context;
+
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.OutputStreamWriter;
 import java.io.UnsupportedEncodingException;
 import java.io.Writer;
@@ -23,6 +27,7 @@ import java.util.Map;
 public class ICS {
     private String head = "BEGIN:VCALENDAR\nVERSION:2.0\nBEGIN:VEVENT";
     private String tail = "END:VEVENT\nEND:VCALENDAR";
+    private Context mContext;
 
     //The value in 'validation' means standard attributes in 'icalendar'(RFC 5545),
     //but I just input the attributes we need now.
@@ -46,8 +51,9 @@ public class ICS {
     //' e.g: 20151225T182030, which means
     //Year:2015 Month:12 Day:25 Hour:18 Minite:20 Second:30.
 
-    public ICS(String event_id, String event_name, String event_description, String event_start, String event_end)
+    public ICS(String event_id, String event_name, String event_description, String event_start, String event_end, Context mContext)
     {
+        this.mContext = mContext;
         dict.put("UID",event_id);
         dict.put("SUMMARY",event_name);
         dict.put("DESCRIPTION",event_description);
@@ -78,31 +84,66 @@ public class ICS {
         this.hasInvitation = true;
     }
 
+    public File getTempFile(Context context, String fileName) {
+        File file = null;
+//        String fileName = Uri.parse(url).getLastPathSegment();
+        try {
+            file = File.createTempFile(fileName, null, mContext.getCacheDir());
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        return file;
+    }
     //Note: Any attributes beyond 'Standard Attributes' will be add prefix 'X-', which
     //means this attributes is customized and other app would not access it.
-    public void createICS(String filePath){
+    public File createICS(String fileName){
         String mainBody = this.configureICSMainBody();
         String invitationBody = this.configureInvitationBody();
 
         String result = head + "\n" + mainBody + invitationBody + tail;
+        FileOutputStream outputStream;
+
 
         try{
-            Writer writer = new BufferedWriter(new OutputStreamWriter(
-                    new FileOutputStream(filePath), "utf-8"));
-            try{
-                writer.write(result);
+            File file = getTempFile(mContext, fileName);
+
+            InputStream in = null;
+            try {
+                System.out.println("以字节为单位读取文件内容，一次读一个字节：");
+                // 一次读一个字节
+                in = new FileInputStream(file);
+                int tempbyte;
+                while ((tempbyte = in.read()) != -1) {
+                    System.out.write(tempbyte);
+                }
+                in.close();
             } catch (IOException e) {
                 e.printStackTrace();
             }
-            
-            writer.close();
+
+
+            outputStream = mContext.openFileOutput(fileName, Context.MODE_PRIVATE);
+            outputStream.write(result.getBytes());
+
+            outputStream.close();
+            return file;
+//            Writer writer = new BufferedWriter(new OutputStreamWriter(
+//                    new FileOutputStream(filePath), "utf-8"));
+//            try{
+//                writer.write(result);
+//            } catch (IOException e) {
+//                e.printStackTrace();
+//            }
+//
+//            writer.close();
         } catch (FileNotFoundException | UnsupportedEncodingException e) {
             e.printStackTrace();
         }catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-
+        return null;
     }
 
     //How to use? Same as 'createICS', but the 'filePath' should be the full path of old ics file. Then you will get a new ICS file with same path(name) and new information of event.

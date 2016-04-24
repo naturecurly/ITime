@@ -25,7 +25,7 @@ import com.itime.team.itime.R;
 import com.itime.team.itime.bean.MeetingInfo;
 import com.itime.team.itime.bean.URLs;
 import com.itime.team.itime.bean.User;
-import com.itime.team.itime.fragments.MeetingDetailQuitReasonDialogFragment;
+import com.itime.team.itime.fragments.MeetingDetailCancelReasonDialogFragment;
 import com.itime.team.itime.utils.DateUtil;
 import com.itime.team.itime.utils.ICS;
 import com.itime.team.itime.utils.Invitation;
@@ -62,6 +62,7 @@ public class MeetingDetaiHostlActivity extends AppCompatActivity implements View
     private Button mEmail, mQuit;
     private ImageView mImage;
     private Button mConfirm, mReset, mConfirmUpdate;
+    private File ICSFile;
 
     private LinearLayout mLNewName, mLNewVenue, mLNewStart, mLNewEnd, mLNewRepeat, mLNewPunctual, mLNewNote;
 
@@ -487,7 +488,9 @@ public class MeetingDetaiHostlActivity extends AppCompatActivity implements View
     }
 
     private void email(){
-        File file = new File("./NewMeeing.ics");
+
+        File file = ICSFile;
+
         String mySbuject = getString(R.string.add_friend);
         String myCc = "cc";
         Intent myIntent = new Intent(android.content.Intent.ACTION_SEND, Uri.fromParts("mailto", "", null));
@@ -509,15 +512,17 @@ public class MeetingDetaiHostlActivity extends AppCompatActivity implements View
             start = DateUtil.getICSTime(mMeetingInfo.getStart());
             end = DateUtil.getICSTime(mMeetingInfo.getEnd());
         }
-        ICS ics = new ICS(eventID, eventName, description, start, end);
+
+
+        ICS ics = new ICS(eventID, eventName, description, start, end,this);
         Invitation host = new Invitation(User.ID, User.ID);
         ics.attachInvitation(host);
-        ics.createICS("./NewMeeing.ics");
+        ICSFile = ics.createICS("NewMeeing.ics");
     }
 
     private void deleteMeeting(){
-        MeetingDetailQuitReasonDialogFragment dialog
-                = new MeetingDetailQuitReasonDialogFragment(mMeetingId);
+        MeetingDetailCancelReasonDialogFragment dialog
+                = new MeetingDetailCancelReasonDialogFragment(mMeetingId, mMeetingInfo.getToken(),true);
         dialog.show(getSupportFragmentManager(),"reasonQuitDialog");
     }
 

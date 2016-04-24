@@ -3,7 +3,6 @@ package com.itime.team.itime.fragments;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.DialogFragment;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -31,14 +30,18 @@ import java.util.Map;
  * Created by Weiwei Cai on 16/4/12.
  * Writing a reason to reject a meeting through this fragment.
  */
-public class MeetingDetailQuitReasonDialogFragment extends DialogFragment implements View.OnClickListener{
+public class MeetingDetailCancelReasonDialogFragment extends DialogFragment implements View.OnClickListener{
     private View mView;
     private EditText mNote;
     private Button mSend,mCancel;
     private String meetingID;
+    private String token;
+    private boolean mIsHost;
 
-    public MeetingDetailQuitReasonDialogFragment(String meetingID){
+    public MeetingDetailCancelReasonDialogFragment(String meetingID, String token, boolean isHost){
         this.meetingID = meetingID;
+        this.token = token;
+        mIsHost = isHost;
     }
     @Nullable
     @Override
@@ -60,13 +63,56 @@ public class MeetingDetailQuitReasonDialogFragment extends DialogFragment implem
     @Override
     public void onClick(View v) {
         if(v.getId() == mSend.getId()){
-            send();
+            if(mIsHost){
+                cancelMeeting();
+            }else{
+                quitMeeting();
+            }
         }else if(v.getId() == mCancel.getId()){
             dismiss();
         }
     }
 
-    private void send() {
+    private void cancelMeeting() {
+        JSONObject jsonObject = new JSONObject();
+        try {
+            jsonObject.put("meeting_id", meetingID);
+            jsonObject.put("user_id", User.ID);
+            jsonObject.put("reject_reason",mNote.getText().toString());
+            jsonObject.put("meeting_valid_token",token);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+        final String url = URLs.CANCEL_MEETING;
+        Map<String, String> params = new HashMap();
+        params.put("json", jsonObject.toString());
+
+        JsonObjectFormRequest request = new JsonObjectFormRequest(Request.Method.POST, url, params, new Response.Listener<JSONObject>() {
+            @Override
+            public void onResponse(JSONObject response) {
+                try {
+                    String result = response.getString("result");
+                    if (!result.equals("success")){
+                        Toast.makeText(getContext(), getString(R.string.time_out), Toast.LENGTH_LONG);
+                    }else{
+                        MeetingDetailCancelReasonDialogFragment.this.dismiss();
+                        getActivity().finish();
+                    }
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
+        }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+
+            }
+        });
+        MySingleton.getInstance(getContext()).addToRequestQueue(request);
+    }
+
+    private void quitMeeting(){
         JSONObject jsonObject = new JSONObject();
         try {
             jsonObject.put("meeting_id", meetingID);
@@ -79,7 +125,6 @@ public class MeetingDetailQuitReasonDialogFragment extends DialogFragment implem
         final String url = URLs.QUIT_MEETING;
         Map<String, String> params = new HashMap();
         params.put("json", jsonObject.toString());
-        Log.i("jso",jsonObject.toString());
 
         JsonObjectFormRequest request = new JsonObjectFormRequest(Request.Method.POST, url, params, new Response.Listener<JSONObject>() {
             @Override
@@ -89,7 +134,8 @@ public class MeetingDetailQuitReasonDialogFragment extends DialogFragment implem
                     if (!result.equals("success")){
                         Toast.makeText(getContext(), getString(R.string.time_out), Toast.LENGTH_LONG);
                     }else{
-                        MeetingDetailQuitReasonDialogFragment.this.dismiss();
+                        MeetingDetailCancelReasonDialogFragment.this.dismiss();
+                        getActivity().finish();
                     }
                 } catch (JSONException e) {
                     e.printStackTrace();

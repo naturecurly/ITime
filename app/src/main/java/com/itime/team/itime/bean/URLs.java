@@ -40,4 +40,7 @@ public class URLs {
     public static final String MEETING_INFO_UPDATE_REQUEST = HEAD + "meeting_info_update_request";
     public static final String HOST_SEND_RESET_MEETING_ANYWAY = HEAD + "host_send_reset_meeting_anyway";
     public static final String QUIT_MEETING = HEAD + "quit_meeting";
+    public static final String CANCEL_MEETING = HEAD + "cancel_meeting";
+    public static final String SEND_AGREE_FRIEND_REQUEST = HEAD + "send_agree_friend_request";
+    public static final String SEND_REJECT_FRIEND_REQUEST = HEAD + "send_agree_friend_request";
 }

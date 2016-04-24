@@ -24,6 +24,7 @@ import com.itime.team.itime.R;
 import com.itime.team.itime.bean.MeetingInfo;
 import com.itime.team.itime.bean.URLs;
 import com.itime.team.itime.bean.User;
+import com.itime.team.itime.fragments.MeetingDetailCancelReasonDialogFragment;
 import com.itime.team.itime.fragments.MeetingDetailReasonDialogFragment;
 import com.itime.team.itime.utils.DateUtil;
 import com.itime.team.itime.utils.JsonObjectFormRequest;
@@ -113,7 +114,8 @@ public class MeetingDetailActivity extends AppCompatActivity implements RadioGro
         mRepeat = (TextView) findViewById(R.id.meeting_detail_repeats);
         mPunctual = (CheckBox) findViewById(R.id.meeting_detail_punctual);
         mEmail = (Button) findViewById(R.id.meeting_detail_email);
-        mQuit = (Button) findViewById(R.id.quit);
+        mQuit = (Button) findViewById(R.id.meeting_detail_quit);
+        mQuit.setOnClickListener(this);
 
         mNote = (EditText) findViewById(R.id.meeting_detail_note);
         mNote.clearFocus();
@@ -332,6 +334,14 @@ public class MeetingDetailActivity extends AppCompatActivity implements RadioGro
             Intent intent = new Intent(this, MeetingAttendeesActivity.class);
             intent.putExtra("arg_meeting_id", mMeetingId);
             startActivity(intent);
+        } else if (v.getId() == mQuit.getId()) {
+            deleteMeeting();
         }
+    }
+
+    private void deleteMeeting(){
+        MeetingDetailCancelReasonDialogFragment dialog
+                = new MeetingDetailCancelReasonDialogFragment(mMeetingId, mMeetingInfo.getToken(),false);
+        dialog.show(getSupportFragmentManager(),"reasonQuitDialog");
     }
 }

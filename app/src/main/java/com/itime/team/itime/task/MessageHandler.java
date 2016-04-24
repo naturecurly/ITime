@@ -146,7 +146,6 @@ public class MessageHandler {
                     }
                 })
                 .setNeutralButton(R.string.accept, new DialogInterface.OnClickListener() {
-
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         // TODO: implement your accept logic
@@ -190,8 +189,8 @@ public class MessageHandler {
         builder.show();
     }
 
-    private static void receiveFriendRequestMessage(Context context, ParcelableMessage message) {
-        String friendId = message.relevantId;
+    private static void receiveFriendRequestMessage(final Context context, final ParcelableMessage message) {
+        final String friendId = message.relevantId;
         AlertDialog.Builder builder = new AlertDialog.Builder(context);
         builder.setTitle(message.messageTitle)
                 .setMessage(message.messageBody)
@@ -201,6 +200,37 @@ public class MessageHandler {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         // TODO: implement your accept friend logic
+                        User.hasNewFriend = true;
+                        JSONObject jsonObject = new JSONObject();
+                        try {
+                            jsonObject.put("user_id", User.ID);
+                            jsonObject.put("friend_id", friendId);
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+
+                        final String url = URLs.SEND_AGREE_FRIEND_REQUEST;
+                        Map<String, String> params = new HashMap();
+                        params.put("json", jsonObject.toString());
+
+                        JsonObjectFormRequest request = new JsonObjectFormRequest(Request.Method.POST, url, params, new Response.Listener<JSONObject>() {
+                            @Override
+                            public void onResponse(JSONObject response) {
+                                try {
+                                    if (!response.getString("result").equals("success")){
+                                        Toast.makeText(context, context.getString(R.string.time_out), Toast.LENGTH_LONG);
+                                    }
+                                } catch (JSONException e) {
+                                    e.printStackTrace();
+                                }
+                            }
+                        }, new Response.ErrorListener() {
+                            @Override
+                            public void onErrorResponse(VolleyError error) {
+
+                            }
+                        });
+                        MySingleton.getInstance(context).addToRequestQueue(request);
                     }
                 })
                 .setNeutralButton(R.string.reject, new DialogInterface.OnClickListener() {
@@ -208,6 +238,36 @@ public class MessageHandler {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         // TODO: implement your reject friend logic
+                        JSONObject jsonObject = new JSONObject();
+                        try {
+                            jsonObject.put("user_id", User.ID);
+                            jsonObject.put("friend_id", friendId);
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+
+                        final String url = URLs.SEND_REJECT_FRIEND_REQUEST;
+                        Map<String, String> params = new HashMap();
+                        params.put("json", jsonObject.toString());
+
+                        JsonObjectFormRequest request = new JsonObjectFormRequest(Request.Method.POST, url, params, new Response.Listener<JSONObject>() {
+                            @Override
+                            public void onResponse(JSONObject response) {
+                                try {
+                                    if (!response.getString("result").equals("success")){
+                                        Toast.makeText(context, context.getString(R.string.time_out), Toast.LENGTH_LONG);
+                                    }
+                                } catch (JSONException e) {
+                                    e.printStackTrace();
+                                }
+                            }
+                        }, new Response.ErrorListener() {
+                            @Override
+                            public void onErrorResponse(VolleyError error) {
+
+                            }
+                        });
+                        MySingleton.getInstance(context).addToRequestQueue(request);
                     }
                 });
 

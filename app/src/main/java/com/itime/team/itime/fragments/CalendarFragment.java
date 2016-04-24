@@ -818,12 +818,9 @@ public class CalendarFragment extends Fragment {
                                         final Boolean isHost = objectList.get(num).getBoolean("is_host");
                                         final String user_id = objectList.get(num).getString("user_id");
                                         final String hostID = objectList.get(num).getString("host_id");
-<<<<<<< HEAD
                                         final String eventID = objectList.get(num).getString("event_id");
                                         Log.i("evnetID",eventID);
-=======
                                         final int finalNum = num;
->>>>>>> c1a187f89786c818ae7b503cea24693eac008518
                                         eventView.setOnClickListener(new View.OnClickListener() {
                                             @Override
                                             public void onClick(View v) {

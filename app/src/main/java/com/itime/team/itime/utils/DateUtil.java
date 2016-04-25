@@ -279,16 +279,18 @@ public class DateUtil {
      * @return a Date Object
      */
     public static Date getLocalDateObject(String data) {
-        Date date = null;
-        // formater.getDateInstance can be more efficient
-        DateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss Z");
-        formatter.setTimeZone(TimeZone.getDefault());
-        try {
-            date = formatter.parse(data);
-        } catch (ParseException e) {
-            e.printStackTrace();
+        if (data != null) {
+            // formater.getDateInstance can be more efficient
+            DateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss Z");
+            formatter.setTimeZone(TimeZone.getDefault());
+            try {
+                return formatter.parse(data);
+            } catch (ParseException e) {
+                return null;
+            }
+        } else {
+            return null;
         }
-        return date;
     }
 
     public static Date getGMTDate(String data) {

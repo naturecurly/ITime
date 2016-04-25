@@ -28,6 +28,7 @@ import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.TextView;
 
+import com.bluelinelabs.logansquare.LoganSquare;
 import com.bugtags.library.Bugtags;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GoogleApiAvailability;
@@ -37,7 +38,9 @@ import com.itime.team.itime.fragments.CalendarFragment;
 import com.itime.team.itime.fragments.InboxFragment;
 import com.itime.team.itime.fragments.MeetingFragment;
 import com.itime.team.itime.fragments.SettingsFragment;
+import com.itime.team.itime.model.ParcelableMessage;
 import com.itime.team.itime.services.RegistrationIntentService;
+import com.itime.team.itime.task.MessageHandler;
 import com.itime.team.itime.utils.ITimeGcmPreferences;
 
 public class MainActivity extends AppCompatActivity implements
@@ -60,8 +63,9 @@ public class MainActivity extends AppCompatActivity implements
     private ImageButton mEventList;
     private Button mToday;
 
-    private static final int PLAY_SERVICES_RESOLUTION_REQUEST = 9000;
-    private BroadcastReceiver mRegistrationBroadcastReceiver;
+
+    // GCM Notification Receiver
+    private BroadcastReceiver mNotificationBroadcastReceiver;
 
 
     @Override
@@ -103,28 +107,7 @@ public class MainActivity extends AppCompatActivity implements
             }
         });
 
-        mRegistrationBroadcastReceiver = new BroadcastReceiver() {
-            @Override
-            public void onReceive(Context context, Intent intent) {
-                SharedPreferences sharedPreferences =
-                        PreferenceManager.getDefaultSharedPreferences(context);
-                boolean sentToken = sharedPreferences
-                        .getBoolean(ITimeGcmPreferences.SENT_TOKEN_TO_SERVER, false);
-                if (sentToken) {
-                    Log.i(LOG_TAG, getString(R.string.gcm_send_message));
-                } else {
-                    Log.i(LOG_TAG, getString(R.string.token_error_message));
-                }
-                String token = sharedPreferences.getString(ITimeGcmPreferences.REGISTRATION_TOKEN, "invalid token");
-                Log.i(LOG_TAG, "token: " + token);
-
-            }
-        };
-        if (checkPlayServices()) {
-            // Start IntentService to register this application with GCM.
-            Intent intent = new Intent(this, RegistrationIntentService.class);
-            startService(intent);
-        }
+        initBroadcastReceiver(this);
     }
 
     private void setFragments() {
@@ -233,14 +216,18 @@ public class MainActivity extends AppCompatActivity implements
     @Override
     protected void onResume() {
         super.onResume();
+        Log.i(LOG_TAG, "onResume");
+        LocalBroadcastManager.getInstance(this).registerReceiver(mNotificationBroadcastReceiver,
+                new IntentFilter(ITimeGcmPreferences.HANDLE_MESSAGE));
+
         Bugtags.onResume(this);
-        LocalBroadcastManager.getInstance(this).registerReceiver(mRegistrationBroadcastReceiver,
-                new IntentFilter(ITimeGcmPreferences.REGISTRATION_COMPLETE));
     }
 
     @Override
     protected void onPause() {
-        LocalBroadcastManager.getInstance(this).unregisterReceiver(mRegistrationBroadcastReceiver);
+        Log.i(LOG_TAG, "onPause");
+        LocalBroadcastManager.getInstance(this).unregisterReceiver(mNotificationBroadcastReceiver);
+
         super.onPause();
         Bugtags.onPause(this);
     }
@@ -251,25 +238,19 @@ public class MainActivity extends AppCompatActivity implements
         return super.dispatchTouchEvent(event);
     }
 
-    /**
-     * Check the device to make sure it has the Google Play Services APK. If
-     * it doesn't, display a dialog that allows users to download the APK from
-     * the Google Play Store or enable it in the device's system settings.
-     */
-    private boolean checkPlayServices() {
-        GoogleApiAvailability apiAvailability = GoogleApiAvailability.getInstance();
-        int resultCode = apiAvailability.isGooglePlayServicesAvailable(this);
-        if (resultCode != ConnectionResult.SUCCESS) {
-            if (apiAvailability.isUserResolvableError(resultCode)) {
-                apiAvailability.getErrorDialog(this, resultCode, PLAY_SERVICES_RESOLUTION_REQUEST)
-                        .show();
-            } else {
-                Log.i(LOG_TAG, "This device is not supported.");
-                //finish();
+    private void initBroadcastReceiver(final Context ctx) {
+        mNotificationBroadcastReceiver = new BroadcastReceiver() {
+            @Override
+            public void onReceive(Context context, Intent intent) {
+                Bundle data = intent.getBundleExtra(ITimeGcmPreferences.HANDLE_MESSAGE_DATA);
+                if (data != null) {
+                    // change data to message
+                    ParcelableMessage message = new ParcelableMessage(data);
+                    MessageHandler.handleMessage(ctx, message);
+                }
             }
-            return false;
-        }
-        return true;
+        };
+
     }
 
 }

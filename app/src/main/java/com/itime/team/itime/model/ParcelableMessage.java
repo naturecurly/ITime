@@ -17,6 +17,7 @@
 package com.itime.team.itime.model;
 
 import android.database.Cursor;
+import android.os.Bundle;
 import android.os.Parcel;
 import android.os.Parcelable;
 
@@ -96,6 +97,25 @@ public class ParcelableMessage implements Parcelable {
 
     public ParcelableMessage() {
 
+    }
+
+    public ParcelableMessage(Bundle data) {
+        this.messageId = data.getString("message_id");
+        this.userId = data.getString("user_id");
+        this.ifRead = data.getBoolean("if_read");
+        this.ifUseful = data.getBoolean("if_useful");
+        String msgType = data.getString("itime_message_type");
+        if (msgType.equalsIgnoreCase("YOU SENT A NEW INVITATION")) {
+            msgType = "YOU_SENT_A_NEW_INVITATION";
+        }
+        this.messageType = MessageType.valueOf(msgType); // special
+        this.messageTitle = data.getString("message_title");
+        this.messageSubtitle = data.getString("message_subtitle");
+        this.messageBody = data.getString("message_body");
+        this.relevantId = data.getString("relevant_id");
+        this.createdTime = DateUtil.getLocalDateObject(data.getString("created_time"));
+        this.meetingId = data.getString("meeting_id");
+        this.meetingValidToken = data.getString("meeting_valid_token");
     }
 
 

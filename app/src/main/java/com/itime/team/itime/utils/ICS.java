@@ -5,12 +5,10 @@ import android.content.Context;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.OutputStreamWriter;
 import java.io.UnsupportedEncodingException;
 import java.io.Writer;
@@ -84,17 +82,6 @@ public class ICS {
         this.hasInvitation = true;
     }
 
-    public File getTempFile(Context context, String fileName) {
-        File file = null;
-//        String fileName = Uri.parse(url).getLastPathSegment();
-        try {
-            file = File.createTempFile(fileName, null, mContext.getCacheDir());
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
-        return file;
-    }
     //Note: Any attributes beyond 'Standard Attributes' will be add prefix 'X-', which
     //means this attributes is customized and other app would not access it.
     public File createICS(String fileName){
@@ -104,39 +91,11 @@ public class ICS {
         String result = head + "\n" + mainBody + invitationBody + tail;
         FileOutputStream outputStream;
 
-
         try{
-            File file = getTempFile(mContext, fileName);
-
-            InputStream in = null;
-            try {
-                System.out.println("以字节为单位读取文件内容，一次读一个字节：");
-                // 一次读一个字节
-                in = new FileInputStream(file);
-                int tempbyte;
-                while ((tempbyte = in.read()) != -1) {
-                    System.out.write(tempbyte);
-                }
-                in.close();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-
-
             outputStream = mContext.openFileOutput(fileName, Context.MODE_PRIVATE);
             outputStream.write(result.getBytes());
-
+            outputStream.flush();
             outputStream.close();
-            return file;
-//            Writer writer = new BufferedWriter(new OutputStreamWriter(
-//                    new FileOutputStream(filePath), "utf-8"));
-//            try{
-//                writer.write(result);
-//            } catch (IOException e) {
-//                e.printStackTrace();
-//            }
-//
-//            writer.close();
         } catch (FileNotFoundException | UnsupportedEncodingException e) {
             e.printStackTrace();
         }catch (IOException e) {

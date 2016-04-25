@@ -26,6 +26,7 @@ import com.android.volley.Request;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.itime.team.itime.R;
+import com.itime.team.itime.activities.MeetingDetaiHostlActivity;
 import com.itime.team.itime.activities.MeetingDetailActivity;
 import com.itime.team.itime.bean.URLs;
 import com.itime.team.itime.bean.User;
@@ -119,7 +120,7 @@ public class MessageHandler {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         // pass meeting information to meeting detail
-                        Intent intent = new Intent(context, MeetingDetailActivity.class);
+                        Intent intent = new Intent(context, MeetingDetaiHostlActivity.class);
                         intent.putExtra(MeetingDetailActivity.ARG_MEETING_ID, message.meetingId);
                         context.startActivity(intent);
                     }

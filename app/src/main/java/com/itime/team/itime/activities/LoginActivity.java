@@ -1,11 +1,17 @@
 package com.itime.team.itime.activities;
 
+import android.content.BroadcastReceiver;
 import android.content.ContentValues;
+import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
+import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.v4.app.FragmentActivity;
+import android.support.v4.content.LocalBroadcastManager;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
@@ -24,15 +30,19 @@ import com.facebook.Profile;
 import com.facebook.ProfileTracker;
 import com.facebook.login.LoginResult;
 import com.facebook.login.widget.LoginButton;
+import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.GoogleApiAvailability;
 import com.itime.team.itime.R;
 import com.itime.team.itime.bean.Device;
 import com.itime.team.itime.bean.URLs;
 import com.itime.team.itime.bean.User;
 import com.itime.team.itime.database.DeviceTableHelper;
 import com.itime.team.itime.database.UserTableHelper;
+import com.itime.team.itime.services.RegistrationIntentService;
 import com.itime.team.itime.task.PreferenceTask;
 import com.itime.team.itime.task.UserTask;
 import com.itime.team.itime.utils.DateUtil;
+import com.itime.team.itime.utils.ITimeGcmPreferences;
 import com.itime.team.itime.utils.JsonObjectFormRequest;
 import com.itime.team.itime.utils.MySingleton;
 import com.itime.team.itime.views.widget.ClearEditText;
@@ -61,6 +71,7 @@ public class LoginActivity extends FragmentActivity implements View.OnClickListe
 
     private String mInviatedFriendID;
 
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -72,6 +83,7 @@ public class LoginActivity extends FragmentActivity implements View.OnClickListe
         mRegister = (Button) findViewById(R.id.login_register);
 
         init();
+        initService();
     }
 
     private void init(){
@@ -134,6 +146,9 @@ public class LoginActivity extends FragmentActivity implements View.OnClickListe
         }
         mUsernameStr = mUsername.getText().toString();
         String password = mPassword.getText().toString();
+        SharedPreferences sharedPreferences =
+                PreferenceManager.getDefaultSharedPreferences(this);
+        String token = sharedPreferences.getString(ITimeGcmPreferences.REGISTRATION_TOKEN, "");
         if(isUsernameLegal(mUsernameStr) && isPasswordLeagal(password)) {
             final JSONObject json = new JSONObject();
             try {
@@ -141,7 +156,7 @@ public class LoginActivity extends FragmentActivity implements View.OnClickListe
                 json.put("password", password);
                 json.put("connect_token", "");
                 json.put("dev_id", Device.DeviceID);
-                json.put("dev_token", "");
+                json.put("dev_token", token);
             } catch (JSONException e) {
                 e.printStackTrace();
             }
@@ -175,6 +190,12 @@ public class LoginActivity extends FragmentActivity implements View.OnClickListe
                     updateUserTable();
                 }
                 User.ID = mUsernameStr;
+
+                PreferenceTask preferenceTask = PreferenceTask.getInstance(getApplicationContext());
+                preferenceTask.syncPreference(User.ID, null, null);
+                UserTask userTask = UserTask.getInstance(getApplicationContext());
+                userTask.loadUserInfo(User.ID, null);
+
                 Intent intent = new Intent(this,MainActivity.class);
                 startActivity(intent);
             }else if(json.get("result").toString().equals("user_id_existed")){
@@ -256,13 +277,17 @@ public class LoginActivity extends FragmentActivity implements View.OnClickListe
         }
         mUsernameStr = mUsername.getText().toString();
         String password = mPassword.getText().toString();
+        SharedPreferences sharedPreferences =
+                PreferenceManager.getDefaultSharedPreferences(this);
+        String token = sharedPreferences.getString(ITimeGcmPreferences.REGISTRATION_TOKEN, "");
+
         final JSONObject json = new JSONObject();
         try {
             json.put("user_id",mUsernameStr);
             json.put("password",password);
             json.put("connect_token","");
             json.put("dev_id", Device.DeviceID);
-            json.put("dev_token", "");
+            json.put("dev_token", token);
 
         } catch (JSONException e) {
             e.printStackTrace();
@@ -423,6 +448,73 @@ public class LoginActivity extends FragmentActivity implements View.OnClickListe
         if (callbackManager.onActivityResult(requestCode, resultCode, data)) {
             return;
         }
+    }
+
+    // Added by Xuhui Chen on 25/04/16
+    // Set up GCM service while login
+    public static final String LOG_TAG = MainActivity.class.getSimpleName();
+
+    private static final int PLAY_SERVICES_RESOLUTION_REQUEST = 9000;
+    private BroadcastReceiver mRegistrationBroadcastReceiver;
+
+    private void initService() {
+        mRegistrationBroadcastReceiver = new BroadcastReceiver() {
+            @Override
+            public void onReceive(Context context, Intent intent) {
+                SharedPreferences sharedPreferences =
+                        PreferenceManager.getDefaultSharedPreferences(context);
+                boolean sentToken = sharedPreferences
+                        .getBoolean(ITimeGcmPreferences.SENT_TOKEN_TO_SERVER, false);
+                if (sentToken) {
+                    Log.i(LOG_TAG, getString(R.string.gcm_send_message));
+                } else {
+                    Log.i(LOG_TAG, getString(R.string.token_error_message));
+                    Toast.makeText(context, getString(R.string.token_error_message), Toast.LENGTH_LONG).show();
+                }
+                String token = sharedPreferences.getString(ITimeGcmPreferences.REGISTRATION_TOKEN, "invalid token");
+                Log.i(LOG_TAG, "token: " + token);
+
+            }
+        };
+        if (checkPlayServices()) {
+            // Start IntentService to register this application with GCM.
+            Intent intent = new Intent(this, RegistrationIntentService.class);
+            startService(intent);
+        }
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        LocalBroadcastManager.getInstance(this).registerReceiver(mRegistrationBroadcastReceiver,
+                new IntentFilter(ITimeGcmPreferences.REGISTRATION_COMPLETE));
+    }
+
+    @Override
+    protected void onStop() {
+        LocalBroadcastManager.getInstance(this).unregisterReceiver(mRegistrationBroadcastReceiver);
+        super.onStop();
+    }
+
+    /**
+     * Check the device to make sure it has the Google Play Services APK. If
+     * it doesn't, display a dialog that allows users to download the APK from
+     * the Google Play Store or enable it in the device's system settings.
+     */
+    private boolean checkPlayServices() {
+        GoogleApiAvailability apiAvailability = GoogleApiAvailability.getInstance();
+        int resultCode = apiAvailability.isGooglePlayServicesAvailable(this);
+        if (resultCode != ConnectionResult.SUCCESS) {
+            if (apiAvailability.isUserResolvableError(resultCode)) {
+                apiAvailability.getErrorDialog(this, resultCode, PLAY_SERVICES_RESOLUTION_REQUEST)
+                        .show();
+            } else {
+                Log.i(LOG_TAG, "This device is not supported.");
+                //finish();
+            }
+            return false;
+        }
+        return true;
     }
 
 }

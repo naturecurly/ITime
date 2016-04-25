@@ -3,10 +3,12 @@ package com.itime.team.itime.activities;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.v7.app.AppCompatActivity;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
@@ -25,6 +27,7 @@ import com.itime.team.itime.bean.User;
 import com.itime.team.itime.database.DeviceTableHelper;
 import com.itime.team.itime.database.UserTableHelper;
 import com.itime.team.itime.utils.DateUtil;
+import com.itime.team.itime.utils.ITimeGcmPreferences;
 import com.itime.team.itime.utils.JsonObjectFormRequest;
 import com.itime.team.itime.utils.MySingleton;
 
@@ -156,13 +159,16 @@ public class CheckLoginActivity extends AppCompatActivity{
 
     // Upload username, password and other relative information to the server.
     private void login(){
+        SharedPreferences sharedPreferences =
+                PreferenceManager.getDefaultSharedPreferences(this);
+        String token = sharedPreferences.getString(ITimeGcmPreferences.REGISTRATION_TOKEN, "");
         JSONObject json = new JSONObject();
         try {
             json.put("user_id",mUsernameStr);
             json.put("password",mPasswordStr);
             json.put("connect_token","");
             json.put("dev_id", Device.DeviceID);
-            json.put("dev_token", "");
+            json.put("dev_token", token);
         } catch (JSONException e) {
             e.printStackTrace();
         }

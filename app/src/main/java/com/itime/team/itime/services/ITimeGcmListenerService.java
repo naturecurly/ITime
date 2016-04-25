@@ -24,11 +24,14 @@ import android.media.RingtoneManager;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.NotificationCompat;
+import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 
 import com.google.android.gms.gcm.GcmListenerService;
 import com.itime.team.itime.R;
 import com.itime.team.itime.activities.MainActivity;
+import com.itime.team.itime.task.MessageHandler;
+import com.itime.team.itime.utils.ITimeGcmPreferences;
 
 public class ITimeGcmListenerService extends GcmListenerService {
 
@@ -44,9 +47,9 @@ public class ITimeGcmListenerService extends GcmListenerService {
     // [START receive_message]
     @Override
     public void onMessageReceived(String from, Bundle data) {
-        String message = data.getString("message");
+        String messageTitle = data.getString("message_title");
         Log.d(TAG, "From: " + from);
-        Log.d(TAG, "Message: " + message);
+        Log.d(TAG, "Message: " + messageTitle);
 
         if (from.startsWith("/topics/")) {
             // message received from some topic.
@@ -61,12 +64,15 @@ public class ITimeGcmListenerService extends GcmListenerService {
          *     - Store message in local database.
          *     - Update UI.
          */
+        Intent handleMessage = new Intent(ITimeGcmPreferences.HANDLE_MESSAGE);
+        handleMessage.putExtra(ITimeGcmPreferences.HANDLE_MESSAGE_DATA, data);
+        LocalBroadcastManager.getInstance(this).sendBroadcast(handleMessage);
 
         /**
          * In some cases it may be useful to show a notification indicating to the user
          * that a message was received.
          */
-        sendNotification(message);
+        sendNotification(data);
         // [END_EXCLUDE]
     }
     // [END receive_message]
@@ -74,19 +80,21 @@ public class ITimeGcmListenerService extends GcmListenerService {
     /**
      * Create and show a simple notification containing the received GCM message.
      *
-     * @param message GCM message received.
+     * @param data GCM message received.
      */
-    private void sendNotification(String message) {
+    private void sendNotification(Bundle data) {
         Intent intent = new Intent(this, MainActivity.class);
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
         PendingIntent pendingIntent = PendingIntent.getActivity(this, 0 /* Request code */, intent,
                 PendingIntent.FLAG_ONE_SHOT);
 
         Uri defaultSoundUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
+        String messageTitle = data.getString("message_title");
+        String messageBody = data.getString("message_body");
         NotificationCompat.Builder notificationBuilder = new NotificationCompat.Builder(this)
-                //.setSmallIcon(R.drawable.ic_stat_ic_notification)
-                .setContentTitle("GCM Message")
-                .setContentText(message)
+                .setSmallIcon(R.drawable.ic_notifications_active_black)
+                .setContentTitle(messageTitle)
+                .setContentText(messageBody)
                 .setAutoCancel(true)
                 .setSound(defaultSoundUri)
                 .setContentIntent(pendingIntent);

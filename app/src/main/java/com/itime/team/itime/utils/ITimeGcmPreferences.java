@@ -21,5 +21,7 @@ public class ITimeGcmPreferences {
     public static final String SENT_TOKEN_TO_SERVER = "sentTokenToServer";
     public static final String REGISTRATION_COMPLETE = "registrationComplete";
     public static final String REGISTRATION_TOKEN = "registrationToken";
+    public static final String HANDLE_MESSAGE = "handleMessage";
+    public static final String HANDLE_MESSAGE_DATA = "handleMessageData";
 
 }

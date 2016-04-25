@@ -72,7 +72,7 @@ public class RegistrationIntentService extends IntentService {
             Log.i(TAG, "GCM Registration Token: " + token);
 
             // TODO: Implement this method to send any registration to your app's servers.
-            sendRegistrationToServer(token);
+            //sendRegistrationToServer(token);
 
             // Subscribe to topic channels
             subscribeTopics(token);
@@ -114,7 +114,7 @@ public class RegistrationIntentService extends IntentService {
                 e.printStackTrace();
             }
 
-            URL url = new URL(URLs.LOAD_INBOX);
+            URL url = new URL(URLs.SYNC_GCM_REGISTRATION_TOKEN);
             HttpURLConnection conn = (HttpURLConnection) url.openConnection();
             conn.setRequestProperty("Content-Type", "application/json");
             conn.setRequestMethod("POST");
@@ -126,7 +126,7 @@ public class RegistrationIntentService extends IntentService {
             BufferedReader bf = new BufferedReader(new InputStreamReader(inputStream));
             String resp = bf.readLine();
 
-            System.out.println(resp);
+            Log.i(TAG, "SYNC_GCM_REGISTRATION_TOKEN: " + resp);
         } catch (IOException e) {
             e.printStackTrace();
         }

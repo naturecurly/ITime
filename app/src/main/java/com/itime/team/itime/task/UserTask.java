@@ -265,7 +265,7 @@ public class UserTask {
 
     }
 
-    public void syncGcmRegistrationToken(String userId, String registrationToken, CallBackResult<String> callback) {
+    public void syncGcmRegistrationToken(String userId, String registrationToken, final CallBackResult<String> callback) {
         JSONObject jsonObject = new JSONObject();
         try {
             jsonObject.put("user_id", userId);

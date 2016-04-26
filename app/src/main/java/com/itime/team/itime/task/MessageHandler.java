@@ -80,6 +80,7 @@ public class MessageHandler {
 
             case MAKE_FRIEND_SUCCESS_INFO:
                 AlertUtil.showMessageDialog(context, messageTitle, messageBody);
+                User.hasNewFriend = true;
                 // load new friends
                 break;
             case MAKE_FRIEND_FAIL_INFO:

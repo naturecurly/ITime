@@ -6,7 +6,6 @@ import android.os.Bundle;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -36,11 +35,10 @@ import com.itime.team.itime.utils.MySingleton;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.InputStream;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.HashMap;
@@ -494,16 +492,31 @@ public class MeetingDetaiHostlActivity extends AppCompatActivity implements View
 
     private void email(){
 
-        File file = this.getFileStreamPath("NewMeeing.ics");
-
+//        File file = this.getFileStreamPath("NewMeeing.ics");
+        File file = new File(getFilesDir(), "NewMeeing.ics");
+        InputStream in = null;
+        try {
+            System.out.println("以字节为单位读取文件内容，一次读一个字节：");
+            // 一次读一个字节
+            in = new FileInputStream(file);
+            int tempbyte;
+            while ((tempbyte = in.read()) != -1) {
+                System.out.write(tempbyte);
+            }
+            in.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+            return;
+        }
         String mySbuject = getString(R.string.add_friend);
         String myCc = "cc";
         Intent myIntent = new Intent(android.content.Intent.ACTION_SEND, Uri.fromParts("mailto", "", null));
-        myIntent.setType("text/html");
+        myIntent.setType("vnd.android.cursor.dir/email");
         myIntent.putExtra(android.content.Intent.EXTRA_CC, myCc);
         myIntent.putExtra(android.content.Intent.EXTRA_SUBJECT, mySbuject);
         myIntent.putExtra(Intent.EXTRA_TEXT, getString(R.string.meeting_detail_email_content));
         myIntent.putExtra(Intent.EXTRA_STREAM, Uri.fromFile(file));
+//        myIntent.putExtra(Intent.EXTRA_STREAM, Uri.fromFile(file));
         startActivity(Intent.createChooser(myIntent, "mail"));
     }
 
@@ -523,27 +536,6 @@ public class MeetingDetaiHostlActivity extends AppCompatActivity implements View
         Invitation host = new Invitation(User.ID, User.ID);
         ics.attachInvitation(host);
         ICSFile = ics.createICS("NewMeeing.ics");
-        read();
-    }
-
-    private void read() {
-        try {
-            FileInputStream inputStream = this.openFileInput("NewMeeing.ics");
-            byte[] bytes = new byte[1024];
-            ByteArrayOutputStream arrayOutputStream = new ByteArrayOutputStream();
-            while (inputStream.read(bytes) != -1) {
-                arrayOutputStream.write(bytes, 0, bytes.length);
-            }
-            inputStream.close();
-            arrayOutputStream.close();
-            String content = new String(arrayOutputStream.toByteArray());
-            Log.i("text",content);
-
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
     }
 
     private void deleteMeeting(){

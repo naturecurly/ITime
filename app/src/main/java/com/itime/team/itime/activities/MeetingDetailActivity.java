@@ -1,7 +1,9 @@
 package com.itime.team.itime.activities;
 
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
+import android.support.v4.content.FileProvider;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
@@ -27,12 +29,15 @@ import com.itime.team.itime.bean.User;
 import com.itime.team.itime.fragments.MeetingDetailCancelReasonDialogFragment;
 import com.itime.team.itime.fragments.MeetingDetailReasonDialogFragment;
 import com.itime.team.itime.utils.DateUtil;
+import com.itime.team.itime.utils.ICS;
+import com.itime.team.itime.utils.Invitation;
 import com.itime.team.itime.utils.JsonObjectFormRequest;
 import com.itime.team.itime.utils.MySingleton;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.File;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.HashMap;
@@ -63,6 +68,8 @@ public class MeetingDetailActivity extends AppCompatActivity implements RadioGro
     private EditText mNewNote;
     private Button mEmail, mQuit;
     private ImageView mImage;
+    private String mEventId;
+    private File ICSFile;
 
     private LinearLayout mLNewName, mLNewVenue, mLNewStart, mLNewEnd, mLNewRepeat, mLNewPunctual, mLNewNote;
 
@@ -95,6 +102,7 @@ public class MeetingDetailActivity extends AppCompatActivity implements RadioGro
         }
 
         mMeetingId = getIntent().getStringExtra(ARG_MEETING_ID);
+        mEventId = getIntent().getStringExtra("event_id");
 
         mRadioGroup = (RadioGroup) findViewById(R.id.meeting_detail_radio_group);
         mAccept = (RadioButton) findViewById(R.id.meeting_detail_radio_accept);
@@ -114,6 +122,7 @@ public class MeetingDetailActivity extends AppCompatActivity implements RadioGro
         mRepeat = (TextView) findViewById(R.id.meeting_detail_repeats);
         mPunctual = (CheckBox) findViewById(R.id.meeting_detail_punctual);
         mEmail = (Button) findViewById(R.id.meeting_detail_email);
+        mEmail.setOnClickListener(this);
         mQuit = (Button) findViewById(R.id.meeting_detail_quit);
         mQuit.setOnClickListener(this);
 
@@ -195,6 +204,7 @@ public class MeetingDetailActivity extends AppCompatActivity implements RadioGro
             @Override
             public void onResponse(JSONObject response) {
                 handleMeetingInfo(response);
+                createICS();
             }
         }, new Response.ErrorListener() {
             @Override
@@ -328,6 +338,44 @@ public class MeetingDetailActivity extends AppCompatActivity implements RadioGro
         }
     }
 
+    private void email(){
+
+        File file = new File(getFilesDir(), "NewMeeing.ics");
+        Uri fileUri = FileProvider.getUriForFile(this, "com.itime.team.itime.fileprovider", file);
+        String mySbuject = getString(R.string.add_friend);
+        String myCc = "cc";
+        Intent myIntent = new Intent(Intent.ACTION_SEND);
+        myIntent.setType("text/plain");
+        myIntent.putExtra(android.content.Intent.EXTRA_CC, myCc);
+        myIntent.putExtra(android.content.Intent.EXTRA_SUBJECT, mySbuject);
+        myIntent.putExtra(Intent.EXTRA_TEXT, getString(R.string.meeting_detail_email_content));
+        myIntent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+
+        myIntent.putExtra(Intent.EXTRA_STREAM, fileUri);
+
+
+        startActivity(Intent.createChooser(myIntent, "mail"));
+    }
+
+    private void createICS(){
+        String eventID = mEventId;
+        String eventName = mMeetingName.getText().toString();
+        String description = mNote.getText().toString();
+        String start = "";
+        String end = "";
+        if(!mMeetingInfo.getName().equals("")){
+            start = DateUtil.getICSTime(mMeetingInfo.getStart());
+            end = DateUtil.getICSTime(mMeetingInfo.getEnd());
+        }
+
+
+        ICS ics = new ICS(eventID, eventName, description, start, end,this);
+        Invitation host = new Invitation(User.ID, User.ID);
+        ics.attachInvitation(host);
+        ICSFile = ics.createICS("NewMeeing.ics");
+    }
+
+
     @Override
     public void onClick(View v) {
         if (v.getId() == mAttendee.getId()){
@@ -336,6 +384,8 @@ public class MeetingDetailActivity extends AppCompatActivity implements RadioGro
             startActivity(intent);
         } else if (v.getId() == mQuit.getId()) {
             deleteMeeting();
+        } else if (v.getId() == mEmail.getId()) {
+            email();
         }
     }
 

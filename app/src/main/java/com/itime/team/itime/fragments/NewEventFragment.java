@@ -8,6 +8,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -33,6 +34,7 @@ import com.itime.team.itime.R;
 import com.itime.team.itime.activities.GooglePlacesAutocompleteActivity;
 import com.itime.team.itime.bean.URLs;
 import com.itime.team.itime.bean.User;
+import com.itime.team.itime.listener.RepeatSelectionListener;
 import com.itime.team.itime.utils.DateUtil;
 import com.itime.team.itime.utils.JsonManager;
 import com.itime.team.itime.utils.MySingleton;
@@ -43,6 +45,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
@@ -88,13 +91,18 @@ public class NewEventFragment extends Fragment {
 //
 //    private JsonManager mJsonManager;
 
+    final private String[] repeatArray = {"One-time event", "Daily", "Weekly", "Bi-Weekly", "Monthly", "Yearly"};
 
     private EditText event_name;
+    private EditText event_comment;
     private TextView event_venue;
     private TextView start_date;
     private TextView start_time;
     private TextView end_date;
     private TextView end_time;
+    private TextView repeat_type;
+
+
     private int mYear;
     private int mMonthOfYear;
     private int mDayOfMonth;
@@ -106,6 +114,7 @@ public class NewEventFragment extends Fragment {
     private int mEndDayOfMonth;
     private int mEndHour;
     private int mEndMin;
+    private String repeatString = "One-time event";
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -118,8 +127,10 @@ public class NewEventFragment extends Fragment {
         mHour = c.get(Calendar.HOUR_OF_DAY);
         Bundle arguments = getArguments();
         View view = inflater.inflate(R.layout.new_event_fragment, container, false);
+        repeat_type = (TextView) view.findViewById(R.id.rep_new_event);
         event_name = (EditText) view.findViewById(R.id.new_event_name);
         event_venue = (TextView) view.findViewById(R.id.new_event_venue);
+        event_comment = (EditText) view.findViewById(R.id.new_event_comment);
         start_date = (TextView) view.findViewById(R.id.start_date);
         start_time = (TextView) view.findViewById(R.id.start_time);
         end_date = (TextView) view.findViewById(R.id.end_date);
@@ -187,10 +198,31 @@ public class NewEventFragment extends Fragment {
                 }, mHour, mMin, true).show();
             }
         });
+
+        repeat_type.setText("One-time event");
+        repeat_type.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                FragmentManager fm = getFragmentManager();
+                NewEventRepeatDialogFragment dialog = new NewEventRepeatDialogFragment();
+                Bundle bundle = new Bundle();
+                bundle.putInt(NewEventRepeatDialogFragment.SELECTED, Arrays.asList(repeatArray).indexOf(repeatString));
+                dialog.setArguments(bundle);
+                dialog.setListener(new RepeatSelectionListener() {
+                    @Override
+                    public void selectItem(int positon) {
+                        repeatString = repeatArray[positon];
+                        repeat_type.setText(repeatArray[positon]);
+                    }
+                });
+                dialog.show(fm, "repeat_dialog");
+            }
+        });
 //        init(rootView);
 
         return view;
     }
+
 
     //    private void init(View rootView) {
 //
@@ -285,21 +317,37 @@ public class NewEventFragment extends Fragment {
 //    }
 //
 //
-//    @Override
-//    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-//        super.onCreateOptionsMenu(menu, inflater);
-//        inflater.inflate(R.menu.new_event, menu);
-//    }
-//
-//    @Override
-//    public boolean onOptionsItemSelected(MenuItem item) {
-//        switch (item.getItemId()) {
-//            case R.id.new_event_menu_send:
-//                Toast.makeText(getContext(), "hello, it's me", Toast.LENGTH_LONG).show();
-//                break;
-//        }
-//        return super.onOptionsItemSelected(item);
-//    }
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        super.onCreateOptionsMenu(menu, inflater);
+        inflater.inflate(R.menu.new_event, menu);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.new_event_menu_send:
+                Toast.makeText(getContext(), "hello, it's me", Toast.LENGTH_LONG).show();
+                postEvent();
+                break;
+        }
+        return super.onOptionsItemSelected(item);
+    }
+
+    private void postEvent() {
+        JSONObject object = new JSONObject();
+        try {
+            object.put("event_id", UUID.randomUUID().toString());
+            object.put("user_id", User.ID);
+            object.put("host_id", "");
+            object.put("meeting_id", "");
+            object.put("event_name", event_name.getText());
+            object.put("event_comment", event_comment.getText());
+
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+    }
 //
 //    private void getCoordinate(String address) {
 //        StringBuffer buffer = new StringBuffer();

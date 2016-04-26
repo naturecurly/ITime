@@ -259,7 +259,7 @@
                 android:background="#000000" />
 
             <EditText
-                android:id="@+id/new_meeting_message"
+                android:id="@+id/new_event_comment"
                 android:layout_width="match_parent"
                 android:layout_height="200dp"
                 android:background="@color/white"

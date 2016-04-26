@@ -214,6 +214,15 @@
             android:name=".database.ITimeDataProivder"
             android:authorities="itime"
             android:exported="false" />
+        <provider
+            android:name="android.support.v4.content.FileProvider"
+            android:authorities="com.itime.team.itime.fileprovider"
+            android:exported="false"
+            android:grantUriPermissions="true">
+            <meta-data
+                android:name="android.support.FILE_PROVIDER_PATHS"
+                android:resource="@xml/file_provider_paths" />
+        </provider>
 
         <!-- [START gcm_receiver] -->
         <receiver

@@ -3,6 +3,7 @@ package com.itime.team.itime.activities;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.v4.content.FileProvider;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
@@ -36,9 +37,6 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStream;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.HashMap;
@@ -492,31 +490,20 @@ public class MeetingDetaiHostlActivity extends AppCompatActivity implements View
 
     private void email(){
 
-//        File file = this.getFileStreamPath("NewMeeing.ics");
         File file = new File(getFilesDir(), "NewMeeing.ics");
-        InputStream in = null;
-        try {
-            System.out.println("以字节为单位读取文件内容，一次读一个字节：");
-            // 一次读一个字节
-            in = new FileInputStream(file);
-            int tempbyte;
-            while ((tempbyte = in.read()) != -1) {
-                System.out.write(tempbyte);
-            }
-            in.close();
-        } catch (IOException e) {
-            e.printStackTrace();
-            return;
-        }
+        Uri fileUri = FileProvider.getUriForFile(this, "com.itime.team.itime.fileprovider", file);
         String mySbuject = getString(R.string.add_friend);
         String myCc = "cc";
-        Intent myIntent = new Intent(android.content.Intent.ACTION_SEND, Uri.fromParts("mailto", "", null));
-        myIntent.setType("vnd.android.cursor.dir/email");
+        Intent myIntent = new Intent(Intent.ACTION_SEND);
+        myIntent.setType("text/plain");
         myIntent.putExtra(android.content.Intent.EXTRA_CC, myCc);
         myIntent.putExtra(android.content.Intent.EXTRA_SUBJECT, mySbuject);
         myIntent.putExtra(Intent.EXTRA_TEXT, getString(R.string.meeting_detail_email_content));
-        myIntent.putExtra(Intent.EXTRA_STREAM, Uri.fromFile(file));
-//        myIntent.putExtra(Intent.EXTRA_STREAM, Uri.fromFile(file));
+        myIntent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+
+        myIntent.putExtra(Intent.EXTRA_STREAM, fileUri);
+
+
         startActivity(Intent.createChooser(myIntent, "mail"));
     }
 

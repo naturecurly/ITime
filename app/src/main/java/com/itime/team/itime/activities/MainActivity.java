@@ -1,10 +1,12 @@
 package com.itime.team.itime.activities;
 
 import android.content.BroadcastReceiver;
+import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
+import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
@@ -30,15 +32,18 @@ import android.widget.TextView;
 
 import com.bluelinelabs.logansquare.LoganSquare;
 import com.bugtags.library.Bugtags;
+import com.facebook.login.LoginManager;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GoogleApiAvailability;
 import com.itime.team.itime.R;
 import com.itime.team.itime.bean.User;
+import com.itime.team.itime.database.UserTableHelper;
 import com.itime.team.itime.fragments.CalendarFragment;
 import com.itime.team.itime.fragments.InboxFragment;
 import com.itime.team.itime.fragments.MeetingFragment;
 import com.itime.team.itime.fragments.SettingsFragment;
 import com.itime.team.itime.model.ParcelableMessage;
+import com.itime.team.itime.model.utils.MessageType;
 import com.itime.team.itime.services.RegistrationIntentService;
 import com.itime.team.itime.task.MessageHandler;
 import com.itime.team.itime.utils.ITimeGcmPreferences;
@@ -246,11 +251,32 @@ public class MainActivity extends AppCompatActivity implements
                 if (data != null) {
                     // change data to message
                     ParcelableMessage message = new ParcelableMessage(data);
+                    if (message.messageType == MessageType.OTHER_DEVICE_LOGIN) {
+                        finish();
+                        Intent intent2 = new Intent(ctx, LoginActivity.class);
+                        intent2.putExtra("username", com.itime.team.itime.bean.User.ID);
+                        updateUserTable();
+                        startActivity(intent2);
+                        LoginManager.getInstance().logOut();
+                    }
                     MessageHandler.handleMessage(ctx, message);
                 }
             }
         };
 
+    }
+
+    /*
+        if a user logout, the person's account will not be remembered.
+     */
+    private void updateUserTable(){
+        UserTableHelper dbHelper = new UserTableHelper(this, "userbase1");
+        SQLiteDatabase db = dbHelper.getReadableDatabase();
+        ContentValues values = new ContentValues();
+        values.put("remember", false);
+        db.update("itime_user", values, "id=?", new String[]{"1"});
+        dbHelper.close();
+        db.close();
     }
 
 }

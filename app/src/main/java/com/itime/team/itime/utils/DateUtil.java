@@ -332,7 +332,7 @@ public class DateUtil {
         return formatter.format(c.getTime());
     }
 
-    public static String getICSTime(Calendar calendar){
+    public static String getICSTime(Calendar calendar) {
         SimpleDateFormat formatter = new SimpleDateFormat("yyyyMMdd'T'HHmmss'Z'");
         return formatter.format(calendar.getTime());
     }
@@ -365,5 +365,12 @@ public class DateUtil {
         DateFormat formatter = new SimpleDateFormat("EEE, dd MMM yyyy HH:mm");
         Date date = getLocalDateObject(dateString);
         return formatter.format(date);
+    }
+
+    public static String formatDate(int day, int month, int year) {
+        DateFormat formatter = new SimpleDateFormat("EEE, dd MMM yyyy");
+        Calendar calendar = Calendar.getInstance();
+        calendar.set(year, month, day);
+        return formatter.format(calendar.getTime());
     }
 }

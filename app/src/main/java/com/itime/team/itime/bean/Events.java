@@ -29,4 +29,6 @@ public class Events {
     public static Map<String, Set<List<JSONObject>>> eventsMonthMap = new HashMap<>();
 
     public static Set<String> loadingMonth = new HashSet<>();
+
+    public static String daySelected = "";
 }

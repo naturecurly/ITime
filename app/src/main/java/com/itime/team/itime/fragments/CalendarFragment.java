@@ -5,6 +5,7 @@ import android.app.usage.UsageEvents;
 import android.content.Intent;
 import android.graphics.Color;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -45,6 +46,7 @@ import com.itime.team.itime.bean.User;
 import com.itime.team.itime.listener.OnDateSelectedListener;
 import com.itime.team.itime.listener.RecyclerItemClickListener;
 import com.itime.team.itime.listener.ScrollMeetingViewListener;
+import com.itime.team.itime.listener.ScrollViewInterceptTouchListener;
 import com.itime.team.itime.task.ReadMonthEventTask;
 import com.itime.team.itime.utils.DateUtil;
 import com.itime.team.itime.utils.DensityUtil;
@@ -86,6 +88,8 @@ public class CalendarFragment extends Fragment {
     private boolean isExpended = false;
     private JSONArray mResponse;
     private boolean scroll_flag;
+    private boolean isPress;
+    private boolean shouldScrollCalendar;
 
     public LinearLayoutManager getLinearLayoutManager() {
         return linearLayoutManager;
@@ -188,6 +192,15 @@ public class CalendarFragment extends Fragment {
             public void onClick(View v) {
 //                recyclerView.scrollToPosition(todayIndex);
                 //  recyclerView.getLayoutManager().scrollToPosition(todayIndex);
+                int day = today.get(Calendar.DAY_OF_MONTH);
+                int month = today.get(Calendar.MONTH) + 1;
+                int year = today.get(Calendar.YEAR);
+                clickedDay = day;
+                clickedMonth = month;
+                clickedYear = year;
+
+                Events.daySelected = day + "-" + month + "-" + year;
+
                 ((LinearLayoutManager) recyclerView.getLayoutManager()).scrollToPositionWithOffset(todayIndex - 2, 0);
                 dates.clear();
                 fillData(Calendar.getInstance());
@@ -196,6 +209,7 @@ public class CalendarFragment extends Fragment {
                 EventUtil.isTodayPressed = true;
 
 //                linearLayoutManager.scrollToPositionWithOffset(5, 0);
+                loadNum = 0;
                 recyclerView.getAdapter().notifyDataSetChanged();
                 recyclerView.scrollToPosition(5);
 //                EventUtil.isTodayPressed = false;
@@ -231,13 +245,26 @@ public class CalendarFragment extends Fragment {
 
         //scrollView transaction
         mScrollView = (MeetingScrollView) view.findViewById(R.id.lower_scroll_view);
+        mScrollView.setOnInterceptTouchListener(new ScrollViewInterceptTouchListener() {
+            @Override
+            public void touchEventHappend(MeetingScrollView scrollView, MotionEvent ev) {
+                if (ev.getAction() == MotionEvent.ACTION_DOWN) {
+                    isPress = false;
+                }
+            }
+        });
         mScrollView.setOnScrollViewListener(new ScrollMeetingViewListener() {
+
             @Override
             public void onScrollChanged(MeetingScrollView scrollView, int x, int y, int oldx, int oldy) {
                 //Toast.makeText(getActivity(), "scrolled", Toast.LENGTH_SHORT).show();
-                if (isExpended) {
-                    isExpended = false;
 
+                if (isExpended && isPress == false) {
+                    isExpended = false;
+                    if (shouldScrollCalendar) {
+                        recyclerView.scrollBy(0, rowHeight * 3);
+                        shouldScrollCalendar = false;
+                    }
                     ValueAnimator animator = ValueAnimator.ofInt(recyclerView.getMeasuredHeight(), rowHeight * 3);
                     animator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
                         @Override
@@ -477,6 +504,7 @@ public class CalendarFragment extends Fragment {
 //            if (holder.calendarView.isHasToday()) {
 //                todayCalendarView = holder.calendarView;
 //            }
+            holder.position = position;
             boolean flag = false;
             Map<String, Integer> c = dates.get(position);
             //Log.i("testCalendar", dates.get(position).get(Calendar.DATE) + "," + dates.get(position).get(Calendar.MONTH));
@@ -534,9 +562,12 @@ public class CalendarFragment extends Fragment {
 
     private class CalendarViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
         private CalendarView calendarView;
+        private int position;
+        private View itemView;
 
-        public CalendarViewHolder(View itemView) {
+        public CalendarViewHolder(final View itemView) {
             super(itemView);
+            this.itemView = itemView;
             itemView.setOnClickListener(this);
             calendarView = (CalendarView) itemView.findViewById(R.id.calendar_view);
             calendarView.setOnDateSelectedListener(new OnDateSelectedListener() {
@@ -544,6 +575,26 @@ public class CalendarFragment extends Fragment {
 
                 @Override
                 public void dateSelected(float x, float y) {
+                    isPress = true;
+                    int firstVisiblePosition = recyclerView.getChildLayoutPosition(recyclerView.getChildAt(0));
+                    if (recyclerView.getChildLayoutPosition(itemView) - firstVisiblePosition >= 3) {
+                        Log.d("position", "low 3 rows");
+//                        recyclerView.scrollBy(0, rowHeight * 3);
+                        shouldScrollCalendar = true;
+                    }
+                    CalendarView.Row row = calendarView.getRows()[0];
+                    int day = Integer.valueOf(row.getCells()[DateUtil.analysePosition(x, rowHeight)].text);
+                    int month = row.getCells()[DateUtil.analysePosition(x, rowHeight)].month;
+                    int year = row.getCells()[DateUtil.analysePosition(x, rowHeight)].year;
+                    for (int n = 0; n < 6; n++) {
+                        View v = recyclerView.getChildAt(n);
+                        if (v != null) {
+                            v.findViewById(R.id.calendar_view).invalidate();
+                        }
+                    }
+//                    recyclerView.getAdapter().notifyItemRangeChanged(position - 3, position + 3, null);
+
+                    Events.daySelected = day + "-" + month + "-" + year;
                     if (EventUtil.isTodayPressed) {
                         EventUtil.isTodayPressed = false;
                         todayCalendarView.invalidate();
@@ -558,13 +609,12 @@ public class CalendarFragment extends Fragment {
                         lastCalendarView.removeSelectedDate();
                         lastCalendarView = calendarView;
                     }
+                    Events.daySelected = day + "-" + month + "-" + year;
+
                     calendarView.invalidate();
                     Calendar now = Calendar.getInstance();
                     final List<Integer> eventGroup = new ArrayList<Integer>();
-                    CalendarView.Row row = calendarView.getRows()[0];
-                    int day = Integer.valueOf(row.getCells()[DateUtil.analysePosition(x, rowHeight)].text);
-                    int month = row.getCells()[DateUtil.analysePosition(x, rowHeight)].month;
-                    int year = row.getCells()[DateUtil.analysePosition(x, rowHeight)].year;
+
 //                    excuteAsyncTask(month, year);
                     selectedCalendar.set(year, month - 1, day);
                     if (now.get(Calendar.YEAR) == year && now.get(Calendar.MONTH) == month - 1 && now.get(Calendar.DAY_OF_MONTH) == day) {
@@ -602,7 +652,6 @@ public class CalendarFragment extends Fragment {
                         View firstEventView = relativeLayout.findViewById(100 + firstPosition);
                         if (!(now.get(Calendar.YEAR) == year && now.get(Calendar.MONTH) == month - 1 && now.get(Calendar.DAY_OF_MONTH) == day)) {
                             mScrollView.smoothScrollTo(0, DensityUtil.dip2px(getActivity(), 30 * firstPosition));
-
                         }
 
                         String start = null;
@@ -701,7 +750,9 @@ public class CalendarFragment extends Fragment {
                                 CustomizedTextView eventView = new CustomizedTextView(getActivity());
                                 eventView.setIncludeFontPadding(true);
                                 eventView.setPadding(DensityUtil.dip2px(getActivity(), 4), 0, 0, 0);
-                                eventView.setZ(DensityUtil.dip2px(getActivity(), 5));
+                                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                                    eventView.setZ(DensityUtil.dip2px(getActivity(), 5));
+                                }
                                 RelativeLayout.LayoutParams eventParam = new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, DensityUtil.dip2px(getActivity(), (float) (4.0 / 6.0 * durationMin) - 4));
                                 try {
                                     if (!jsonObject.getString("meeting_id").equals("")) {
@@ -723,7 +774,7 @@ public class CalendarFragment extends Fragment {
                                             String user_id = objectList.get(eventGroup.get(flag)).getString("user_id");
                                             String hostID = objectList.get(eventGroup.get(flag)).getString("host_id");
                                             String eventID = objectList.get(eventGroup.get(flag)).getString("event_id");
-                                            Log.i("event",eventID);
+                                            Log.i("event", eventID);
                                             if (!meeting_id.equals("")) {
                                                 Bundle bundle = new Bundle();
                                                 bundle.putString("meeting_id", meeting_id);
@@ -731,15 +782,15 @@ public class CalendarFragment extends Fragment {
                                                 if (hostID.equals(User.ID)) {
                                                     Intent intent = new Intent(getActivity(), MeetingDetaiHostlActivity.class);
                                                     intent.putExtra("arg_meeting_id", meeting_id);
-                                                    intent.putExtra("event_id",eventID);
-                                                    intent.putExtra("host_id",hostID);
+                                                    intent.putExtra("event_id", eventID);
+                                                    intent.putExtra("host_id", hostID);
                                                     startActivity(intent);
                                                 } else {
 
                                                     Intent intent = new Intent(getActivity(), MeetingDetailActivity.class);
                                                     intent.putExtra("arg_meeting_id", meeting_id);
-                                                    intent.putExtra("event_id",eventID);
-                                                    intent.putExtra("host_id",hostID);
+                                                    intent.putExtra("event_id", eventID);
+                                                    intent.putExtra("host_id", hostID);
                                                     Log.i("userId", user_id);
                                                     startActivity(intent);
                                                 }
@@ -811,7 +862,9 @@ public class CalendarFragment extends Fragment {
                                     }
                                     CustomizedTextView eventView = new CustomizedTextView(getActivity());
                                     eventView.setPadding(DensityUtil.dip2px(getActivity(), 4), 0, 0, 0);
-                                    eventView.setZ(DensityUtil.dip2px(getActivity(), 5));
+                                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                                        eventView.setZ(DensityUtil.dip2px(getActivity(), 5));
+                                    }
                                     try {
                                         eventView.setText(objectList.get(num).getString("event_name"));
                                         final String meeting_id = objectList.get(num).getString("meeting_id");
@@ -819,7 +872,7 @@ public class CalendarFragment extends Fragment {
                                         final String user_id = objectList.get(num).getString("user_id");
                                         final String hostID = objectList.get(num).getString("host_id");
                                         final String eventID = objectList.get(num).getString("event_id");
-                                        Log.i("evnetID",eventID);
+                                        Log.i("evnetID", eventID);
                                         final int finalNum = num;
                                         eventView.setOnClickListener(new View.OnClickListener() {
                                             @Override
@@ -833,12 +886,12 @@ public class CalendarFragment extends Fragment {
                                                     if (hostID.equals(User.ID)) {
                                                         Intent intent = new Intent(getActivity(), MeetingDetaiHostlActivity.class);
                                                         intent.putExtra("arg_meeting_id", meeting_id);
-                                                        intent.putExtra("event_id",eventID);
+                                                        intent.putExtra("event_id", eventID);
                                                         startActivity(intent);
                                                     } else {
                                                         Intent intent = new Intent(getActivity(), MeetingDetailActivity.class);
                                                         intent.putExtra("arg_meeting_id", meeting_id);
-                                                        intent.putExtra("event_id",eventID);
+                                                        intent.putExtra("event_id", eventID);
                                                         startActivity(intent);
                                                     }
                                              /*

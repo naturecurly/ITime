@@ -22,19 +22,17 @@ public class NewEventActivity extends AppCompatActivity {
 
         init();
 
-        if(savedInstanceState == null){
-            Bundle arguments = new Bundle();
+        Bundle arguments = new Bundle();
 
-            NewEventFragment fragment = new NewEventFragment();
-            fragment.setArguments(arguments);
+        NewEventFragment fragment = new NewEventFragment();
+        fragment.setArguments(arguments);
 
-            getSupportFragmentManager().beginTransaction()
-                    .add(R.id.new_event_container, fragment)
-                    .commit();
-        }
+        getSupportFragmentManager().beginTransaction()
+                .add(R.id.new_event_container, fragment)
+                .commit();
     }
 
-    private void init(){
+    private void init() {
         Toolbar toolbar = (Toolbar) findViewById(R.id.new_meeting_toolbar);
         setSupportActionBar(toolbar);
         setTitle(R.string.new_event_title);

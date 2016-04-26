@@ -18,6 +18,7 @@ import android.view.MotionEvent;
 import android.view.View;
 
 import com.itime.team.itime.R;
+import com.itime.team.itime.bean.Events;
 import com.itime.team.itime.listener.OnDateSelectedListener;
 import com.itime.team.itime.utils.DateUtil;
 import com.itime.team.itime.utils.DensityUtil;
@@ -38,7 +39,7 @@ public class CalendarView extends View {
     private int isDateSelected = 0;
     private Paint mCirclePaint;
     private Paint mSelectedCirclePaint;
-
+    private boolean hasBlueCircle = false;
     private Paint mTextPaint;
     private Paint mGridPaint;
     private Paint mLinePaint;
@@ -325,6 +326,10 @@ public class CalendarView extends View {
             if (hasEvents) {
                 //canvas.drawPoint(i * mCellSpace + mCellSpace / 2, mCellSpace / 2, mPointPaint);
                 canvas.drawCircle(i * mCellSpace + mCellSpace / 2, j * mCellSpace + mCellSpace * 3 / 4, DensityUtil.dip2px(context, 2), mPointPaint);
+            }
+            if (Events.daySelected.equals(text + "-" + month + "-" + year)) {
+                canvas.drawCircle(i * mCellSpace + mCellSpace / 2, j * mCellSpace + mCellSpace / 2, mCellSpace / 3, mSelectedCirclePaint);
+                hasBlueCircle = true;
             }
         }
 

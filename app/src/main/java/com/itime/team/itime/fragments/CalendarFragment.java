@@ -52,6 +52,7 @@ import com.itime.team.itime.utils.DateUtil;
 import com.itime.team.itime.utils.DensityUtil;
 import com.itime.team.itime.utils.EventUtil;
 import com.itime.team.itime.utils.JsonArrayFormRequest;
+import com.itime.team.itime.utils.JsonObjectFormRequest;
 import com.itime.team.itime.utils.MySingleton;
 import com.itime.team.itime.views.CalendarView;
 import com.itime.team.itime.views.CustomizedTextView;
@@ -91,6 +92,12 @@ public class CalendarFragment extends Fragment {
     private boolean isPress;
     private boolean shouldScrollCalendar;
 
+    public String getTitle_string() {
+        return title_string;
+    }
+
+    private String title_string;
+
     public LinearLayoutManager getLinearLayoutManager() {
         return linearLayoutManager;
     }
@@ -112,11 +119,13 @@ public class CalendarFragment extends Fragment {
     private final Calendar today = Calendar.getInstance();
     private CalendarView lastCalendarView = null;
     private CalendarView todayCalendarView = null;
+
+
     private TextView title;
     private Calendar selectedCalendar = Calendar.getInstance();
     private boolean isStop = false;
     private int loadNum = 0;
-
+    private int selectedPosition;
 
     public static CalendarFragment newInstance(Bundle bundle) {
 
@@ -150,10 +159,6 @@ public class CalendarFragment extends Fragment {
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
         fetchEvents(mUserId);
-        fetchIgnoredEvents(mUserId);
-
-
-        //analyseEvents(mResponse);
     }
 
     @Override
@@ -183,8 +188,8 @@ public class CalendarFragment extends Fragment {
         //rowHeight = calendarView.getLayoutParams().height;
         title = (TextView) getActivity().findViewById(R.id.toolbar_title);
         Calendar now = Calendar.getInstance();
-        title.setText(now.get(Calendar.YEAR) + "-" + (now.get(Calendar.MONTH) + 1));
-
+        title_string = now.get(Calendar.YEAR) + "-" + (now.get(Calendar.MONTH) + 1);
+        title.setText(title_string);
 
         mTodayButton = (Button) getActivity().findViewById(R.id.button_today);
         mTodayButton.setOnClickListener(new View.OnClickListener() {
@@ -222,6 +227,7 @@ public class CalendarFragment extends Fragment {
 //                if (todayCalendar.isTodayHasEvents()) {
 //                    paintLowerPanel(today.get(Calendar.DAY_OF_MONTH), today.get(Calendar.MONTH) + 1, today.get(Calendar.YEAR));
 //                }
+                Log.d("top", recyclerView.getChildAt(0).getTop() + "");
             }
         });
         recyclerView = (RecyclerView) view.findViewById(R.id.recycler_view);
@@ -229,6 +235,12 @@ public class CalendarFragment extends Fragment {
         linearLayoutManager.scrollToPositionWithOffset(5, 0);
         recyclerView.setLayoutManager(linearLayoutManager);
         recyclerView.setAdapter(new CalendarAdapter(dates));
+        recyclerView.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                return false;
+            }
+        });
         //rowHeight =
         DisplayMetrics dm = getResources().getDisplayMetrics();
         screenWidth = dm.widthPixels;
@@ -258,11 +270,12 @@ public class CalendarFragment extends Fragment {
             @Override
             public void onScrollChanged(MeetingScrollView scrollView, int x, int y, int oldx, int oldy) {
                 //Toast.makeText(getActivity(), "scrolled", Toast.LENGTH_SHORT).show();
+                Log.d("if_scroll", selectedPosition + "");
 
                 if (isExpended && isPress == false) {
                     isExpended = false;
                     if (shouldScrollCalendar) {
-                        recyclerView.scrollBy(0, rowHeight * 3);
+                        linearLayoutManager.scrollToPositionWithOffset(selectedPosition, 0);
                         shouldScrollCalendar = false;
                     }
                     ValueAnimator animator = ValueAnimator.ofInt(recyclerView.getMeasuredHeight(), rowHeight * 3);
@@ -279,6 +292,7 @@ public class CalendarFragment extends Fragment {
                     animator.setInterpolator(new DecelerateInterpolator());
                     animator.start();
                 }
+
 //                if (scroll_flag) {
 //                    scrollToDate(selectedCalendar);
 //                    scroll_flag = false;
@@ -311,6 +325,7 @@ public class CalendarFragment extends Fragment {
                 super.onScrollStateChanged(recyclerView, newState);
                 if (newState == 1 && isExpended == false) {
                     isExpended = true;
+                    shouldScrollCalendar = true;
                     rowHeight = recyclerView.getChildAt(0).getHeight();
                     ValueAnimator animator = ValueAnimator.ofInt(recyclerView.getMeasuredHeight(), rowHeight * 6);
                     animator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
@@ -345,10 +360,12 @@ public class CalendarFragment extends Fragment {
                 CalendarView firstVisibleView = (CalendarView) (recyclerView.getChildAt(2)).findViewById(R.id.calendar_view);
                 if (firstVisibleView.whetherHasFirstDay()) {
                     CalendarView.Row[] rows = firstVisibleView.getRows();
-                    TextView textView = (TextView) getActivity().findViewById(R.id.toolbar_title);
+//                    TextView textView = (TextView) getActivity().findViewById(R.id.toolbar_title);
 //                    CalendarView.Cell[] cells = rows[0].getCells();
 //                    cells
-                    textView.setText(firstVisibleView.getmShowYear() + "-" + firstVisibleView.getmShowMonth());
+                    title_string = firstVisibleView.getmShowYear() + "-" + firstVisibleView.getmShowMonth();
+                    title.setText(title_string);
+//                    textView.setText(firstVisibleView.getmShowYear() + "-" + firstVisibleView.getmShowMonth());
                 }
 
                 visibleItemCount = linearLayoutManager.getChildCount();
@@ -391,6 +408,7 @@ public class CalendarFragment extends Fragment {
                         for (int i = 0; i < 5; i++) {
                             insertItem();
                             todayIndex++;
+                            selectedPosition++;
                             recyclerView.getAdapter().notifyItemInserted(0);
                         }
 
@@ -577,9 +595,12 @@ public class CalendarFragment extends Fragment {
                 public void dateSelected(float x, float y) {
                     isPress = true;
                     int firstVisiblePosition = recyclerView.getChildLayoutPosition(recyclerView.getChildAt(0));
+                    selectedPosition = recyclerView.getChildAdapterPosition(itemView);
+
                     if (recyclerView.getChildLayoutPosition(itemView) - firstVisiblePosition >= 3) {
-                        Log.d("position", "low 3 rows");
 //                        recyclerView.scrollBy(0, rowHeight * 3);
+                        Log.d("position", "low 3 rows" + selectedPosition);
+
                         shouldScrollCalendar = true;
                     }
                     CalendarView.Row row = calendarView.getRows()[0];
@@ -747,6 +768,9 @@ public class CalendarFragment extends Fragment {
                                     e.printStackTrace();
                                 }
                                 int durationMin = (60 * endhour + endmin) - (60 * starthour + startmin);
+                                if (durationMin < 35) {
+                                    durationMin = 35;
+                                }
                                 CustomizedTextView eventView = new CustomizedTextView(getActivity());
                                 eventView.setIncludeFontPadding(true);
                                 eventView.setPadding(DensityUtil.dip2px(getActivity(), 4), 0, 0, 0);
@@ -929,6 +953,9 @@ public class CalendarFragment extends Fragment {
                                         e.printStackTrace();
                                     }
                                     int durationMin = (60 * endhour + endmin) - (60 * starthour + startmin);
+                                    if (durationMin < 35) {
+                                        durationMin = 35;
+                                    }
                                     RelativeLayout.LayoutParams eventParamOverlap = new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, DensityUtil.dip2px(getActivity(), (float) (4.0 / 6.0 * durationMin) - 4));
 
                                     try {
@@ -956,7 +983,7 @@ public class CalendarFragment extends Fragment {
 //                                    eventParam.addRule(RelativeLayout.ALIGN_END, 100 + starthour);
                                     int leftMargin = (int) (flag * (length / overlapNumber));
                                     Log.d("leftMargin", leftMargin + "");
-                                    eventParamOverlap.setMargins(leftMargin, DensityUtil.dip2px(getActivity(), (float) (startmin * 4.0 / 6.0) + 2), DensityUtil.dip2px(getActivity(), 0), DensityUtil.dip2px(getActivity(), 1));
+                                    eventParamOverlap.setMargins(leftMargin + flag * DensityUtil.dip2px(getActivity(), 2), DensityUtil.dip2px(getActivity(), (float) (startmin * 4.0 / 6.0) + 2), DensityUtil.dip2px(getActivity(), 0), DensityUtil.dip2px(getActivity(), 1));
                                     relativeLayout.addView(eventView, eventParamOverlap);
                                     flag++;
                                 }
@@ -1099,31 +1126,39 @@ public class CalendarFragment extends Fragment {
         try {
             jsonObject.put("user_id", userId);
             jsonObject.put("local_events", "");
+            jsonObject.put("if_sync_event", 1);
+            jsonObject.put("if_sync_event_ignore", 1);
+            jsonObject.put("if_sync_calendar_type", 1);
+            jsonObject.put("if_sync_preference", 0);
+            jsonObject.put("local_events_ignore", "");
+            jsonObject.put("local_preferences", "");
+            jsonObject.put("local_calendar_types", "");
+
 
         } catch (JSONException e) {
             e.printStackTrace();
         }
 
-        final String url = URLs.SYNC;
+        final String url = URLs.SYNCS;
         Map<String, String> params = new HashMap();
         params.put("json", jsonObject.toString());
 
-        JsonArrayFormRequest request = new JsonArrayFormRequest(Request.Method.POST, url, params, new Response.Listener<JSONArray>() {
+        JsonObjectFormRequest request = new JsonObjectFormRequest(Request.Method.POST, url, params, new Response.Listener<JSONObject>() {
             @Override
-            public void onResponse(JSONArray response) {
-                //System.out.print("ttttttttttttttt");
+            public void onResponse(JSONObject response) {
+                try {
+                    Events.response = EventUtil.initialEvents(response.getJSONArray("events"));
+                    Events.ignoredEvent = EventUtil.getIgnoredEventsFromResponse(response.getJSONArray("events_ignore"));
+                    Events.calendarTypeList = EventUtil.getCalendarTypeFromResponse(response.getJSONArray("calendar_types"));
+                    Events.notShownId = EventUtil.getNotShownCalendarId();
+                    EventUtil.excuteAsyncTask(today.get(Calendar.MONTH) + 1, today.get(Calendar.YEAR));
+                    recyclerView.getAdapter().notifyDataSetChanged();
+                    Log.i("Event_response", response.getJSONArray("events").toString());
+                    Log.i("Calendar_type", response.getJSONArray("calendar_types").toString());
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
 
-                //mResponse = response;
-                Events.response = EventUtil.initialEvents(response);
-//                new ReadMonthEventTask().execute(today.get(Calendar.MONTH) + 1, today.get(Calendar.YEAR));
-//                new ReadMonthEventTask().execute(today.get(Calendar.MONTH), today.get(Calendar.YEAR));
-//                new ReadMonthEventTask().execute(today.get(Calendar.MONTH) + 2, today.get(Calendar.YEAR));
-                EventUtil.excuteAsyncTask(today.get(Calendar.MONTH) + 1, today.get(Calendar.YEAR));
-//                analyseEvents(response);
-//                Events.repeatEvent = EventUtil.getRepeatEventsFromEvents(Events.response);
-                recyclerView.getAdapter().notifyDataSetChanged();
-                Log.i("Event_response", response.toString());
-//                System.out.println(response.toString());
             }
         }, new Response.ErrorListener() {
             @Override
@@ -1134,41 +1169,41 @@ public class CalendarFragment extends Fragment {
         MySingleton.getInstance(getContext()).addToRequestQueue(request);
     }
 
-    public void fetchIgnoredEvents(String userId) {
-        JSONObject jsonObject = new JSONObject();
-        try {
-            jsonObject.put("user_id", userId);
-            jsonObject.put("local_events_ignored", "");
-
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-
-        final String url = URLs.SYNC_IGNORED;
-        Map<String, String> params = new HashMap();
-        params.put("json", jsonObject.toString());
-
-        JsonArrayFormRequest request = new JsonArrayFormRequest(Request.Method.POST, url, params, new Response.Listener<JSONArray>() {
-            @Override
-            public void onResponse(JSONArray response) {
-                //System.out.print("ttttttttttttttt");
-
-                //mResponse = response;
-//                Events.response = response;
-//                analyseEvents(response);
-                EventUtil.getIgnoredEventsFromResponse(response);
-                recyclerView.getAdapter().notifyDataSetChanged();
-                Log.i("Event_response_ignored", response.toString());
-//                System.out.println(response.toString());
-            }
-        }, new Response.ErrorListener() {
-            @Override
-            public void onErrorResponse(VolleyError error) {
-
-            }
-        });
-        MySingleton.getInstance(getContext()).addToRequestQueue(request);
-    }
+//    public void fetchIgnoredEvents(String userId) {
+//        JSONObject jsonObject = new JSONObject();
+//        try {
+//            jsonObject.put("user_id", userId);
+//            jsonObject.put("local_events_ignored", "");
+//
+//        } catch (JSONException e) {
+//            e.printStackTrace();
+//        }
+//
+//        final String url = URLs.SYNC_IGNORED;
+//        Map<String, String> params = new HashMap();
+//        params.put("json", jsonObject.toString());
+//
+//        JsonArrayFormRequest request = new JsonArrayFormRequest(Request.Method.POST, url, params, new Response.Listener<JSONArray>() {
+//            @Override
+//            public void onResponse(JSONArray response) {
+//                //System.out.print("ttttttttttttttt");
+//
+//                //mResponse = response;
+////                Events.response = response;
+////                analyseEvents(response);
+//                EventUtil.getIgnoredEventsFromResponse(response);
+//                recyclerView.getAdapter().notifyDataSetChanged();
+//                Log.i("Event_response_ignored", response.toString());
+////                System.out.println(response.toString());
+//            }
+//        }, new Response.ErrorListener() {
+//            @Override
+//            public void onErrorResponse(VolleyError error) {
+//
+//            }
+//        });
+//        MySingleton.getInstance(getContext()).addToRequestQueue(request);
+//    }
 
 //    public void analyseEvents(JSONArray response) {
 //        for (int i = 0; i < response.length(); i++) {
@@ -1388,7 +1423,8 @@ public class CalendarFragment extends Fragment {
                 previousTotal = 0;
                 linearLayoutManager.scrollToPositionWithOffset(5, 0);
                 recyclerView.getAdapter().notifyDataSetChanged();
-                title.setText(year + "-" + month);
+                title_string = year + "-" + month;
+                title.setText(title_string);
             }
         }
     }

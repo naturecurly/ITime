@@ -31,4 +31,8 @@ public class Events {
     public static Set<String> loadingMonth = new HashSet<>();
 
     public static String daySelected = "";
+
+    public static List<JSONObject> calendarTypeList = new ArrayList<>();
+
+    public static Set<String> notShownId = new HashSet<>();
 }

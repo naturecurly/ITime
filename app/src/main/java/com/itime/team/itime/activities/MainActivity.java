@@ -140,7 +140,7 @@ public class MainActivity extends AppCompatActivity implements
             fragmentManager.beginTransaction().hide(inboxFragment).commit();
             fragmentManager.beginTransaction().show(meetingFragment).commit();
 
-            if(User.hasNewFriend)
+            if (User.hasNewFriend)
                 meetingFragment.fetchEvents();
         } else if (me == inboxFragment) {
             fragmentManager.beginTransaction().hide(calendarFragment).commit();
@@ -159,7 +159,7 @@ public class MainActivity extends AppCompatActivity implements
             meetingFragment.setPosition();
             meetingFragment.handleConflict(mEventList, mToday);
         } else if (me == calendarFragment) {
-            title.setText(getResources().getString(R.string.calendar_title));
+            title.setText(calendarFragment.getTitle_string());
             calendarFragment.reSetMenuOnClickListener(mEventList);
         } else if (me == settingsFragment) {
             title.setText(getResources().getString(R.string.setting_title));
@@ -269,7 +269,7 @@ public class MainActivity extends AppCompatActivity implements
     /*
         if a user logout, the person's account will not be remembered.
      */
-    private void updateUserTable(){
+    private void updateUserTable() {
         UserTableHelper dbHelper = new UserTableHelper(this, "userbase1");
         SQLiteDatabase db = dbHelper.getReadableDatabase();
         ContentValues values = new ContentValues();

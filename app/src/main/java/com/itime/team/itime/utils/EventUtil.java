@@ -463,14 +463,17 @@ public class EventUtil {
     }
 
 
-    public static void getIgnoredEventsFromResponse(JSONArray events) {
+    public static List<JSONObject> getIgnoredEventsFromResponse(JSONArray events) {
+        List<JSONObject> ignord = new ArrayList<>();
         for (int i = 0; i < events.length(); i++) {
+
             try {
-                Events.ignoredEvent.add(events.getJSONObject(i));
+                ignord.add(events.getJSONObject(i));
             } catch (JSONException e) {
                 e.printStackTrace();
             }
         }
+        return ignord;
     }
 
     public static int calDuration(Calendar start, Calendar end) {
@@ -626,4 +629,30 @@ public class EventUtil {
 
     }
 
+
+    public static List<JSONObject> getCalendarTypeFromResponse(JSONArray response) {
+        List<JSONObject> list = new ArrayList<>();
+        for (int i = 0; i < response.length(); i++) {
+            try {
+                list.add(response.getJSONObject(i));
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+        }
+        return list;
+    }
+
+    public static Set<String> getNotShownCalendarId() {
+        Set<String> notShownCalendarId = new HashSet<>();
+        for (JSONObject object : Events.calendarTypeList) {
+            try {
+                if (object.getBoolean("if_show") == false) {
+                    notShownCalendarId.add(object.getString("calendar_id"));
+                }
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+        }
+        return notShownCalendarId;
+    }
 }

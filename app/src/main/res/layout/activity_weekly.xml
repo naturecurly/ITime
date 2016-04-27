@@ -31,7 +31,7 @@
         android:layout_below="@id/week_toolbar"
         app:columnGap="8dp"
         app:dayBackgroundColor="#05000000"
-        app:eventTextColor="@android:color/white"
+        app:eventTextColor="@android:color/black"
         app:headerColumnBackground="#ffffffff"
         app:headerColumnPadding="8dp"
         app:headerColumnTextColor="@color/toolbar_text"

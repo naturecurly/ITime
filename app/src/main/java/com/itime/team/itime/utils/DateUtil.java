@@ -245,7 +245,7 @@ public class DateUtil {
         return formatter.format(new Date(targetTime));
     }
 
-    public static Date getLocalTime(String data) {
+    /*public static Date getLocalTime(String data) {
         Date dateForReturn = null;
         try {
             String[] dataOfJson = data.split(" ");
@@ -263,7 +263,7 @@ public class DateUtil {
             e.printStackTrace();
         }
         return dateForReturn;
-    }
+    }*/
 
 
     public static String getCurrentTime(String format) {

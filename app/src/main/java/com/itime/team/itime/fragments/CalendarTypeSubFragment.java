@@ -31,6 +31,7 @@ import android.widget.EditText;
 import android.widget.TextView;
 
 import com.itime.team.itime.R;
+import com.itime.team.itime.bean.Events;
 import com.itime.team.itime.model.ParcelableCalendarType;
 import com.itime.team.itime.task.UserTask;
 
@@ -104,6 +105,13 @@ public class CalendarTypeSubFragment extends Fragment {
             @Override
             public void callback(String data) {
                 if (data.equalsIgnoreCase("success")) {
+                    // Fuck! No need to do this because it force to load calendar type again
+                    // add new calendar type to static list
+                    Events.calendarTypeList.add(calendarType);
+                    // add not show calendar id to static set
+                    if (!calendarType.ifShow) {
+                        Events.notShownId.add(calendarType.calendarId);
+                    }
                     final Intent intent = new Intent();
                     intent.putExtra(RETURN_IF_ADDED, true);
                     getActivity().setResult(RESULT_ADD_CALENDAR_TYPE, intent);

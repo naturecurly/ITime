@@ -34,6 +34,7 @@ import android.widget.Toast;
 import com.android.volley.VolleyError;
 import com.itime.team.itime.R;
 import com.itime.team.itime.activities.SettingsActivity;
+import com.itime.team.itime.bean.Events;
 import com.itime.team.itime.bean.User;
 import com.itime.team.itime.model.ParcelableCalendarType;
 import com.itime.team.itime.task.UserTask;
@@ -116,6 +117,14 @@ public class CalendarTypeFragment extends Fragment {
                     final String s = calendarType.calendarName + (calendarType.ifShow ? " shows" : " does not show");
                     Toast.makeText(getContext(), s, Toast.LENGTH_SHORT).show();
                     mAdapter.notifyDataSetChanged();
+
+                    // add not show calendar id to static set
+                    if (calendarType.ifShow) {
+                        Events.notShownId.remove(calendarType.calendarId);
+                    } else {
+                        Events.notShownId.add(calendarType.calendarId);
+                    }
+
                 }
             }
         };
@@ -178,6 +187,16 @@ public class CalendarTypeFragment extends Fragment {
             @Override
             public void callback(List<ParcelableCalendarType> calendarType) {
                 mAdapter.refresh(calendarType);
+                // add new calendar type to static list
+                Events.calendarTypeList.clear();
+                for (ParcelableCalendarType c : calendarType) {
+                    Events.calendarTypeList.add(c);
+                    // add not show calendar id to static set
+                    if (!c.ifShow) {
+                        Events.notShownId.add(c.calendarId);
+                    }
+                }
+
             }
 
             @Override

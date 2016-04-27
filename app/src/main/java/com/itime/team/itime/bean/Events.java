@@ -1,5 +1,7 @@
 package com.itime.team.itime.bean;
 
+import com.itime.team.itime.model.ParcelableCalendarType;
+
 import org.json.JSONArray;
 import org.json.JSONObject;
 
@@ -32,7 +34,7 @@ public class Events {
 
     public static String daySelected = "";
 
-    public static List<JSONObject> calendarTypeList = new ArrayList<>();
+    public static List<ParcelableCalendarType> calendarTypeList = new ArrayList<>();
 
     public static Set<String> notShownId = new HashSet<>();
 }

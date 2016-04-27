@@ -168,17 +168,8 @@ public class CalendarFragment extends Fragment {
         setHasOptionsMenu(true);
         mUserId = User.ID;
 
-//        if (getArguments() != null) {
-//            int month = getArguments().getInt("month");
-//            int year = getArguments().getInt("year");
-//            Calendar c = Calendar.getInstance();
-//            c.set(year, month - 1, 1);
-//            fillData(c);
-
-//        } else {
         fillData(Calendar.getInstance());
 
-//        }
     }
 
     @Override

@@ -151,32 +151,32 @@
                         android:layout_width="wrap_content"
                         android:layout_height="match_parent"
                         android:layout_marginLeft="12dp"
+                        android:gravity="center_vertical"
                         android:text="@string/meeting_end_time"
-                        android:textSize="16sp"
-                        android:gravity="center_vertical" />
+                        android:textSize="16sp" />
 
                     <TextView
                         android:id="@+id/end_date"
                         android:layout_width="wrap_content"
                         android:layout_height="match_parent"
+                        android:layout_alignParentTop="true"
+                        android:layout_toLeftOf="@+id/end_time"
+                        android:layout_toStartOf="@+id/end_time"
                         android:gravity="center"
                         android:paddingRight="5dp"
                         android:text="Tue, 26 Apr 2016"
-                        android:textAlignment="viewEnd"
-                        android:layout_alignParentTop="true"
-                        android:layout_toLeftOf="@+id/end_time"
-                        android:layout_toStartOf="@+id/end_time" />
+                        android:textAlignment="viewEnd" />
 
                     <TextView
                         android:id="@+id/end_time"
                         android:layout_width="wrap_content"
                         android:layout_height="match_parent"
-                        android:gravity="center_vertical"
-                        android:text="00:00"
-                        android:layout_alignParentTop="true"
-                        android:layout_alignParentRight="true"
                         android:layout_alignParentEnd="true"
-                        android:layout_marginRight="12dp" />
+                        android:layout_alignParentRight="true"
+                        android:layout_alignParentTop="true"
+                        android:layout_marginRight="12dp"
+                        android:gravity="center_vertical"
+                        android:text="00:00" />
 
                 </RelativeLayout>
 
@@ -225,8 +225,7 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_marginRight="5dp"
-                            android:checked="false"
-                            />
+                            android:checked="false" />
                     </LinearLayout>
                 </LinearLayout>
 
@@ -274,7 +273,84 @@
                 android:layout_gravity="bottom"
                 android:background="#000000" />
 
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="40dp"
+                android:background="#ececec"></LinearLayout>
 
+            <ImageView
+                android:layout_width="match_parent"
+                android:layout_height="1px"
+                android:layout_gravity="bottom"
+                android:background="#000000" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:divider="@drawable/separator"
+                android:orientation="vertical"
+                android:showDividers="middle">
+
+                <LinearLayout
+                    style="@style/MeetingTimeLayout"
+                    android:layout_height="40dp"
+                    android:weightSum="3">
+
+                    <TextView
+                        style="@style/MeetingText"
+                        android:layout_width="0dp"
+                        android:layout_marginLeft="12dp"
+                        android:layout_weight="1"
+                        android:text="@string/event_detail_alert"
+                        android:textSize="16sp" />
+
+                    <TextView
+                        android:id="@+id/new_event_alert"
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:layout_weight="2"
+                        android:gravity="center_vertical"
+                        android:paddingRight="12dp"
+                        android:text="test"
+                        android:textAlignment="textEnd" />
+
+                </LinearLayout>
+
+                <LinearLayout
+                    style="@style/MeetingTimeLayout"
+                    android:layout_height="40dp"
+                    android:weightSum="3">
+
+                    <TextView
+                        style="@style/MeetingText"
+                        android:layout_width="0dp"
+                        android:layout_marginLeft="12dp"
+                        android:layout_weight="1"
+                        android:text="@string/Calendar"
+                        android:textSize="16sp" />
+
+                    <TextView
+                        android:id="@+id/new_event_calendar_type"
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:layout_weight="2"
+                        android:gravity="center_vertical"
+                        android:paddingRight="12dp"
+                        android:text="test"
+                        android:textAlignment="textEnd" />
+
+                </LinearLayout>
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="30dp"
+                    android:background="#ececec"></LinearLayout>
+            </LinearLayout>
+
+            <ImageView
+                android:layout_width="match_parent"
+                android:layout_height="1px"
+                android:layout_gravity="bottom"
+                android:background="#000000" />
         </LinearLayout>
     </ScrollView>
 </FrameLayout>

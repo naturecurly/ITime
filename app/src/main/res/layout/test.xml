@@ -65,7 +65,15 @@
         android:layout_alignStart="@+id/occupied_space"
         android:layout_below="@+id/occupied_space"
         android:layout_marginTop="73dp"
-        android:text="test"
         android:includeFontPadding="true"
-        android:paddingLeft="2dp"/>
+        android:paddingLeft="2dp"
+        android:text="test" />
+
+    <SearchView
+        android:id="@+id/search_view"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:iconifiedByDefault="false"
+        android:inputType="textFilter"
+        android:queryHint="search"></SearchView>
 </RelativeLayout>

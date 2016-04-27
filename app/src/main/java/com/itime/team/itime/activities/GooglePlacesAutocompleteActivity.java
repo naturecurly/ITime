@@ -5,12 +5,12 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.SearchView;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ListView;
+import android.widget.SearchView;
 import android.widget.TextView;
 
 import com.android.volley.Response;
@@ -32,10 +32,11 @@ import java.util.ArrayList;
  * The activity UI contains a ListView which get Locations from Google Map, the locations are based
  * on users' query.
  */
-public class GooglePlacesAutocompleteActivity extends AppCompatActivity implements SearchView.OnQueryTextListener{
+public class GooglePlacesAutocompleteActivity extends AppCompatActivity implements SearchView.OnQueryTextListener {
     private static final String LOG_TAG = "Google Places Autocomplete";
     private static final String PLACES_API_BASE = "https://maps.googleapis.com/maps/api/place";
     private static final String TYPE_AUTOCOMPLETE = "/autocomplete";
+    private static final String TYPE_DETAILS = "/details";
     private static final String OUT_JSON = "/json";
     private static String API_KEY;
     private SearchView mSearch;
@@ -43,7 +44,8 @@ public class GooglePlacesAutocompleteActivity extends AppCompatActivity implemen
     private Activity myActivity;
 
     private ListView mListView;
-    private ArrayList<String> mAddresses;
+    private ArrayList<String> mAddresses = new ArrayList<>();
+    private ArrayList<String> mAddressIds = new ArrayList<>();
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -66,7 +68,7 @@ public class GooglePlacesAutocompleteActivity extends AppCompatActivity implemen
         init();
     }
 
-    private void init(){
+    private void init() {
         API_KEY = getResources().getString(R.string.google_web_id);
         mListView = (ListView) findViewById(R.id.auto_complete_listview);
         mSearch = (SearchView) findViewById(R.id.auto_complete_search);
@@ -77,8 +79,9 @@ public class GooglePlacesAutocompleteActivity extends AppCompatActivity implemen
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 Intent intent = new Intent();
-                TextView textView = (TextView) view.findViewById(R.id.auto_complete_listview_item);
-                intent.putExtra("address", textView.getText().toString());
+//                TextView textView = (TextView) view.findViewById(R.id.auto_complete_listview_item);
+
+                intent.putExtra("address", mAddressIds.get(position).toString());
                 setResult(RESULT_OK, intent);
                 finish();
             }
@@ -89,10 +92,10 @@ public class GooglePlacesAutocompleteActivity extends AppCompatActivity implemen
     // the parameter is the query, this function will get location names from Google Map based on
     // the parameter. Here just support Aus location, if want to support more, then set the parameter
     // &components=country:XXX
-    private void postData(String input){
+    private void postData(String input) {
         StringBuilder sb = new StringBuilder(PLACES_API_BASE + TYPE_AUTOCOMPLETE + OUT_JSON);
         sb.append("?key=" + API_KEY);
-        sb.append("&components=country:aus");
+//        sb.append("&components=country:aus");
         sb.append("&input=" + URLConnectionUtil.encode(input));
         String url = sb.toString();
         JsonObjectRequest jsObjRequest = new JsonObjectRequest
@@ -101,10 +104,11 @@ public class GooglePlacesAutocompleteActivity extends AppCompatActivity implemen
                     public void onResponse(JSONObject response) {
                         try {
                             JSONArray predsJsonArray = response.getJSONArray("predictions");
-                            for(int i = 0; i < predsJsonArray.length(); i ++){
+                            for (int i = 0; i < predsJsonArray.length(); i++) {
                                 mAddresses.add(predsJsonArray.getJSONObject(i).getString("description"));
+                                mAddressIds.add(predsJsonArray.getJSONObject(i).getString("place_id"));
                             }
-                            AutoCompleteAdapter adapter = new AutoCompleteAdapter(myActivity,mAddresses);
+                            AutoCompleteAdapter adapter = new AutoCompleteAdapter(myActivity, mAddresses);
                             mListView.setAdapter(adapter);
                         } catch (JSONException e) {
                             e.printStackTrace();
@@ -115,7 +119,7 @@ public class GooglePlacesAutocompleteActivity extends AppCompatActivity implemen
                     @Override
                     public void onErrorResponse(VolleyError error) {
                         // TODO Auto-generated method stub
-                        Log.i("rerror",error.toString());
+                        Log.i("rerror", error.toString());
 
                     }
                 });
@@ -123,7 +127,7 @@ public class GooglePlacesAutocompleteActivity extends AppCompatActivity implemen
         MySingleton.getInstance(this).addToRequestQueue(jsObjRequest);
     }
 
-    private void setListView(String query){
+    private void setListView(String query) {
         mAddresses.clear();
         postData(query);
     }

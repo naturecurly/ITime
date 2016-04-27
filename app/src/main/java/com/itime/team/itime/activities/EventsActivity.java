@@ -54,7 +54,7 @@ public class EventsActivity extends AppCompatActivity {
                 JSONObject object = Events.response.getJSONObject(position);
                 Log.d("eventtest", object.toString());
                 holder.eventTitle.setText(object.getString("event_name"));
-                holder.eventPosition.setText(object.getString("calendar_id"));
+                holder.eventPosition.setText(object.getString("event_alert"));
                 Date date = DateUtil.getLocalDateObject(object.getString("event_starts_datetime"));
                 Calendar cal = Calendar.getInstance();
                 cal.setTime(date);

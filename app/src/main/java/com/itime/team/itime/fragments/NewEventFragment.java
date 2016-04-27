@@ -92,6 +92,7 @@ public class NewEventFragment extends Fragment {
 //    private JsonManager mJsonManager;
 
     final private String[] repeatArray = {"One-time event", "Daily", "Weekly", "Bi-Weekly", "Monthly", "Yearly"};
+    final private String[] alertArray = {"None", "At time of Departure", "5 minutes before", "10 minutes before", "15 minutes before", "30 minutes before", "1 hour before"};
 
     private EditText event_name;
     private EditText event_comment;
@@ -101,7 +102,8 @@ public class NewEventFragment extends Fragment {
     private TextView end_date;
     private TextView end_time;
     private TextView repeat_type;
-
+    private TextView alert;
+    private TextView calendar_type;
 
     private int mYear;
     private int mMonthOfYear;
@@ -115,6 +117,7 @@ public class NewEventFragment extends Fragment {
     private int mEndHour;
     private int mEndMin;
     private String repeatString = "One-time event";
+    private String alertString = "At time of Departure";
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -135,7 +138,17 @@ public class NewEventFragment extends Fragment {
         start_time = (TextView) view.findViewById(R.id.start_time);
         end_date = (TextView) view.findViewById(R.id.end_date);
         end_time = (TextView) view.findViewById(R.id.end_time);
+        alert = (TextView) view.findViewById(R.id.new_event_alert);
+        calendar_type = (TextView) view.findViewById(R.id.new_event_calendar_type);
 
+
+        event_venue.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(getActivity(), GooglePlacesAutocompleteActivity.class);
+                startActivityForResult(intent, 1);
+            }
+        });
         start_date.setText(DateUtil.formatDate(mDayOfMonth, mMonthOfYear, mYear));
         start_date.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -218,7 +231,30 @@ public class NewEventFragment extends Fragment {
                 dialog.show(fm, "repeat_dialog");
             }
         });
+
+        alert.setText("At time of Departure");
+        alert.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+//                NewEventRepeatDialogFragment dialogFragment = new NewEventRepeatDialogFragment();
+                NewEventAlertDialogFragment dialog = new NewEventAlertDialogFragment();
+                Bundle bundle = new Bundle();
+                bundle.putInt(NewEventAlertDialogFragment.SELECTED, Arrays.asList(alertArray).indexOf(alertString));
+                dialog.setArguments(bundle);
+                dialog.setListener(new RepeatSelectionListener() {
+                    @Override
+                    public void selectItem(int positon) {
+                        alertString = alertArray[positon];
+                        alert.setText(alertArray[positon]);
+                    }
+                });
+                dialog.show(getFragmentManager(), "alert_dialog");
+
+            }
+        });
+
 //        init(rootView);
+
 
         return view;
     }
@@ -348,7 +384,8 @@ public class NewEventFragment extends Fragment {
             e.printStackTrace();
         }
     }
-//
+
+    //
 //    private void getCoordinate(String address) {
 //        StringBuffer buffer = new StringBuffer();
 //        buffer.append("https://maps.googleapis.com/maps/api/geocode/json?address=");
@@ -446,18 +483,17 @@ public class NewEventFragment extends Fragment {
 //        }
 //    }
 //
-//    @Override
-//    public void onActivityResult(int requestCode, int resultCode, Intent data) {
-//        if (requestCode == 1) {
-//            if (resultCode == getActivity().RESULT_OK) {
-//                String address = "";
-//                address = data.getStringExtra("address");
-//                mVeune.setText(address);
-//                mVeune.setTextSize(12);
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (requestCode == 1) {
+            if (resultCode == getActivity().RESULT_OK) {
+                String address = "";
+                address = data.getStringExtra("address");
+                event_venue.setText(address);
 //                getCoordinate(address);
-//            }
-//        }
-//    }
+            }
+        }
+    }
 //
 //    @Override
 //    public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {

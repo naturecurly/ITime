@@ -1,7 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical" android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
     <android.support.design.widget.AppBarLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -11,21 +13,22 @@
             android:id="@+id/auto_complete_bar"
             android:layout_width="match_parent"
             android:layout_height="?attr/actionBarSize"
-            android:background="?attr/colorPrimary"
-            />
+            android:background="?attr/colorPrimary" />
     </android.support.design.widget.AppBarLayout>
 
-    <android.support.v7.widget.SearchView
-        android:layout_width="match_parent"
-        android:layout_height="@dimen/meeting_search_picture"
+
+    <SearchView
         android:id="@+id/auto_complete_search"
-        android:background="@color/white"/>
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:iconifiedByDefault="false"
+        android:inputType="textFilter"
+        android:queryHint="search"></SearchView>
 
 
     <ListView
+        android:id="@+id/auto_complete_listview"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:id="@+id/auto_complete_listview">
-    </ListView>
+        android:layout_height="match_parent"></ListView>
 
 </LinearLayout>

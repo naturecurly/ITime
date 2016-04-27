@@ -3,6 +3,7 @@ package com.itime.team.itime.utils;
 import android.util.Log;
 
 import com.itime.team.itime.bean.Events;
+import com.itime.team.itime.model.ParcelableCalendarType;
 import com.itime.team.itime.task.ReadMonthEventTask;
 
 import org.json.JSONArray;
@@ -40,7 +41,7 @@ public class EventUtil {
             try {
                 JSONObject object = response.getJSONObject(i);
                 Log.d("isValid", object.toString());
-                if (isValidEvent(object)) {
+                if (isValidEvent(object) && !Events.notShownId.contains(object.getString("calendar_id"))) {
                     if (!decideWhetherMultiDays(object)) {
                         array.put(object);
                         if (isRepeat(object)) {
@@ -630,29 +631,26 @@ public class EventUtil {
     }
 
 
-    public static List<JSONObject> getCalendarTypeFromResponse(JSONArray response) {
-        List<JSONObject> list = new ArrayList<>();
-        for (int i = 0; i < response.length(); i++) {
-            try {
-                list.add(response.getJSONObject(i));
-            } catch (JSONException e) {
-                e.printStackTrace();
-            }
-        }
-        return list;
-    }
+//    public static List<ParcelableCalendarType> getCalendarTypeFromResponse(JSONArray response) {
+//        List<ParcelableCalendarType> list = new ArrayList<>();
+//        for (int i = 0; i < response.length(); i++) {
+//            try {
+//                list.add(response.getJSONObject(i));
+//            } catch (JSONException e) {
+//                e.printStackTrace();
+//            }
+//        }
+//        return list;
+//    }
 
     public static Set<String> getNotShownCalendarId() {
         Set<String> notShownCalendarId = new HashSet<>();
-        for (JSONObject object : Events.calendarTypeList) {
-            try {
-                if (object.getBoolean("if_show") == false) {
-                    notShownCalendarId.add(object.getString("calendar_id"));
-                }
-            } catch (JSONException e) {
-                e.printStackTrace();
+        for (ParcelableCalendarType object : Events.calendarTypeList) {
+            if (object.ifShow == false) {
+                notShownCalendarId.add(object.calendarId);
             }
         }
         return notShownCalendarId;
     }
+
 }

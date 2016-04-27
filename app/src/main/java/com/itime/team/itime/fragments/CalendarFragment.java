@@ -32,6 +32,7 @@ import android.widget.Toast;
 import com.android.volley.Request;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
+import com.bluelinelabs.logansquare.LoganSquare;
 import com.itime.team.itime.R;
 import com.itime.team.itime.activities.EventsActivity;
 import com.itime.team.itime.activities.EventsDetailActivity;
@@ -47,6 +48,7 @@ import com.itime.team.itime.listener.OnDateSelectedListener;
 import com.itime.team.itime.listener.RecyclerItemClickListener;
 import com.itime.team.itime.listener.ScrollMeetingViewListener;
 import com.itime.team.itime.listener.ScrollViewInterceptTouchListener;
+import com.itime.team.itime.model.ParcelableCalendarType;
 import com.itime.team.itime.task.ReadMonthEventTask;
 import com.itime.team.itime.utils.DateUtil;
 import com.itime.team.itime.utils.DensityUtil;
@@ -62,6 +64,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
@@ -208,6 +211,7 @@ public class CalendarFragment extends Fragment {
                 loadNum = 0;
                 recyclerView.getAdapter().notifyDataSetChanged();
                 recyclerView.scrollToPosition(5);
+                selectedPosition = 6;
 //                EventUtil.isTodayPressed = false;
 //                linearLayoutManager.scrollToPosition(5);
 //                CalendarView todayCalendar = (CalendarView) linearLayoutManager.getChildAt(0).findViewById(R.id.calendar_view);
@@ -266,7 +270,7 @@ public class CalendarFragment extends Fragment {
                 if (isExpended && isPress == false) {
                     isExpended = false;
                     if (shouldScrollCalendar) {
-                        linearLayoutManager.scrollToPositionWithOffset(selectedPosition, 0);
+                        linearLayoutManager.scrollToPositionWithOffset(selectedPosition - 1, 0);
                         shouldScrollCalendar = false;
                     }
                     ValueAnimator animator = ValueAnimator.ofInt(recyclerView.getMeasuredHeight(), rowHeight * 3);
@@ -815,20 +819,28 @@ public class CalendarFragment extends Fragment {
                                             } else {
                                                 String event_name = objectList.get(eventGroup.get(flag)).getString("event_name");
                                                 String venue = objectList.get(eventGroup.get(flag)).getString("event_venue_location");
-                                                String dep_time = objectList.get(eventGroup.get(flag)).getString("event_last_sug_dep_time");
+//                                                String dep_time = objectList.get(eventGroup.get(flag)).getString("event_last_sug_dep_time");
                                                 String start_time = objectList.get(eventGroup.get(flag)).getString("event_starts_datetime");
                                                 String end_time = objectList.get(eventGroup.get(flag)).getString("event_ends_datetime");
-                                                boolean punctual = objectList.get(eventGroup.get(flag)).getBoolean("event_is_punctual");
+//                                                boolean punctual = objectList.get(eventGroup.get(flag)).getBoolean("event_is_punctual");
                                                 String repeat_type = objectList.get(eventGroup.get(flag)).getString("event_repeats_type");
+                                                String alert = objectList.get(eventGroup.get(flag)).getString("event_alert");
+                                                String calendarId = objectList.get(eventGroup.get(flag)).getString("calendar_id");
+                                                String calendarType = "";
+                                                for (ParcelableCalendarType calType : Events.calendarTypeList) {
+                                                    if (calType.calendarId.equals(calendarId)) {
+                                                        calendarType = calType.calendarName;
+                                                    }
+                                                }
                                                 Intent detailIntent = new Intent(getActivity(), EventsDetailActivity.class);
                                                 Bundle bundle = new Bundle();
                                                 bundle.putString("event_name", event_name);
                                                 bundle.putString("venue", venue);
-                                                bundle.putString("dep_time", dep_time);
                                                 bundle.putString("start_time", start_time);
                                                 bundle.putString("end_time", end_time);
-                                                bundle.putBoolean("punctual", punctual);
                                                 bundle.putString("repeat_type", repeat_type);
+                                                bundle.putString("alert", alert);
+                                                bundle.putString("calendar_type", calendarType);
                                                 detailIntent.putExtras(bundle);
                                                 startActivity(detailIntent);
                                             }
@@ -1138,15 +1150,17 @@ public class CalendarFragment extends Fragment {
             @Override
             public void onResponse(JSONObject response) {
                 try {
+                    Events.calendarTypeList = LoganSquare.parseList(response.getJSONArray("calendar_types").toString(), ParcelableCalendarType.class);
+                    Events.notShownId = EventUtil.getNotShownCalendarId();
                     Events.response = EventUtil.initialEvents(response.getJSONArray("events"));
                     Events.ignoredEvent = EventUtil.getIgnoredEventsFromResponse(response.getJSONArray("events_ignore"));
-                    Events.calendarTypeList = EventUtil.getCalendarTypeFromResponse(response.getJSONArray("calendar_types"));
-                    Events.notShownId = EventUtil.getNotShownCalendarId();
                     EventUtil.excuteAsyncTask(today.get(Calendar.MONTH) + 1, today.get(Calendar.YEAR));
                     recyclerView.getAdapter().notifyDataSetChanged();
                     Log.i("Event_response", response.getJSONArray("events").toString());
                     Log.i("Calendar_type", response.getJSONArray("calendar_types").toString());
                 } catch (JSONException e) {
+                    e.printStackTrace();
+                } catch (IOException e) {
                     e.printStackTrace();
                 }
 

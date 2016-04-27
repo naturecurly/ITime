@@ -100,34 +100,6 @@
                 android:orientation="vertical"
                 android:showDividers="middle">
 
-                <LinearLayout
-                    style="@style/MeetingTimeLayout"
-                    android:layout_height="40dp"
-
-                    android:weightSum="3">
-
-                    <TextView
-                        style="@style/MeetingText"
-                        android:layout_width="0dp"
-                        android:layout_height="match_parent"
-                        android:layout_marginLeft="12dp"
-                        android:layout_weight="1"
-                        android:gravity="center_vertical"
-                        android:text="@string/departure_time"
-                        android:textSize="16sp" />
-
-                    <TextView
-                        android:id="@+id/dep_text"
-                        android:layout_width="0dp"
-                        android:layout_height="match_parent"
-                        android:layout_weight="2"
-                        android:gravity="center_vertical"
-                        android:paddingRight="12dp"
-                        android:text="test"
-                        android:textAlignment="viewEnd" />
-
-                </LinearLayout>
-
 
                 <LinearLayout
                     style="@style/MeetingTimeLayout"
@@ -204,28 +176,28 @@
 
                 </LinearLayout>
 
-                <LinearLayout
-                    style="@style/MeetingTimeLayout"
-                    android:layout_height="40dp">
+                <!--<LinearLayout-->
+                <!--style="@style/MeetingTimeLayout"-->
+                <!--android:layout_height="40dp">-->
 
-                    <TextView
-                        style="@style/MeetingText"
-                        android:layout_marginLeft="12dp"
-                        android:text="@string/new_meeting_punctual"
-                        android:textSize="16sp" />
+                <!--<TextView-->
+                <!--style="@style/MeetingText"-->
+                <!--android:layout_marginLeft="12dp"-->
+                <!--android:text="@string/new_meeting_punctual"-->
+                <!--android:textSize="16sp" />-->
 
-                    <LinearLayout
-                        style="@style/MeetingTimeLayout"
-                        android:gravity="right">
+                <!--<LinearLayout-->
+                <!--style="@style/MeetingTimeLayout"-->
+                <!--android:gravity="right">-->
 
-                        <CheckBox
-                            android:id="@+id/event_punctual"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_marginRight="5dp"
-                            android:clickable="false" />
-                    </LinearLayout>
-                </LinearLayout>
+                <!--<CheckBox-->
+                <!--android:id="@+id/event_punctual"-->
+                <!--android:layout_width="wrap_content"-->
+                <!--android:layout_height="wrap_content"-->
+                <!--android:layout_marginRight="5dp"-->
+                <!--android:clickable="false" />-->
+                <!--</LinearLayout>-->
+                <!--</LinearLayout>-->
 
             </LinearLayout>
 
@@ -277,7 +249,85 @@
             <!--android:layout_width="match_parent"-->
             <!--android:layout_height="wrap_content"-->
             <!--android:text="@string/new_meeting_alert" />-->
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="40dp"
+                android:background="#ececec"></LinearLayout>
+
+            <ImageView
+                android:layout_width="match_parent"
+                android:layout_height="1px"
+                android:layout_gravity="bottom"
+                android:background="#000000" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:divider="@drawable/separator"
+                android:showDividers="middle">
+
+                <LinearLayout
+                    style="@style/MeetingTimeLayout"
+                    android:layout_height="40dp"
+                    android:weightSum="3">
+
+                    <TextView
+                        style="@style/MeetingText"
+                        android:layout_width="0dp"
+                        android:layout_marginLeft="12dp"
+                        android:layout_weight="1"
+                        android:text="@string/event_detail_alert"
+                        android:textSize="16sp" />
+
+                    <TextView
+                        android:id="@+id/alert_text"
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:layout_weight="2"
+                        android:gravity="center_vertical"
+                        android:paddingRight="12dp"
+                        android:text="test"
+                        android:textAlignment="textEnd" />
+
+                </LinearLayout>
+
+                <LinearLayout
+                    style="@style/MeetingTimeLayout"
+                    android:layout_height="40dp"
+                    android:weightSum="3">
+
+                    <TextView
+                        style="@style/MeetingText"
+                        android:layout_width="0dp"
+                        android:layout_marginLeft="12dp"
+                        android:layout_weight="1"
+                        android:text="@string/Calendar"
+                        android:textSize="16sp" />
+
+                    <TextView
+                        android:id="@+id/calendar_type_text"
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:layout_weight="2"
+                        android:gravity="center_vertical"
+                        android:paddingRight="12dp"
+                        android:text="test"
+                        android:textAlignment="textEnd" />
+
+                </LinearLayout>
+            </LinearLayout>
+
+            <ImageView
+                android:layout_width="match_parent"
+                android:layout_height="1px"
+                android:layout_gravity="bottom"
+                android:background="#000000" />
+
         </LinearLayout>
+
+
     </ScrollView>
 
 </LinearLayout>

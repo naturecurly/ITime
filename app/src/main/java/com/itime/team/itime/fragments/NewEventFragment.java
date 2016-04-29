@@ -27,16 +27,20 @@ import android.widget.TextView;
 import android.widget.TimePicker;
 import android.widget.Toast;
 
+import com.android.volley.Request;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.itime.team.itime.R;
 import com.itime.team.itime.activities.GooglePlacesAutocompleteActivity;
+import com.itime.team.itime.bean.Events;
 import com.itime.team.itime.bean.URLs;
 import com.itime.team.itime.bean.User;
 import com.itime.team.itime.listener.RepeatSelectionListener;
+import com.itime.team.itime.model.ParcelableCalendarType;
 import com.itime.team.itime.utils.DateUtil;
 import com.itime.team.itime.utils.JsonManager;
+import com.itime.team.itime.utils.JsonObjectFormRequest;
 import com.itime.team.itime.utils.MySingleton;
 import com.itime.team.itime.utils.URLConnectionUtil;
 
@@ -56,6 +60,11 @@ import java.util.UUID;
  * Created by mac on 16/3/15.
  */
 public class NewEventFragment extends Fragment {
+    private static final String PLACES_API_BASE = "https://maps.googleapis.com/maps/api/place";
+    private static final String TYPE_DETAILS = "/details";
+    private static final String OUT_JSON = "/json";
+    private static String API_KEY = "AIzaSyBC4zDmkarugKY0Njs_n2TtEUVEyeESn0c";
+
 //    private EditText mMessage;
 //    private Button mStartDate, mStartTime, mEndDate, mEndTime;
 //    private Button mRepeat;
@@ -104,6 +113,7 @@ public class NewEventFragment extends Fragment {
     private TextView repeat_type;
     private TextView alert;
     private TextView calendar_type;
+    private CheckBox punctual;
 
     private int mYear;
     private int mMonthOfYear;
@@ -118,6 +128,12 @@ public class NewEventFragment extends Fragment {
     private int mEndMin;
     private String repeatString = "One-time event";
     private String alertString = "At time of Departure";
+    private String event_longitude = "";
+    private String event_latitude = "";
+
+    private ParcelableCalendarType calendarTypeString = Events.calendarTypeList.get(0);
+    private String event_venue_location = "";
+    private int is_punctual;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -128,6 +144,9 @@ public class NewEventFragment extends Fragment {
         mMonthOfYear = c.get(Calendar.MONTH);
         mDayOfMonth = c.get(Calendar.DAY_OF_MONTH);
         mHour = c.get(Calendar.HOUR_OF_DAY);
+        mEndYear = mYear;
+        mEndMonthOfYear = mMonthOfYear;
+        mEndDayOfMonth = mDayOfMonth;
         Bundle arguments = getArguments();
         View view = inflater.inflate(R.layout.new_event_fragment, container, false);
         repeat_type = (TextView) view.findViewById(R.id.rep_new_event);
@@ -140,7 +159,18 @@ public class NewEventFragment extends Fragment {
         end_time = (TextView) view.findViewById(R.id.end_time);
         alert = (TextView) view.findViewById(R.id.new_event_alert);
         calendar_type = (TextView) view.findViewById(R.id.new_event_calendar_type);
+        punctual = (CheckBox) view.findViewById(R.id.new_event_punctual);
 
+        punctual.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                if (isChecked) {
+                    is_punctual = 1;
+                } else {
+                    is_punctual = 0;
+                }
+            }
+        });
 
         event_venue.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -252,6 +282,24 @@ public class NewEventFragment extends Fragment {
 
             }
         });
+        calendar_type.setText(Events.calendarTypeList.get(0).calendarName);
+        calendar_type.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                NewEventCalendarTypeDialogFragment dialog = new NewEventCalendarTypeDialogFragment();
+                Bundle bundle = new Bundle();
+                bundle.putInt(NewEventCalendarTypeDialogFragment.SELECTED, Events.calendarTypeList.indexOf(calendarTypeString));
+                dialog.setArguments(bundle);
+                dialog.setListener(new RepeatSelectionListener() {
+                    @Override
+                    public void selectItem(int positon) {
+                        calendarTypeString = Events.calendarTypeList.get(positon);
+                        calendar_type.setText(Events.calendarTypeList.get(positon).calendarName);
+                    }
+                });
+                dialog.show(getFragmentManager(), "calendar_dialog");
+            }
+        });
 
 //        init(rootView);
 
@@ -306,7 +354,6 @@ public class NewEventFragment extends Fragment {
     private String timeFormat(int hour, int min) {
         String hourReturn = hour < 10 ? "0" + hour : String.valueOf(hour);
         String minReturn = min < 10 ? "0" + min : String.valueOf(min);
-
         return hourReturn + ":" + minReturn;
     }
 
@@ -325,33 +372,6 @@ public class NewEventFragment extends Fragment {
 //        }
 //    }
 //
-//    private void setEndTime() {
-//        mEndYear = 2016;
-//        mEndMonth = 10;
-//        mEndDay = 1;
-//        mEndHour = 10;
-//        mEndMin = 0;
-//    }
-//
-//    private Date getCurrentDate() {
-//        Date date = null;
-//        Intent receiver = getActivity().getIntent();
-//        mStartYear = receiver.getIntExtra("year", 2016);
-//        mStartMonth = receiver.getIntExtra("month", 1);
-//        mStartDay = receiver.getIntExtra("day", 1);
-//        mStartHour = receiver.getIntExtra("hour", 10);
-//        mStartMin = receiver.getIntExtra("min", 0);
-////        mFriendIDs = receiver.getStringArrayExtra("friendids");
-////        int currentDay = receiver.getIntExtra("currentDay",0);
-////        date = DateUtil.plusDay(mStartYear, mStartMonth, mStartDay, mStartHour, mStartMin, currentDay);
-////        mStartYear = date.getYear() + 1900;
-////        mStartMonth = date.getMonth();
-////        mStartDay = date.getDate();
-////        mStartHour = date.getHours();
-////        mStartMin = date.getMinutes();
-//        return null;
-//    }
-//
 //
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
@@ -365,6 +385,8 @@ public class NewEventFragment extends Fragment {
             case R.id.new_event_menu_send:
                 Toast.makeText(getContext(), "hello, it's me", Toast.LENGTH_LONG).show();
                 postEvent();
+                getActivity().setResult(getActivity().RESULT_OK, new Intent());
+                getActivity().finish();
                 break;
         }
         return super.onOptionsItemSelected(item);
@@ -377,111 +399,106 @@ public class NewEventFragment extends Fragment {
             object.put("user_id", User.ID);
             object.put("host_id", "");
             object.put("meeting_id", "");
+
             object.put("event_name", event_name.getText());
             object.put("event_comment", event_comment.getText());
+            Calendar start_calendar = Calendar.getInstance();
+            start_calendar.set(mYear, mMonthOfYear, mDayOfMonth, mHour, mMin);
+            String start_datetime = DateUtil.getDateStringFromCalendarGMT(start_calendar);
+            object.put("event_starts_datetime", start_datetime);
+
+            Calendar end_calendar = Calendar.getInstance();
+            end_calendar.set(mEndYear, mEndMonthOfYear, mEndDayOfMonth, mEndHour, mEndMin);
+            String end_datetime = DateUtil.getDateStringFromCalendarGMT(end_calendar);
+            object.put("event_ends_datetime", end_datetime);
+
+            object.put("event_venue_show", event_venue_location);
+            object.put("event_venue_location", event_venue_location);
+
+            object.put("event_repeats_type", repeatString);
+
+            object.put("event_latitude", event_latitude);
+            object.put("event_longitude", event_longitude);
+
+            object.put("event_last_sug_dep_time", start_datetime);
+            object.put("event_last_time_on_way_in_second", "0");
+            object.put("event_last_distance_in_meter", "0");
+
+            object.put("event_name_new", event_name.getText());
+            object.put("event_comment_new", event_comment.getText());
+
+            object.put("event_starts_datetime_new", start_datetime);
+            object.put("event_ends_datetime_new", end_datetime);
+
+            object.put("event_venue_show_new", event_venue_location);
+            object.put("event_venue_location_new", event_venue_location);
+
+            object.put("event_repeats_type_new", repeatString);
+            //punctual
+            object.put("event_latitude_new", event_latitude);
+            object.put("event_longitude_new", event_longitude);
+
+            object.put("event_last_sug_dep_time_new", start_datetime);
+            object.put("event_last_time_on_way_in_second_new", "0");
+            object.put("event_last_distance_in_meter_new", "0");
+
+            object.put("is_meeting", 0);
+            object.put("is_host", 0);
+
+            object.put("meeting_status", "");
+            object.put("meeting_valid_token", UUID.randomUUID().toString());
+
+            object.put("event_repeat_to_date", end_datetime);
+
+
+            if (!repeatString.equals("One-time event")) {
+                object.put("is_long_repeat", 1);
+            } else {
+                object.put("is_long_repeat", 0);
+            }
+            object.put("event_alert", alertString);
+            object.put("calendar_id", calendarTypeString.calendarId);
+
+            object.put("event_last_update_datetime", DateUtil.getDateStringFromCalendarGMT(Calendar.getInstance()));
+            object.put("if_deleted", 0);
+
+            object.put("event_is_punctual", is_punctual);
+            object.put("event_is_punctual_new", is_punctual);
 
         } catch (JSONException e) {
             e.printStackTrace();
         }
+        Log.d("newEvent", mEndYear + "-" + mEndMonthOfYear + "-" + mDayOfMonth);
+        Log.d("newEvent", object.toString());
+        final String url = URLs.SYNC;
+        JSONObject jsonObject = new JSONObject();
+        JSONArray jsonArray = new JSONArray();
+        jsonArray.put(object);
+        try {
+            jsonObject.put("user_id", User.ID);
+            jsonObject.put("local_events", jsonArray);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+        Map<String, String> params = new HashMap();
+        params.put("json", jsonObject.toString());
+        JsonObjectFormRequest request = new JsonObjectFormRequest(Request.Method.POST, url, params, new Response.Listener<JSONObject>() {
+            @Override
+            public void onResponse(JSONObject response) {
+
+            }
+        }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+
+            }
+        });
+        MySingleton.getInstance(getActivity()).addToRequestQueue(request);
+
     }
 
     //
-//    private void getCoordinate(String address) {
-//        StringBuffer buffer = new StringBuffer();
-//        buffer.append("https://maps.googleapis.com/maps/api/geocode/json?address=");
-//        String words = address.replaceAll(",", "");
-//        words = words.replaceAll(" ", "+");
-//        buffer.append(words).append(getResources().getString(R.string.google_web_id));
-//        String url = buffer.toString();
-//
-//        JsonObjectRequest jsObjRequest = new JsonObjectRequest
-//                (url, null, new Response.Listener<JSONObject>() {
-//                    @Override
-//                    public void onResponse(JSONObject response) {
-//                        try {
-//                            JSONArray result = response.getJSONArray("results");
-//                            JSONObject object = (JSONObject) result.get(0);
-//                            JSONObject geometry = (JSONObject) object.get("geometry");
-//                            JSONObject localtion = (JSONObject) geometry.get("location");
-//                            mLat = localtion.getString("lat");
-//                            mLng = localtion.getString("lng");
-//                        } catch (JSONException e) {
-//                            e.printStackTrace();
-//                        }
-//                    }
-//                }, new Response.ErrorListener() {
-//
-//                    @Override
-//                    public void onErrorResponse(VolleyError error) {
-//                        // TODO Auto-generated method stub
-//                        Log.i("rerror", error.toString());
-//
-//                    }
-//                });
-//
-//        MySingleton.getInstance(getContext()).addToRequestQueue(jsObjRequest);
-//    }
-//
-//    @Override
-//    public void onClick(View v) {
-//        checkTime();
-//        if (v.getId() == R.id.new_meeting_start_time) {
-//            mTimePicker1 = new TimePickerDialog(getContext(), new TimePickerDialog.OnTimeSetListener() {
-//                @Override
-//                public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
-//                    mStartTime.setText(timeFormat(hourOfDay, minute));
-//                    mStartHour = hourOfDay;
-//                    mStartMin = minute;
-//                    checkTime();
-//                }
-//            }, mStartHour, mStartMin, false);
-//            mTimePicker1.show();
-//        } else if (v.getId() == R.id.new_meeting_start_date) {
-//            mDatePicker1 = new DatePickerDialog(getContext(), new DatePickerDialog.OnDateSetListener() {
-//                @Override
-//                public void onDateSet(DatePicker view, int year, int monthOfYear, int dayOfMonth) {
-//                    mStartDate.setText(dateFormat(dayOfMonth, monthOfYear, year));
-//                    mStartYear = year;
-//                    mStartMonth = monthOfYear;
-//                    mStartDay = dayOfMonth;
-//                    checkTime();
-//                }
-//            }, mStartYear, mStartMonth, mStartDay);
-//            mDatePicker1.show();
-//        } else if (v.getId() == R.id.new_meeting_end_time) {
-//            mTimePicker2 = new TimePickerDialog(getContext(), new TimePickerDialog.OnTimeSetListener() {
-//                @Override
-//                public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
-//                    mEndTime.setText(timeFormat(hourOfDay, minute));
-//                    mEndHour = hourOfDay;
-//                    mEndMin = minute;
-//                    checkTime();
-//                }
-//            }, mEndHour, mEndMin, false);
-//            mTimePicker2.show();
-//        } else if (v.getId() == R.id.new_meeting_end_date) {
-//            mDatePicker2 = new DatePickerDialog(getContext(), new DatePickerDialog.OnDateSetListener() {
-//                @Override
-//                public void onDateSet(DatePicker view, int year, int monthOfYear, int dayOfMonth) {
-//                    mEndDate.setText(dateFormat(dayOfMonth, monthOfYear, year));
-//                    mEndYear = year;
-//                    mEndMonth = monthOfYear;
-//                    mEndDay = dayOfMonth;
-//                    checkTime();
-//                }
-//            }, mEndYear, mEndMonth, mEndDay);
-//            mDatePicker2.show();
-//        } else if (v.getId() == R.id.new_meeting_repeat) {
-//            NewMeetingRepeatDialogFragment dialogFragment = new NewMeetingRepeatDialogFragment(mRepeat, mRpeatValue);
-//            dialogFragment.show(getFragmentManager(), "newMeetingRepeat");
-//        } else if (v.getId() == R.id.new_meeting_alert) {
-//            NewMeetingAlertDialogFragment dialogFragment = new NewMeetingAlertDialogFragment(mAlert, mAlertValue);
-//            dialogFragment.show(getFragmentManager(), "newMeetingAlert");
-//        } else if (v.getId() == R.id.new_meeting_venue) {
-//            Intent intent = new Intent(getActivity(), GooglePlacesAutocompleteActivity.class);
-//            startActivityForResult(intent, 1);
-//        }
-//    }
 //
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
@@ -489,25 +506,36 @@ public class NewEventFragment extends Fragment {
             if (resultCode == getActivity().RESULT_OK) {
                 String address = "";
                 address = data.getStringExtra("address");
-                event_venue.setText(address);
-//                getCoordinate(address);
+                StringBuilder sb = new StringBuilder(PLACES_API_BASE + TYPE_DETAILS + OUT_JSON);
+                sb.append("?key=" + API_KEY);
+                sb.append("&&placeid=" + address);
+                String url = sb.toString();
+                JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(url, null, new Response.Listener<JSONObject>() {
+                    @Override
+                    public void onResponse(JSONObject response) {
+                        try {
+                            JSONObject result = response.getJSONObject("result");
+                            String locations = result.getString("formatted_address");
+                            JSONObject geo = result.getJSONObject("geometry");
+                            JSONObject geoLocation = geo.getJSONObject("location");
+                            event_latitude = Double.toString(geoLocation.getDouble("lat"));
+                            event_longitude = Double.toString(geoLocation.getDouble("lng"));
+                            event_venue_location = locations;
+                            event_venue.setText(locations);
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                }, new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+
+                    }
+                });
+                MySingleton.getInstance(getActivity()).addToRequestQueue(jsonObjectRequest);
             }
         }
     }
-//
-//    @Override
-//    public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-//
-//    }
-//
-//    @Override
-//    public boolean onTouch(View v, MotionEvent event) {
-//        if (v.getId() == R.id.new_meeting_message && mMessage.isFocused()) {
-//            v.getParent().requestDisallowInterceptTouchEvent(true);
-//        }
-//
-//        return false;
-//    }
 //
 //    public void postEvents() {
 //        String startDateForPost = DateUtil.getDateWithTimeZone(mStartYear, mStartMonth + 1, mStartDay, mStartHour, mStartMin);

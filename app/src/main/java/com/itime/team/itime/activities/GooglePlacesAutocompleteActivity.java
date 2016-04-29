@@ -38,7 +38,8 @@ public class GooglePlacesAutocompleteActivity extends AppCompatActivity implemen
     private static final String TYPE_AUTOCOMPLETE = "/autocomplete";
     private static final String TYPE_DETAILS = "/details";
     private static final String OUT_JSON = "/json";
-    private static String API_KEY;
+    private static String API_KEY = "AIzaSyBC4zDmkarugKY0Njs_n2TtEUVEyeESn0c";
+
     private SearchView mSearch;
 
     private Activity myActivity;

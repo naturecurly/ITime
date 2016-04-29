@@ -80,6 +80,7 @@ import java.util.Objects;
 public class CalendarFragment extends Fragment {
 
     private static final int YEAR_REQUEST = 100;
+    private static final int NEW_EVENT_REQUEST = 101;
     private RecyclerView recyclerView;
     private List<Map<String, Integer>> dates = new ArrayList<>();
     private int lastPosition = -1;
@@ -1070,7 +1071,7 @@ public class CalendarFragment extends Fragment {
                 break;
             case R.id.add_event:
                 Intent intent = new Intent(getActivity(), NewEventActivity.class);
-                startActivity(intent);
+                startActivityForResult(intent, NEW_EVENT_REQUEST);
                 break;
         }
         return super.onOptionsItemSelected(item);
@@ -1432,6 +1433,12 @@ public class CalendarFragment extends Fragment {
                 title.setText(title_string);
             }
         }
+        if (requestCode == NEW_EVENT_REQUEST) {
+            if (resultCode == getActivity().RESULT_OK) {
+                Log.d("finishNewEvent", "ok");
+                refresh();
+            }
+        }
     }
 
     public void scrollToDate(Calendar calendar) {
@@ -1475,6 +1482,17 @@ public class CalendarFragment extends Fragment {
             }
         }
         return false;
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        Log.d("onResume", "OnResume");
+    }
+
+    public void refresh() {
+        loadNum=0;
+        fetchEvents(User.ID);
     }
 }
 

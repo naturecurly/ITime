@@ -10,6 +10,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.LinearLayout;
@@ -60,8 +61,22 @@ public class CheckLoginActivity extends AppCompatActivity{
     private boolean hasAddFriendRequest;
 
     @Override
+    protected void onDestroy() {
+        Log.i(getClass().getSimpleName(), "onDestroy");
+        super.onDestroy();
+    }
+
+    @Override
+    protected void onStop() {
+        Log.i(getClass().getSimpleName(), "onStop");
+        super.onStop();
+    }
+
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        Log.i(getClass().getSimpleName(), "onCreate");
+
         // This is a tool that can detect crashes of the App and send the details to developers.
         Fabric.with(this, new Crashlytics());
 

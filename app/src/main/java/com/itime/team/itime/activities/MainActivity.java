@@ -1,18 +1,10 @@
 package com.itime.team.itime.activities;
 
 import android.content.BroadcastReceiver;
-import android.content.ContentValues;
-import android.content.Context;
-import android.content.Intent;
-import android.content.IntentFilter;
-import android.content.SharedPreferences;
-import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
-import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
-import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.preference.PreferenceFragmentCompat;
 import android.support.v7.preference.PreferenceScreen;
@@ -25,28 +17,17 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageButton;
-import android.widget.ProgressBar;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.TextView;
 
-import com.bluelinelabs.logansquare.LoganSquare;
 import com.bugtags.library.Bugtags;
-import com.facebook.login.LoginManager;
-import com.google.android.gms.common.ConnectionResult;
-import com.google.android.gms.common.GoogleApiAvailability;
 import com.itime.team.itime.R;
 import com.itime.team.itime.bean.User;
-import com.itime.team.itime.database.UserTableHelper;
 import com.itime.team.itime.fragments.CalendarFragment;
 import com.itime.team.itime.fragments.InboxFragment;
 import com.itime.team.itime.fragments.MeetingFragment;
 import com.itime.team.itime.fragments.SettingsFragment;
-import com.itime.team.itime.model.ParcelableMessage;
-import com.itime.team.itime.model.utils.MessageType;
-import com.itime.team.itime.services.RegistrationIntentService;
-import com.itime.team.itime.task.MessageHandler;
-import com.itime.team.itime.utils.ITimeGcmPreferences;
 
 public class MainActivity extends AppCompatActivity implements
         PreferenceFragmentCompat.OnPreferenceStartScreenCallback {
@@ -111,8 +92,6 @@ public class MainActivity extends AppCompatActivity implements
                 }
             }
         });
-
-        initBroadcastReceiver(this);
     }
 
     private void setFragments() {
@@ -222,17 +201,12 @@ public class MainActivity extends AppCompatActivity implements
     protected void onResume() {
         super.onResume();
         Log.i(LOG_TAG, "onResume");
-        LocalBroadcastManager.getInstance(this).registerReceiver(mNotificationBroadcastReceiver,
-                new IntentFilter(ITimeGcmPreferences.HANDLE_MESSAGE));
-
         Bugtags.onResume(this);
     }
 
     @Override
     protected void onPause() {
         Log.i(LOG_TAG, "onPause");
-        LocalBroadcastManager.getInstance(this).unregisterReceiver(mNotificationBroadcastReceiver);
-
         super.onPause();
         Bugtags.onPause(this);
     }
@@ -241,42 +215,6 @@ public class MainActivity extends AppCompatActivity implements
     public boolean dispatchTouchEvent(MotionEvent event) {
         Bugtags.onDispatchTouchEvent(this, event);
         return super.dispatchTouchEvent(event);
-    }
-
-    private void initBroadcastReceiver(final Context ctx) {
-        mNotificationBroadcastReceiver = new BroadcastReceiver() {
-            @Override
-            public void onReceive(Context context, Intent intent) {
-                Bundle data = intent.getBundleExtra(ITimeGcmPreferences.HANDLE_MESSAGE_DATA);
-                if (data != null) {
-                    // change data to message
-                    ParcelableMessage message = new ParcelableMessage(data);
-                    if (message.messageType == MessageType.OTHER_DEVICE_LOGIN) {
-                        finish();
-                        Intent intent2 = new Intent(ctx, LoginActivity.class);
-                        intent2.putExtra("username", com.itime.team.itime.bean.User.ID);
-                        updateUserTable();
-                        startActivity(intent2);
-                        LoginManager.getInstance().logOut();
-                    }
-                    MessageHandler.handleMessage(ctx, message);
-                }
-            }
-        };
-
-    }
-
-    /*
-        if a user logout, the person's account will not be remembered.
-     */
-    private void updateUserTable() {
-        UserTableHelper dbHelper = new UserTableHelper(this, "userbase1");
-        SQLiteDatabase db = dbHelper.getReadableDatabase();
-        ContentValues values = new ContentValues();
-        values.put("remember", false);
-        db.update("itime_user", values, "id=?", new String[]{"1"});
-        dbHelper.close();
-        db.close();
     }
 
 }

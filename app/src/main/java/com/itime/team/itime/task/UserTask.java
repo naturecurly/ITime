@@ -265,7 +265,43 @@ public class UserTask {
 
     }
 
-    public void syncGcmRegistrationToken(String userId, String registrationToken, final CallBackResult<String> callback) {
+    public void logout(String userId, final CallBackResult<String> callback) {
+        JSONObject jsonObject = new JSONObject();
+        try {
+            jsonObject.put("user_id", userId);
+        } catch (JSONException e) {
+            e.printStackTrace();
+            return;
+        }
+        final String url = URLs.LOG_OUT;
+        JsonObjectRequest request = new JsonObjectRequest(Request.Method.POST, url, jsonObject.toString(),
+                new Response.Listener<JSONObject>() {
+                    @Override
+                    public void onResponse(JSONObject response) {
+                        Log.i(LOG_TAG, response.toString());
+                        String result = "failed";
+                        try {
+                            result = response.getString("result");
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+                        if (callback != null) {
+                            callback.callback(result);
+                        }
+                    }
+                },
+                new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+
+                    }
+                }
+        );
+        MySingleton.getInstance(mContext).addToRequestQueue(request);
+    }
+
+
+        public void syncGcmRegistrationToken(String userId, String registrationToken, final CallBackResult<String> callback) {
         JSONObject jsonObject = new JSONObject();
         try {
             jsonObject.put("user_id", userId);

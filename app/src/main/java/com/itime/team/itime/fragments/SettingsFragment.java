@@ -173,15 +173,24 @@ public class SettingsFragment extends Fragment implements View.OnClickListener, 
             case SETTINGS_CLEAR_CALENDAR_ID:
                 break;
 
-            case SETTING_LOGOUT_ID:
-                getActivity().finish();
-                Intent intent2 = new Intent(getActivity(), LoginActivity.class);
-                intent2.putExtra("username", com.itime.team.itime.bean.User.ID);
-                updateUserTable();
-                startActivity(intent2);
-                LoginManager.getInstance().logOut();
+            case SETTING_LOGOUT_ID: {
+                UserTask userTask = UserTask.getInstance(getContext());
+                UserTask.CallBackResult<String> callback = new UserTask.CallBackResult<String>() {
+                    @Override
+                    public void callback(String data) {
+                        if (data.equalsIgnoreCase("success")) {
+                            getActivity().finish();
+                            Intent intent2 = new Intent(getActivity(), LoginActivity.class);
+                            intent2.putExtra("username", com.itime.team.itime.bean.User.ID);
+                            updateUserTable();
+                            startActivity(intent2);
+                            LoginManager.getInstance().logOut();
+                        }
+                    }
+                };
+                userTask.logout(com.itime.team.itime.bean.User.ID, callback);
                 break;
-
+            }
             default:
                 break;
         }

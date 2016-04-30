@@ -26,6 +26,7 @@ import android.media.RingtoneManager;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.NotificationCompat;
+import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 
 import com.google.android.gms.gcm.GcmListenerService;
@@ -34,6 +35,7 @@ import com.itime.team.itime.activities.CheckLoginActivity;
 import com.itime.team.itime.bean.User;
 import com.itime.team.itime.database.UserTableHelper;
 import com.itime.team.itime.model.ParcelableMessage;
+import com.itime.team.itime.utils.ITimeGcmPreferences;
 
 public class ITimeGcmListenerService extends GcmListenerService {
 
@@ -81,6 +83,7 @@ public class ITimeGcmListenerService extends GcmListenerService {
          * which need to perform the actual UI changes. But this way could startActivity like that
          * in a service. For an example, see usage in {@link #checkLogout}.
          */
+        broadcastNotification(data);
 
         /**
          * In some cases it may be useful to show a notification indicating to the user
@@ -126,6 +129,14 @@ public class ITimeGcmListenerService extends GcmListenerService {
         db.update("itime_user", values, "id=?", new String[]{"1"});
         dbHelper.close();
         db.close();
+    }
+
+    private void broadcastNotification(Bundle data) {
+        if (!data.getString("itime_message_type", "").equals("OTHER_DEVICE_LOGIN")) {
+            Intent broadcastIntent = new Intent(ITimeGcmPreferences.HANDLE_MESSAGE);
+            broadcastIntent.putExtra(ITimeGcmPreferences.HANDLE_MESSAGE_DATA, data);
+            LocalBroadcastManager.getInstance(this).sendBroadcast(broadcastIntent);
+        }
     }
 
     /**

@@ -7,11 +7,7 @@
         android:targetSdkVersion="17" />
     <uses-permission android:name="android.permission.WAKE_LOCK" />
 
-    <permission
-        android:name="com.itime.team.itime.permission.C2D_MESSAGE"
-        android:protectionLevel="signature" />
 
-    <uses-permission android:name="com.itime.team.itime.permission.C2D_MESSAGE" />
     <uses-permission android:name="com.google.android.c2dm.permission.RECEIVE" />
 
 
@@ -36,11 +32,6 @@
     <!-- Permission to receive Google Maps -->
     <uses-permission android:name="com.arshad.map.permission.MAPS_RECEIVE" />
 
-    <permission
-        android:name="${applicationId}.permission.JPUSH_MESSAGE"
-        android:protectionLevel="signature" />
-
-    <uses-permission android:name="${applicationId}.permission.JPUSH_MESSAGE" />
     <uses-permission android:name="android.permission.RECEIVE_USER_PRESENT" />
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.WAKE_LOCK" />
@@ -186,17 +177,6 @@
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme.NoActionBar"></activity>
 
-        <!--<receiver
-            android:name="com.google.android.gms.gcm.GcmReceiver"
-            android:exported="true"
-            android:permission="com.google.android.c2dm.permission.SEND">
-            <intent-filter>
-                <action android:name="com.google.android.c2dm.intent.RECEIVE" />
-                <category android:name="com.example.gcm" />
-            </intent-filter>
-        </receiver>-->
-
-
         <activity
             android:name=".activities.WeeklyActivity"
             android:parentActivityName=".activities.MainActivity"
@@ -258,92 +238,6 @@
             android:name=".services.RegistrationIntentService"
             android:exported="false">
         </service>
-
-        <!--&lt;!&ndash; Required JPush&ndash;&gt;-->
-        <!--<activity-->
-        <!--android:name="cn.jpush.android.ui.PushActivity"-->
-        <!--android:configChanges="orientation|keyboardHidden"-->
-        <!--android:theme="@android:style/Theme.NoTitleBar"-->
-        <!--android:exported="false">-->
-        <!--<intent-filter>-->
-        <!--<action android:name="cn.jpush.android.ui.PushActivity" />-->
-        <!--<category android:name="android.intent.category.DEFAULT" />-->
-        <!--<category android:name="${applicationId}" />-->
-        <!--</intent-filter>-->
-        <!--</activity>-->
-
-        <!--<service-->
-        <!--android:name="cn.jpush.android.service.DownloadService"-->
-        <!--android:enabled="true"-->
-        <!--android:exported="false" >-->
-        <!--</service>-->
-
-
-        <!--<service-->
-        <!--android:name="cn.jpush.android.service.PushService"-->
-        <!--android:enabled="true"-->
-        <!--android:exported="false">-->
-        <!--<intent-filter>-->
-        <!--<action android:name="cn.jpush.android.intent.REGISTER" />-->
-        <!--<action android:name="cn.jpush.android.intent.REPORT" />-->
-        <!--<action android:name="cn.jpush.android.intent.PushService" />-->
-        <!--<action android:name="cn.jpush.android.intent.PUSH_TIME" />-->
-
-        <!--</intent-filter>-->
-        <!--</service>-->
-
-        <!--<service-->
-        <!--android:name="cn.jpush.android.service.DaemonService"-->
-        <!--android:enabled="true"-->
-        <!--android:exported="true">-->
-        <!--<intent-filter >-->
-        <!--<action android:name="cn.jpush.android.intent.DaemonService" />-->
-        <!--<category android:name="${applicationId}"/>-->
-        <!--</intent-filter>-->
-        <!--</service>-->
-
-        <!--<receiver-->
-        <!--android:name="cn.jpush.android.service.PushReceiver"-->
-        <!--android:enabled="true"-->
-        <!--android:exported="false">-->
-        <!--<intent-filter android:priority="1000">-->
-        <!--<action android:name="cn.jpush.android.intent.NOTIFICATION_RECEIVED_PROXY" /> &lt;!&ndash;Required 显示通知栏 &ndash;&gt;-->
-        <!--<category android:name="${applicationId}" />-->
-        <!--</intent-filter>-->
-        <!--<intent-filter>-->
-        <!--<action android:name="android.intent.action.USER_PRESENT" />-->
-        <!--<action android:name="android.net.conn.CONNECTIVITY_CHANGE" />-->
-        <!--</intent-filter>-->
-        <!--&lt;!&ndash; Optional &ndash;&gt;-->
-        <!--<intent-filter>-->
-        <!--<action android:name="android.intent.action.PACKAGE_ADDED" />-->
-        <!--<action android:name="android.intent.action.PACKAGE_REMOVED" />-->
-        <!--<data android:scheme="package" />-->
-        <!--</intent-filter>-->
-        <!--</receiver>-->
-
-        <!--<receiver-->
-        <!--android:name=".receivers.JPushReceiver"-->
-        <!--android:enabled="true">-->
-        <!--<intent-filter>-->
-        <!--<action android:name="cn.jpush.android.intent.REGISTRATION" />-->
-        <!--<action android:name="cn.jpush.android.intent.UNREGISTRATION" />-->
-        <!--<action android:name="cn.jpush.android.intent.MESSAGE_RECEIVED" />-->
-        <!--<action android:name="cn.jpush.android.intent.NOTIFICATION_RECEIVED" />-->
-        <!--<action android:name="cn.jpush.android.intent.NOTIFICATION_OPENED" />-->
-        <!--<action android:name="cn.jpush.android.intent.ACTION_RICHPUSH_CALLBACK" /> &lt;!&ndash;Optional Rich Push Javascript Recall Function intent&ndash;&gt;-->
-        <!--<action android:name="cn.jpush.android.intent.CONNECTION" />-->
-        <!--<category android:name="${applicationId}" />-->
-        <!--</intent-filter>-->
-        <!--</receiver>-->
-
-        <!--&lt;!&ndash; Required &ndash;&gt;-->
-        <!--<receiver android:name="cn.jpush.android.service.AlarmReceiver" />-->
-
-
-        <!--&lt;!&ndash; Required . Enable it you can get statistics data with channel &ndash;&gt;-->
-        <!--<meta-data android:name="JPUSH_CHANNEL" android:value="developer-default"/>-->
-        <!--<meta-data android:name="JPUSH_APPKEY" android:value="590224acd64d2714e64b0034" />-->
 
         <!-- Required . FaceBook -->
         <meta-data

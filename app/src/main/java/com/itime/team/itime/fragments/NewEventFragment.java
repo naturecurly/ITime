@@ -99,6 +99,8 @@ public class NewEventFragment extends Fragment {
     private ParcelableCalendarType calendarTypeString = Events.calendarTypeList.get(0);
     private String event_venue_location = "";
     private int is_punctual;
+    private Calendar calendar = Calendar.getInstance();
+
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -109,9 +111,14 @@ public class NewEventFragment extends Fragment {
         mMonthOfYear = c.get(Calendar.MONTH);
         mDayOfMonth = c.get(Calendar.DAY_OF_MONTH);
         mHour = c.get(Calendar.HOUR_OF_DAY);
-        mEndYear = mYear;
-        mEndMonthOfYear = mMonthOfYear;
-        mEndDayOfMonth = mDayOfMonth;
+        mMin = 0;
+        calendar.set(mYear, mMonthOfYear, mDayOfMonth, mHour, mMin);
+        calendar.add(Calendar.HOUR_OF_DAY, 1);
+        mEndYear = calendar.get(Calendar.YEAR);
+        mEndMonthOfYear = calendar.get(Calendar.MONTH);
+        mEndDayOfMonth = calendar.get(Calendar.DAY_OF_MONTH);
+        mEndHour = calendar.get(Calendar.HOUR_OF_DAY);
+        mEndMin = calendar.get(Calendar.MINUTE);
         Bundle arguments = getArguments();
         View view = inflater.inflate(R.layout.new_event_fragment, container, false);
         repeat_type = (TextView) view.findViewById(R.id.rep_new_event);
@@ -156,11 +163,20 @@ public class NewEventFragment extends Fragment {
                         mYear = year;
                         mMonthOfYear = monthOfYear;
                         mDayOfMonth = dayOfMonth;
+                        calendar.set(year, monthOfYear, dayOfMonth, mHour, mMin);
+                        calendar.add(Calendar.HOUR_OF_DAY, 1);
+                        mEndYear = calendar.get(Calendar.YEAR);
+                        mEndMonthOfYear = calendar.get(Calendar.MONTH);
+                        mEndDayOfMonth = calendar.get(Calendar.DAY_OF_MONTH);
+                        mEndHour = calendar.get(Calendar.HOUR_OF_DAY);
+                        mEndMin = calendar.get(Calendar.MINUTE);
+                        end_date.setText(DateUtil.formatDate(mEndDayOfMonth, mEndMonthOfYear, mEndYear));
+                        end_time.setText(timeFormat(mEndHour, mEndMin));
                     }
                 }, mYear, mMonthOfYear, mDayOfMonth).show();
             }
         });
-        start_time.setText(timeFormat(mHour, 0));
+        start_time.setText(timeFormat(mHour, mMin));
         start_time.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -170,12 +186,21 @@ public class NewEventFragment extends Fragment {
                         start_time.setText(timeFormat(hourOfDay, minute));
                         mHour = hourOfDay;
                         mMin = minute;
+                        calendar.set(mYear, mMonthOfYear, mDayOfMonth, mHour, mMin);
+                        calendar.add(Calendar.HOUR_OF_DAY, 1);
+                        mEndYear = calendar.get(Calendar.YEAR);
+                        mEndMonthOfYear = calendar.get(Calendar.MONTH);
+                        mEndDayOfMonth = calendar.get(Calendar.DAY_OF_MONTH);
+                        mEndHour = calendar.get(Calendar.HOUR_OF_DAY);
+                        mEndMin = calendar.get(Calendar.MINUTE);
+                        end_date.setText(DateUtil.formatDate(mEndDayOfMonth, mEndMonthOfYear, mEndYear));
+                        end_time.setText(timeFormat(mEndHour, mEndMin));
                     }
                 }, mHour, mMin, true).show();
             }
         });
 
-        end_date.setText(DateUtil.formatDate(mDayOfMonth, mMonthOfYear, mYear));
+        end_date.setText(DateUtil.formatDate(mEndDayOfMonth, mEndMonthOfYear, mEndYear));
         end_date.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -188,11 +213,11 @@ public class NewEventFragment extends Fragment {
                         mEndMonthOfYear = monthOfYear;
                         mEndDayOfMonth = dayOfMonth;
                     }
-                }, mYear, mMonthOfYear, mDayOfMonth).show();
+                }, mEndYear, mEndMonthOfYear, mEndDayOfMonth).show();
             }
         });
 
-        end_time.setText(timeFormat(mHour, 0));
+        end_time.setText(timeFormat(mEndHour, mEndMin));
         end_time.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -203,7 +228,7 @@ public class NewEventFragment extends Fragment {
                         mEndHour = hourOfDay;
                         mEndMin = minute;
                     }
-                }, mHour, mMin, true).show();
+                }, mEndHour, mEndMin, true).show();
             }
         });
 
@@ -273,7 +298,7 @@ public class NewEventFragment extends Fragment {
     }
 
 
-//
+    //
     private String timeFormat(int hour, int min) {
         String hourReturn = hour < 10 ? "0" + hour : String.valueOf(hour);
         String minReturn = min < 10 ? "0" + min : String.valueOf(min);

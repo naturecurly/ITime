@@ -695,7 +695,7 @@ public class EventUtil {
         try {
             String type = object.getString("event_repeats_type");
             boolean isLong = object.getBoolean("is_long_repeat");
-            if (!type.equals("One-time event") && isLong) {
+            if (!type.equals("One-time event")) {
                 return true;
             }
         } catch (JSONException e) {
@@ -784,6 +784,23 @@ public class EventUtil {
             }
         }
         return notShownCalendarId;
+    }
+
+    public static Map<String, JSONObject> processRawEvents(JSONArray response) {
+        Map<String, JSONObject> rawEvents = new HashMap<>();
+
+        for (int i = 0; i < response.length(); i++) {
+            try {
+                rawEvents.put(response.getJSONObject(i).getString("event_id"), response.getJSONObject(i));
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+        }
+        return rawEvents;
+    }
+
+    public static JSONObject findEventById(String id) {
+        return Events.rawEvents.get(id);
     }
 
 }

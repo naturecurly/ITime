@@ -1171,6 +1171,7 @@ public class CalendarFragment extends Fragment {
             @Override
             public void onResponse(JSONObject response) {
                 try {
+                    Events.rawEvents = EventUtil.processRawEvents(response.getJSONArray("events"));
                     Events.calendarTypeList = LoganSquare.parseList(response.getJSONArray("calendar_types").toString(), ParcelableCalendarType.class);
                     Events.notShownId = EventUtil.getNotShownCalendarId();
                     Events.response = EventUtil.initialEvents(response.getJSONArray("events"));

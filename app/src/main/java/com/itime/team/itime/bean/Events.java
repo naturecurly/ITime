@@ -37,4 +37,6 @@ public class Events {
     public static List<ParcelableCalendarType> calendarTypeList = new ArrayList<>();
 
     public static Set<String> notShownId = new HashSet<>();
+
+    public static Map<String, JSONObject> rawEvents = new HashMap<>();
 }

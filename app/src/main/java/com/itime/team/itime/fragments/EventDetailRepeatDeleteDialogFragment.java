@@ -27,7 +27,7 @@ public class EventDetailRepeatDeleteDialogFragment extends DialogFragment {
         dialog.setButton(AlertDialog.BUTTON_NEGATIVE, "Delete for the future events", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
-
+                ((EventDetailFragment) getTargetFragment()).deleteFutureEvents();
             }
         });
 

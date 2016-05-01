@@ -29,6 +29,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.util.Calendar;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -38,6 +39,7 @@ import java.util.Map;
 public class EventDetailFragment extends Fragment {
 
     private static final int DIALOG_FRAGMENT = 1;
+    private static final int DELETE_REPEAT_EVENTS_REQUEST = 2;
     private EditText name;
     private EditText venue;
     private TextView start_text;
@@ -162,6 +164,75 @@ public class EventDetailFragment extends Fragment {
     private void showRepeatDeleteDialog() {
         FragmentManager fm = getFragmentManager();
         EventDetailRepeatDeleteDialogFragment dialog = new EventDetailRepeatDeleteDialogFragment();
+        dialog.setTargetFragment(this, DELETE_REPEAT_EVENTS_REQUEST);
         dialog.show(fm, "event_detail_repeat_delete_dialog");
+    }
+
+    public void deleteFutureEvents() {
+        JSONObject event = EventUtil.findEventById(event_id);
+        try {
+            event.put("is_long_repeat", 0);
+            if (event.getBoolean("is_meeting")) {
+                event.put("is_meeting", 1);
+            } else {
+                event.put("is_meeting", 0);
+            }
+            if (event.getBoolean("event_is_punctual_new")) {
+                event.put("event_is_punctual_new", 1);
+            } else {
+                event.put("event_is_punctual_new", 0);
+            }
+            if (event.getBoolean("is_host")) {
+                event.put("is_host", 1);
+            } else {
+                event.put("is_host", 0);
+            }
+            if (event.getBoolean("event_is_punctual")) {
+                event.put("event_is_punctual", 1);
+            } else {
+                event.put("event_is_punctual", 0);
+            }
+            if (event.getBoolean("if_deleted")) {
+                event.put("if_deleted", 1);
+            } else {
+                event.put("if_deleted", 0);
+            }
+            Calendar cal = DateUtil.getLocalDateObjectToCalendar(DateUtil.getLocalDateObject(event_start));
+            cal.add(Calendar.DAY_OF_MONTH, -1);
+            cal.set(Calendar.HOUR_OF_DAY, 23);
+            cal.set(Calendar.MINUTE, 59);
+            String reToDate = DateUtil.getDateStringFromCalendarGMT(cal);
+            event.put("event_repeat_to_date", reToDate);
+
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        JSONObject jsonObject = new JSONObject();
+        JSONArray array = new JSONArray();
+        array.put(event);
+        try {
+            jsonObject.put("user_id", User.ID);
+            jsonObject.put("local_events", array);
+
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+        Map<String, String> params = new HashMap();
+        params.put("json", jsonObject.toString());
+        String url = URLs.SYNC;
+        JsonObjectFormRequest request = new JsonObjectFormRequest(Request.Method.POST, url, params, new Response.Listener<JSONObject>() {
+            @Override
+            public void onResponse(JSONObject response) {
+
+            }
+        }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+
+            }
+        });
+        MySingleton.getInstance(getActivity()).addToRequestQueue(request);
+        Toast.makeText(getActivity(), "Deleted", Toast.LENGTH_SHORT).show();
     }
 }

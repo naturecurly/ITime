@@ -72,6 +72,7 @@ public class SearchFriendActivity extends AppCompatActivity implements SearchVie
     }
 
     private void searchFriend(String name){
+
         JSONObject jsonObject = new JSONObject();
         try {
             jsonObject.put("user_id", User.ID);
@@ -98,6 +99,7 @@ public class SearchFriendActivity extends AppCompatActivity implements SearchVie
     }
 
     private void adaptListView(JSONArray jsonArray){
+        mListItem.clear();
         try {
             for(int i = 0; i < jsonArray.length(); i ++){
                 JSONObject jsonObject = (JSONObject) jsonArray.get(i);
@@ -122,7 +124,7 @@ public class SearchFriendActivity extends AppCompatActivity implements SearchVie
 
     @Override
     public boolean onQueryTextSubmit(String query) {
-        mListItem.clear();
+
         searchFriend(query);
         return true;
     }

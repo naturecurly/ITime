@@ -5,6 +5,7 @@ package com.itime.team.itime.utils;
  */
 
 import android.annotation.SuppressLint;
+import android.util.Log;
 
 import java.text.DateFormat;
 import java.text.ParseException;
@@ -138,6 +139,12 @@ public class DateUtil {
         return cal.get(Calendar.DAY_OF_WEEK);
     }
 
+    public static int getDateOfWeek_M(int year, int month, int day) {
+        Calendar cal = Calendar.getInstance();
+        cal.set(year, month, day);
+        return cal.get(Calendar.DAY_OF_WEEK);
+    }
+
     //Return the number of days between two specific days
     public static int diffDate(int oldYear, int oldMonth, int oldDay, int year, int month, int day) {
         Calendar cal1 = Calendar.getInstance();
@@ -228,9 +235,11 @@ public class DateUtil {
     public static boolean isFeasible(int startYear, int startMonth, int startDay, int startHour, int startMin,
                                      int endYear, int endMonth, int endDay, int endHour, int endMin) {
         Calendar start = Calendar.getInstance();
-        start.set(startYear, startMonth, startDay, startHour, startMin);
+        start.set(startYear, startMonth + 1, startDay, startHour, startMin);
         Calendar end = Calendar.getInstance();
-        end.set(endYear, endMonth, endDay, endHour, endMin);
+        end.set(endYear, endMonth + 1, endDay, endHour, endMin);
+        Log.i("start", start.toString());
+        Log.i("end", end.toString());
         if (start.compareTo(end) >= 0) {
             return false;
         } else {

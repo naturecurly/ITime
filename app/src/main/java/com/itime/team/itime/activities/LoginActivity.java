@@ -102,6 +102,7 @@ public class LoginActivity extends FragmentActivity implements View.OnClickListe
         mMainIntent = new Intent(this, MainActivity.class);
         mMainIntent.putExtra("invitation", mInviatedFriendID);
 
+        checkInvitation();
 
         setTexts();
 
@@ -113,6 +114,12 @@ public class LoginActivity extends FragmentActivity implements View.OnClickListe
         mUsername.setText(mUsernameStr);
     }
 
+    private void checkInvitation(){
+        String id = getIntent().getStringExtra("invitation");
+        if(!id.equals("")) {
+            Toast.makeText(this,getString(R.string.add_friend_login),Toast.LENGTH_LONG).show();
+        }
+    }
 
     /*
         If a device already has a device id in the database, then we just get the ID from the database,

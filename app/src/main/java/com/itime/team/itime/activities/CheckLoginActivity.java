@@ -91,6 +91,7 @@ public class CheckLoginActivity extends AppCompatActivity{
         mPasswordStr = "";
         mLastLoginTime = "";
         hasAddFriendRequest = false;
+        mInviatedFriendID = "";
 
         getInvitation();
 
@@ -105,6 +106,7 @@ public class CheckLoginActivity extends AppCompatActivity{
                 if(canLogin()){
 //                    User.ID = mUsernameStr;
 //                    startActivity(MainIntent);
+                    mCanLogin = true;
                 }else{
                     // If cannot login directly, then enter into the UI which provides inputing
                     // password and username function.
@@ -264,8 +266,16 @@ public class CheckLoginActivity extends AppCompatActivity{
             if(uri != null){
                 hasAddFriendRequest = true;
                 mInviatedFriendID = uri.getQueryParameter("id");
-
+                String address = uri.getQueryParameter("address");
+                final String id = mInviatedFriendID + "@" + address;
+                mInviatedFriendID = id;
+                if(uri != null){
+                }
             }
         }
     }
+
+    // When user is invited to make friends by clicking a link, then this method will handle this
+    // situation.
+
 }

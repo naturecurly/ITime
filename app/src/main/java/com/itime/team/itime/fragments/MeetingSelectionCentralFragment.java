@@ -31,7 +31,6 @@ import com.itime.team.itime.utils.DateUtil;
 import com.itime.team.itime.utils.JsonArrayFormRequest;
 import com.itime.team.itime.utils.JsonManager;
 import com.itime.team.itime.utils.MySingleton;
-import com.itime.team.itime.utils.URLConnectionUtil;
 import com.itime.team.itime.views.MeetingSelectionScrollView;
 
 import org.json.JSONArray;
@@ -625,7 +624,7 @@ public class MeetingSelectionCentralFragment extends Fragment implements ScrollV
         }
     }
 
-    private void getAvailability1(){
+    /*private void getAvailability1(){
         try {
             JSONArray friendID = new JSONArray();
             for(String ids : mFriendIDS){
@@ -662,7 +661,7 @@ public class MeetingSelectionCentralFragment extends Fragment implements ScrollV
         } catch (JSONException e) {
             e.printStackTrace();
         }
-    }
+    }*/
 
     private void getAvailability(){
         JSONObject post = new JSONObject();

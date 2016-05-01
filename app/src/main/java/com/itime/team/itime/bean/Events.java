@@ -18,15 +18,15 @@ import java.util.Set;
 public class Events {
     public static JSONArray response;
 
-    public static List<JSONObject> repeatEvent;
+    public static List<JSONObject> repeatEvent = new ArrayList<>();
 
-    public static List<JSONObject> ignoredEvent;
+    public static List<JSONObject> ignoredEvent = new ArrayList<>();
 
-    public static Set<String> daysHaveEvents;
+    public static Set<String> daysHaveEvents = new HashSet<>();
 
     public static Map<String, List<JSONObject>> eventsByMonth = new HashMap<>();
 
-    public static Map<String, List<JSONObject>> eventsMonth = new HashMap<>();
+//    public static Map<String, List<JSONObject>> eventsMonth = new HashMap<>();
 
     public static Map<String, Set<List<JSONObject>>> eventsMonthMap = new HashMap<>();
 

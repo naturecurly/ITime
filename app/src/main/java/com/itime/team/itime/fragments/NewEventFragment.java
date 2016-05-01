@@ -65,41 +65,6 @@ public class NewEventFragment extends Fragment {
     private static final String OUT_JSON = "/json";
     private static String API_KEY = "AIzaSyBC4zDmkarugKY0Njs_n2TtEUVEyeESn0c";
 
-//    private EditText mMessage;
-//    private Button mStartDate, mStartTime, mEndDate, mEndTime;
-//    private Button mRepeat;
-//    private CheckBox mPunctual;
-//    private Button mAlert;
-//    private EditText mName, mVeune;
-//
-//    private int mStartYear;
-//    private int mStartMonth;
-//    private int mStartDay;
-//    private int mStartHour;
-//    private int mStartMin;
-//    private int mEndYear;
-//    private int mEndMonth;
-//    private int mEndDay;
-//    private int mEndHour;
-//    private int mEndMin;
-//    private int mDuration;
-//    private String[] mFriendIDs;
-//
-//
-//    private TimePickerDialog mTimePicker1;
-//    private TimePickerDialog mTimePicker2;
-//    private DatePickerDialog mDatePicker1;
-//    private DatePickerDialog mDatePicker2;
-//    private String mLat = "";
-//    private String mLng = "";
-//
-//    private ScrollView mMain;
-//    private boolean mIsFeasible;
-//    private ArrayList<String> mRpeatValue;
-//    private ArrayList<Integer> mAlertValue;
-//
-//    private JsonManager mJsonManager;
-
     final private String[] repeatArray = {"One-time event", "Daily", "Weekly", "Bi-Weekly", "Monthly", "Yearly"};
     final private String[] alertArray = {"None", "At time of Departure", "5 minutes before", "10 minutes before", "15 minutes before", "30 minutes before", "1 hour before"};
 
@@ -308,48 +273,6 @@ public class NewEventFragment extends Fragment {
     }
 
 
-    //    private void init(View rootView) {
-//
-//
-//        setEndTime();
-//        getCurrentDate();
-//
-//        mMessage = (EditText) rootView.findViewById(R.id.new_meeting_message);
-//        mMessage.setOnTouchListener(this);
-//        mStartDate = (Button) rootView.findViewById(R.id.new_meeting_start_date);
-//        mEndDate = (Button) rootView.findViewById(R.id.new_meeting_end_date);
-//        mStartTime = (Button) rootView.findViewById(R.id.new_meeting_start_time);
-//        mEndTime = (Button) rootView.findViewById(R.id.new_meeting_end_time);
-//        mRepeat = (Button) rootView.findViewById(R.id.new_meeting_repeat);
-//        mAlert = (Button) rootView.findViewById(R.id.new_meeting_alert);
-//        mPunctual = (CheckBox) rootView.findViewById(R.id.new_meeting_punctual);
-//        mName = (EditText) rootView.findViewById(R.id.new_meeting_name);
-//        mMain = (ScrollView) rootView.findViewById(R.id.new_meeting_main_layout);
-//        mVeune = (EditText) rootView.findViewById(R.id.new_meeting_venue);
-//        mStartDate.setOnClickListener(this);
-//        mEndDate.setOnClickListener(this);
-//        mStartTime.setOnClickListener(this);
-//        mEndTime.setOnClickListener(this);
-//        mRepeat.setOnClickListener(this);
-//        mPunctual.setOnCheckedChangeListener(this);
-//        mMain.setOnTouchListener(this);
-//        mAlert.setOnClickListener(this);
-//        mVeune.setOnClickListener(this);
-//
-//        mStartTime.setText(timeFormat(mStartHour, mStartMin));
-//        mEndTime.setText(timeFormat(mEndHour, mEndMin));
-//        mStartDate.setText(dateFormat(mStartDay, mStartMonth, mStartYear));
-//        mEndDate.setText(dateFormat(mEndDay, mEndMonth, mEndYear));
-//
-//        mRpeatValue = new ArrayList();
-//        mAlertValue = new ArrayList();
-//        mRpeatValue.add("One-time event");
-//        mAlertValue.add(1);
-//
-//        mJsonManager = new JsonManager();
-//
-//        //simpleRequest();
-//    }
 //
     private String timeFormat(int hour, int min) {
         String hourReturn = hour < 10 ? "0" + hour : String.valueOf(hour);
@@ -498,8 +421,6 @@ public class NewEventFragment extends Fragment {
 
     }
 
-    //
-//
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (requestCode == 1) {
@@ -536,51 +457,4 @@ public class NewEventFragment extends Fragment {
             }
         }
     }
-//
-//    public void postEvents() {
-//        String startDateForPost = DateUtil.getDateWithTimeZone(mStartYear, mStartMonth + 1, mStartDay, mStartHour, mStartMin);
-//        String endDateForPost = DateUtil.getDateWithTimeZone(mEndYear, mEndMonth + 1, mEndDay, mEndHour, mEndMin);
-//        String comment = mMessage.getText().toString();
-//        String name = mName.getText().toString();
-//        String punctual = mPunctual.isChecked() ? "true" : "false";
-//        String repeative = mRpeatValue.get(0);
-//
-//        String status = "NO CONFIRM NEW MEETING";
-//        String location = "Melbourne";
-//        String showLocation = "Melbourne";
-//        String meetingID = UUID.randomUUID().toString();
-//        String meetingToken = UUID.randomUUID().toString();
-//
-//        JSONArray friendID = new JSONArray();
-//        friendID.put("");
-//        JSONObject json = new JSONObject();
-//        try {
-//            json.put("event_is_punctual", punctual);
-//            json.put("event_starts_datetime", URLConnectionUtil.encode(startDateForPost));
-//            json.put("event_ends_datetime", URLConnectionUtil.encode(endDateForPost));
-//            json.put("event_comment", comment);
-//            json.put("event_name", name);
-//            json.put("friends_id", friendID);
-//            json.put("event_repeats_type", repeative);
-//            json.put("event_latitude", mLat);
-//            json.put("event_longitude_new", mLng);
-//            json.put("event_venue_location", location);
-//            json.put("meeting_id", meetingID);
-//            json.put("meeting_valid_token", meetingToken);
-//            json.put("user_id", User.ID);
-//            json.put("meeting_status", status);
-//            json.put("event_venue_show", showLocation);
-//            json.put("is_meeting", false);
-//            json.put("is_long_repeat", true);
-//            Log.i("resu", json.toString());
-//        } catch (JSONException e) {
-//            e.printStackTrace();
-//        }
-//
-//        final String url = URLs.SYNC;
-//        Map<String, String> params = new HashMap();
-//        params.put("json", json.toString());
-//
-//
-//    }
 }

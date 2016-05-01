@@ -186,6 +186,8 @@
         sending the fetched token to the server or subscribing to the PubSub topic. Please try
         running the sample again.</string>
     <string name="event_detail_alert">Alert</string>
+    <string name="event_detail_edit">Edit</string>
+    <string name="event_detail_delete">Delete</string>
 
 
 </resources>

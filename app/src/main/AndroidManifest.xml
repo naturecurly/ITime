@@ -5,6 +5,7 @@
     <uses-sdk
         android:minSdkVersion="8"
         android:targetSdkVersion="17" />
+
     <uses-permission android:name="android.permission.WAKE_LOCK" />
 
 
@@ -189,6 +190,9 @@
             android:name=".activities.EventsDetailActivity"
             android:parentActivityName=".activities.MainActivity"
             android:screenOrientation="portrait" />
+        <activity
+            android:name=".activities.EventsDetailEditActivity"
+            android:screenOrientation="portrait" />
 
         <provider
             android:name=".database.ITimeDataProivder"
@@ -208,7 +212,7 @@
         <receiver
             android:name="com.google.android.gms.gcm.GcmReceiver"
             android:exported="true"
-            android:permission="com.google.android.c2dm.permission.SEND" >
+            android:permission="com.google.android.c2dm.permission.SEND">
             <intent-filter>
                 <action android:name="com.google.android.c2dm.intent.RECEIVE" />
                 <category android:name="com.itime.team.itime" />
@@ -219,7 +223,7 @@
         <!-- [START gcm_listener] -->
         <service
             android:name=".services.ITimeGcmListenerService"
-            android:exported="false" >
+            android:exported="false">
             <intent-filter>
                 <action android:name="com.google.android.c2dm.intent.RECEIVE" />
             </intent-filter>
@@ -230,14 +234,13 @@
             android:name=".services.ITimeInstanceIDListenerService"
             android:exported="false">
             <intent-filter>
-                <action android:name="com.google.android.gms.iid.InstanceID"/>
+                <action android:name="com.google.android.gms.iid.InstanceID" />
             </intent-filter>
         </service>
         <!-- [END instanceId_listener] -->
         <service
             android:name=".services.RegistrationIntentService"
-            android:exported="false">
-        </service>
+            android:exported="false"></service>
 
         <!-- Required . FaceBook -->
         <meta-data

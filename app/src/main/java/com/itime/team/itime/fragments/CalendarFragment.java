@@ -81,6 +81,7 @@ public class CalendarFragment extends Fragment {
 
     private static final int YEAR_REQUEST = 100;
     private static final int NEW_EVENT_REQUEST = 101;
+    private static final int EDIT_EVENT_REQUEST = 102;
     private RecyclerView recyclerView;
     private List<Map<String, Integer>> dates = new ArrayList<>();
     private int lastPosition = -1;
@@ -585,7 +586,7 @@ public class CalendarFragment extends Fragment {
             itemView.setOnClickListener(this);
             calendarView = (CalendarView) itemView.findViewById(R.id.calendar_view);
             calendarView.setOnDateSelectedListener(new OnDateSelectedListener() {
-                List<JSONObject> objectList;
+                List<JSONObject> objectList = new ArrayList<JSONObject>();
 
                 @Override
                 public void dateSelected(float x, float y) {
@@ -651,10 +652,11 @@ public class CalendarFragment extends Fragment {
 //                        for (int f = 0; f < objectList.size(); f++) {
 //                            Log.d("68", objectList.get(f).toString());
 //                        }
-                        JSONObject firstObject = null;
+                        JSONObject firstObject = new JSONObject();
                         if (objectList.size() != 0) {
                             firstObject = objectList.get(0);
                         }
+                        Log.d("whetherValid", objectList.toString());
                         Calendar firstTimeCal = Calendar.getInstance();
                         try {
                             String firstTimeString = firstObject.getString("event_starts_datetime");
@@ -828,9 +830,11 @@ public class CalendarFragment extends Fragment {
                                                 String alert = objectList.get(eventGroup.get(flag)).getString("event_alert");
                                                 String calendarId = objectList.get(eventGroup.get(flag)).getString("calendar_id");
                                                 String calendarType = "";
+                                                ParcelableCalendarType parcelableCalendarType = new ParcelableCalendarType();
                                                 for (ParcelableCalendarType calType : Events.calendarTypeList) {
                                                     if (calType.calendarId.equals(calendarId)) {
                                                         calendarType = calType.calendarName;
+                                                        parcelableCalendarType = calType;
                                                     }
                                                 }
                                                 Intent detailIntent = new Intent(getActivity(), EventsDetailActivity.class);
@@ -842,8 +846,11 @@ public class CalendarFragment extends Fragment {
                                                 bundle.putString("repeat_type", repeat_type);
                                                 bundle.putString("alert", alert);
                                                 bundle.putString("calendar_type", calendarType);
+                                                bundle.putParcelable("calendar_type_pacelable", parcelableCalendarType);
+                                                bundle.putString("event_id", eventID);
                                                 detailIntent.putExtras(bundle);
-                                                startActivity(detailIntent);
+//                                                startActivity(detailIntent);
+                                                startActivityForResult(detailIntent, EDIT_EVENT_REQUEST);
                                             }
                                         } catch (JSONException e) {
                                             e.printStackTrace();
@@ -934,6 +941,15 @@ public class CalendarFragment extends Fragment {
                                                         String end_time = objectList.get(finalNum).getString("event_ends_datetime");
                                                         boolean punctual = objectList.get(finalNum).getBoolean("event_is_punctual");
                                                         String repeat_type = objectList.get(finalNum).getString("event_repeats_type");
+                                                        String calendarType = "";
+                                                        String calendarId = objectList.get(finalNum).getString("calendar_id");
+                                                        ParcelableCalendarType parcelableCalendarType = new ParcelableCalendarType();
+                                                        for (ParcelableCalendarType calType : Events.calendarTypeList) {
+                                                            if (calType.calendarId.equals(calendarId)) {
+                                                                calendarType = calType.calendarName;
+                                                                parcelableCalendarType = calType;
+                                                            }
+                                                        }
                                                         Intent detailIntent = new Intent(getActivity(), EventsDetailActivity.class);
                                                         Bundle bundle = new Bundle();
                                                         bundle.putString("event_name", event_name);
@@ -943,8 +959,12 @@ public class CalendarFragment extends Fragment {
                                                         bundle.putString("end_time", end_time);
                                                         bundle.putBoolean("punctual", punctual);
                                                         bundle.putString("repeat_type", repeat_type);
+                                                        bundle.putString("calendar_type", calendarType);
+                                                        bundle.putParcelable("calendar_type_pacelable", parcelableCalendarType);
+                                                        bundle.putString("event_id", eventID);
                                                         detailIntent.putExtras(bundle);
-                                                        startActivity(detailIntent);
+                                                        startActivityForResult(detailIntent, EDIT_EVENT_REQUEST);
+//                                                        startActivity(detailIntent);
                                                     } catch (JSONException e) {
                                                         e.printStackTrace();
                                                     }
@@ -1159,6 +1179,7 @@ public class CalendarFragment extends Fragment {
                     recyclerView.getAdapter().notifyDataSetChanged();
                     Log.i("Event_response", response.getJSONArray("events").toString());
                     Log.i("Calendar_type", response.getJSONArray("calendar_types").toString());
+                    Log.i("ignored_response", Events.ignoredEvent.toString());
                 } catch (JSONException e) {
                     e.printStackTrace();
                 } catch (IOException e) {
@@ -1439,6 +1460,12 @@ public class CalendarFragment extends Fragment {
                 refresh();
             }
         }
+
+        if (requestCode == EDIT_EVENT_REQUEST) {
+            if (resultCode == getActivity().RESULT_OK) {
+                refresh();
+            }
+        }
     }
 
     public void scrollToDate(Calendar calendar) {
@@ -1491,8 +1518,11 @@ public class CalendarFragment extends Fragment {
     }
 
     public void refresh() {
-        loadNum=0;
+        loadNum = 0;
+        Events.loadingMonth.clear();
+        Events.eventsMonthMap.clear();
         fetchEvents(User.ID);
+
     }
 }
 

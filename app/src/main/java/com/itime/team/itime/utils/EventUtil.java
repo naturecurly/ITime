@@ -3,6 +3,7 @@ package com.itime.team.itime.utils;
 import android.util.Log;
 
 import com.itime.team.itime.bean.Events;
+import com.itime.team.itime.fragments.EventDetailFragment;
 import com.itime.team.itime.model.ParcelableCalendarType;
 import com.itime.team.itime.task.ReadMonthEventTask;
 
@@ -28,6 +29,12 @@ import java.util.concurrent.TimeUnit;
  */
 public class EventUtil {
 
+    public static final String ONE_TIME = "One-time event";
+    public static final String DAILY = "Daily";
+    public static final String WEEKLY = "Weekly";
+    public static final String BI_WEEKLY = "Bi-Weekly";
+    public static final String MONTHLY = "Monthly";
+    public static final String YEARLY = "Yearly";
     public static boolean isTodayPressed = false;
 
 
@@ -41,6 +48,8 @@ public class EventUtil {
             try {
                 JSONObject object = response.getJSONObject(i);
                 Log.d("isValid", object.toString());
+                Log.d("notShownId", Events.notShownId.toString());
+
                 if (isValidEvent(object) && !Events.notShownId.contains(object.getString("calendar_id"))) {
                     if (!decideWhetherMultiDays(object)) {
                         array.put(object);
@@ -66,7 +75,7 @@ public class EventUtil {
                         Calendar startCal = DateUtil.getLocalDateObjectToCalendar(DateUtil.getLocalDateObject(startString));
                         Calendar endCal = DateUtil.getLocalDateObjectToCalendar(DateUtil.getLocalDateObject(endString));
                         Log.d("this", startCal.get(Calendar.DAY_OF_MONTH) + " " + endCal.get(Calendar.DAY_OF_MONTH));
-                        int day = calDuration(endCal, startCal);
+                        int day = calDuration(startCal, endCal);
                         if (day > 0) {
                             Log.d("how many days", day + "");
                             for (int y = 0; y <= day; y++) {
@@ -206,13 +215,15 @@ public class EventUtil {
                 JSONObject object = response.getJSONObject(i);
                 Date date = DateUtil.getLocalDateObject(object.getString("event_starts_datetime"));
                 Date enddate = DateUtil.getLocalDateObject(object.getString("event_ends_datetime"));
+                Date repeatToDate = DateUtil.getLocalDateObject(object.getString("event_repeat_to_date"));
                 Calendar calendar = DateUtil.getCalendarFromInteger(day, month, year);
                 Calendar new_cal = Calendar.getInstance();
                 new_cal.set(year, month - 1, day);
                 Calendar cal = DateUtil.getLocalDateObjectToCalendar(date);
                 Calendar endCal = DateUtil.getLocalDateObjectToCalendar(enddate);
+                Calendar repeatToCal = DateUtil.getLocalDateObjectToCalendar(repeatToDate);
                 Log.d("tttttt", cal.get(Calendar.DAY_OF_MONTH) + "");
-                int duration = calDuration(calendar, cal);
+                int duration = calDuration(cal, calendar);
                 String type = object.getString("event_repeats_type");
                 Boolean isLong = object.getBoolean("is_long_repeat");
                 if (type.equals("One-time event")) {
@@ -220,42 +231,86 @@ public class EventUtil {
                         list.add(object);
                     }
                 } else {
-                    if (type.equals("Daily") && isLong) {
-                        if (calendar.compareTo(cal) > 0 || (cal.get(Calendar.DAY_OF_MONTH) == calendar.get(Calendar.DAY_OF_MONTH) && (cal.get(Calendar.MONTH)) == calendar.get(Calendar.MONTH) && cal.get(Calendar.YEAR) == calendar.get(Calendar.YEAR))) {
+                    if (type.equals("Daily") && duration >= 0) {
+                        if (isLong) {
+//                            if (calendar.compareTo(cal) > 0 || (cal.get(Calendar.DAY_OF_MONTH) == calendar.get(Calendar.DAY_OF_MONTH) && (cal.get(Calendar.MONTH)) == calendar.get(Calendar.MONTH) && cal.get(Calendar.YEAR) == calendar.get(Calendar.YEAR))) {
                             cal.add(Calendar.DAY_OF_MONTH, duration);
                             endCal.add(Calendar.DAY_OF_MONTH, duration);
                             list.add(changeObjectDate(cal, endCal, object));
 //                            list.add(object);
+//                            }
+                        } else {
+                            int days = calDuration(cal, repeatToCal);
+                            if (duration <= days) {
+                                cal.add(Calendar.DAY_OF_MONTH, duration);
+                                endCal.add(Calendar.DAY_OF_MONTH, duration);
+                                list.add(changeObjectDate(cal, endCal, object));
+                            }
                         }
-                    } else if (type.equals("Weekly") && isLong) {
-                        if ((calendar.compareTo(cal) > 0 && duration > 0 && duration % 7 == 0) || (cal.get(Calendar.DAY_OF_MONTH) == calendar.get(Calendar.DAY_OF_MONTH) && (cal.get(Calendar.MONTH)) == calendar.get(Calendar.MONTH) && cal.get(Calendar.YEAR) == calendar.get(Calendar.YEAR))) {
+                    } else if (type.equals("Weekly") && duration >= 0) {
+                        if (isLong) {
+                            if (duration % 7 == 0) {
 //                            list.add(object);
-                            cal.add(Calendar.DAY_OF_MONTH, duration);
-                            endCal.add(Calendar.DAY_OF_MONTH, duration);
-                            list.add(changeObjectDate(cal, endCal, object));
+                                cal.add(Calendar.DAY_OF_MONTH, duration);
+                                endCal.add(Calendar.DAY_OF_MONTH, duration);
+                                list.add(changeObjectDate(cal, endCal, object));
+                            }
+                        } else {
+                            int days = calDuration(cal, repeatToCal);
+                            if (duration <= days && duration % 7 == 0) {
+                                cal.add(Calendar.DAY_OF_MONTH, duration);
+                                endCal.add(Calendar.DAY_OF_MONTH, duration);
+                                list.add(changeObjectDate(cal, endCal, object));
+                            }
+                        }
+                    } else if (type.equals("Bi-Weekly") && duration >= 0) {
+                        if (isLong) {
+                            if (duration % 14 == 0) {
+//                            list.add(object);
+                                cal.add(Calendar.DAY_OF_MONTH, duration);
+                                endCal.add(Calendar.DAY_OF_MONTH, duration);
+                                list.add(changeObjectDate(cal, endCal, object));
+                            }
+                        } else {
+                            int days = calDuration(cal, repeatToCal);
+                            if (duration <= days && duration % 14 == 0) {
+                                cal.add(Calendar.DAY_OF_MONTH, duration);
+                                endCal.add(Calendar.DAY_OF_MONTH, duration);
+                                list.add(changeObjectDate(cal, endCal, object));
+                            }
                         }
 
-                    } else if (type.equals("Bi-Weekly") && isLong) {
-                        if ((calendar.compareTo(cal) > 0 && duration > 0 && duration % 14 == 0) || (cal.get(Calendar.DAY_OF_MONTH) == calendar.get(Calendar.DAY_OF_MONTH) && (cal.get(Calendar.MONTH)) == calendar.get(Calendar.MONTH) && cal.get(Calendar.YEAR) == calendar.get(Calendar.YEAR))) {
+                    } else if (type.equals("Monthly") && duration >= 0) {
+                        if (isLong) {
+                            if (calendar.get(Calendar.DAY_OF_MONTH) == cal.get(Calendar.DAY_OF_MONTH)) {
 //                            list.add(object);
-                            cal.add(Calendar.DAY_OF_MONTH, duration);
-                            endCal.add(Calendar.DAY_OF_MONTH, duration);
-                            list.add(changeObjectDate(cal, endCal, object));
+                                cal.add(Calendar.DAY_OF_MONTH, duration);
+                                endCal.add(Calendar.DAY_OF_MONTH, duration);
+                                list.add(changeObjectDate(cal, endCal, object));
+                            }
+                        } else {
+                            int days = calDuration(cal, repeatToCal);
+                            if (duration <= days && calendar.get(Calendar.DAY_OF_MONTH) == cal.get(Calendar.DAY_OF_MONTH)) {
+                                cal.add(Calendar.DAY_OF_MONTH, duration);
+                                endCal.add(Calendar.DAY_OF_MONTH, duration);
+                                list.add(changeObjectDate(cal, endCal, object));
+                            }
                         }
-
-                    } else if (type.equals("Monthly") && isLong) {
-                        if ((calendar.compareTo(cal) > 0 && calendar.get(Calendar.DAY_OF_MONTH) == cal.get(Calendar.DAY_OF_MONTH)) || (cal.get(Calendar.DAY_OF_MONTH) == calendar.get(Calendar.DAY_OF_MONTH) && (cal.get(Calendar.MONTH)) == calendar.get(Calendar.MONTH) && cal.get(Calendar.YEAR) == calendar.get(Calendar.YEAR))) {
+                    } else if (type.equals("Yearly") && duration >= 0) {
+                        if (isLong) {
+                            if (calendar.get(Calendar.DAY_OF_MONTH) == cal.get(Calendar.DAY_OF_MONTH) && calendar.get(Calendar.MONTH) == cal.get(Calendar.MONTH)) {
 //                            list.add(object);
-                            cal.add(Calendar.DAY_OF_MONTH, duration);
-                            endCal.add(Calendar.DAY_OF_MONTH, duration);
-                            list.add(changeObjectDate(cal, endCal, object));
-                        }
-                    } else if (type.equals("Yearly") && isLong) {
-                        if ((calendar.compareTo(cal) > 0 && calendar.get(Calendar.DAY_OF_MONTH) == cal.get(Calendar.DAY_OF_MONTH) && calendar.get(Calendar.MONTH) == cal.get(Calendar.MONTH)) || (cal.get(Calendar.DAY_OF_MONTH) == calendar.get(Calendar.DAY_OF_MONTH) && (cal.get(Calendar.MONTH)) == calendar.get(Calendar.MONTH) && cal.get(Calendar.YEAR) == calendar.get(Calendar.YEAR))) {
-//                            list.add(object);
-                            cal.add(Calendar.DAY_OF_MONTH, duration);
-                            endCal.add(Calendar.DAY_OF_MONTH, duration);
-                            list.add(changeObjectDate(cal, endCal, object));
+                                cal.add(Calendar.DAY_OF_MONTH, duration);
+                                endCal.add(Calendar.DAY_OF_MONTH, duration);
+                                list.add(changeObjectDate(cal, endCal, object));
+                            }
+                        } else {
+                            int days = calDuration(cal, repeatToCal);
+                            if (duration <= days && calendar.get(Calendar.DAY_OF_MONTH) == cal.get(Calendar.DAY_OF_MONTH) && calendar.get(Calendar.MONTH) == cal.get(Calendar.MONTH)) {
+                                cal.add(Calendar.DAY_OF_MONTH, duration);
+                                endCal.add(Calendar.DAY_OF_MONTH, duration);
+                                list.add(changeObjectDate(cal, endCal, object));
+                            }
                         }
                     }
                 }
@@ -328,6 +383,7 @@ public class EventUtil {
             }
         }
         List<JSONObject> rEvents = Events.repeatEvent;
+
         for (int j = 1; j <= DateUtil.getMonthDays(year, month); j++) {
             Calendar calendar = Calendar.getInstance();
             calendar.set(year, month - 1, j);
@@ -339,40 +395,85 @@ public class EventUtil {
                 Calendar endCal = DateUtil.getLocalDateObjectToCalendar(enddate);
                 String type = object.getString("event_repeats_type");
                 Boolean isLong = object.getBoolean("is_long_repeat");
-                int day = calDuration(calendar, cal);
-                if (type.equals("Daily") && isLong) {
-                    if (compareTwoCalendar(calendar, cal)) {
+                Calendar repeatToCal = DateUtil.getLocalDateObjectToCalendar(DateUtil.getLocalDateObject(object.getString("event_repeat_to_date")));
+                int day = calDuration(cal, calendar);
+                if (type.equals("Daily") && day >= 0) {
+                    if (isLong) {
                         cal.add(Calendar.DAY_OF_MONTH, day);
                         endCal.add(Calendar.DAY_OF_MONTH, day);
                         allevents.add(changeObjectDate(cal, endCal, object));
                         continue;
-                    }
-                } else if (type.equals("Weekly") && isLong) {
-                    if (compareTwoCalendar(calendar, cal) && day > 0 && day % 7 == 0) {
-                        cal.add(Calendar.DAY_OF_MONTH, day);
-                        endCal.add(Calendar.DAY_OF_MONTH, day);
-                        allevents.add(changeObjectDate(cal, endCal, object));
-                        continue;
-                    }
-                } else if (type.equals("Bi-Weekly") && isLong) {
-                    if (compareTwoCalendar(calendar, cal) && day > 0 && day % 14 == 0) {
-                        cal.add(Calendar.DAY_OF_MONTH, day);
-                        endCal.add(Calendar.DAY_OF_MONTH, day);
-                        allevents.add(changeObjectDate(cal, endCal, object));
-                        continue;
-                    }
-                } else if (type.equals("Monthly") && isLong) {
-                    if (compareTwoCalendar(calendar, cal)) {
-                        if (calendar.get(Calendar.DAY_OF_MONTH) == cal.get(Calendar.DAY_OF_MONTH)) {
+                    } else {
+                        int days = calDuration(cal, repeatToCal);
+                        if (day <= days) {
                             cal.add(Calendar.DAY_OF_MONTH, day);
                             endCal.add(Calendar.DAY_OF_MONTH, day);
                             allevents.add(changeObjectDate(cal, endCal, object));
                             continue;
                         }
                     }
-                } else if (type.equals("Yearly") && isLong) {
-                    if (compareTwoCalendar(calendar, cal)) {
+                } else if (type.equals("Weekly") && day >= 0) {
+                    if (isLong) {
+                        if (day % 7 == 0) {
+                            cal.add(Calendar.DAY_OF_MONTH, day);
+                            endCal.add(Calendar.DAY_OF_MONTH, day);
+                            allevents.add(changeObjectDate(cal, endCal, object));
+                            continue;
+                        }
+                    } else {
+                        int days = calDuration(cal, repeatToCal);
+                        if (day <= days && day % 7 == 0) {
+                            cal.add(Calendar.DAY_OF_MONTH, day);
+                            endCal.add(Calendar.DAY_OF_MONTH, day);
+                            allevents.add(changeObjectDate(cal, endCal, object));
+                            continue;
+                        }
+                    }
+                } else if (type.equals("Bi-Weekly") && day >= 0) {
+                    if (isLong) {
+                        if (day % 14 == 0) {
+                            cal.add(Calendar.DAY_OF_MONTH, day);
+                            endCal.add(Calendar.DAY_OF_MONTH, day);
+                            allevents.add(changeObjectDate(cal, endCal, object));
+                            continue;
+                        }
+                    } else {
+                        int days = calDuration(cal, repeatToCal);
+                        if (day <= days && day % 14 == 0) {
+                            cal.add(Calendar.DAY_OF_MONTH, day);
+                            endCal.add(Calendar.DAY_OF_MONTH, day);
+                            allevents.add(changeObjectDate(cal, endCal, object));
+                            continue;
+                        }
+                    }
+                } else if (type.equals("Monthly") && day >= 0) {
+                    if (isLong) {
+                        if (calendar.get(Calendar.DAY_OF_MONTH) == cal.get(Calendar.DAY_OF_MONTH)) {
+                            cal.add(Calendar.DAY_OF_MONTH, day);
+                            endCal.add(Calendar.DAY_OF_MONTH, day);
+                            allevents.add(changeObjectDate(cal, endCal, object));
+                            continue;
+                        }
+                    } else {
+                        int days = calDuration(cal, repeatToCal);
+                        if (day <= days && calendar.get(Calendar.DAY_OF_MONTH) == cal.get(Calendar.DAY_OF_MONTH)) {
+                            cal.add(Calendar.DAY_OF_MONTH, day);
+                            endCal.add(Calendar.DAY_OF_MONTH, day);
+                            allevents.add(changeObjectDate(cal, endCal, object));
+                            continue;
+                        }
+                    }
+                } else if (type.equals("Yearly") && day >= 0) {
+                    if (isLong) {
                         if (calendar.get(Calendar.DAY_OF_MONTH) == cal.get(Calendar.DAY_OF_MONTH) && calendar.get(Calendar.MONTH) == cal.get(Calendar.MONTH)) {
+                            cal.add(Calendar.DAY_OF_MONTH, day);
+                            endCal.add(Calendar.DAY_OF_MONTH, day);
+                            allevents.add(changeObjectDate(cal, endCal, object));
+                            continue;
+                        }
+                    } else {
+                        int days = calDuration(cal, repeatToCal);
+                        if (day <= days && calendar.get(Calendar.DAY_OF_MONTH) == cal.get(Calendar.DAY_OF_MONTH) && calendar.get(Calendar.MONTH) == cal.get(Calendar.MONTH)) {
                             cal.add(Calendar.DAY_OF_MONTH, day);
                             endCal.add(Calendar.DAY_OF_MONTH, day);
                             allevents.add(changeObjectDate(cal, endCal, object));
@@ -415,16 +516,16 @@ public class EventUtil {
     }
 
 
-    public static int calDurationDays(Calendar calendar, Calendar eventCal) {
-        Calendar new_cal = (Calendar) calendar.clone();
-        new_cal.set(Calendar.HOUR_OF_DAY, eventCal.get(Calendar.HOUR_OF_DAY));
-        new_cal.set(Calendar.MINUTE, eventCal.get(Calendar.MINUTE));
-//        Calendar new_eventCal = (Calendar) eventCal.clone();
-//        new_eventCal.set(Calendar.HOUR_OF_DAY, 0);
-//        new_eventCal.set(Calendar.MINUTE, 0);
-        int day = (int) TimeUnit.MILLISECONDS.toDays(Math.abs(new_cal.getTimeInMillis() - eventCal.getTimeInMillis()));
-        return day;
-    }
+//    public static int calDurationDays(Calendar calendar, Calendar eventCal) {
+//        Calendar new_cal = (Calendar) calendar.clone();
+//        new_cal.set(Calendar.HOUR_OF_DAY, eventCal.get(Calendar.HOUR_OF_DAY));
+//        new_cal.set(Calendar.MINUTE, eventCal.get(Calendar.MINUTE));
+////        Calendar new_eventCal = (Calendar) eventCal.clone();
+////        new_eventCal.set(Calendar.HOUR_OF_DAY, 0);
+////        new_eventCal.set(Calendar.MINUTE, 0);
+//        int day = (int) TimeUnit.MILLISECONDS.toDays(Math.abs(new_cal.getTimeInMillis() - eventCal.getTimeInMillis()));
+//        return day;
+//    }
 
     public static boolean hasRepeatEvent(Calendar calendar) throws JSONException {
         List<JSONObject> list = Events.repeatEvent;
@@ -433,28 +534,60 @@ public class EventUtil {
             String type = object.getString("event_repeats_type");
             Boolean isLong = object.getBoolean("is_long_repeat");
             Calendar eventCal = DateUtil.getLocalDateObjectToCalendar(DateUtil.getLocalDateObject(object.getString("event_starts_datetime")));
-            int day = calDuration(calendar, eventCal);
-            if (type.equals("Daily") && isLong) {
-                if (calendar.compareTo(eventCal) > 0) {
+            Calendar repeatToCal = DateUtil.getLocalDateObjectToCalendar(DateUtil.getLocalDateObject(object.getString("event_repeat_to_date")));
+            int day = calDuration(eventCal, calendar);
+            if (type.equals("Daily") && day >= 0) {
+                if (isLong) {
                     return true;
-                }
-            } else if (type.equals("Weekly") && isLong) {
-                if (calendar.compareTo(eventCal) > 0 && day > 0 && day % 7 == 0) {
-                    return true;
-                }
-            } else if (type.equals("Bi-Weekly") && isLong) {
-                if (calendar.compareTo(eventCal) > 0 && day > 0 && day % 14 == 0) {
-                    return true;
-                }
-            } else if (type.equals("Monthly") && isLong) {
-                if (calendar.compareTo(eventCal) > 0) {
-                    if (calendar.get(Calendar.DAY_OF_MONTH) == eventCal.get(Calendar.DAY_OF_MONTH)) {
+                } else {
+                    int days = calDuration(eventCal, repeatToCal);
+                    if (day <= days) {
                         return true;
                     }
                 }
-            } else if (type.equals("Yearly") && isLong) {
-                if (calendar.compareTo(eventCal) > 0) {
+            } else if (type.equals("Weekly") && day >= 0) {
+                if (isLong) {
+                    if (day % 7 == 0) {
+                        return true;
+                    }
+                } else {
+                    int days = calDuration(eventCal, repeatToCal);
+                    if (day <= days && day % 7 == 0) {
+                        return true;
+                    }
+                }
+            } else if (type.equals("Bi-Weekly") && day >= 0) {
+                if (isLong) {
+                    if (day % 14 == 0) {
+                        return true;
+                    }
+                } else {
+                    int days = calDuration(eventCal, repeatToCal);
+                    if (day <= days && day % 14 == 0) {
+                        return true;
+                    }
+                }
+            } else if (type.equals("Monthly") && day >= 0) {
+                if (isLong) {
+
+                    if (calendar.get(Calendar.DAY_OF_MONTH) == eventCal.get(Calendar.DAY_OF_MONTH)) {
+                        return true;
+                    }
+
+                } else {
+                    int days = calDuration(eventCal, repeatToCal);
+                    if (day <= days && calendar.get(Calendar.DAY_OF_MONTH) == eventCal.get(Calendar.DAY_OF_MONTH)) {
+                        return true;
+                    }
+                }
+            } else if (type.equals("Yearly") && day >= 0) {
+                if (isLong) {
                     if (calendar.get(Calendar.DAY_OF_MONTH) == eventCal.get(Calendar.DAY_OF_MONTH) && calendar.get(Calendar.MONTH) == eventCal.get(Calendar.MONTH)) {
+                        return true;
+                    }
+                } else {
+                    int days = calDuration(eventCal, repeatToCal);
+                    if (day <= days && calendar.get(Calendar.DAY_OF_MONTH) == eventCal.get(Calendar.DAY_OF_MONTH) && calendar.get(Calendar.MONTH) == eventCal.get(Calendar.MONTH)) {
                         return true;
                     }
                 }
@@ -484,7 +617,7 @@ public class EventUtil {
         Calendar newEnd = Calendar.getInstance();
         newEnd.setTimeZone(TimeZone.getTimeZone("GMT"));
         newEnd.set(end.get(Calendar.YEAR), end.get(Calendar.MONTH), end.get(Calendar.DAY_OF_MONTH), 0, 0);
-        int day = (int) TimeUnit.MILLISECONDS.toDays(Math.abs(newEnd.getTimeInMillis() - newStart.getTimeInMillis()));
+        int day = (int) TimeUnit.MILLISECONDS.toDays(newEnd.getTimeInMillis() - newStart.getTimeInMillis());
         return day;
     }
 
@@ -495,7 +628,7 @@ public class EventUtil {
             String endString = object.getString("event_ends_datetime");
             Calendar startCal = DateUtil.getLocalDateObjectToCalendar(DateUtil.getLocalDateObject(startString));
             Calendar endCal = DateUtil.getLocalDateObjectToCalendar(DateUtil.getLocalDateObject(endString));
-            if (calDuration(endCal, startCal) >= 1) {
+            if (calDuration(startCal, endCal) >= 1) {
                 return true;
             }
         } catch (JSONException e) {
@@ -504,58 +637,58 @@ public class EventUtil {
         return false;
     }
 
-    public static boolean hasEvents(int day, int month, int year) {
-        JSONArray response = Events.response;
-        for (int i = 0; i < response.length(); i++) {
-            try {
-                JSONObject object = response.getJSONObject(i);
-                Date date = DateUtil.getLocalDateObject(object.getString("event_starts_datetime"));
-                Date enddate = DateUtil.getLocalDateObject(object.getString("event_ends_datetime"));
-                Calendar calendar = DateUtil.getCalendarFromInteger(day, month, year);
-                Calendar new_cal = Calendar.getInstance();
-                new_cal.set(year, month - 1, day);
-                Calendar cal = DateUtil.getLocalDateObjectToCalendar(date);
-                Calendar endCal = DateUtil.getLocalDateObjectToCalendar(enddate);
-                Log.d("tttttt", cal.get(Calendar.DAY_OF_MONTH) + "");
-                int duration = calDuration(calendar, cal);
-                String type = object.getString("event_repeats_type");
-                Boolean isLong = object.getBoolean("is_long_repeat");
-                if (type.equals("One-time event")) {
-                    if ((cal.get(Calendar.DAY_OF_MONTH) == calendar.get(Calendar.DAY_OF_MONTH) && (cal.get(Calendar.MONTH)) == calendar.get(Calendar.MONTH) && cal.get(Calendar.YEAR) == calendar.get(Calendar.YEAR))) {
-                        return true;
-                    }
-                } else {
-                    if (type.equals("Daily") && isLong) {
-                        if (calendar.compareTo(cal) > 0 || (cal.get(Calendar.DAY_OF_MONTH) == calendar.get(Calendar.DAY_OF_MONTH) && (cal.get(Calendar.MONTH)) == calendar.get(Calendar.MONTH) && cal.get(Calendar.YEAR) == calendar.get(Calendar.YEAR))) {
-                            return true;
-                        }
-                    } else if (type.equals("Weekly") && isLong) {
-                        if ((calendar.compareTo(cal) > 0 && duration > 0 && duration % 7 == 0) || (cal.get(Calendar.DAY_OF_MONTH) == calendar.get(Calendar.DAY_OF_MONTH) && (cal.get(Calendar.MONTH)) == calendar.get(Calendar.MONTH) && cal.get(Calendar.YEAR) == calendar.get(Calendar.YEAR))) {
-                            return true;
-                        }
-
-                    } else if (type.equals("Bi-Weekly") && isLong) {
-                        if ((calendar.compareTo(cal) > 0 && duration > 0 && duration % 14 == 0) || (cal.get(Calendar.DAY_OF_MONTH) == calendar.get(Calendar.DAY_OF_MONTH) && (cal.get(Calendar.MONTH)) == calendar.get(Calendar.MONTH) && cal.get(Calendar.YEAR) == calendar.get(Calendar.YEAR))) {
-                            return true;
-                        }
-
-                    } else if (type.equals("Monthly") && isLong) {
-                        if ((calendar.compareTo(cal) > 0 && calendar.get(Calendar.DAY_OF_MONTH) == cal.get(Calendar.DAY_OF_MONTH)) || (cal.get(Calendar.DAY_OF_MONTH) == calendar.get(Calendar.DAY_OF_MONTH) && (cal.get(Calendar.MONTH)) == calendar.get(Calendar.MONTH) && cal.get(Calendar.YEAR) == calendar.get(Calendar.YEAR))) {
-                            return true;
-                        }
-                    } else if (type.equals("Yearly") && isLong) {
-                        if ((calendar.compareTo(cal) > 0 && calendar.get(Calendar.DAY_OF_MONTH) == cal.get(Calendar.DAY_OF_MONTH) && calendar.get(Calendar.MONTH) == cal.get(Calendar.MONTH)) || (cal.get(Calendar.DAY_OF_MONTH) == calendar.get(Calendar.DAY_OF_MONTH) && (cal.get(Calendar.MONTH)) == calendar.get(Calendar.MONTH) && cal.get(Calendar.YEAR) == calendar.get(Calendar.YEAR))) {
-                            return true;
-                        }
-                    }
-                }
-            } catch (JSONException e) {
-                e.printStackTrace();
-            }
-
-        }
-        return false;
-    }
+//    public static boolean hasEvents(int day, int month, int year) {
+//        JSONArray response = Events.response;
+//        for (int i = 0; i < response.length(); i++) {
+//            try {
+//                JSONObject object = response.getJSONObject(i);
+//                Date date = DateUtil.getLocalDateObject(object.getString("event_starts_datetime"));
+//                Date enddate = DateUtil.getLocalDateObject(object.getString("event_ends_datetime"));
+//                Calendar calendar = DateUtil.getCalendarFromInteger(day, month, year);
+//                Calendar new_cal = Calendar.getInstance();
+//                new_cal.set(year, month - 1, day);
+//                Calendar cal = DateUtil.getLocalDateObjectToCalendar(date);
+//                Calendar endCal = DateUtil.getLocalDateObjectToCalendar(enddate);
+//                Log.d("tttttt", cal.get(Calendar.DAY_OF_MONTH) + "");
+//                int duration = calDuration(calendar, cal);
+//                String type = object.getString("event_repeats_type");
+//                Boolean isLong = object.getBoolean("is_long_repeat");
+//                if (type.equals("One-time event")) {
+//                    if ((cal.get(Calendar.DAY_OF_MONTH) == calendar.get(Calendar.DAY_OF_MONTH) && (cal.get(Calendar.MONTH)) == calendar.get(Calendar.MONTH) && cal.get(Calendar.YEAR) == calendar.get(Calendar.YEAR))) {
+//                        return true;
+//                    }
+//                } else {
+//                    if (type.equals("Daily") && isLong) {
+//                        if (calendar.compareTo(cal) > 0 || (cal.get(Calendar.DAY_OF_MONTH) == calendar.get(Calendar.DAY_OF_MONTH) && (cal.get(Calendar.MONTH)) == calendar.get(Calendar.MONTH) && cal.get(Calendar.YEAR) == calendar.get(Calendar.YEAR))) {
+//                            return true;
+//                        }
+//                    } else if (type.equals("Weekly") && isLong) {
+//                        if ((calendar.compareTo(cal) > 0 && duration > 0 && duration % 7 == 0) || (cal.get(Calendar.DAY_OF_MONTH) == calendar.get(Calendar.DAY_OF_MONTH) && (cal.get(Calendar.MONTH)) == calendar.get(Calendar.MONTH) && cal.get(Calendar.YEAR) == calendar.get(Calendar.YEAR))) {
+//                            return true;
+//                        }
+//
+//                    } else if (type.equals("Bi-Weekly") && isLong) {
+//                        if ((calendar.compareTo(cal) > 0 && duration > 0 && duration % 14 == 0) || (cal.get(Calendar.DAY_OF_MONTH) == calendar.get(Calendar.DAY_OF_MONTH) && (cal.get(Calendar.MONTH)) == calendar.get(Calendar.MONTH) && cal.get(Calendar.YEAR) == calendar.get(Calendar.YEAR))) {
+//                            return true;
+//                        }
+//
+//                    } else if (type.equals("Monthly") && isLong) {
+//                        if ((calendar.compareTo(cal) > 0 && calendar.get(Calendar.DAY_OF_MONTH) == cal.get(Calendar.DAY_OF_MONTH)) || (cal.get(Calendar.DAY_OF_MONTH) == calendar.get(Calendar.DAY_OF_MONTH) && (cal.get(Calendar.MONTH)) == calendar.get(Calendar.MONTH) && cal.get(Calendar.YEAR) == calendar.get(Calendar.YEAR))) {
+//                            return true;
+//                        }
+//                    } else if (type.equals("Yearly") && isLong) {
+//                        if ((calendar.compareTo(cal) > 0 && calendar.get(Calendar.DAY_OF_MONTH) == cal.get(Calendar.DAY_OF_MONTH) && calendar.get(Calendar.MONTH) == cal.get(Calendar.MONTH)) || (cal.get(Calendar.DAY_OF_MONTH) == calendar.get(Calendar.DAY_OF_MONTH) && (cal.get(Calendar.MONTH)) == calendar.get(Calendar.MONTH) && cal.get(Calendar.YEAR) == calendar.get(Calendar.YEAR))) {
+//                            return true;
+//                        }
+//                    }
+//                }
+//            } catch (JSONException e) {
+//                e.printStackTrace();
+//            }
+//
+//        }
+//        return false;
+//    }
 
 
     public static boolean isRepeat(JSONObject object) {

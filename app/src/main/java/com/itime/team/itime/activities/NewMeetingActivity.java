@@ -40,6 +40,9 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -142,7 +145,7 @@ public class NewMeetingActivity extends AppCompatActivity implements View.OnTouc
             actionBar.setDisplayHomeAsUpEnabled(true);
         }
 
-        setEndTime();
+
 
         mAddress = "";
         mMessage = (EditText) findViewById(R.id.new_meeting_message);
@@ -167,6 +170,7 @@ public class NewMeetingActivity extends AppCompatActivity implements View.OnTouc
         mAlert.setOnClickListener(this);
         mVeune.setOnClickListener(this);
 
+        setEndTime(true);
         mStartTime.setText(timeFormat(mStartHour, mStartMin));
         mEndTime.setText(timeFormat(mEndHour, mEndMin));
         mStartDate.setText(dateFormat(mStartDay, mStartMonth, mStartYear));
@@ -176,7 +180,6 @@ public class NewMeetingActivity extends AppCompatActivity implements View.OnTouc
         mAlertValue = new ArrayList();
         mRpeatValue.add("One-time event");
         mAlertValue.add(1);
-
 
         //simpleRequest();
     }
@@ -202,24 +205,40 @@ public class NewMeetingActivity extends AppCompatActivity implements View.OnTouc
     }
 
     // The end time equals the start time plus the duration of a meeting.
-    private void setEndTime(){
-        Date endTime = DateUtil.plusMinute(getCurrentDate(), mDuration);
+    private void setEndTime(boolean isInit){
+        Date endTime = null;
+        if (isInit) {
+            endTime = DateUtil.plusMinute(getCurrentDate(), mDuration);
+        } else {
+            Date date;
+            DateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm");
+            String d = mStartYear + "-" + (mStartMonth+1) + "-" + mStartDay + " " + mStartHour + ":" + mStartMin;
+            Log.i("date",d);
+            try {
+                date = formatter.parse(d);
+                endTime = DateUtil.plusMinute(date, mDuration);
+            } catch (ParseException e) {
+                e.printStackTrace();
+            }
+        }
         mEndYear = endTime.getYear() + 1900;
         mEndMonth = endTime.getMonth();
         mEndDay = endTime.getDate();
         mEndHour = endTime.getHours();
         mEndMin = endTime.getMinutes();
+        mEndTime.setText(timeFormat(mEndHour, mEndMin));
+        mEndDate.setText(dateFormat(mEndDay, mEndMonth, mEndYear));
     }
 
     private String timeFormat(int hour, int min){
-        String hourReturn = hour < 10 ? "0" + hour : String.valueOf(hour);
+        String hourReturn =     hour < 10 ? "0" + hour : String.valueOf(hour);
         String minReturn = min < 10 ? "0" + min : String.valueOf(min);
-
         return hourReturn + " : " + minReturn;
     }
+
     private String dateFormat(int day, int month, int year){
         String dayReturn = day < 10 ? "0" + day : String.valueOf(day);
-        return  DateUtil.weekNameStandardTwo[DateUtil.getDateOfWeek(year,month,day) - 1] +
+        return  DateUtil.weekName[DateUtil.getDateOfWeek_M(year, month, day) - 1] +
                 ", " + dayReturn + " " + DateUtil.month[month] + " " + year;
     }
 
@@ -257,6 +276,7 @@ public class NewMeetingActivity extends AppCompatActivity implements View.OnTouc
                     mStartTime.setText(timeFormat(hourOfDay, minute));
                     mStartHour = hourOfDay;
                     mStartMin = minute;
+                    setEndTime(false);
                     checkTime();
                 }
             },mStartHour,mStartMin,false);
@@ -269,6 +289,7 @@ public class NewMeetingActivity extends AppCompatActivity implements View.OnTouc
                     mStartYear = year;
                     mStartMonth = monthOfYear;
                     mStartDay = dayOfMonth;
+                    setEndTime(false);
                     checkTime();
                 }
             },mStartYear, mStartMonth, mStartDay);

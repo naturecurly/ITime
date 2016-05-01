@@ -17,6 +17,8 @@ import android.widget.TextView;
 
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
 import com.itime.team.itime.R;
 import com.itime.team.itime.activities.NewMeetingActivity;
 import com.itime.team.itime.bean.Preference;
@@ -26,9 +28,9 @@ import com.itime.team.itime.bean.User;
 import com.itime.team.itime.interfaces.DataRequest;
 import com.itime.team.itime.listener.ScrollViewListener;
 import com.itime.team.itime.utils.DateUtil;
+import com.itime.team.itime.utils.JsonArrayFormRequest;
 import com.itime.team.itime.utils.JsonManager;
 import com.itime.team.itime.utils.MySingleton;
-import com.itime.team.itime.utils.URLConnectionUtil;
 import com.itime.team.itime.views.MeetingSelectionScrollView;
 
 import org.json.JSONArray;
@@ -41,6 +43,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.Map;
 
 //import com.itime.team.itime.activities.R;
 
@@ -207,7 +210,7 @@ public class MeetingSelectionCentralFragment extends Fragment implements ScrollV
         //12 means that we initialize 12 days' data at beginning
         mInitDays = DAYS > 12 ? 12 : DAYS;
         for(int i = 0; i < mInitDays; i ++){
-            addView(i, true, true,12);
+            addView(i, true, true, 12);
         }
     }
     /*
@@ -404,8 +407,8 @@ public class MeetingSelectionCentralFragment extends Fragment implements ScrollV
             for (int i = checkDatePointer; i < mAvailability.length(); i ++){
                 //mAvailability.get(i)
                 JSONObject object = (JSONObject) mAvailability.get(checkDatePointer);
-                Date targetStartTime = DateUtil.getLocalTime(object.get("starts_time").toString());
-                Date targetEndTime = DateUtil.getLocalTime(object.get("ends_time").toString());
+                Date targetStartTime = DateUtil.getLocalDateObject(object.get("starts_time").toString());
+                Date targetEndTime = DateUtil.getLocalDateObject(object.get("ends_time").toString());
                 if(targetStartTime.getTime() <= currentStartTime.getTime() &&
                         targetEndTime.getTime() >= currentEndTime.getTime()){
 //                    mEachEndDate = targetEndTime;
@@ -453,8 +456,8 @@ public class MeetingSelectionCentralFragment extends Fragment implements ScrollV
             for(int i = 0; i < jsonArray.length(); i ++){
                 JSONObject jsonObject = (JSONObject) jsonArray.get(i);
                 mPreference[i] = new Preference();
-                mPreference[i].setStarts_time(DateUtil.getLocalTime(jsonObject.get("starts_time").toString()));
-                mPreference[i].setEnds_time(DateUtil.getLocalTime(jsonObject.get("ends_time").toString()));
+                mPreference[i].setStarts_time(DateUtil.getLocalDateObject(jsonObject.get("starts_time").toString()));
+                mPreference[i].setEnds_time(DateUtil.getLocalDateObject(jsonObject.get("ends_time").toString()));
                 mPreference[i].setRepeat_type(jsonObject.get("repeat_type").toString());
                 Date startDate = mPreference[i].getStarts_time();
                 Date endDate = mPreference[i].getEnds_time();
@@ -621,7 +624,7 @@ public class MeetingSelectionCentralFragment extends Fragment implements ScrollV
         }
     }
 
-    private void getAvailability(){
+    /*private void getAvailability1(){
         try {
             JSONArray friendID = new JSONArray();
             for(String ids : mFriendIDS){
@@ -654,11 +657,68 @@ public class MeetingSelectionCentralFragment extends Fragment implements ScrollV
             post.put("friend_id",friendID);
             requestJSONArray(mJsonManager, post, url, "match_time_with_friends");
             handleJSON(mJsonManager);
+            Log.i("post",post.toString());
         } catch (JSONException e) {
             e.printStackTrace();
         }
-    }
+    }*/
 
+    private void getAvailability(){
+        JSONObject post = new JSONObject();
+        JSONArray friendID = new JSONArray();
+        for(String ids : mFriendIDS){
+            friendID.put(ids);
+        }
+        try {
+            String duration = "";
+            post.put("user_id",User.ID);
+            switch (DURATION){
+                case 10:
+                    duration = "10mins";break;
+                case 15:
+                    duration = "15mins";break;
+                case 30:
+                    duration = "30mins";break;
+                case 60:
+                    duration = "1hrs";break;
+                case 120:
+                    duration = "2hrs";break;
+                case 360:
+                    duration = "6hrs";break;
+            }
+            post.put("duration", duration);
+//            post.put("starts", URLConnectionUtil.encode(mStartDateForPost));
+            post.put("starts", mStartDateForPost);
+            post.put("events",new JSONArray());
+//            post.put("ends",URLConnectionUtil.encode(mEndDateForPost));
+            post.put("ends",mEndDateForPost);
+            post.put("friend_id",friendID);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+        final String url = URLs.MATCH_TIME_WITH_FRIENDS;
+        Map<String, String> params = new HashMap();
+        params.put("json", post.toString());
+
+        JsonArrayFormRequest request = new JsonArrayFormRequest(Request.Method.POST, url, params, new Response.Listener<JSONArray>() {
+            @Override
+            public void onResponse(JSONArray response) {
+                mAvailability = response;
+                isMatchTimeDone = true;
+                if(isGetPreferenceDone && isMatchTimeDone){
+                    initTable();
+                }
+            }
+        }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+
+            }
+        });
+        MySingleton.getInstance(getActivity()).addToRequestQueue(request);
+
+    }
 
     @Override
     public void onScrollChanged(MeetingSelectionScrollView scrollView, int x, int y, int oldx, int oldy) {
@@ -699,11 +759,11 @@ public class MeetingSelectionCentralFragment extends Fragment implements ScrollV
                                 doGetPreference(jsonArray);
                                 isGetPreferenceDone = true;
                             }
-                            if ((jsonArray = (JSONArray) map.get("match_time_with_friends")) != null) {
-                                mAvailability = jsonArray;
-                                isMatchTimeDone = true;
-                                Log.i("match", jsonArray.toString());
-                            }
+//                            if ((jsonArray = (JSONArray) map.get("match_time_with_friends")) != null) {
+//                                mAvailability = jsonArray;
+//                                isMatchTimeDone = true;
+//                                Log.i("match", jsonArray.toString());
+//                            }
                             if(isGetPreferenceDone && isMatchTimeDone){
                                 initTable();
                             }

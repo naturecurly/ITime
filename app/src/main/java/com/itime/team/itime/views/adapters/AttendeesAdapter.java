@@ -78,7 +78,7 @@ public class AttendeesAdapter extends BaseAdapter {
         viewHolder.name.setText(map.get("name"));
         viewHolder.id.setText(map.get("id"));
         viewHolder.status.setText(map.get("status"));
-        boolean isGrey = !Boolean.valueOf(map.get("isFriend")) && !User.ID.equals(viewHolder.name.getText().toString());
+        boolean isGrey = !Boolean.valueOf(map.get("isFriend")) && !User.ID.equals(viewHolder.id.getText().toString());
         if(isGrey){
             convertView.setBackgroundColor(mContext.getResources().getColor(R.color.grey));
             final ViewHolder finalViewHolder = viewHolder;

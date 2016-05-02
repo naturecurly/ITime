@@ -1074,23 +1074,14 @@ public class CalendarFragment extends Fragment {
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.item_year_view:
-//                Fragment fragment = new YearViewFragment();
-//                FragmentTransaction ft = fm.beginTransaction();
-//                ft.hide(currentFragment);
-//                if (!yearFragment.isAdded()) {
-//                    ft.add(R.id.realtab_content, yearFragment);
-//                } else {
-//                    ft.show(yearFragment);
-//                }
-//                ft.commit();
-//                title.setText("Years");
-//                mTodayButton.setVisibility(View.GONE);
-//                imageButton.setVisibility(View.GONE);
                 Intent start_year_intent = new Intent(getActivity(), YearViewActivity.class);
                 startActivityForResult(start_year_intent, YEAR_REQUEST);
                 break;
             case R.id.add_event:
                 Intent intent = new Intent(getActivity(), NewEventActivity.class);
+//                Bundle bundle = new Bundle();
+//                bundle.putString("selected_date", Events.daySelected);
+//                intent.putExtras(bundle);
                 startActivityForResult(intent, NEW_EVENT_REQUEST);
                 break;
         }
@@ -1175,12 +1166,12 @@ public class CalendarFragment extends Fragment {
                     Events.calendarTypeList = LoganSquare.parseList(response.getJSONArray("calendar_types").toString(), ParcelableCalendarType.class);
                     Events.notShownId = EventUtil.getNotShownCalendarId();
                     Events.response = EventUtil.initialEvents(response.getJSONArray("events"));
-                    Events.ignoredEvent = EventUtil.getIgnoredEventsFromResponse(response.getJSONArray("events_ignore"));
+                    Events.ignoredEventMap = EventUtil.processIgnoredEvents(response.getJSONArray("events_ignore"));
                     EventUtil.excuteAsyncTask(today.get(Calendar.MONTH) + 1, today.get(Calendar.YEAR));
                     recyclerView.getAdapter().notifyDataSetChanged();
                     Log.i("Event_response", response.getJSONArray("events").toString());
                     Log.i("Calendar_type", response.getJSONArray("calendar_types").toString());
-                    Log.i("ignored_response", Events.ignoredEvent.toString());
+                    Log.i("ignored_response", response.getJSONArray("events_ignore").toString());
                 } catch (JSONException e) {
                     e.printStackTrace();
                 } catch (IOException e) {
@@ -1464,6 +1455,8 @@ public class CalendarFragment extends Fragment {
 
         if (requestCode == EDIT_EVENT_REQUEST) {
             if (resultCode == getActivity().RESULT_OK) {
+                refresh();
+            } else if (resultCode == 200) {
                 refresh();
             }
         }

@@ -233,6 +233,13 @@ public class EventDetailFragment extends Fragment {
             }
         });
         MySingleton.getInstance(getActivity()).addToRequestQueue(request);
+        getActivity().setResult(200);
+        getActivity().finish();
         Toast.makeText(getActivity(), "Deleted", Toast.LENGTH_SHORT).show();
+
+    }
+
+    public void deleteSingleEventInRepeat() {
+
     }
 }

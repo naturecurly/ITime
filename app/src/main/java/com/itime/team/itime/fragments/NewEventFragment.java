@@ -103,13 +103,22 @@ public class NewEventFragment extends Fragment {
 
 
     @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        String dateSelected = Events.daySelected;
+        mDayOfMonth = Integer.valueOf(dateSelected.split("-")[0]);
+        mMonthOfYear = Integer.valueOf(dateSelected.split("-")[1]) - 1;
+        mYear = Integer.valueOf(dateSelected.split("-")[2]);
+    }
+
+    @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
 
         setHasOptionsMenu(true);
-        mYear = c.get(Calendar.YEAR);
-        mMonthOfYear = c.get(Calendar.MONTH);
-        mDayOfMonth = c.get(Calendar.DAY_OF_MONTH);
+//        mYear = c.get(Calendar.YEAR);
+//        mMonthOfYear = c.get(Calendar.MONTH);
+//        mDayOfMonth = c.get(Calendar.DAY_OF_MONTH);
         mHour = c.get(Calendar.HOUR_OF_DAY);
         mMin = 0;
         calendar.set(mYear, mMonthOfYear, mDayOfMonth, mHour, mMin);

@@ -20,7 +20,7 @@ public class Events {
 
     public static List<JSONObject> repeatEvent = new ArrayList<>();
 
-    public static List<JSONObject> ignoredEvent = new ArrayList<>();
+//    public static List<JSONObject> ignoredEvent = new ArrayList<>();
 
     public static Set<String> daysHaveEvents = new HashSet<>();
 
@@ -39,4 +39,6 @@ public class Events {
     public static Set<String> notShownId = new HashSet<>();
 
     public static Map<String, JSONObject> rawEvents = new HashMap<>();
+
+    public static Map<String, List<JSONObject>> ignoredEventMap = new HashMap<>();
 }

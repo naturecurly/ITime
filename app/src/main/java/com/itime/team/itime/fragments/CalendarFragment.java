@@ -1458,6 +1458,8 @@ public class CalendarFragment extends Fragment {
                 refresh();
             } else if (resultCode == 200) {
                 refresh();
+            } else if (requestCode == 300) {
+                refresh();
             }
         }
     }

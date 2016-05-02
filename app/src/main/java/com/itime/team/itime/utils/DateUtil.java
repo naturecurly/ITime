@@ -355,7 +355,7 @@ public class DateUtil {
 
     public static String getDateStringFromCalendarGMT(Calendar calendar) {
         DateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss Z");
-        formatter.setTimeZone(TimeZone.getTimeZone("GMT"));
+        formatter.setTimeZone(TimeZone.getTimeZone("UTC"));
 //        calendar.setTimeZone(TimeZone.getTimeZone("GMT"));
         return formatter.format(calendar.getTime());
     }

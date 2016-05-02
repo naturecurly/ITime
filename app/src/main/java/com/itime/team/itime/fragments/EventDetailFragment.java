@@ -30,8 +30,11 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.Calendar;
+import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 /**
  * Created by leveyleonhardt on 4/23/16.
@@ -240,6 +243,72 @@ public class EventDetailFragment extends Fragment {
     }
 
     public void deleteSingleEventInRepeat() {
+        JSONObject jsonObject = new JSONObject();
+        JSONObject ig_event = new JSONObject();
+        JSONArray local_events = new JSONArray();
+        try {
+            ig_event.put("event_ignored_id", UUID.randomUUID().toString());
+            JSONObject event = EventUtil.findEventById(event_id);
+            Calendar start = DateUtil.getLocalDateObjectToCalendar(DateUtil.getLocalDateObject(event.getString("event_starts_datetime")));
+            Calendar end = DateUtil.getLocalDateObjectToCalendar(DateUtil.getLocalDateObject(event.getString("event_ends_datetime")));
+            int day = EventUtil.calDuration(event);
+            Calendar current_start = DateUtil.getLocalDateObjectToCalendar(DateUtil.getLocalDateObject(event_start));
+            Calendar toBeSentCal = Calendar.getInstance();
+            if (day > 0) {
+                if (start.get(Calendar.HOUR_OF_DAY) == current_start.get(Calendar.HOUR_OF_DAY) && start.get(Calendar.MINUTE) == current_start.get(Calendar.MINUTE)) {
+                    //This is the first day of a multi-day event
+                } else {
+                    //This is not the first day
+                    boolean flag = false;
+                    for (int i = 0; i <= day; i++) {
+                        current_start.add(Calendar.DAY_OF_MONTH, -1);
+                        List<JSONObject> eventList = EventUtil.getEventFromDate(current_start.get(Calendar.DAY_OF_MONTH), current_start.get(Calendar.MONTH) + 1, current_start.get(Calendar.YEAR));
+                        for (JSONObject object : eventList) {
+                            if (object.getString("event_id").equals(event_id)) {
+                                Calendar preCal = DateUtil.getLocalDateObjectToCalendar(DateUtil.getLocalDateObject(object.getString("event_starts_datetime")));
+                                if (preCal.get(Calendar.HOUR_OF_DAY) == start.get(Calendar.HOUR_OF_DAY) && preCal.get(Calendar.MINUTE) == start.get(Calendar.MINUTE)) {
+                                    toBeSentCal = preCal;
+                                    flag = true;
+                                }
 
+                            }
+                        }
+                        if (flag) {
+                            break;
+                        }
+                    }
+                }
+
+            } else {
+                toBeSentCal = DateUtil.getLocalDateObjectToCalendar(DateUtil.getLocalDateObject(event_start));
+            }
+            ig_event.put("event_starts_datetime", DateUtil.getDateStringFromCalendarGMT(toBeSentCal));
+            ig_event.put("event_id", event_id);
+            ig_event.put("user_id", User.ID);
+            ig_event.put("last_update_datetime", DateUtil.getDateStringFromCalendar(Calendar.getInstance()));
+            jsonObject.put("user_id", User.ID);
+            local_events.put(ig_event);
+            jsonObject.put("local_events_ignored", local_events);
+//            ig_event.put("event_starts_datetime", )
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        Map<String, String> params = new HashMap();
+        params.put("json", jsonObject.toString());
+        String url = URLs.SYNC_IGNORED;
+        JsonObjectFormRequest request = new JsonObjectFormRequest(Request.Method.POST, url, params, new Response.Listener<JSONObject>() {
+            @Override
+            public void onResponse(JSONObject response) {
+
+            }
+        }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+
+            }
+        });
+        MySingleton.getInstance(getActivity()).addToRequestQueue(request);
+        getActivity().setResult(300);
+        getActivity().finish();
     }
 }

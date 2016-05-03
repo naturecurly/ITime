@@ -36,6 +36,7 @@ import com.itime.team.itime.bean.User;
 import com.itime.team.itime.database.UserTableHelper;
 import com.itime.team.itime.model.ParcelableMessage;
 import com.itime.team.itime.utils.ITimeGcmPreferences;
+import com.itime.team.itime.utils.NotificationID;
 
 public class ITimeGcmListenerService extends GcmListenerService {
 
@@ -177,6 +178,6 @@ public class ITimeGcmListenerService extends GcmListenerService {
         NotificationManager notificationManager =
                 (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
 
-        notificationManager.notify(0 /* ID of notification */, notificationBuilder.build());
+        notificationManager.notify(NotificationID.getID() /* ID of notification */, notificationBuilder.build());
     }
 }

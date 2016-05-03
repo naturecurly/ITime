@@ -205,6 +205,9 @@ public class SearchFriendActivity extends AppCompatActivity implements SearchVie
     }
 
     private boolean isCurrentFriend(String id){
+        if(id.equals(User.ID)){
+            return true;
+        }
         for(String listID : mFriendIDs){
             if(listID.equals(id)){
                 return true;

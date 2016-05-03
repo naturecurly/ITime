@@ -830,6 +830,7 @@ public class CalendarFragment extends Fragment {
                                                 String alert = objectList.get(eventGroup.get(flag)).getString("event_alert");
                                                 String calendarId = objectList.get(eventGroup.get(flag)).getString("calendar_id");
                                                 String calendarType = "";
+                                                String jsonString = objectList.get(eventGroup.get(flag)).toString();
                                                 ParcelableCalendarType parcelableCalendarType = new ParcelableCalendarType();
                                                 for (ParcelableCalendarType calType : Events.calendarTypeList) {
                                                     if (calType.calendarId.equals(calendarId)) {
@@ -848,6 +849,7 @@ public class CalendarFragment extends Fragment {
                                                 bundle.putString("calendar_type", calendarType);
                                                 bundle.putParcelable("calendar_type_pacelable", parcelableCalendarType);
                                                 bundle.putString("event_id", eventID);
+                                                bundle.putString("json", jsonString);
                                                 detailIntent.putExtras(bundle);
 //                                                startActivity(detailIntent);
                                                 startActivityForResult(detailIntent, EDIT_EVENT_REQUEST);
@@ -944,6 +946,7 @@ public class CalendarFragment extends Fragment {
                                                         String calendarType = "";
                                                         String calendarId = objectList.get(finalNum).getString("calendar_id");
                                                         ParcelableCalendarType parcelableCalendarType = new ParcelableCalendarType();
+                                                        String jsonString = objectList.get(finalNum).toString();
                                                         for (ParcelableCalendarType calType : Events.calendarTypeList) {
                                                             if (calType.calendarId.equals(calendarId)) {
                                                                 calendarType = calType.calendarName;
@@ -962,6 +965,8 @@ public class CalendarFragment extends Fragment {
                                                         bundle.putString("calendar_type", calendarType);
                                                         bundle.putParcelable("calendar_type_pacelable", parcelableCalendarType);
                                                         bundle.putString("event_id", eventID);
+                                                        bundle.putString("json", jsonString);
+
                                                         detailIntent.putExtras(bundle);
                                                         startActivityForResult(detailIntent, EDIT_EVENT_REQUEST);
 //                                                        startActivity(detailIntent);

@@ -330,11 +330,11 @@
                 android:layout_height="50dp"
                 android:background="#ececec"></LinearLayout>
 
-            <ImageView
-                android:layout_width="match_parent"
-                android:layout_height="1px"
-                android:layout_gravity="bottom"
-                android:background="#000000" />
+            <!--<ImageView-->
+            <!--android:layout_width="match_parent"-->
+            <!--android:layout_height="1px"-->
+            <!--android:layout_gravity="bottom"-->
+            <!--android:background="#000000" />-->
 
             <Button
                 android:id="@+id/event_detail_delete_button"

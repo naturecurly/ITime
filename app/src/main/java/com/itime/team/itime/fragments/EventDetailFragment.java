@@ -1,11 +1,16 @@
 package com.itime.team.itime.fragments;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
+import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
@@ -18,6 +23,7 @@ import com.android.volley.Request;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.itime.team.itime.R;
+import com.itime.team.itime.activities.EventsDetailEditActivity;
 import com.itime.team.itime.bean.URLs;
 import com.itime.team.itime.bean.User;
 import com.itime.team.itime.utils.DateUtil;
@@ -43,6 +49,7 @@ public class EventDetailFragment extends Fragment {
 
     private static final int DIALOG_FRAGMENT = 1;
     private static final int DELETE_REPEAT_EVENTS_REQUEST = 2;
+    private static final int EDIT_REQUEST = 3;
     private EditText name;
     private EditText venue;
     private TextView start_text;
@@ -60,10 +67,13 @@ public class EventDetailFragment extends Fragment {
     private String event_alert;
     private String calendar_type;
     private String event_id;
+    private String jsonString;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        setHasOptionsMenu(true);
+
     }
 
     @Nullable
@@ -89,7 +99,7 @@ public class EventDetailFragment extends Fragment {
         event_alert = bundle.getString("alert");
         calendar_type = bundle.getString("calendar_type");
         event_id = bundle.getString("event_id");
-
+        jsonString = bundle.getString("json");
         name.setText(event_name);
         venue.setText(event_venue);
         start_text.setText(DateUtil.formatToReadable(event_start));
@@ -257,6 +267,7 @@ public class EventDetailFragment extends Fragment {
             if (day > 0) {
                 if (start.get(Calendar.HOUR_OF_DAY) == current_start.get(Calendar.HOUR_OF_DAY) && start.get(Calendar.MINUTE) == current_start.get(Calendar.MINUTE)) {
                     //This is the first day of a multi-day event
+                    toBeSentCal = DateUtil.getLocalDateObjectToCalendar(DateUtil.getLocalDateObject(event_start));
                 } else {
                     //This is not the first day
                     boolean flag = false;
@@ -310,5 +321,25 @@ public class EventDetailFragment extends Fragment {
         MySingleton.getInstance(getActivity()).addToRequestQueue(request);
         getActivity().setResult(300);
         getActivity().finish();
+    }
+
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        inflater.inflate(R.menu.event_detail, menu);
+        super.onCreateOptionsMenu(menu, inflater);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        if (item.getItemId() == R.id.event_detail_edit) {
+            Intent intent = new Intent(getActivity(), EventsDetailEditActivity.class);
+            Bundle bundle = new Bundle();
+            bundle.putString("event", jsonString);
+            Log.d("jsonevent", jsonString);
+            intent.putExtras(bundle);
+            startActivityForResult(intent, EDIT_REQUEST);
+            return true;
+        }
+        return super.onOptionsItemSelected(item);
     }
 }

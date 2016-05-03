@@ -65,12 +65,12 @@ public class NewEventFragment extends Fragment {
     private static final String OUT_JSON = "/json";
     private static String API_KEY = "AIzaSyBC4zDmkarugKY0Njs_n2TtEUVEyeESn0c";
 
-    final private String[] repeatArray = {"One-time event", "Daily", "Weekly", "Bi-Weekly", "Monthly", "Yearly"};
-    final private String[] alertArray = {"None", "At time of Departure", "5 minutes before", "10 minutes before", "15 minutes before", "30 minutes before", "1 hour before"};
+    final public String[] repeatArray = {"One-time event", "Daily", "Weekly", "Bi-Weekly", "Monthly", "Yearly"};
+    final public String[] alertArray = {"None", "At time of Departure", "5 minutes before", "10 minutes before", "15 minutes before", "30 minutes before", "1 hour before"};
 
     private EditText event_name;
     private EditText event_comment;
-    private TextView event_venue;
+    public TextView event_venue;
     private TextView start_date;
     private TextView start_time;
     private TextView end_date;
@@ -93,11 +93,11 @@ public class NewEventFragment extends Fragment {
     private int mEndMin;
     private String repeatString = "One-time event";
     private String alertString = "At time of Departure";
-    private String event_longitude = "";
-    private String event_latitude = "";
+    public String event_longitude = "";
+    public String event_latitude = "";
 
     private ParcelableCalendarType calendarTypeString = Events.calendarTypeList.get(0);
-    private String event_venue_location = "";
+    public String event_venue_location = "";
     private int is_punctual;
     private Calendar calendar = Calendar.getInstance();
 
@@ -116,9 +116,21 @@ public class NewEventFragment extends Fragment {
                              Bundle savedInstanceState) {
 
         setHasOptionsMenu(true);
+        View view = inflater.inflate(R.layout.new_event_fragment, container, false);
+
 //        mYear = c.get(Calendar.YEAR);
 //        mMonthOfYear = c.get(Calendar.MONTH);
 //        mDayOfMonth = c.get(Calendar.DAY_OF_MONTH);
+
+
+        init(view);
+
+
+        return view;
+    }
+
+
+    public void init(View view) {
         mHour = c.get(Calendar.HOUR_OF_DAY);
         mMin = 0;
         calendar.set(mYear, mMonthOfYear, mDayOfMonth, mHour, mMin);
@@ -129,7 +141,6 @@ public class NewEventFragment extends Fragment {
         mEndHour = calendar.get(Calendar.HOUR_OF_DAY);
         mEndMin = calendar.get(Calendar.MINUTE);
         Bundle arguments = getArguments();
-        View view = inflater.inflate(R.layout.new_event_fragment, container, false);
         repeat_type = (TextView) view.findViewById(R.id.rep_new_event);
         event_name = (EditText) view.findViewById(R.id.new_event_name);
         event_venue = (TextView) view.findViewById(R.id.new_event_venue);
@@ -265,7 +276,6 @@ public class NewEventFragment extends Fragment {
         alert.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-//                NewEventRepeatDialogFragment dialogFragment = new NewEventRepeatDialogFragment();
                 NewEventAlertDialogFragment dialog = new NewEventAlertDialogFragment();
                 Bundle bundle = new Bundle();
                 bundle.putInt(NewEventAlertDialogFragment.SELECTED, Arrays.asList(alertArray).indexOf(alertString));
@@ -299,16 +309,10 @@ public class NewEventFragment extends Fragment {
                 dialog.show(getFragmentManager(), "calendar_dialog");
             }
         });
-
-//        init(rootView);
-
-
-        return view;
     }
 
-
     //
-    private String timeFormat(int hour, int min) {
+    public String timeFormat(int hour, int min) {
         String hourReturn = hour < 10 ? "0" + hour : String.valueOf(hour);
         String minReturn = min < 10 ? "0" + min : String.valueOf(min);
         return hourReturn + ":" + minReturn;

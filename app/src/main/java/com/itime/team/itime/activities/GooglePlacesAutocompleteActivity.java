@@ -11,7 +11,6 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.SearchView;
-import android.widget.TextView;
 
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
@@ -81,7 +80,6 @@ public class GooglePlacesAutocompleteActivity extends AppCompatActivity implemen
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 Intent intent = new Intent();
 //                TextView textView = (TextView) view.findViewById(R.id.auto_complete_listview_item);
-
                 intent.putExtra("address", mAddressIds.get(position).toString());
                 setResult(RESULT_OK, intent);
                 finish();

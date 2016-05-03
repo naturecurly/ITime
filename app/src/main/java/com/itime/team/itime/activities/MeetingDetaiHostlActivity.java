@@ -7,6 +7,7 @@ import android.support.v4.content.FileProvider;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -259,6 +260,7 @@ public class MeetingDetaiHostlActivity extends AppCompatActivity implements View
 
     // Load meeting information from the server.
     private void loadMeetingInfo() {
+        Log.i("meetingID2",mMeetingId);
         JSONObject jsonObject = new JSONObject();
         try {
             jsonObject.put("meeting_id", mMeetingId);
@@ -288,14 +290,15 @@ public class MeetingDetaiHostlActivity extends AppCompatActivity implements View
 
     // Set contents for each component.
     private void handleMeetingInfo(JSONObject json){
+        Log.i("json999",json.toString());
         mMeetingInfo = new MeetingInfo();
         try {
-            mMeetingInfo.setLatitude(json.getString("event_latitude"));
+            mMeetingInfo.setLatitude("");
             mMeetingInfo.setNewLocation(json.getString("event_venue_location_new"));
             mMeetingInfo.setNewName(json.getString("event_name_new"));
             mMeetingInfo.setStatus(json.getString("meeting_status"));
             mMeetingInfo.setNewRepeat(json.getString("event_repeats_type_new"));
-            mMeetingInfo.setLongitude(json.getString("event_longitude"));
+            mMeetingInfo.setLongitude("");
             mMeetingInfo.setLocation(json.getString("event_venue_location"));
             mMeetingInfo.setNewPunctual(json.getBoolean("event_is_punctual_new"));
             mMeetingInfo.setComment(json.getString("event_comment"));
@@ -308,9 +311,9 @@ public class MeetingDetaiHostlActivity extends AppCompatActivity implements View
             mMeetingInfo.setNewStart(json.getString("event_starts_datetime_new"));
             mMeetingInfo.setNewVenue(json.getString("event_venue_show_new"));
             mMeetingInfo.setStart(json.getString("event_starts_datetime"));
-            mMeetingInfo.setNewLongitude(json.getString("event_longitude_new"));
+            mMeetingInfo.setNewLongitude("");
             mMeetingInfo.setName(json.getString("event_name"));
-            mMeetingInfo.setNewLatitude(json.getString("event_latitude_new"));
+            mMeetingInfo.setNewLatitude("");
             mMeetingInfo.setToken(json.getString("meeting_valid_token"));
             mMeetingInfo.setNewEnd(json.getString("event_ends_datetime_new"));
             mMeetingInfo.setNewComment(json.getString("event_comment_new"));

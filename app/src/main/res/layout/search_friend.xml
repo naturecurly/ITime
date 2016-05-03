@@ -19,11 +19,14 @@
             />
     </android.support.design.widget.AppBarLayout>
 
-    <android.support.v7.widget.SearchView
+    <SearchView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:iconifiedByDefault="false"
+        android:hint="@string/meeting_search_friend_title"
+        android:inputType="textFilter"
         android:id="@+id/meeting_search_search">
-    </android.support.v7.widget.SearchView>
+    </SearchView>
 
     <ListView
         android:layout_width="match_parent"

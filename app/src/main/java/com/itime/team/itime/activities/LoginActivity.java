@@ -116,7 +116,7 @@ public class LoginActivity extends FragmentActivity implements View.OnClickListe
 
     private void checkInvitation(){
         String id = getIntent().getStringExtra("invitation");
-        if(!id.equals("")) {
+        if(id != null && !id.equals("")) {
             Toast.makeText(this,getString(R.string.add_friend_login),Toast.LENGTH_LONG).show();
         }
     }

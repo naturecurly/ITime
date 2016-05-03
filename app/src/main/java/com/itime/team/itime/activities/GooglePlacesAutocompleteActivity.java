@@ -80,7 +80,6 @@ public class GooglePlacesAutocompleteActivity extends AppCompatActivity implemen
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 Intent intent = new Intent();
 //                TextView textView = (TextView) view.findViewById(R.id.auto_complete_listview_item);
-
                 intent.putExtra("address", mAddressIds.get(position).toString());
                 setResult(RESULT_OK, intent);
                 finish();

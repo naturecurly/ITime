@@ -55,6 +55,11 @@ import java.util.UUID;
  * This activity creates new meeting.
  */
 public class NewMeetingActivity extends AppCompatActivity implements View.OnTouchListener, View.OnClickListener, CompoundButton.OnCheckedChangeListener{
+    private static final String PLACES_API_BASE = "https://maps.googleapis.com/maps/api/place";
+    private static final String TYPE_DETAILS = "/details";
+    private static final String OUT_JSON = "/json";
+    private static String API_KEY = "AIzaSyBC4zDmkarugKY0Njs_n2TtEUVEyeESn0c";
+
     private EditText mMessage;
     private Button mStartDate, mStartTime, mEndDate, mEndTime;
     private Button mRepeat;
@@ -338,9 +343,10 @@ public class NewMeetingActivity extends AppCompatActivity implements View.OnTouc
         if (requestCode == 1){
             if(resultCode == RESULT_OK){
                 mAddress = data.getStringExtra("address");
-                mVeune.setText(mAddress);
-                mVeune.setTextSize(12);
-                getCoordinate(mAddress);
+                getLoaction(mAddress);
+                //mVeune.setText(mAddress);
+                //mVeune.setTextSize(12);
+                //getCoordinate(mAddress);
             }
         }
     }
@@ -569,5 +575,35 @@ public class NewMeetingActivity extends AppCompatActivity implements View.OnTouc
         });
         MySingleton.getInstance(this).addToRequestQueue(request);
 
+    }
+
+    private void getLoaction(String address) {
+        StringBuilder sb = new StringBuilder(PLACES_API_BASE + TYPE_DETAILS + OUT_JSON);
+        sb.append("?key=" + API_KEY);
+        sb.append("&&placeid=" + address);
+        String url = sb.toString();
+        JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(url, null, new Response.Listener<JSONObject>() {
+            @Override
+            public void onResponse(JSONObject response) {
+                try {
+                    JSONObject result = response.getJSONObject("result");
+                    String locations = result.getString("formatted_address");
+                    JSONObject geo = result.getJSONObject("geometry");
+                    mAddress = locations;
+//                    JSONObject geoLocation = geo.getJSONObject("location");
+//                    event_latitude = Double.toString(geoLocation.getDouble("lat"));
+//                    event_longitude = Double.toString(geoLocation.getDouble("lng"));
+                    mVeune.setText(mAddress);
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
+        }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+
+            }
+        });
+        MySingleton.getInstance(this).addToRequestQueue(jsonObjectRequest);
     }
 }

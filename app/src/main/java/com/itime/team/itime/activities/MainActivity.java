@@ -244,42 +244,6 @@ public class MainActivity extends AppCompatActivity implements
         return super.dispatchTouchEvent(event);
     }
 
-    private void initBroadcastReceiver(final Context ctx) {
-        mNotificationBroadcastReceiver = new BroadcastReceiver() {
-            @Override
-            public void onReceive(Context context, Intent intent) {
-                Bundle data = intent.getBundleExtra(ITimeGcmPreferences.HANDLE_MESSAGE_DATA);
-                if (data != null) {
-                    // change data to message
-                    ParcelableMessage message = new ParcelableMessage(data);
-                    if (message.messageType == MessageType.OTHER_DEVICE_LOGIN) {
-                        finish();
-                        Intent intent2 = new Intent(ctx, LoginActivity.class);
-                        intent2.putExtra("username", com.itime.team.itime.bean.User.ID);
-                        updateUserTable();
-                        startActivity(intent2);
-                        LoginManager.getInstance().logOut();
-                    }
-                    MessageHandler.handleMessage(ctx, message);
-                }
-            }
-        };
-
-    }
-
-    /*
-        if a user logout, the person's account will not be remembered.
-     */
-    private void updateUserTable(){
-        UserTableHelper dbHelper = new UserTableHelper(this, "userbase1");
-        SQLiteDatabase db = dbHelper.getReadableDatabase();
-        ContentValues values = new ContentValues();
-        values.put("remember", false);
-        db.update("itime_user", values, "id=?", new String[]{"1"});
-        dbHelper.close();
-        db.close();
-    }
-
     private void addFriend(String name){
         JSONObject object = new JSONObject();
         try {

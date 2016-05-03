@@ -28,7 +28,10 @@ import android.widget.Toast;
 import com.daimajia.swipe.adapters.BaseSwipeAdapter;
 import com.itime.team.itime.R;
 import com.itime.team.itime.model.ParcelableCalendarType;
+import com.itime.team.itime.model.ParcelableMessage;
 
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 /**
@@ -42,6 +45,7 @@ public class CalendarTypeAdapter extends BaseSwipeAdapter {
     public CalendarTypeAdapter(Context context, List<ParcelableCalendarType> data) {
         mContext = context;
         mData = data;
+        processCalendarList();
     }
 
     public interface OnDeleteClickListener {
@@ -56,7 +60,45 @@ public class CalendarTypeAdapter extends BaseSwipeAdapter {
 
     public void refresh(List<ParcelableCalendarType> data) {
         mData = data;
+        processCalendarList();
         notifyDataSetChanged();
+    }
+
+    public static final Comparator<ParcelableCalendarType> CALENDAR_TYPE_COMPARATOR =
+            new Comparator<ParcelableCalendarType>() {
+                public int compare(ParcelableCalendarType m1, ParcelableCalendarType m2) {
+                    if (m1.calendarOwnerName.compareTo(m2.calendarOwnerName) != 0) {
+                        return m2.calendarOwnerName.compareTo(m1.calendarOwnerName);
+                    } else {
+                        return m1.calendarName.compareTo(m2.calendarName);
+                    }
+                }
+            };
+
+    private void processCalendarList() {
+        // Group by ownerName and then sort by name
+        Collections.sort(mData, CALENDAR_TYPE_COMPARATOR);
+
+        // add two extra title
+        ParcelableCalendarType iTimeTitle = new ParcelableCalendarType();
+        iTimeTitle.calendarId = "";
+        iTimeTitle.calendarOwnerName = "iTIME";
+        iTimeTitle.calendarName = "iTIME";
+        ParcelableCalendarType googleCalendarTitle = new ParcelableCalendarType();
+        googleCalendarTitle.calendarId = "";
+        googleCalendarTitle.calendarOwnerName = "Google";
+        googleCalendarTitle.calendarName = "Google";
+
+        mData.add(0, iTimeTitle);
+        int i = 0;
+        for (i = 0; i < mData.size(); i++) {
+            if (mData.get(i).calendarOwnerName.equals("Google")) {
+                break;
+            }
+        }
+        mData.add(i, googleCalendarTitle);
+
+
     }
 
     @Override
@@ -66,46 +108,60 @@ public class CalendarTypeAdapter extends BaseSwipeAdapter {
 
     @Override
     public View generateView(final int position, ViewGroup parent) {
-        View v = LayoutInflater.from(mContext).inflate(R.layout.view_setting_list, null);
-        // add a checkbox and hide it
-        LinearLayout linearLayout = (LinearLayout) v.findViewById(R.id.setting_list_right);
-        CheckBox isShow = new CheckBox(mContext);
-        isShow.setTag("isShow");
-        linearLayout.addView(isShow);
-        isShow.setVisibility(View.GONE);
+        View v;
+        if (getItemViewType(position) == 0) {
+            // title
+            v = LayoutInflater.from(mContext).inflate(R.layout.view_calendar_type_title, null);
+            v.setClickable(false);
+        } else {
+            v = LayoutInflater.from(mContext).inflate(R.layout.view_setting_list, null);
+            // add a checkbox and hide it
+            LinearLayout linearLayout = (LinearLayout) v.findViewById(R.id.setting_list_right);
+            CheckBox isShow = new CheckBox(mContext);
+            isShow.setTag("isShow");
+            linearLayout.addView(isShow);
+            isShow.setVisibility(View.GONE);
 
-        v.findViewById(R.id.delete).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-            }
-        });
-
-        // bind listener
-        if (mOnDeleteClickListener != null) {
             v.findViewById(R.id.delete).setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    mOnDeleteClickListener.onDeleteClickListener(v, position);
-                    Toast.makeText(mContext, "Delete push", Toast.LENGTH_SHORT).show();
-
                 }
             });
+
+            // bind listener
+            if (mOnDeleteClickListener != null) {
+                v.findViewById(R.id.delete).setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        mOnDeleteClickListener.onDeleteClickListener(v, position);
+                        Toast.makeText(mContext, "Delete push", Toast.LENGTH_SHORT).show();
+
+                    }
+                });
+            }
         }
+
         return v;
     }
 
     @Override
     public void fillValues(int position, View convertView) {
-        TextView calTypeText = (TextView)convertView.findViewById(R.id.setting_list_left_text);
-        CheckBox isShow = (CheckBox) convertView.findViewWithTag("isShow");
-
         final ParcelableCalendarType item = (ParcelableCalendarType) getItem(position);
-        calTypeText.setText(item.calendarName);
-        if (item.ifShow) {
-            isShow.setChecked(true);
-            isShow.setVisibility(View.VISIBLE);
+        if (getItemViewType(position) == 0) {
+            TextView calTypeTitleText = (TextView)convertView.findViewById(R.id.calendar_type_title);
+
+            calTypeTitleText.setText(item.calendarOwnerName);
         } else {
-            isShow.setVisibility(View.GONE);
+            TextView calTypeText = (TextView)convertView.findViewById(R.id.setting_list_left_text);
+            CheckBox isShow = (CheckBox) convertView.findViewWithTag("isShow");
+
+            calTypeText.setText(item.calendarName);
+            if (item.ifShow) {
+                isShow.setChecked(true);
+                isShow.setVisibility(View.VISIBLE);
+            } else {
+                isShow.setVisibility(View.GONE);
+            }
         }
     }
 
@@ -122,5 +178,20 @@ public class CalendarTypeAdapter extends BaseSwipeAdapter {
     @Override
     public long getItemId(int position) {
         return position;
+    }
+
+    @Override
+    public int getItemViewType(int position) {
+        final ParcelableCalendarType item = (ParcelableCalendarType) getItem(position);
+        if (item.calendarId.isEmpty()) {
+            return 0;
+        } else {
+            return 1;
+        }
+    }
+
+    @Override
+    public int getViewTypeCount() {
+        return 2;
     }
 }

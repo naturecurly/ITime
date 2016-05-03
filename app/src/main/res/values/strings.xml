@@ -192,5 +192,10 @@
     <string name="event_detail_edit">Edit</string>
     <string name="event_detail_delete">Delete</string>
 
+    <!-- import calendars -->
+    <string name="import_calendar">Import Calendar</string>
+    <string name="import_google_calendar">Import Google Calendar</string>
+    <string name="import_ios_calendar">Import  IOS Calendar</string>
+
 
 </resources>

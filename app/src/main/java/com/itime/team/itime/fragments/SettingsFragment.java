@@ -16,7 +16,9 @@
 
 package com.itime.team.itime.fragments;
 
+import android.app.AlertDialog;
 import android.content.ContentValues;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
@@ -41,6 +43,7 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.facebook.login.LoginManager;
 import com.itime.team.itime.R;
+import com.itime.team.itime.activities.ImportGoogleCalendarActivity;
 import com.itime.team.itime.activities.LoginActivity;
 import com.itime.team.itime.activities.SettingsActivity;
 import com.itime.team.itime.bean.URLs;
@@ -156,8 +159,7 @@ public class SettingsFragment extends Fragment implements View.OnClickListener, 
 
 
             case SETTINGS_IMPORT_ID:
-                intent.putExtra(SETTINGS, IMPORT_SETTINGS);
-                startActivity(intent);
+                importCalendar();
                 break;
 
             case SETTINGS_ALERT_TIME_ID:
@@ -336,5 +338,27 @@ public class SettingsFragment extends Fragment implements View.OnClickListener, 
             userId = mCursor.getColumnIndex(User.USER_ID);
             defaultAlert = mCursor.getColumnIndex(User.DEFAULT_ALERT);
         }
+    }
+
+    private void importCalendar() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+        builder.setItems(R.array.import_calendars_list, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                switch (which) {
+                    // google calendar
+                    case 0:
+                        Intent intent = new Intent(getActivity(), ImportGoogleCalendarActivity.class);
+                        startActivity(intent);
+                        break;
+                    case 1:
+                        break;
+                    default:
+                        break;
+                }
+            }
+        })
+                .setTitle(getString(R.string.import_calendar));
+        builder.show();
     }
 }

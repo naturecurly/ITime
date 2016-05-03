@@ -204,6 +204,12 @@ public class CheckLoginActivity extends AppCompatActivity{
                     e.printStackTrace();
                 }
                 if(result.equals("success")) {
+                    try {
+                        User.token = response.getString("connect_token");
+                        Log.i("CheckLoginActivity", "connect_token: " + User.token);
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
                     User.ID = mUsernameStr;
                     if (hasAddFriendRequest) {
                         MainIntent.putExtra("invitation",mInviatedFriendID);

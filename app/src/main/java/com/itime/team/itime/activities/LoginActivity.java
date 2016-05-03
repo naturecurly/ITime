@@ -196,6 +196,8 @@ public class LoginActivity extends FragmentActivity implements View.OnClickListe
                 }else {
                     updateUserTable();
                 }
+
+                User.token = json.getString("connect_token");
                 User.ID = mUsernameStr;
 
                 PreferenceTask preferenceTask = PreferenceTask.getInstance(getApplicationContext());
@@ -329,6 +331,8 @@ public class LoginActivity extends FragmentActivity implements View.OnClickListe
                 }
                 //Intent intent = new Intent(this, MainActivity.class);
 
+                User.token = json.getString("connect_token");
+                Log.i(LOG_TAG, "connect_token: " + User.token);
                 User.ID = mUsernameStr;
 
                 PreferenceTask preferenceTask = PreferenceTask.getInstance(getApplicationContext());

@@ -7,6 +7,7 @@ package com.itime.team.itime.utils;
 import android.annotation.SuppressLint;
 import android.util.Log;
 
+import java.sql.Time;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -294,6 +295,44 @@ public class DateUtil {
             formatter.setTimeZone(TimeZone.getDefault());
             try {
                 return formatter.parse(data);
+            } catch (ParseException e) {
+                return null;
+            }
+        } else {
+            return null;
+        }
+    }
+
+    public static final DateFormat dateFormatter = new SimpleDateFormat("yyyy-MM-dd");
+    public static final DateFormat dateTimeFormatter = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'");
+    public static final DateFormat serverDateformatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss Z");
+
+    static {
+        dateFormatter.setTimeZone(TimeZone.getTimeZone("GMT"));
+        dateTimeFormatter.setTimeZone(TimeZone.getTimeZone("GMT"));
+        serverDateformatter.setTimeZone(TimeZone.getDefault());
+    }
+    /**
+     * parse RFC3339 format in UTC and format it in RFC822TimeZone format with local timezone
+     * @param dateTime RFC3339 format with UTC timezone
+     * @return RFC822TimeZone format with local timezone
+     */
+    public static String parseDateTimeString(String dateTime) {
+        if (dateTime != null) {
+            try {
+                return serverDateformatter.format(dateTimeFormatter.parse(dateTime));
+            } catch (ParseException e) {
+                return null;
+            }
+        } else {
+            return null;
+        }
+    }
+
+    public static String parseDateString(String date) {
+        if (date != null) {
+            try {
+                return serverDateformatter.format(dateFormatter.parse(date));
             } catch (ParseException e) {
                 return null;
             }

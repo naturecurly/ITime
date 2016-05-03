@@ -237,7 +237,7 @@ public class UserTask {
                     new Response.Listener<JSONObject>() {
                         @Override
                         public void onResponse(JSONObject response) {
-                            Log.i(LOG_TAG, response.toString());
+                            //Log.i(LOG_TAG, response.toString());
                             String result = "failed";
                             try {
                                 result = response.getString("result");

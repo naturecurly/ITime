@@ -155,6 +155,10 @@ public abstract class WeeklyBaseActivity extends AppCompatActivity implements We
 
                 }
                 return true;
+            case R.id.new_event:
+                Intent intent = new Intent(this, NewEventActivity.class);
+                startActivity(intent);
+                return true;
 //            case R.id.action_three_day_view:
 //                if (mWeekViewType != TYPE_THREE_DAY_VIEW) {
 //                    item.setChecked(!item.isChecked());

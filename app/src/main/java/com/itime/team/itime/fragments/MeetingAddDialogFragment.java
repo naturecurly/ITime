@@ -9,6 +9,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.DialogFragment;
 import android.text.Html;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -52,15 +53,7 @@ public class MeetingAddDialogFragment extends DialogFragment implements DataRequ
     private static String APPID;
     private IWXAPI api;
 
-    public String invitationContent = new StringBuilder()
-            .append("<p style='font-weight:bold;'>Hello, this is ")
-            .append(User.ID)
-            .append(", please click the link</p>")
-            .append("<a>").append("http://54.200.31.237/").append("openwith?id=" + User.ID.replace("@","###") + "</a>")
-            .append("<p> to be my iTime firend. If you do not install the iTime yet, please click following " +
-                    "link to find the App ")
-            .append("Install iTime</p>")
-            .toString();
+    public String invitationContent;
 
 
 
@@ -69,6 +62,22 @@ public class MeetingAddDialogFragment extends DialogFragment implements DataRequ
         this.mUserInfo = mUserInfo;
     }
 
+    private void init(){
+        String[] info = User.ID.split("@");
+        String name = info[0];
+        String address = info.length > 1 ? info[1] : "";
+        String request = URLs.HEAD + "openwith?id=" + name + "&address=" + address;
+        invitationContent = new StringBuilder()
+                .append("<p style='font-weight:bold;'>Hello, this is ")
+                .append(User.ID)
+                .append(", please click the link</p>")
+                .append("<a>").append(request).append("</a>")
+                .append("<p> to be my iTime firend. If you do not install the iTime yet, please click following " +
+                        "link to find the App ")
+                .append("Install iTime</p>")
+                .toString();
+        Log.i("info",invitationContent);
+    }
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         APPID = getString(R.string.wechat_app_id);
@@ -89,7 +98,9 @@ public class MeetingAddDialogFragment extends DialogFragment implements DataRequ
         initData();
     }
 
+
     private void initData(){
+        init();
         HashMap<String, Object> map = new HashMap<String, Object>();
         map.put("ItemImage", R.drawable.search);
         map.put("ItemText", getString(R.string.meeting_dialog_search));

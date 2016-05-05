@@ -264,8 +264,8 @@
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="vertical"
                 android:divider="@drawable/separator"
+                android:orientation="vertical"
                 android:showDividers="middle">
 
                 <LinearLayout
@@ -325,6 +325,32 @@
                 android:layout_gravity="bottom"
                 android:background="#000000" />
 
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="50dp"
+                android:background="#ececec"></LinearLayout>
+
+            <!--<ImageView-->
+            <!--android:layout_width="match_parent"-->
+            <!--android:layout_height="1px"-->
+            <!--android:layout_gravity="bottom"-->
+            <!--android:background="#000000" />-->
+
+            <Button
+                android:id="@+id/event_detail_delete_button"
+                android:layout_width="match_parent"
+                android:layout_height="40dp"
+                android:text="@string/event_detail_delete"
+                android:textAlignment="center"
+                android:textColor="#e70404"
+                android:background="@color/white"
+                style="?android:attr/selectableItemBackground"/>
+
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="40dp"
+                android:background="#ececec"></LinearLayout>
         </LinearLayout>
 
 

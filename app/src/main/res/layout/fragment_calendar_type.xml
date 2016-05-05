@@ -4,14 +4,6 @@
     android:orientation="vertical" android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <TextView
-        android:text="@string/app_label"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_margin="10dp"
-        android:textSize="16dp"
-        android:backgroundTint="@color/transparent"/>
-
     <ListView
         android:id="@+id/setting_calendar_type_list"
         android:layout_width="match_parent"

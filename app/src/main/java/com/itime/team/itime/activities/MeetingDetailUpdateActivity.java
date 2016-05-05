@@ -49,6 +49,11 @@ import java.util.Map;
  *
  */
 public class MeetingDetailUpdateActivity extends AppCompatActivity implements View.OnTouchListener, View.OnClickListener, CompoundButton.OnCheckedChangeListener{
+    private static final String PLACES_API_BASE = "https://maps.googleapis.com/maps/api/place";
+    private static final String TYPE_DETAILS = "/details";
+    private static final String OUT_JSON = "/json";
+    private static String API_KEY = "AIzaSyBC4zDmkarugKY0Njs_n2TtEUVEyeESn0c";
+
     private EditText mMessage;
     private Button mStartDate, mStartTime, mEndDate, mEndTime;
     private Button mRepeat;
@@ -350,9 +355,10 @@ public class MeetingDetailUpdateActivity extends AppCompatActivity implements Vi
         if (requestCode == 1){
             if(resultCode == RESULT_OK){
                 mAddress = data.getStringExtra("address");
-                mVeune.setText(mAddress);
-                mVeune.setTextSize(12);
-                getCoordinate(mAddress);
+                //mVeune.setText(mAddress);
+                getLoaction(mAddress);
+                //mVeune.setTextSize(12);
+                //getCoordinate(mAddress);
             }
         }
     }
@@ -378,33 +384,33 @@ public class MeetingDetailUpdateActivity extends AppCompatActivity implements Vi
         try {
             String currentTime = DateUtil.formatLocalDateObject(new Date());
             Log.i("currentTime",currentTime);
-            json.put("event_id", mEventID);    //
-            json.put("event_venue_location_new", mLocation);    // 下面
+            json.put("event_id", mEventID);
+            json.put("event_venue_location_new", mLocation);
             json.put("event_repeats_type_new",mMRepeat);
-            json.put("event_last_sug_dep_time",currentTime); //?X
-            json.put("is_long_repeat",1);   //  默认是1
+            json.put("event_last_sug_dep_time",currentTime);
+            json.put("is_long_repeat",1);
             json.put("event_starts_datetime_new",DateUtil.getDateWithTimeZone(mStartYear,mStartMonth + 1,mStartDay,mStartHour,mStartMin));
             json.put("is_host","");
             json.put("event_longitude_new",mLng);
             json.put("event_latitude_new",mLat);
-            json.put("event_last_sug_dep_time_new",currentTime); //  X
+            json.put("event_last_sug_dep_time_new",currentTime);
             json.put("event_ends_datetime_new",DateUtil.getDateWithTimeZone(mEndYear,mEndMonth + 1,mEndDay,mEndHour,mEndMin));
             json.put("event_name_new", mName.getText());
-            json.put("event_last_distance_in_meter_new",currentTime);    //  X
-            json.put("event_is_punctual_new", mPunctual.isChecked() ? 1 : 0);    //1 是， 0否
+            json.put("event_last_distance_in_meter_new",currentTime);
+            json.put("event_is_punctual_new", mPunctual.isChecked() ? 1 : 0);
             json.put("host_id",mHostID);
-            json.put("event_last_time_on_way_in_second_new",currentTime);    // X
-            json.put("is_meeting",1);   //1 是， 0否
+            json.put("event_last_time_on_way_in_second_new",currentTime);
+            json.put("is_meeting",1);
             json.put("event_venue_show_new", mShow);
-            json.put("event_last_time_on_way_in_second",currentTime); //  X
+            json.put("event_last_time_on_way_in_second",currentTime);
             json.put("event_alert", mAlert.getText().toString().split(" -- ")[1]); //Need to be changed
-            json.put("if_deleted",0);   //1 是， 0否
-            json.put("event_last_distance_in_meter",0); //  X
+            json.put("if_deleted",0);
+            json.put("event_last_distance_in_meter",0);
             json.put("event_comment_new",mMessage.getText());
-            json.put("event_repeat_to_date",DateUtil.getDateWithTimeZone(mEndYear, mEndMonth, mEndDay, mEndHour, mEndMin));    //  传end date
+            json.put("event_repeat_to_date",DateUtil.getDateWithTimeZone(mEndYear, mEndMonth, mEndDay, mEndHour, mEndMin));
             json.put("calendar_id","");
-            json.put("event_last_update_datetime",currentTime);  //  当前时间
-            json.put("event_is_punctual",mOldMPunctual ? 1 : 0); //?
+            json.put("event_last_update_datetime",currentTime);
+            json.put("event_is_punctual",mOldMPunctual ? 1 : 0);
             json.put("event_starts_datetime", startDateForPost);
             json.put("event_ends_datetime", endDateForPost);
             json.put("event_comment",mOldNote);
@@ -412,12 +418,12 @@ public class MeetingDetailUpdateActivity extends AppCompatActivity implements Vi
             json.put("event_repeats_type",mOldMRepeat);
             json.put("event_latitude",mLat);
             json.put("event_longitude", mLng);
-            json.put("event_venue_location", mOldLocation); //?
-            json.put("meeting_id",mMeetingID);   //?
-            json.put("meeting_valid_token",mToken);   //?
+            json.put("event_venue_location", mOldLocation);
+            json.put("meeting_id",mMeetingID);
+            json.put("meeting_valid_token",mToken);
             json.put("user_id", User.ID);
             json.put("meeting_status", "NO CONFIRM UPDATE MEETING"); //Neet to add
-            json.put("event_venue_show", mOldShow);  //?
+            json.put("event_venue_show", mOldShow);
 
             Log.i("resu",json.toString());
 
@@ -452,6 +458,36 @@ public class MeetingDetailUpdateActivity extends AppCompatActivity implements Vi
         });
         MySingleton.getInstance(this).addToRequestQueue(request);
 
+    }
+
+    private void getLoaction(String address) {
+        StringBuilder sb = new StringBuilder(PLACES_API_BASE + TYPE_DETAILS + OUT_JSON);
+        sb.append("?key=" + API_KEY);
+        sb.append("&&placeid=" + address);
+        String url = sb.toString();
+        JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(url, null, new Response.Listener<JSONObject>() {
+            @Override
+            public void onResponse(JSONObject response) {
+                try {
+                    JSONObject result = response.getJSONObject("result");
+                    String locations = result.getString("formatted_address");
+                    JSONObject geo = result.getJSONObject("geometry");
+                    mAddress = locations;
+//                    JSONObject geoLocation = geo.getJSONObject("location");
+//                    event_latitude = Double.toString(geoLocation.getDouble("lat"));
+//                    event_longitude = Double.toString(geoLocation.getDouble("lng"));
+                    mVeune.setText(mAddress);
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
+        }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+
+            }
+        });
+        MySingleton.getInstance(this).addToRequestQueue(jsonObjectRequest);
     }
 
     private void getCoordinate(String address){

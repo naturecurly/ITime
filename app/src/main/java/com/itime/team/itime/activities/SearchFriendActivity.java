@@ -5,11 +5,11 @@ import android.content.DialogInterface;
 import android.os.Bundle;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.SearchView;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ListView;
+import android.widget.SearchView;
 import android.widget.Toast;
 
 import com.android.volley.Request;
@@ -72,6 +72,7 @@ public class SearchFriendActivity extends AppCompatActivity implements SearchVie
     }
 
     private void searchFriend(String name){
+
         JSONObject jsonObject = new JSONObject();
         try {
             jsonObject.put("user_id", User.ID);
@@ -98,6 +99,7 @@ public class SearchFriendActivity extends AppCompatActivity implements SearchVie
     }
 
     private void adaptListView(JSONArray jsonArray){
+        mListItem.clear();
         try {
             for(int i = 0; i < jsonArray.length(); i ++){
                 JSONObject jsonObject = (JSONObject) jsonArray.get(i);
@@ -122,7 +124,7 @@ public class SearchFriendActivity extends AppCompatActivity implements SearchVie
 
     @Override
     public boolean onQueryTextSubmit(String query) {
-        mListItem.clear();
+
         searchFriend(query);
         return true;
     }

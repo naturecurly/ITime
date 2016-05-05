@@ -41,6 +41,7 @@ import java.util.List;
  */
 public class InboxTask {
     private final static String LOG_TAG = InboxTask.class.getSimpleName();
+    public static final String REQUEST_TAG = "InboxRequestTag";
 
     private final Context mContext;
     private static InboxTask mInstance;
@@ -115,7 +116,17 @@ public class InboxTask {
                         }
                     }
                 });
+
+        // cancel all previous load message request in case of some requests might deliver later
+        // than the request which post next.
+        MySingleton.getInstance(mContext).getRequestQueue().cancelAll(REQUEST_TAG);
+        request.setTag(REQUEST_TAG);
         MySingleton.getInstance(mContext).addToRequestQueue(request);
+    }
+
+    public static final void cancelLoadMessageTask(Context context) {
+        MySingleton.getInstance(context).getRequestQueue().cancelAll(REQUEST_TAG);
+
     }
 
     public void getUnreadMessageCount(String userId, final ResultCallBack<Integer> callback) {

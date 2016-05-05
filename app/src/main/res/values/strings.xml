@@ -118,6 +118,9 @@
     <string name="meeting_detail_quit_reason">Please Type the Reason</string>
 
 
+    <string name="repeat_add_friend">Sorry, %1s is aready your friend</string>
+    <string name="add_friend_myself">Sorry, You cannot add yourself</string>
+    <string name="add_friend_login">Sorry, you need to login first, then click the invitaion link again.</string>
     <string name="check_login_timeout">Timeout, please check your internet</string>
 
     <string name="search_friend_added_friend_info">Please wait for your friend\'s reply</string>
@@ -186,6 +189,13 @@
         sending the fetched token to the server or subscribing to the PubSub topic. Please try
         running the sample again.</string>
     <string name="event_detail_alert">Alert</string>
+    <string name="event_detail_edit">Edit</string>
+    <string name="event_detail_delete">Delete</string>
+
+    <!-- import calendars -->
+    <string name="import_calendar">Import Calendar</string>
+    <string name="import_google_calendar">Import Google Calendar</string>
+    <string name="import_ios_calendar">Import  IOS Calendar</string>
 
 
 </resources>

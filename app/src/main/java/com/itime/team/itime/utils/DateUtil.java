@@ -5,7 +5,9 @@ package com.itime.team.itime.utils;
  */
 
 import android.annotation.SuppressLint;
+import android.util.Log;
 
+import java.sql.Time;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -138,6 +140,12 @@ public class DateUtil {
         return cal.get(Calendar.DAY_OF_WEEK);
     }
 
+    public static int getDateOfWeek_M(int year, int month, int day) {
+        Calendar cal = Calendar.getInstance();
+        cal.set(year, month, day);
+        return cal.get(Calendar.DAY_OF_WEEK);
+    }
+
     //Return the number of days between two specific days
     public static int diffDate(int oldYear, int oldMonth, int oldDay, int year, int month, int day) {
         Calendar cal1 = Calendar.getInstance();
@@ -228,9 +236,11 @@ public class DateUtil {
     public static boolean isFeasible(int startYear, int startMonth, int startDay, int startHour, int startMin,
                                      int endYear, int endMonth, int endDay, int endHour, int endMin) {
         Calendar start = Calendar.getInstance();
-        start.set(startYear, startMonth, startDay, startHour, startMin);
+        start.set(startYear, startMonth + 1, startDay, startHour, startMin);
         Calendar end = Calendar.getInstance();
-        end.set(endYear, endMonth, endDay, endHour, endMin);
+        end.set(endYear, endMonth + 1, endDay, endHour, endMin);
+        Log.i("start", start.toString());
+        Log.i("end", end.toString());
         if (start.compareTo(end) >= 0) {
             return false;
         } else {
@@ -245,7 +255,7 @@ public class DateUtil {
         return formatter.format(new Date(targetTime));
     }
 
-    public static Date getLocalTime(String data) {
+    /*public static Date getLocalTime(String data) {
         Date dateForReturn = null;
         try {
             String[] dataOfJson = data.split(" ");
@@ -263,7 +273,7 @@ public class DateUtil {
             e.printStackTrace();
         }
         return dateForReturn;
-    }
+    }*/
 
 
     public static String getCurrentTime(String format) {
@@ -285,6 +295,44 @@ public class DateUtil {
             formatter.setTimeZone(TimeZone.getDefault());
             try {
                 return formatter.parse(data);
+            } catch (ParseException e) {
+                return null;
+            }
+        } else {
+            return null;
+        }
+    }
+
+    public static final DateFormat dateFormatter = new SimpleDateFormat("yyyy-MM-dd");
+    public static final DateFormat dateTimeFormatter = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'");
+    public static final DateFormat serverDateformatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss Z");
+
+    static {
+        dateFormatter.setTimeZone(TimeZone.getTimeZone("GMT"));
+        dateTimeFormatter.setTimeZone(TimeZone.getTimeZone("GMT"));
+        serverDateformatter.setTimeZone(TimeZone.getDefault());
+    }
+    /**
+     * parse RFC3339 format in UTC and format it in RFC822TimeZone format with local timezone
+     * @param dateTime RFC3339 format with UTC timezone
+     * @return RFC822TimeZone format with local timezone
+     */
+    public static String parseDateTimeString(String dateTime) {
+        if (dateTime != null) {
+            try {
+                return serverDateformatter.format(dateTimeFormatter.parse(dateTime));
+            } catch (ParseException e) {
+                return null;
+            }
+        } else {
+            return null;
+        }
+    }
+
+    public static String parseDateString(String date) {
+        if (date != null) {
+            try {
+                return serverDateformatter.format(dateFormatter.parse(date));
             } catch (ParseException e) {
                 return null;
             }
@@ -346,7 +394,7 @@ public class DateUtil {
 
     public static String getDateStringFromCalendarGMT(Calendar calendar) {
         DateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss Z");
-        formatter.setTimeZone(TimeZone.getTimeZone("GMT"));
+        formatter.setTimeZone(TimeZone.getTimeZone("UTC"));
 //        calendar.setTimeZone(TimeZone.getTimeZone("GMT"));
         return formatter.format(calendar.getTime());
     }

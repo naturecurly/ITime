@@ -190,6 +190,12 @@ public class MeetingFragment extends Fragment implements View.OnClickListener,Se
         mStartDay = mCalendar.get(Calendar.DAY_OF_MONTH);
         mStartDate.setText(dateFormat(mStartDay, mStartMonth, mStartYear));
 
+        setEndTime();
+
+        mIsFeasible = true;
+    }
+
+    private void setEndTime(){
         //Default date : 7 days later
         int[] laterDay = DateUtil.addDaysBasedOnCalendar(mStartYear, mStartMonth, mStartDay, 7);
 
@@ -199,8 +205,6 @@ public class MeetingFragment extends Fragment implements View.OnClickListener,Se
         mEndMonth = laterDay[1];
         mEndDay = laterDay[2];
         mEndDate.setText(dateFormat(mEndDay, mEndMonth, mEndYear));
-
-        mIsFeasible = true;
     }
 
     public void initListView() {
@@ -291,7 +295,7 @@ public class MeetingFragment extends Fragment implements View.OnClickListener,Se
     }
     private String dateFormat(int day, int month, int year){
         String dayReturn = day < 10 ? "0" + day : String.valueOf(day);
-        return  DateUtil.weekNameStandardTwo[DateUtil.getDateOfWeek(year,month,day) - 1] +
+        return  DateUtil.weekName[DateUtil.getDateOfWeek_M(year,month, day) - 1] +
                 ", " + dayReturn + " " + DateUtil.month[month] + " " + year;
     }
 
@@ -307,6 +311,7 @@ public class MeetingFragment extends Fragment implements View.OnClickListener,Se
             mEndTime.setTextColor(getResources().getColor(R.color.colorAccent));
         }
     }
+
     @Override
     public void onClick(View v) {
         checkTime();
@@ -317,6 +322,7 @@ public class MeetingFragment extends Fragment implements View.OnClickListener,Se
                     mStartTime.setText(timeFormat(hourOfDay, minute));
                     mStartHour = hourOfDay;
                     mStartMin = minute;
+                    setEndTime();
                     checkTime();
                 }
             },mCalendar.get(Calendar.HOUR_OF_DAY),mCalendar.get(Calendar.MINUTE),false);
@@ -329,6 +335,7 @@ public class MeetingFragment extends Fragment implements View.OnClickListener,Se
                     mStartYear = year;
                     mStartMonth = monthOfYear;
                     mStartDay = dayOfMonth;
+                    setEndTime();
                     checkTime();
                 }
             },mCalendar.get(Calendar.YEAR), mCalendar.get(Calendar.MONTH), mCalendar.get(Calendar.DAY_OF_MONTH));

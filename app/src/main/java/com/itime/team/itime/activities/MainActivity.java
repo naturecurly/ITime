@@ -1,6 +1,10 @@
 package com.itime.team.itime.activities;
 
 import android.content.BroadcastReceiver;
+import android.content.ContentValues;
+import android.content.Context;
+import android.content.Intent;
+import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -20,15 +24,35 @@ import android.widget.ImageButton;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import com.android.volley.Request;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
 import com.bugtags.library.Bugtags;
+import com.facebook.login.LoginManager;
 import com.itime.team.itime.R;
+import com.itime.team.itime.bean.URLs;
 import com.itime.team.itime.bean.User;
+import com.itime.team.itime.database.UserTableHelper;
 import com.itime.team.itime.fragments.CalendarFragment;
 import com.itime.team.itime.fragments.InboxFragment;
 import com.itime.team.itime.fragments.MeetingFragment;
 import com.itime.team.itime.fragments.SettingsFragment;
+import com.itime.team.itime.model.ParcelableMessage;
+import com.itime.team.itime.model.utils.MessageType;
+import com.itime.team.itime.task.MessageHandler;
+import com.itime.team.itime.utils.ITimeGcmPreferences;
+import com.itime.team.itime.utils.JsonArrayFormRequest;
+import com.itime.team.itime.utils.JsonObjectFormRequest;
+import com.itime.team.itime.utils.MySingleton;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.util.HashMap;
+import java.util.Map;
 public class MainActivity extends AppCompatActivity implements
         PreferenceFragmentCompat.OnPreferenceStartScreenCallback {
 
@@ -48,6 +72,8 @@ public class MainActivity extends AppCompatActivity implements
 
     private ImageButton mEventList;
     private Button mToday;
+
+    private boolean mIsFriend;
 
 
     // GCM Notification Receiver
@@ -70,6 +96,7 @@ public class MainActivity extends AppCompatActivity implements
         mEventList = (ImageButton) findViewById(R.id.event_list);
         mToday = (Button) findViewById(R.id.button_today);
 
+        isFriend();
         setFragments();
 
         mRadioGroup = (RadioGroup) findViewById(R.id.tab_menu);
@@ -217,4 +244,81 @@ public class MainActivity extends AppCompatActivity implements
         return super.dispatchTouchEvent(event);
     }
 
+    private void addFriend(String name){
+        JSONObject object = new JSONObject();
+        try {
+            object.put("user_id", User.ID);
+            object.put("friend_id", name);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+        final String url = URLs.ADD_FRIEND_REQUEST;
+        Map<String, String> params = new HashMap();
+        params.put("json", object.toString());
+
+        JsonObjectFormRequest request = new JsonObjectFormRequest(Request.Method.POST, url, params, new Response.Listener<JSONObject>() {
+            @Override
+            public void onResponse(JSONObject response) {
+                Toast.makeText(getApplicationContext(), getString(R.string.search_friend_added_friend_info), Toast.LENGTH_SHORT).show();
+            }
+        }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+            }
+        });
+        MySingleton.getInstance(this).addToRequestQueue(request);
+    }
+
+    private void isFriend(){
+        final String id = getIntent().getStringExtra("invitation");
+        if (id == null || id.equals("")){
+            return;
+        }
+        if (id.equals(User.ID)) {
+            Toast.makeText(this, getString(R.string.add_friend_myself), Toast.LENGTH_LONG).show();
+            return;
+        }
+
+        mIsFriend = false;
+        JSONObject jsonObject = new JSONObject();
+        try {
+            jsonObject.put("user_id", User.ID);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+        final String url = URLs.LOAD_FRIEND;
+        Map<String, String> params = new HashMap();
+        params.put("json", jsonObject.toString());
+
+        JsonArrayFormRequest request = new JsonArrayFormRequest(Request.Method.POST, url, params, new Response.Listener<JSONArray>() {
+            @Override
+            public void onResponse(JSONArray response) {
+                try {
+                    for (int i = 0; i < response.length(); i++) {
+                        JSONObject json = response.getJSONObject(i);
+                        if (json.get("user_id").toString().equals(id)){
+                            mIsFriend = true;
+                            break;
+                        }
+                    }
+                    if(mIsFriend == false) {
+                        addFriend(id);
+                    } else {
+                        String warning = String.format(getString(R.string.repeat_add_friend), id);
+                        Toast.makeText(getApplication(), warning, Toast.LENGTH_LONG).show();
+                    }
+                } catch (JSONException e){
+                    e.printStackTrace();
+                }
+            }
+        }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+
+            }
+        });
+        MySingleton.getInstance(this).addToRequestQueue(request);
+    }
 }

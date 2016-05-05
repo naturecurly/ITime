@@ -16,11 +16,16 @@
 
 package com.itime.team.itime.fragments;
 
+import android.content.BroadcastReceiver;
+import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -40,6 +45,7 @@ import com.itime.team.itime.model.ParcelableMessage;
 import com.itime.team.itime.task.InboxTask;
 import com.itime.team.itime.task.MessageHandler;
 import com.itime.team.itime.utils.AlertUtil;
+import com.itime.team.itime.utils.ITimeGcmPreferences;
 import com.itime.team.itime.views.adapters.MessageAdapter;
 
 import java.lang.ref.WeakReference;
@@ -75,6 +81,9 @@ public class InboxFragment extends Fragment implements View.OnClickListener {
     private RecyclerView messageRecyclerView;
     private MessageAdapter mAdapter;
 
+    /* receiver */
+    private BroadcastReceiver mITimeNotificationBroadcastReceiver;
+
     /* Timer and Task for repeated load inbox messages */
     public static final int HAS_NEW_MESSAGES = 1;
     private Timer mTimer = new Timer();
@@ -104,6 +113,12 @@ public class InboxFragment extends Fragment implements View.OnClickListener {
             checkNewMessages();
         }
     };
+
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        mITimeNotificationBroadcastReceiver = new ITimeNotificationBroadcastReceiver();
+    }
 
     @Nullable
     @Override
@@ -247,10 +262,10 @@ public class InboxFragment extends Fragment implements View.OnClickListener {
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        setMessages();
+        //setMessages();
 
         // schedule timer, start after 100ms and repeat every 5s
-        mTimer.scheduleAtFixedRate(mTimerTask, 100, 5000);
+        //mTimer.scheduleAtFixedRate(mTimerTask, 100, 5000);
     }
 
     @Override
@@ -299,6 +314,86 @@ public class InboxFragment extends Fragment implements View.OnClickListener {
             }
         };
         inboxTask.getUnreadMessageCount(User.ID, callback);
+    }
+
+    /**
+     * this method is called on the main thread (UI thread)
+     */
+    public void checkeckNewMessagesOnMainThread() {
+        InboxTask inboxTask = InboxTask.getInstance(getActivity().getApplicationContext());
+        InboxTask.ResultCallBack<Integer> callback = new InboxTask.ResultCallBack<Integer>() {
+            @Override
+            public void callback(Integer result) {
+                Log.i(LOG_TAG, "unread message count: " + result);
+
+                // if count is not consistent, load all the message
+                if (mAdapter.getUnreadMessageCount() != result.intValue()) {
+                    // could call setMessage to load messages directly
+                    setMessages();
+                }
+            }
+        };
+        inboxTask.getUnreadMessageCount(User.ID, callback);
+    }
+
+    @Override
+    public void onStart() {
+        Log.i(LOG_TAG, "onStart");
+        super.onStart();
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        Log.i(LOG_TAG, "onResume");
+        // check whether there are new messages whenever this activity/fragment resume
+        checkeckNewMessagesOnMainThread();
+        // register a receiver to receive broadcast from GCMListenerService
+        LocalBroadcastManager.getInstance(getContext()).registerReceiver(mITimeNotificationBroadcastReceiver,
+                new IntentFilter(ITimeGcmPreferences.HANDLE_MESSAGE));
+    }
+
+    @Override
+    public void onPause() {
+        Log.i(LOG_TAG, "onPause");
+        InboxTask.cancelLoadMessageTask(getContext());
+        LocalBroadcastManager.getInstance(getContext()).unregisterReceiver(mITimeNotificationBroadcastReceiver);
+        super.onPause();
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+        Log.i(LOG_TAG, "onStop");
+    }
+
+    @Override
+    public void onDestroyView() {
+        Log.i(LOG_TAG, "onDestroyView");
+        super.onDestroyView();
+    }
+
+    @Override
+    public void onDestroy() {
+        Log.i(LOG_TAG, "onDestroy");
+        super.onDestroy();
+    }
+
+    private class ITimeNotificationBroadcastReceiver extends BroadcastReceiver {
+
+        private final String TAG = ITimeNotificationBroadcastReceiver.class.getSimpleName();
+
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            final String action = intent.getAction();
+            Log.i(TAG, "onReceive: " + action);
+            switch (action) {
+                case ITimeGcmPreferences.HANDLE_MESSAGE:
+                    // just load all message, may be use the data from intent
+                    setMessages();
+                    break;
+            }
+        }
     }
 
 }

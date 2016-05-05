@@ -21,7 +21,7 @@ public class ReadMonthEventTask extends AsyncTask<Integer, Void, Void> {
         int month = params[0];
         int year = params[1];
         try {
-            if (Events.eventsMonth.size() == 0 || !Events.eventsMonth.containsKey(month + "-" + year)) {
+            if (Events.eventsMonthMap.size() == 0 || !Events.eventsMonthMap.containsKey(month + "-" + year)) {
                 List<JSONObject> list = EventUtil.getEventsByMonth(year, month);
 
                 Set<List<JSONObject>> set = new HashSet<>();

@@ -16,10 +16,10 @@ import java.util.ArrayList;
 /**
  * Created by mac on 16/3/7.
  */
-public class MeetingScrollView extends ScrollView {
+public class MeetingScrollView extends ScrollView{
     private ScrollMeetingViewListener scrollViewListener = null;
     private ScrollViewInterceptTouchListener scrollViewInterceptTouchListener = null;
-
+    private View pressedSubView = null;
     private final static String TAG = "MeetingScrollView";
 
     public MeetingScrollView(Context context) {
@@ -43,6 +43,10 @@ public class MeetingScrollView extends ScrollView {
         this.scrollViewInterceptTouchListener = scrollViewInterceptTouchListener;
     }
 
+    public View getPressedSubView(){
+        return this.pressedSubView;
+    }
+
     @Override
     protected void onScrollChanged(int x, int y, int oldx, int oldy) {
         super.onScrollChanged(x, y, oldx, oldy);
@@ -58,31 +62,32 @@ public class MeetingScrollView extends ScrollView {
             scrollViewInterceptTouchListener.touchEventHappend(this, ev);
         }
 
-        if (ev.getAction() == MotionEvent.ACTION_UP){
-            Log.d(TAG, ev.getAction() + "----");
+        if (ev.getAction() == MotionEvent.ACTION_DOWN){
             RelativeLayout subLayout = (RelativeLayout)this.getChildAt(0);
             int subCount = subLayout.getChildCount();
-            ArrayList<CustomizedTextView> viewList = new ArrayList<CustomizedTextView>();
+            ArrayList<View> viewList = new ArrayList<View>();
             for(int i = 0; i < subCount; i++){
-                View textView = subLayout.getChildAt(i);
-                if (textView instanceof CustomizedTextView){
-                    viewList.add((CustomizedTextView)textView);
+                View occupiedView = subLayout.getChildAt(i);
+                if (occupiedView.getId()  >= 1000){
+                    //only select occupied view
+                    viewList.add(occupiedView);
                 }
             }
             int y = (int)ev.getY();
-            for (CustomizedTextView textView : viewList){
-                int top = textView.getTop();
-                int bottom = textView.getBottom();
-                int sy = this.getScrollY();
-                int pointY = y + sy;
-                if (top <= pointY && pointY <= bottom){
-                    // if pointer is in event area, deal with text view
-                    return super.onInterceptTouchEvent(ev);
+            int sy = this.getScrollY();
+            int pointY = y + sy;
+            int pointX = (int)ev.getX();
+            for (View occupiedView : viewList){
+                int top = occupiedView.getTop();
+                int bottom = occupiedView.getBottom();
+                int left = occupiedView.getLeft();
+                int right = occupiedView.getRight();
+                if (top <= pointY && pointY <= bottom && left <= pointX && pointX <= right){
+                    pressedSubView = occupiedView;
+                    Log.d(TAG, "pressed view id:" + pressedSubView.getId());
+                    break;
                 }
             }
-            // if pointer is not int event area, deal with scroll view
-            // add an listener here to handle blank area click event
-            return true;
         }
 
         return super.onInterceptTouchEvent(ev);

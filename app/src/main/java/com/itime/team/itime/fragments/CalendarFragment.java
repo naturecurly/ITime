@@ -785,6 +785,18 @@ public class CalendarFragment extends Fragment {
                                     e.printStackTrace();
                                 }
 
+
+                                eventView.setOnLongClickListener(new View.OnLongClickListener() {
+                                    @Override
+                                    public boolean onLongClick(View view) {
+                                        View pressedView = mScrollView.getPressedSubView();
+                                        if (pressedView != null){
+                                            pressedView.performLongClick();
+                                        }
+                                        return true;
+                                    }
+                                });
+
                                 eventView.setOnClickListener(new View.OnClickListener() {
                                     @Override
                                     public void onClick(View v) {
@@ -902,6 +914,18 @@ public class CalendarFragment extends Fragment {
                                         final String eventID = objectList.get(num).getString("event_id");
                                         Log.i("evnetID", eventID);
                                         final int finalNum = num;
+
+                                        eventView.setOnLongClickListener(new View.OnLongClickListener() {
+                                            @Override
+                                            public boolean onLongClick(View view) {
+                                                View pressedView = mScrollView.getPressedSubView();
+                                                if (pressedView != null){
+                                                    pressedView.performLongClick();
+                                                }
+                                                return true;
+                                            }
+                                        });
+
                                         eventView.setOnClickListener(new View.OnClickListener() {
                                             @Override
                                             public void onClick(View v) {

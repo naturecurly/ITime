@@ -19,7 +19,7 @@
             />
         <RadioButton
             style="@style/DialogRadioButton"
-            android:text="At time of Departure"
+            android:text="@string/alert_event"
             android:id="@+id/new_meeting_alert_departure"
             />
         <RadioButton

@@ -63,7 +63,8 @@
     <string name="new_meeting_venuehit">Venue</string>
     <string name="new_meeting_repeat">Repeats</string>
     <string name="new_meeting_punctual">Punctual</string>
-    <string name="new_meeting_alert">Alert -- at time of Departure</string>
+    <string name="new_meeting_alert">Alert -- At Time Of Event</string>
+    <string name="alert_event">At Time Of Event</string>
     <string name="new_meeting_title">New Meeting</string>
     <string name="new_meeting_repeat_dialog_title">Repeats</string>
     <string name="new_meeting_alert_dialog_title">Alert Time</string>

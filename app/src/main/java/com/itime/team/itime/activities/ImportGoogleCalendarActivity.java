@@ -19,6 +19,7 @@ package com.itime.team.itime.activities;
 import com.android.volley.Request;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
+import com.android.volley.toolbox.JsonArrayRequest;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GoogleApiAvailability;
 import com.google.api.client.extensions.android.http.AndroidHttp;
@@ -76,8 +77,10 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.UUID;
 
 import pub.devrel.easypermissions.AfterPermissionGranted;
@@ -189,17 +192,20 @@ public class ImportGoogleCalendarActivity extends AppCompatActivity
     private void chooseAccount() {
         if (EasyPermissions.hasPermissions(
                 this, Manifest.permission.GET_ACCOUNTS)) {
-            String accountName = getPreferences(Context.MODE_PRIVATE)
-                    .getString(PREF_ACCOUNT_NAME, null);
-            if (accountName != null) {
-                mCredential.setSelectedAccountName(accountName);
-                getResultsFromApi();
-            } else {
-                // Start a dialog from which the user can choose an account
-                startActivityForResult(
-                        mCredential.newChooseAccountIntent(),
-                        REQUEST_ACCOUNT_PICKER);
-            }
+//            String accountName = getPreferences(Context.MODE_PRIVATE)
+//                    .getString(PREF_ACCOUNT_NAME, null);
+//            if (accountName != null) {
+//                mCredential.setSelectedAccountName(accountName);
+//                getResultsFromApi();
+//            } else {
+//                // Start a dialog from which the user can choose an account
+//                startActivityForResult(
+//                        mCredential.newChooseAccountIntent(),
+//                        REQUEST_ACCOUNT_PICKER);
+//            }
+            startActivityForResult(
+                    mCredential.newChooseAccountIntent(),
+                    REQUEST_ACCOUNT_PICKER);
         } else {
             // Request the GET_ACCOUNTS permission via a user dialog
             EasyPermissions.requestPermissions(
@@ -240,11 +246,11 @@ public class ImportGoogleCalendarActivity extends AppCompatActivity
                     String accountName =
                             data.getStringExtra(AccountManager.KEY_ACCOUNT_NAME);
                     if (accountName != null) {
-                        SharedPreferences settings =
-                                getPreferences(Context.MODE_PRIVATE);
-                        SharedPreferences.Editor editor = settings.edit();
-                        editor.putString(PREF_ACCOUNT_NAME, accountName);
-                        editor.apply();
+//                        SharedPreferences settings =
+//                                getPreferences(Context.MODE_PRIVATE);
+//                        SharedPreferences.Editor editor = settings.edit();
+//                        editor.putString(PREF_ACCOUNT_NAME, accountName);
+//                        editor.apply();
                         mCredential.setSelectedAccountName(accountName);
                         getResultsFromApi();
                     }
@@ -381,6 +387,16 @@ public class ImportGoogleCalendarActivity extends AppCompatActivity
                 //return getDataFromApi();
                 List<String> calendars =  getCalendarLists();
                 return importEvents(calendars);
+                /*
+                http://stackoverflow.com/questions/18030486/google-oauth2-application-remove-self-from-user-authenticated-applications
+                https://accounts.google.com/o/oauth2/revoke?token={token}
+                If the revocation succeeds, the response's status code is 200. If an error occurs, the response's status code is 400 and the response also contains an error code.
+                 */
+//                CalendarList calendarList = mService.calendarList().list().setPageToken(null).execute();
+//                String token = mCredential.getToken();
+//                Log.i("MakeRequestTask", token);
+//                mCredential.getGoogleAccountManager().invalidateAuthToken(token);
+//                return null;
             } catch (Exception e) {
                 mLastError = e;
                 cancel(true);
@@ -466,22 +482,26 @@ public class ImportGoogleCalendarActivity extends AppCompatActivity
         private void transferOnlineCalendarDataToLocal(List<Event> eventList) {
             Map<String, JSONObject> events = com.itime.team.itime.bean.Events.rawEvents;
             JSONArray localEvents = new JSONArray();
+            Set<String> idSet = new HashSet<>();
             for (Event event : eventList) {
                 if (!events.containsKey(event.getId())) {
                     // update calendar type
                     ParcelableCalendarType calendarType = new ParcelableCalendarType(User.ID);
                     calendarType.calendarId = User.ID + "_" + event.getCreator().getEmail();
-                    calendarType.calendarName = event.getCreator().getDisplayName();
-                    calendarType.calendarOwnerId = User.ID + "_Google";
-                    calendarType.calendarOwnerName = "Google";
-                    UserTask userTask = UserTask.getInstance(getApplicationContext());
-                    userTask.updateCalendarType(calendarType, new UserTask.CallBackResult<String>() {
-                        @Override
-                        public void callback(String data) {
-                            // Don't flood my logcat
-                            //Log.i("MakeRequestTask", "update calendar type success");
-                        }
-                    });
+                    if (!idSet.contains(calendarType.calendarId)) {
+                        idSet.add(calendarType.calendarId);
+                        calendarType.calendarName = event.getCreator().getDisplayName();
+                        calendarType.calendarOwnerId = User.ID + "_Google";
+                        calendarType.calendarOwnerName = "Google";
+                        UserTask userTask = UserTask.getInstance(getApplicationContext());
+                        userTask.updateCalendarType(calendarType, new UserTask.CallBackResult<String>() {
+                            @Override
+                            public void callback(String data) {
+                                // Don't flood my logcat
+                                Log.i("MakeRequestTask", "update calendar type success");
+                            }
+                        });
+                    }
 
 
                     // sync event
@@ -520,8 +540,12 @@ public class ImportGoogleCalendarActivity extends AppCompatActivity
                 }
                 object.put("event_ends_datetime", end_datetime);
 
-                object.put("event_venue_show", event.getLocation());
-                object.put("event_venue_location", event.getLocation());
+
+                final String location = event.getLocation() == null ? "" : event.getLocation();
+                object.put("event_venue_show", location);
+                object.put("event_venue_location", location);
+                object.put("event_venue_show_new", location);
+                object.put("event_venue_location_new", location);
 
                 object.put("event_repeats_type", "");
 
@@ -538,8 +562,6 @@ public class ImportGoogleCalendarActivity extends AppCompatActivity
                 object.put("event_starts_datetime_new", start_datetime);
                 object.put("event_ends_datetime_new", end_datetime);
 
-                object.put("event_venue_show_new", event.getLocation());
-                object.put("event_venue_location_new", event.getLocation());
 
                 object.put("event_repeats_type_new", "");
                 //punctual
@@ -574,7 +596,7 @@ public class ImportGoogleCalendarActivity extends AppCompatActivity
             } catch (JSONException e) {
                 e.printStackTrace();
             }
-            Log.d("newEvent", object.toString());
+            //Log.d("newEvent", object.toString());
             return object;
         }
 
@@ -589,11 +611,9 @@ public class ImportGoogleCalendarActivity extends AppCompatActivity
                 e.printStackTrace();
             }
 
-            Map<String, String> params = new HashMap();
-            params.put("json", jsonObject.toString());
-            JsonObjectFormRequest request = new JsonObjectFormRequest(Request.Method.POST, url, params, new Response.Listener<JSONObject>() {
+            JsonArrayRequest request = new JsonArrayRequest(Request.Method.POST, url, jsonObject.toString(), new Response.Listener<JSONArray>() {
                 @Override
-                public void onResponse(JSONObject response) {
+                public void onResponse(JSONArray response) {
                     Log.i("MakeRequestTask", response.toString());
                 }
             }, new Response.ErrorListener() {
@@ -645,4 +665,16 @@ public class ImportGoogleCalendarActivity extends AppCompatActivity
             }
         }
     }
+
+    /*
+    http://stackoverflow.com/questions/20555351/google-oauth2-re-authorization-is-missing-permissions-on-the-consent-page
+    You should use the refresh token that you have stored in the future.  ...
+
+    public static void RevokeAcess(String accessOrRefreshToken) throws ClientProtocolException, IOException
+    {
+        HttpClient client = new DefaultHttpClient();
+        HttpPost post = new HttpPost("https://accounts.google.com/o/oauth2/revoke?token="+accessOrRefreshToken);
+        client.execute(post);
+    }
+    */
 }

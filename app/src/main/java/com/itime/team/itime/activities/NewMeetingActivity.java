@@ -408,6 +408,7 @@ public class NewMeetingActivity extends AppCompatActivity implements View.OnTouc
                 try {
                     if(response.getString("result").equals("success")){
                         setResult(RESULT_OK);
+                        User.hasNewMeeting = true;
                         Toast.makeText(getApplicationContext(),
                                 getString(R.string.new_meeting_send_invitation_successful), Toast.LENGTH_SHORT).show();
                         finish();
@@ -479,6 +480,10 @@ public class NewMeetingActivity extends AppCompatActivity implements View.OnTouc
         String[] address = mAddress.split(",");
         String location = mAddress;
         String showLocation = address[0];
+
+//        String location = mAddress.equals("") ? getString(R.string.post_null) : mAddress;
+//        String showLocation = address[0].equals("") ? getString(R.string.post_null) : address[0];
+
         Log.i("meetingID",mMeetingID);
         JSONObject object = new JSONObject();
         try {

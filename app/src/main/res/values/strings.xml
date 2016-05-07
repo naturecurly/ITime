@@ -198,5 +198,6 @@
     <string name="import_google_calendar">Import Google Calendar</string>
     <string name="import_ios_calendar">Import  IOS Calendar</string>
 
+    <string name="post_null">NOT PROVIDED</string>
 
 </resources>

@@ -16,7 +16,6 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.android.volley.Request;
-import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.itime.team.itime.R;
@@ -25,7 +24,6 @@ import com.itime.team.itime.bean.Preference;
 import com.itime.team.itime.bean.TopAndCenterMeetingFragmentScrollViews;
 import com.itime.team.itime.bean.URLs;
 import com.itime.team.itime.bean.User;
-import com.itime.team.itime.interfaces.DataRequest;
 import com.itime.team.itime.listener.ScrollViewListener;
 import com.itime.team.itime.utils.DateUtil;
 import com.itime.team.itime.utils.JsonArrayFormRequest;
@@ -57,7 +55,7 @@ import java.util.Map;
  * many ImageViews.
  */
 
-public class MeetingSelectionCentralFragment extends Fragment implements ScrollViewListener, DataRequest {
+public class MeetingSelectionCentralFragment extends Fragment implements ScrollViewListener {
     private Intent intent;
     private View mParent;
     private View mTopView;
@@ -441,8 +439,25 @@ public class MeetingSelectionCentralFragment extends Fragment implements ScrollV
             String url = URLs.LOAD_FRDS_PERFER_PREFERENCES;
             JSONObject post = new JSONObject();
             post.put("friend_id", friendID);
-            requestJSONArray(mJsonManager, post, url, "load_frds_prefer_preferences");
-            handleJSON(mJsonManager);
+            Map<String, String> params = new HashMap();
+            params.put("json", post.toString());
+            JsonArrayFormRequest request = new JsonArrayFormRequest(Request.Method.POST, url, params, new Response.Listener<JSONArray>() {
+                @Override
+                public void onResponse(JSONArray response) {
+                    doGetPreference(response);
+                    isGetPreferenceDone = true;
+                    if(isGetPreferenceDone && isMatchTimeDone){
+                        initTable();
+                    }
+                }
+            }, new Response.ErrorListener() {
+                @Override
+                public void onErrorResponse(VolleyError error) {
+
+                }
+            });
+            MySingleton.getInstance(getActivity()).addToRequestQueue(request);
+
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -744,42 +759,4 @@ public class MeetingSelectionCentralFragment extends Fragment implements ScrollV
 //        }
     }
 
-    @Override
-    public void handleJSON(JsonManager manager) {
-        MySingleton.getInstance(getActivity()).getRequestQueue().addRequestFinishedListener(
-                new RequestQueue.RequestFinishedListener<String>() {
-                    @Override
-                    public void onRequestFinished(Request<String> request) {
-                        JSONObject jsonObject;
-                        JSONArray jsonArray;
-                        HashMap map;
-
-                        while ((map = mJsonManager.getJsonQueue().poll()) != null) {
-                            if ((jsonArray = (JSONArray) map.get("load_frds_prefer_preferences")) != null) {
-                                doGetPreference(jsonArray);
-                                isGetPreferenceDone = true;
-                            }
-//                            if ((jsonArray = (JSONArray) map.get("match_time_with_friends")) != null) {
-//                                mAvailability = jsonArray;
-//                                isMatchTimeDone = true;
-//                                Log.i("match", jsonArray.toString());
-//                            }
-                            if(isGetPreferenceDone && isMatchTimeDone){
-                                initTable();
-                            }
-                        }
-                    }
-                }
-        );
-    }
-
-    @Override
-    public void requestJSONObject(JsonManager manager,JSONObject jsonObject, String url, String tag) {
-        manager.postForJsonObject(url, jsonObject, getActivity(), tag);
-    }
-
-    @Override
-    public void requestJSONArray(JsonManager manager,JSONObject jsonObject, String url, String tag) {
-        manager.postForJsonArray(url, jsonObject, getActivity(),tag);
-    }
 }

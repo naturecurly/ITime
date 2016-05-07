@@ -1,10 +1,6 @@
 package com.itime.team.itime.activities;
 
 import android.content.BroadcastReceiver;
-import android.content.ContentValues;
-import android.content.Context;
-import android.content.Intent;
-import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -30,19 +26,13 @@ import com.android.volley.Request;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.bugtags.library.Bugtags;
-import com.facebook.login.LoginManager;
 import com.itime.team.itime.R;
 import com.itime.team.itime.bean.URLs;
 import com.itime.team.itime.bean.User;
-import com.itime.team.itime.database.UserTableHelper;
 import com.itime.team.itime.fragments.CalendarFragment;
 import com.itime.team.itime.fragments.InboxFragment;
 import com.itime.team.itime.fragments.MeetingFragment;
 import com.itime.team.itime.fragments.SettingsFragment;
-import com.itime.team.itime.model.ParcelableMessage;
-import com.itime.team.itime.model.utils.MessageType;
-import com.itime.team.itime.task.MessageHandler;
-import com.itime.team.itime.utils.ITimeGcmPreferences;
 import com.itime.team.itime.utils.JsonArrayFormRequest;
 import com.itime.team.itime.utils.JsonObjectFormRequest;
 import com.itime.team.itime.utils.MySingleton;
@@ -140,6 +130,10 @@ public class MainActivity extends AppCompatActivity implements
             fragmentManager.beginTransaction().hide(settingsFragment).commit();
             fragmentManager.beginTransaction().hide(inboxFragment).commit();
             fragmentManager.beginTransaction().show(calendarFragment).commit();
+            if(User.hasNewMeeting){
+                calendarFragment.refresh();
+                User.hasNewMeeting = false;
+            }
         } else if (me == meetingFragment) {
             fragmentManager.beginTransaction().hide(calendarFragment).commit();
             fragmentManager.beginTransaction().hide(settingsFragment).commit();

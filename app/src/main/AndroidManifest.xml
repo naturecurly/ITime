@@ -78,7 +78,7 @@
                 <action android:name="android.intent.action.VIEW" />
                 <data
                     android:host="54.200.31.237"
-                    android:pathPrefix="/openwith"
+                    android:pathPrefix="/redirect_friend_request"
                     android:scheme="http" />
                 <!--<data android:scheme="http" android:host="itime.app" android:pathPrefix="/openwith"/>-->
                 <category android:name="android.intent.category.DEFAULT" />

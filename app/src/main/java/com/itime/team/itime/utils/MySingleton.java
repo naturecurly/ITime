@@ -8,6 +8,7 @@ import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.toolbox.ImageLoader;
 import com.android.volley.toolbox.Volley;
+import com.itime.team.itime.bean.User;
 
 /**
  * Created by mac on 16/1/6.
@@ -56,6 +57,15 @@ public class MySingleton {
     }
 
     public <T> void addToRequestQueue(Request<T> req) {
+        if (req instanceof JsonArrayFormRequest) {
+            ((JsonArrayFormRequest) req).setmToken(User.token);
+        } else if (req instanceof JsonObjectFormRequest) {
+            ((JsonObjectFormRequest) req).setmToken(User.token);
+        } else if (req instanceof JsonArrayAuthRequest) {
+            ((JsonArrayAuthRequest) req).setmToken(User.token);
+        } else if (req instanceof JsonObjectAuthRequest) {
+            ((JsonObjectAuthRequest) req).setmToken(User.token);
+        }
         getRequestQueue().add(req);
     }
 

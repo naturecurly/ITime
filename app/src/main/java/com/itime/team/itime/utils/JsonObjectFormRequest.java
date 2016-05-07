@@ -16,6 +16,7 @@
 
 package com.itime.team.itime.utils;
 
+import com.android.volley.AuthFailureError;
 import com.android.volley.NetworkResponse;
 import com.android.volley.ParseError;
 import com.android.volley.Response;
@@ -34,6 +35,29 @@ import java.util.Map;
  * PROTOCOL_CONTENT_TYPE is `application/x-www-form-urlencoded` derived from Request
  */
 public class JsonObjectFormRequest extends JsonFormRequest<JSONObject> {
+
+    private Map<String, String> mHeaders;
+    private String mToken;
+
+
+    /**
+     *
+     * Creates a new request.
+     * @param method the HTTP method to use
+     * @param url URL to fetch the JSON from
+     * @param params A {@link Map<String, String>} contains all params in <Key, Value> to post with
+     *   the request. Null is allowed and indicates no parameters will be posted along with request.
+     * @param token token string
+     * @param listener Listener to receive the JSON response
+     * @param errorListener Error listener, or null to ignore errors.
+     */
+    public JsonObjectFormRequest(int method, String url, Map<String, String> params, String token,
+                                 Response.Listener<JSONObject> listener, Response.ErrorListener errorListener) {
+        super(method, url, params, listener,
+                errorListener);
+        mToken = token;
+    }
+
     /**
      * Creates a new request.
      * @param method the HTTP method to use
@@ -47,6 +71,7 @@ public class JsonObjectFormRequest extends JsonFormRequest<JSONObject> {
                              Response.Listener<JSONObject> listener, Response.ErrorListener errorListener) {
         super(method, url, params, listener,
                 errorListener);
+        mToken = null;
     }
 
     /**
@@ -83,5 +108,20 @@ public class JsonObjectFormRequest extends JsonFormRequest<JSONObject> {
         } catch (JSONException je) {
             return Response.error(new ParseError(je));
         }
+    }
+
+    @Override
+    public Map<String, String> getHeaders() throws AuthFailureError {
+        if (mToken != null) {
+            mHeaders = new HashMap<>();
+            mHeaders.put("Authorization", "Bearer " + mToken);
+            return mHeaders;
+        } else {
+            return super.getHeaders();
+        }
+    }
+
+    public void setmToken(String mToken) {
+        this.mToken = mToken;
     }
 }

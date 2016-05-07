@@ -16,44 +16,12 @@
 
 package com.itime.team.itime.activities;
 
-import com.android.volley.Request;
-import com.android.volley.Response;
-import com.android.volley.VolleyError;
-import com.android.volley.toolbox.JsonArrayRequest;
-import com.google.android.gms.common.ConnectionResult;
-import com.google.android.gms.common.GoogleApiAvailability;
-import com.google.api.client.extensions.android.http.AndroidHttp;
-import com.google.api.client.googleapis.extensions.android.gms.auth.GoogleAccountCredential;
-import com.google.api.client.googleapis.extensions.android.gms.auth.GooglePlayServicesAvailabilityIOException;
-import com.google.api.client.googleapis.extensions.android.gms.auth.UserRecoverableAuthIOException;
-
-import com.google.api.client.http.HttpTransport;
-import com.google.api.client.json.JsonFactory;
-import com.google.api.client.json.jackson2.JacksonFactory;
-import com.google.api.client.util.ExponentialBackOff;
-
-import com.google.api.services.calendar.*;
-import com.google.api.client.util.DateTime;
-
-import com.google.api.services.calendar.Calendar;
-import com.google.api.services.calendar.model.*;
-import com.google.api.services.calendar.model.Events;
-import com.itime.team.itime.bean.*;
-import com.itime.team.itime.model.ParcelableCalendarType;
-import com.itime.team.itime.task.UserTask;
-import com.itime.team.itime.utils.DateUtil;
-import com.itime.team.itime.utils.EventUtil;
-import com.itime.team.itime.utils.JsonObjectFormRequest;
-import com.itime.team.itime.utils.MySingleton;
-
 import android.Manifest;
 import android.accounts.AccountManager;
-import android.app.Activity;
 import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.AsyncTask;
@@ -69,6 +37,33 @@ import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import com.android.volley.Request;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.GoogleApiAvailability;
+import com.google.api.client.extensions.android.http.AndroidHttp;
+import com.google.api.client.googleapis.extensions.android.gms.auth.GoogleAccountCredential;
+import com.google.api.client.googleapis.extensions.android.gms.auth.GooglePlayServicesAvailabilityIOException;
+import com.google.api.client.googleapis.extensions.android.gms.auth.UserRecoverableAuthIOException;
+import com.google.api.client.http.HttpTransport;
+import com.google.api.client.json.JsonFactory;
+import com.google.api.client.json.jackson2.JacksonFactory;
+import com.google.api.client.util.DateTime;
+import com.google.api.client.util.ExponentialBackOff;
+import com.google.api.services.calendar.CalendarScopes;
+import com.google.api.services.calendar.model.CalendarList;
+import com.google.api.services.calendar.model.CalendarListEntry;
+import com.google.api.services.calendar.model.Event;
+import com.google.api.services.calendar.model.Events;
+import com.itime.team.itime.bean.URLs;
+import com.itime.team.itime.bean.User;
+import com.itime.team.itime.model.ParcelableCalendarType;
+import com.itime.team.itime.task.UserTask;
+import com.itime.team.itime.utils.DateUtil;
+import com.itime.team.itime.utils.JsonArrayAuthRequest;
+import com.itime.team.itime.utils.MySingleton;
+
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -76,7 +71,6 @@ import org.json.JSONObject;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -99,7 +93,9 @@ public class ImportGoogleCalendarActivity extends AppCompatActivity
     static final int REQUEST_ACCOUNT_PICKER = 1000;
     static final int REQUEST_AUTHORIZATION = 1001;
     static final int REQUEST_GOOGLE_PLAY_SERVICES = 1002;
-    static final int REQUEST_PERMISSION_GET_ACCOUNTS = 1003;
+    // Can only use lower 8 bits for requestCode
+    // http://stackoverflow.com/questions/33331073/android-what-to-choose-for-requestcode-values
+    static final int REQUEST_PERMISSION_GET_ACCOUNTS = 100;
 
     private static final String BUTTON_TEXT = "Call Google Calendar API";
     private static final String PREF_ACCOUNT_NAME = "accountName";
@@ -611,7 +607,7 @@ public class ImportGoogleCalendarActivity extends AppCompatActivity
                 e.printStackTrace();
             }
 
-            JsonArrayRequest request = new JsonArrayRequest(Request.Method.POST, url, jsonObject.toString(), new Response.Listener<JSONArray>() {
+            JsonArrayAuthRequest request = new JsonArrayAuthRequest(Request.Method.POST, url, jsonObject.toString(), new Response.Listener<JSONArray>() {
                 @Override
                 public void onResponse(JSONArray response) {
                     Log.i("MakeRequestTask", response.toString());

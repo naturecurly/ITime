@@ -161,7 +161,7 @@ public class CheckLoginActivity extends AppCompatActivity{
     @Override
     protected void onResume() {
         super.onResume();
-
+        getInvitation();
         // Logs 'install' and 'app activate' App Events.
         AppEventsLogger.activateApp(this);
     }
@@ -275,8 +275,7 @@ public class CheckLoginActivity extends AppCompatActivity{
                 String address = uri.getQueryParameter("address");
                 final String id = mInviatedFriendID + "@" + address;
                 mInviatedFriendID = id;
-                if(uri != null){
-                }
+                User.addFriendResume = id;
             }
         }
     }

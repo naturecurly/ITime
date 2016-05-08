@@ -222,6 +222,7 @@ public class MainActivity extends AppCompatActivity implements
     protected void onResume() {
         super.onResume();
         Log.i(LOG_TAG, "onResume");
+        isFriend();
         Bugtags.onResume(this);
     }
 
@@ -264,8 +265,13 @@ public class MainActivity extends AppCompatActivity implements
         MySingleton.getInstance(this).addToRequestQueue(request);
     }
 
+
     private void isFriend(){
-        final String id = getIntent().getStringExtra("invitation");
+        String id = getIntent().getStringExtra("invitation");
+        if (!User.addFriendResume.equals("")){
+            id = User.addFriendResume;
+            User.addFriendResume = "";
+        }
         if (id == null || id.equals("")){
             return;
         }
@@ -286,21 +292,22 @@ public class MainActivity extends AppCompatActivity implements
         Map<String, String> params = new HashMap();
         params.put("json", jsonObject.toString());
 
+        final String finalId = id;
         JsonArrayFormRequest request = new JsonArrayFormRequest(Request.Method.POST, url, params, new Response.Listener<JSONArray>() {
             @Override
             public void onResponse(JSONArray response) {
                 try {
                     for (int i = 0; i < response.length(); i++) {
                         JSONObject json = response.getJSONObject(i);
-                        if (json.get("user_id").toString().equals(id)){
+                        if (json.get("user_id").toString().equals(finalId)){
                             mIsFriend = true;
                             break;
                         }
                     }
                     if(mIsFriend == false) {
-                        addFriend(id);
+                        addFriend(finalId);
                     } else {
-                        String warning = String.format(getString(R.string.repeat_add_friend), id);
+                        String warning = String.format(getString(R.string.repeat_add_friend), finalId);
                         Toast.makeText(getApplication(), warning, Toast.LENGTH_LONG).show();
                     }
                 } catch (JSONException e){
@@ -315,4 +322,5 @@ public class MainActivity extends AppCompatActivity implements
         });
         MySingleton.getInstance(this).addToRequestQueue(request);
     }
+
 }

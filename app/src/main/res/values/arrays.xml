@@ -47,4 +47,14 @@
     <string-array name="import_calendars_list">
         <item>@string/import_google_calendar</item>
     </string-array>
+
+    <!-- entry and values should be the same size -->
+    <string-array name="language_settings_list">
+        <item>@string/english</item>
+        <item>@string/simple_chinese</item>
+    </string-array>
+    <string-array name="language_settings_list_values">
+        <item>en_US</item>
+        <item>zh_CN</item>
+    </string-array>
 </resources>

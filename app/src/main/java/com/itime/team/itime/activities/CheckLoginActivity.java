@@ -4,6 +4,7 @@ import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.res.Configuration;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;
@@ -36,6 +37,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -76,6 +78,9 @@ public class CheckLoginActivity extends AppCompatActivity{
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         Log.i(getClass().getSimpleName(), "onCreate");
+
+        // set locale
+        setAppLocale();
 
         // This is a tool that can detect crashes of the App and send the details to developers.
         Fabric.with(this, new Crashlytics());
@@ -282,5 +287,20 @@ public class CheckLoginActivity extends AppCompatActivity{
 
     // When user is invited to make friends by clicking a link, then this method will handle this
     // situation.
+
+    public static final String ITIME_LOCALE = "itime_locale";
+    /**
+     * set app locale
+     */
+    private void setAppLocale() {
+        SharedPreferences sharedPreferences =
+                PreferenceManager.getDefaultSharedPreferences(this);
+        String localeCode = sharedPreferences.getString(ITIME_LOCALE, "en_US");
+        Locale locale = new Locale(localeCode);
+        Locale.setDefault(locale);
+        Configuration config = new Configuration();
+        config.locale = locale;
+        this.getApplicationContext().getResources().updateConfiguration(config, null);
+    }
 
 }

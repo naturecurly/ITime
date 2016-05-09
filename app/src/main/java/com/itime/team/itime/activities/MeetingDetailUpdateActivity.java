@@ -26,10 +26,14 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.itime.team.itime.R;
+import com.itime.team.itime.bean.Events;
 import com.itime.team.itime.bean.URLs;
 import com.itime.team.itime.bean.User;
+import com.itime.team.itime.fragments.NewEventCalendarTypeDialogFragment;
 import com.itime.team.itime.fragments.NewMeetingAlertDialogFragment;
 import com.itime.team.itime.fragments.NewMeetingRepeatDialogFragment;
+import com.itime.team.itime.listener.RepeatSelectionListener;
+import com.itime.team.itime.model.ParcelableCalendarType;
 import com.itime.team.itime.utils.DateUtil;
 import com.itime.team.itime.utils.JsonObjectFormRequest;
 import com.itime.team.itime.utils.MySingleton;
@@ -60,6 +64,7 @@ public class MeetingDetailUpdateActivity extends AppCompatActivity implements Vi
     private CheckBox mPunctual;
     private Button mAlert;
     private EditText mName, mVeune;
+    private Button mCalendar;
 
     private int mStartYear;
     private int mStartMonth;
@@ -117,6 +122,7 @@ public class MeetingDetailUpdateActivity extends AppCompatActivity implements Vi
     private String mOldNote;
 
     private String mHostID;
+    private ParcelableCalendarType calendarTypeString = Events.calendarTypeList.get(0);
 
 //    private JsonManager mJsonManager;
 
@@ -146,7 +152,7 @@ public class MeetingDetailUpdateActivity extends AppCompatActivity implements Vi
     private void init(){
         Toolbar toolbar = (Toolbar) findViewById(R.id.new_meeting_toolbar);
         setSupportActionBar(toolbar);
-        setTitle(R.string.new_meeting_title);
+        setTitle(R.string.edit);
         toolbar.setNavigationOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -171,6 +177,7 @@ public class MeetingDetailUpdateActivity extends AppCompatActivity implements Vi
         mName = (EditText) findViewById(R.id.new_meeting_name);
         mMain = (ScrollView) findViewById(R.id.new_meeting_main_layout);
         mVeune = (EditText) findViewById(R.id.new_meeting_venue);
+        mCalendar = (Button) findViewById(R.id.new_meeting_calendar);
         mStartDate.setOnClickListener(this);
         mEndDate.setOnClickListener(this);
         mStartTime.setOnClickListener(this);
@@ -180,6 +187,7 @@ public class MeetingDetailUpdateActivity extends AppCompatActivity implements Vi
         mMain.setOnTouchListener(this);
         mAlert.setOnClickListener(this);
         mVeune.setOnClickListener(this);
+        mCalendar.setOnClickListener(this);
 
         setEndTime();
 
@@ -347,6 +355,26 @@ public class MeetingDetailUpdateActivity extends AppCompatActivity implements Vi
         }else if(v.getId() == R.id.new_meeting_venue){
             Intent intent = new Intent(this,GooglePlacesAutocompleteActivity.class);
             startActivityForResult(intent, 1);
+        }else if (v.getId() == mCalendar.getId()) {
+            mCalendar.setText(Events.calendarTypeList.get(0).calendarName);
+            mCalendar.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+
+                    NewEventCalendarTypeDialogFragment dialog = new NewEventCalendarTypeDialogFragment();
+                    Bundle bundle = new Bundle();
+                    bundle.putInt(NewEventCalendarTypeDialogFragment.SELECTED, Events.calendarTypeList.indexOf(calendarTypeString));
+                    dialog.setArguments(bundle);
+                    dialog.setListener(new RepeatSelectionListener() {
+                        @Override
+                        public void selectItem(int positon) {
+                            calendarTypeString = Events.calendarTypeList.get(positon);
+                            mCalendar.setText(Events.calendarTypeList.get(positon).calendarName);
+                        }
+                    });
+                    dialog.show(getSupportFragmentManager(), "calendar_dialog");
+                }
+            });
         }
     }
 
@@ -408,7 +436,7 @@ public class MeetingDetailUpdateActivity extends AppCompatActivity implements Vi
             json.put("event_last_distance_in_meter",0);
             json.put("event_comment_new",mMessage.getText());
             json.put("event_repeat_to_date",DateUtil.getDateWithTimeZone(mEndYear, mEndMonth, mEndDay, mEndHour, mEndMin));
-            json.put("calendar_id","");
+            json.put("calendar_id",calendarTypeString.calendarId);
             json.put("event_last_update_datetime",currentTime);
             json.put("event_is_punctual",mOldMPunctual ? 1 : 0);
             json.put("event_starts_datetime", startDateForPost);

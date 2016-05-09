@@ -7,6 +7,8 @@ public class User {
     public static String ID = "";
     public static boolean isRemembered = false;
     public static boolean hasNewFriend = false;
+    public static boolean hasNewMeeting = false;
+    public static String addFriendResume = "";
     public static String token = "";
 
 //    private String profilePicture = "";

@@ -121,7 +121,7 @@
 
     <string name="repeat_add_friend">Sorry, %1s is aready your friend</string>
     <string name="add_friend_myself">Sorry, You cannot add yourself</string>
-    <string name="add_friend_login">Sorry, you need to login first, then click the invitaion link again.</string>
+    <string name="add_friend_login">Sorry, you need to login first.</string>
     <string name="check_login_timeout">Timeout, please check your internet</string>
 
     <string name="search_friend_added_friend_info">Please wait for your friend\'s reply</string>
@@ -198,5 +198,6 @@
     <string name="import_google_calendar">Import Google Calendar</string>
     <string name="import_ios_calendar">Import  IOS Calendar</string>
 
+    <string name="post_null">NOT PROVIDED</string>
 
 </resources>

@@ -28,10 +28,14 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.itime.team.itime.R;
+import com.itime.team.itime.bean.Events;
 import com.itime.team.itime.bean.URLs;
 import com.itime.team.itime.bean.User;
+import com.itime.team.itime.fragments.NewEventCalendarTypeDialogFragment;
 import com.itime.team.itime.fragments.NewMeetingAlertDialogFragment;
 import com.itime.team.itime.fragments.NewMeetingRepeatDialogFragment;
+import com.itime.team.itime.listener.RepeatSelectionListener;
+import com.itime.team.itime.model.ParcelableCalendarType;
 import com.itime.team.itime.utils.DateUtil;
 import com.itime.team.itime.utils.JsonObjectFormRequest;
 import com.itime.team.itime.utils.MySingleton;
@@ -66,6 +70,7 @@ public class NewMeetingActivity extends AppCompatActivity implements View.OnTouc
     private CheckBox mPunctual;
     private Button mAlert;
     private EditText mName, mVeune;
+    private Button mCalendar;
 
     private int mStartYear;
     private int mStartMonth;
@@ -79,6 +84,8 @@ public class NewMeetingActivity extends AppCompatActivity implements View.OnTouc
     private int mEndMin;
     private int mDuration;
     private String[] mFriendIDs;
+
+    private ParcelableCalendarType calendarTypeString = Events.calendarTypeList.get(0);
 
 
     private TimePickerDialog mTimePicker1;
@@ -168,6 +175,8 @@ public class NewMeetingActivity extends AppCompatActivity implements View.OnTouc
         mName = (EditText) findViewById(R.id.new_meeting_name);
         mMain = (ScrollView) findViewById(R.id.new_meeting_main_layout);
         mVeune = (EditText) findViewById(R.id.new_meeting_venue);
+        mCalendar = (Button) findViewById(R.id.new_meeting_calendar);
+        mCalendar.setOnClickListener(this);
         mStartDate.setOnClickListener(this);
         mEndDate.setOnClickListener(this);
         mStartTime.setOnClickListener(this);
@@ -188,6 +197,7 @@ public class NewMeetingActivity extends AppCompatActivity implements View.OnTouc
         mAlertValue = new ArrayList();
         mRpeatValue.add("One-time event");
         mAlertValue.add(1);
+
 
         //simpleRequest();
     }
@@ -334,6 +344,26 @@ public class NewMeetingActivity extends AppCompatActivity implements View.OnTouc
         }else if(v.getId() == R.id.new_meeting_venue){
             Intent intent = new Intent(this,GooglePlacesAutocompleteActivity.class);
             startActivityForResult(intent, 1);
+        }else if(v.getId() == mCalendar.getId()) {
+            mCalendar.setText(Events.calendarTypeList.get(0).calendarName);
+            mCalendar.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+
+                    NewEventCalendarTypeDialogFragment dialog = new NewEventCalendarTypeDialogFragment();
+                    Bundle bundle = new Bundle();
+                    bundle.putInt(NewEventCalendarTypeDialogFragment.SELECTED, Events.calendarTypeList.indexOf(calendarTypeString));
+                    dialog.setArguments(bundle);
+                    dialog.setListener(new RepeatSelectionListener() {
+                        @Override
+                        public void selectItem(int positon) {
+                            calendarTypeString = Events.calendarTypeList.get(positon);
+                            mCalendar.setText(Events.calendarTypeList.get(positon).calendarName);
+                        }
+                    });
+                    dialog.show(getSupportFragmentManager(), "calendar_dialog");
+                }
+            });
         }
     }
 
@@ -408,6 +438,7 @@ public class NewMeetingActivity extends AppCompatActivity implements View.OnTouc
                 try {
                     if(response.getString("result").equals("success")){
                         setResult(RESULT_OK);
+                        User.hasNewMeeting = true;
                         Toast.makeText(getApplicationContext(),
                                 getString(R.string.new_meeting_send_invitation_successful), Toast.LENGTH_SHORT).show();
                         finish();
@@ -479,6 +510,10 @@ public class NewMeetingActivity extends AppCompatActivity implements View.OnTouc
         String[] address = mAddress.split(",");
         String location = mAddress;
         String showLocation = address[0];
+
+//        String location = mAddress.equals("") ? getString(R.string.post_null) : mAddress;
+//        String showLocation = address[0].equals("") ? getString(R.string.post_null) : address[0];
+
         Log.i("meetingID",mMeetingID);
         JSONObject object = new JSONObject();
         try {
@@ -537,7 +572,7 @@ public class NewMeetingActivity extends AppCompatActivity implements View.OnTouc
                 object.put("is_long_repeat", 0);
             }
             object.put("event_alert", "");
-            object.put("calendar_id", "");
+            object.put("calendar_id", calendarTypeString.calendarId);
 
             object.put("event_last_update_datetime", DateUtil.getDateStringFromCalendarGMT(Calendar.getInstance()));
             object.put("if_deleted", 0);

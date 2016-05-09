@@ -1,5 +1,6 @@
 package com.itime.team.itime.fragments;
 
+import android.app.Activity;
 import android.app.DatePickerDialog;
 import android.app.TimePickerDialog;
 import android.content.Intent;
@@ -35,6 +36,7 @@ import com.itime.team.itime.model.ParcelableCalendarType;
 import com.itime.team.itime.utils.CalendarTypeUtil;
 import com.itime.team.itime.utils.DateUtil;
 import com.itime.team.itime.utils.EventUtil;
+import com.itime.team.itime.utils.JsonArrayFormRequest;
 import com.itime.team.itime.utils.JsonObjectFormRequest;
 import com.itime.team.itime.utils.MySingleton;
 
@@ -353,7 +355,7 @@ public class EventDetailEditFragment extends NewEventFragment {
 
 
     private void postEvent(String id, String repeatString) {
-        JSONObject object = new JSONObject();
+        final JSONObject object = new JSONObject();
         try {
             object.put("event_id", id);
             object.put("user_id", User.ID);
@@ -441,10 +443,15 @@ public class EventDetailEditFragment extends NewEventFragment {
 
         Map<String, String> params = new HashMap();
         params.put("json", jsonObject.toString());
-        JsonObjectFormRequest request = new JsonObjectFormRequest(Request.Method.POST, url, params, new Response.Listener<JSONObject>() {
+        JsonArrayFormRequest request = new JsonArrayFormRequest(Request.Method.POST, url, params, new Response.Listener<JSONArray>() {
             @Override
-            public void onResponse(JSONObject response) {
-
+            public void onResponse(JSONArray response) {
+                Intent intent = new Intent();
+                Bundle bundle = new Bundle();
+                bundle.putString("edited", object.toString());
+                intent.putExtras(bundle);
+                getActivity().setResult(Activity.RESULT_OK, intent);
+                getActivity().finish();
             }
         }, new Response.ErrorListener() {
             @Override
@@ -509,9 +516,11 @@ public class EventDetailEditFragment extends NewEventFragment {
         Map<String, String> params = new HashMap();
         params.put("json", jsonObject.toString());
         String url = URLs.SYNC;
-        JsonObjectFormRequest request = new JsonObjectFormRequest(Request.Method.POST, url, params, new Response.Listener<JSONObject>() {
+
+        JsonArrayFormRequest request = new JsonArrayFormRequest(Request.Method.POST, url, params, new Response.Listener<JSONArray>() {
             @Override
-            public void onResponse(JSONObject response) {
+            public void onResponse(JSONArray response) {
+                postEvent(UUID.randomUUID().toString(), repeatStringNew);
 
             }
         }, new Response.ErrorListener() {
@@ -521,10 +530,9 @@ public class EventDetailEditFragment extends NewEventFragment {
             }
         });
         MySingleton.getInstance(getActivity()).addToRequestQueue(request);
-        getActivity().setResult(200);
-        getActivity().finish();
+//        getActivity().setResult(200);
+//        getActivity().finish();
         Toast.makeText(getActivity(), "Deleted", Toast.LENGTH_SHORT).show();
-        postEvent(UUID.randomUUID().toString(), repeatStringNew);
 
     }
 
@@ -583,9 +591,10 @@ public class EventDetailEditFragment extends NewEventFragment {
         Map<String, String> params = new HashMap();
         params.put("json", jsonObject.toString());
         String url = URLs.SYNC_IGNORED;
-        JsonObjectFormRequest request = new JsonObjectFormRequest(Request.Method.POST, url, params, new Response.Listener<JSONObject>() {
+        JsonArrayFormRequest request = new JsonArrayFormRequest(Request.Method.POST, url, params, new Response.Listener<JSONArray>() {
             @Override
-            public void onResponse(JSONObject response) {
+            public void onResponse(JSONArray response) {
+                postEvent(UUID.randomUUID().toString(), repeatStringNew);
 
             }
         }, new Response.ErrorListener() {
@@ -595,10 +604,7 @@ public class EventDetailEditFragment extends NewEventFragment {
             }
         });
         MySingleton.getInstance(getActivity()).addToRequestQueue(request);
-        postEvent(UUID.randomUUID().toString(), repeatStringNew);
 
-        getActivity().setResult(300);
-        getActivity().finish();
     }
 
 

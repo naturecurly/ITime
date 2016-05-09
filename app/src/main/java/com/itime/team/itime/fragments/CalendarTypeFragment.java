@@ -186,7 +186,6 @@ public class CalendarTypeFragment extends Fragment {
         UserTask.CallBackCalType callback = new UserTask.CallBackCalType() {
             @Override
             public void callback(List<ParcelableCalendarType> calendarType) {
-                mAdapter.refresh(calendarType);
                 // add new calendar type to static list
                 Events.calendarTypeList.clear();
                 for (ParcelableCalendarType c : calendarType) {
@@ -196,6 +195,7 @@ public class CalendarTypeFragment extends Fragment {
                         Events.notShownId.add(c.calendarId);
                     }
                 }
+                mAdapter.refresh(calendarType);
 
             }
 

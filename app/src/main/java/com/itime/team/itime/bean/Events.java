@@ -41,4 +41,5 @@ public class Events {
     public static Map<String, JSONObject> rawEvents = new HashMap<>();
 
     public static Map<String, List<JSONObject>> ignoredEventMap = new HashMap<>();
+
 }

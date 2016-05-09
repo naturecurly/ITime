@@ -1,5 +1,6 @@
 package com.itime.team.itime.fragments;
 
+import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -26,8 +27,11 @@ import com.itime.team.itime.R;
 import com.itime.team.itime.activities.EventsDetailEditActivity;
 import com.itime.team.itime.bean.URLs;
 import com.itime.team.itime.bean.User;
+import com.itime.team.itime.utils.CalendarTypeUtil;
 import com.itime.team.itime.utils.DateUtil;
 import com.itime.team.itime.utils.EventUtil;
+import com.itime.team.itime.utils.JsonArrayAuthRequest;
+import com.itime.team.itime.utils.JsonArrayFormRequest;
 import com.itime.team.itime.utils.JsonObjectFormRequest;
 import com.itime.team.itime.utils.MySingleton;
 
@@ -68,6 +72,8 @@ public class EventDetailFragment extends Fragment {
     private String calendar_type;
     private String event_id;
     private String jsonString;
+    private JSONObject eventJsonObject = new JSONObject();
+    private boolean edited;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -100,6 +106,11 @@ public class EventDetailFragment extends Fragment {
         calendar_type = bundle.getString("calendar_type");
         event_id = bundle.getString("event_id");
         jsonString = bundle.getString("json");
+        try {
+            eventJsonObject = new JSONObject(jsonString);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
         name.setText(event_name);
         venue.setText(event_venue);
         start_text.setText(DateUtil.formatToReadable(event_start));
@@ -128,10 +139,10 @@ public class EventDetailFragment extends Fragment {
         try {
             event.put("if_deleted", 1);
             event.put("event_id", event_id);
-            event.put("event_starts_datetime", "");
-            event.put("event_ends_datetime", "");
-            event.put("event_ends_datetime_new", "");
-            event.put("event_starts_datetime_new", "");
+            event.put("event_starts_datetime", eventJsonObject.getString("event_starts_datetime"));
+            event.put("event_ends_datetime", eventJsonObject.getString("event_ends_datetime"));
+            event.put("event_ends_datetime_new", eventJsonObject.getString("event_ends_datetime_new"));
+            event.put("event_starts_datetime_new", eventJsonObject.getString("event_starts_datetime_new"));
             event.put("event_is_punctual", 0);
             event.put("event_is_punctual_new", 0);
             event.put("is_long_repeat", 0);
@@ -150,10 +161,23 @@ public class EventDetailFragment extends Fragment {
         Map<String, String> params = new HashMap();
         params.put("json", jsonObject.toString());
         String url = URLs.SYNC;
-        JsonObjectFormRequest request = new JsonObjectFormRequest(Request.Method.POST, url, params, new Response.Listener<JSONObject>() {
+//        JsonArrayAuthRequest request = new JsonArrayAuthRequest(Request.Method.POST, url, jsonObject.toString(), new Response.Listener<JSONArray>() {
+//            @Override
+//            public void onResponse(JSONArray response) {
+//                getActivity().setResult(getActivity().RESULT_OK);
+//                getActivity().finish();
+//            }
+//        }, new Response.ErrorListener() {
+//            @Override
+//            public void onErrorResponse(VolleyError error) {
+//
+//            }
+//        });
+        JsonArrayFormRequest request = new JsonArrayFormRequest(Request.Method.POST, url, params, new Response.Listener<JSONArray>() {
             @Override
-            public void onResponse(JSONObject response) {
-
+            public void onResponse(JSONArray response) {
+                getActivity().setResult(getActivity().RESULT_OK);
+                getActivity().finish();
             }
         }, new Response.ErrorListener() {
             @Override
@@ -162,8 +186,7 @@ public class EventDetailFragment extends Fragment {
             }
         });
         MySingleton.getInstance(getActivity()).addToRequestQueue(request);
-        getActivity().setResult(getActivity().RESULT_OK);
-        getActivity().finish();
+
         Toast.makeText(getActivity(), "Deleted", Toast.LENGTH_SHORT).show();
     }
 
@@ -234,10 +257,11 @@ public class EventDetailFragment extends Fragment {
         Map<String, String> params = new HashMap();
         params.put("json", jsonObject.toString());
         String url = URLs.SYNC;
-        JsonObjectFormRequest request = new JsonObjectFormRequest(Request.Method.POST, url, params, new Response.Listener<JSONObject>() {
+        JsonArrayFormRequest request = new JsonArrayFormRequest(Request.Method.POST, url, params, new Response.Listener<JSONArray>() {
             @Override
-            public void onResponse(JSONObject response) {
-
+            public void onResponse(JSONArray response) {
+                getActivity().setResult(Activity.RESULT_OK);
+                getActivity().finish();
             }
         }, new Response.ErrorListener() {
             @Override
@@ -246,8 +270,7 @@ public class EventDetailFragment extends Fragment {
             }
         });
         MySingleton.getInstance(getActivity()).addToRequestQueue(request);
-        getActivity().setResult(200);
-        getActivity().finish();
+
         Toast.makeText(getActivity(), "Deleted", Toast.LENGTH_SHORT).show();
 
     }
@@ -307,10 +330,11 @@ public class EventDetailFragment extends Fragment {
         Map<String, String> params = new HashMap();
         params.put("json", jsonObject.toString());
         String url = URLs.SYNC_IGNORED;
-        JsonObjectFormRequest request = new JsonObjectFormRequest(Request.Method.POST, url, params, new Response.Listener<JSONObject>() {
+        JsonArrayFormRequest request = new JsonArrayFormRequest(Request.Method.POST, url, params, new Response.Listener<JSONArray>() {
             @Override
-            public void onResponse(JSONObject response) {
-
+            public void onResponse(JSONArray response) {
+                getActivity().setResult(Activity.RESULT_OK);
+                getActivity().finish();
             }
         }, new Response.ErrorListener() {
             @Override
@@ -319,8 +343,7 @@ public class EventDetailFragment extends Fragment {
             }
         });
         MySingleton.getInstance(getActivity()).addToRequestQueue(request);
-        getActivity().setResult(300);
-        getActivity().finish();
+
     }
 
     @Override
@@ -341,5 +364,32 @@ public class EventDetailFragment extends Fragment {
             return true;
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == EDIT_REQUEST) {
+            if (resultCode == Activity.RESULT_OK) {
+                try {
+                    JSONObject event = new JSONObject(data.getExtras().getString("edited"));
+                    name.setText(event.getString("event_name"));
+                    venue.setText(event.getString("event_venue_location"));
+                    start_text.setText(DateUtil.formatToReadable(event.getString("event_starts_datetime")));
+                    end_text.setText(DateUtil.formatToReadable(event.getString("event_ends_datetime")));
+                    type.setText(event.getString("event_repeats_type"));
+                    alert.setText(event.getString("event_alert"));
+                    calendarType.setText(CalendarTypeUtil.findCalendarById(event.getString("calendar_id")).calendarName);
+                    edited = true;
+
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+    }
+
+    public boolean isEdited() {
+        return edited;
     }
 }

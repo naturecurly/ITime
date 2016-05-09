@@ -40,6 +40,7 @@ import android.widget.TextView;
 import com.android.volley.Request;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
+import com.bluelinelabs.logansquare.LoganSquare;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GoogleApiAvailability;
 import com.google.api.client.extensions.android.http.AndroidHttp;
@@ -61,6 +62,7 @@ import com.itime.team.itime.bean.User;
 import com.itime.team.itime.model.ParcelableCalendarType;
 import com.itime.team.itime.task.UserTask;
 import com.itime.team.itime.utils.DateUtil;
+import com.itime.team.itime.utils.EventUtil;
 import com.itime.team.itime.utils.JsonArrayAuthRequest;
 import com.itime.team.itime.utils.MySingleton;
 
@@ -77,6 +79,9 @@ import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 
+import okhttp3.MediaType;
+import okhttp3.OkHttpClient;
+import okhttp3.RequestBody;
 import pub.devrel.easypermissions.AfterPermissionGranted;
 import pub.devrel.easypermissions.EasyPermissions;
 
@@ -97,7 +102,7 @@ public class ImportGoogleCalendarActivity extends AppCompatActivity
     // http://stackoverflow.com/questions/33331073/android-what-to-choose-for-requestcode-values
     static final int REQUEST_PERMISSION_GET_ACCOUNTS = 100;
 
-    private static final String BUTTON_TEXT = "Call Google Calendar API";
+    private static final String BUTTON_TEXT = "Import Google Calendar";
     private static final String PREF_ACCOUNT_NAME = "accountName";
     private static final String[] SCOPES = { CalendarScopes.CALENDAR_READONLY };
 
@@ -139,7 +144,7 @@ public class ImportGoogleCalendarActivity extends AppCompatActivity
         mOutputText.setVerticalScrollBarEnabled(true);
         mOutputText.setMovementMethod(new ScrollingMovementMethod());
         mOutputText.setText(
-                "Click the \'" + BUTTON_TEXT +"\' button to test the API.");
+                "Click the \'" + BUTTON_TEXT +"\' button to import.");
         activityLayout.addView(mOutputText);
 
         mProgress = new ProgressDialog(this);
@@ -363,6 +368,8 @@ public class ImportGoogleCalendarActivity extends AppCompatActivity
     private class MakeRequestTask extends AsyncTask<Void, Void, List<String>> {
         private com.google.api.services.calendar.Calendar mService = null;
         private Exception mLastError = null;
+        final MediaType JSON = MediaType.parse("application/json; charset=utf-8");
+        OkHttpClient mClient = null;
 
         public MakeRequestTask(GoogleAccountCredential credential) {
             HttpTransport transport = AndroidHttp.newCompatibleTransport();
@@ -371,6 +378,8 @@ public class ImportGoogleCalendarActivity extends AppCompatActivity
                     transport, jsonFactory, credential)
                     .setApplicationName("Google Calendar API Android Quickstart")
                     .build();
+
+            mClient = new OkHttpClient();
         }
 
         /**
@@ -382,17 +391,23 @@ public class ImportGoogleCalendarActivity extends AppCompatActivity
             try {
                 //return getDataFromApi();
                 List<String> calendars =  getCalendarLists();
-                return importEvents(calendars);
+                List<String> result = importEvents(calendars);
                 /*
                 http://stackoverflow.com/questions/18030486/google-oauth2-application-remove-self-from-user-authenticated-applications
                 https://accounts.google.com/o/oauth2/revoke?token={token}
                 If the revocation succeeds, the response's status code is 200. If an error occurs, the response's status code is 400 and the response also contains an error code.
                  */
-//                CalendarList calendarList = mService.calendarList().list().setPageToken(null).execute();
-//                String token = mCredential.getToken();
-//                Log.i("MakeRequestTask", token);
-//                mCredential.getGoogleAccountManager().invalidateAuthToken(token);
-//                return null;
+                String token = mCredential.getToken();
+                Log.i("MakeRequestTask", "AuthToken " + token);
+                okhttp3.Request request = new okhttp3.Request.Builder()
+                        .url("https://accounts.google.com/o/oauth2/revoke?token=" + token)
+                        .build();
+
+                okhttp3.Response response = mClient.newCall(request).execute();
+                if (!response.isSuccessful()) throw new IOException("Unexpected code " + response);
+                Log.i("MakeRequestTask", response.body().string());
+                Log.i("MakeRequestTask", "revoke auth token success");
+                return result;
             } catch (Exception e) {
                 mLastError = e;
                 cancel(true);
@@ -445,6 +460,28 @@ public class ImportGoogleCalendarActivity extends AppCompatActivity
 
                 for (CalendarListEntry calendarListEntry : items) {
                     calendarIds.add(calendarListEntry.getId());
+                    // update calendar type
+                    ParcelableCalendarType calendarType = new ParcelableCalendarType(User.ID);
+                    calendarType.calendarId = User.ID + "_" + calendarListEntry.getId();
+                    calendarType.calendarName = calendarListEntry.getSummary();
+                    calendarType.calendarOwnerId = User.ID + "_Google";
+                    calendarType.calendarOwnerName = "Google";
+
+                    String calType = LoganSquare.serialize(calendarType);
+                    final String url = URLs.INSERT_OR_UPDATE_USER_CALENDAR_TYPE;
+                    String postBody = calType;
+
+                    okhttp3.Request request = new okhttp3.Request.Builder()
+                            .url(url)
+                            .addHeader("Authorization", "Bearer " + User.token)
+                            .post(RequestBody.create(JSON, postBody))
+                            .build();
+
+                    okhttp3.Response response = mClient.newCall(request).execute();
+                    if (!response.isSuccessful()) throw new IOException("Unexpected code " + response);
+                    Log.i("MakeRequestTask", response.body().string());
+                    Log.i("MakeRequestTask", "update calendar type success");
+
                 }
                 pageToken = calendarList.getNextPageToken();
             } while (pageToken != null);
@@ -465,7 +502,7 @@ public class ImportGoogleCalendarActivity extends AppCompatActivity
                         .setTimeZone("UTC")
                         .execute();
 
-                transferOnlineCalendarDataToLocal(events.getItems());
+                transferOnlineCalendarDataToLocal(events.getItems(), calendar);
                 result.add(String.format("Import calendar %s success", calendar));
             }
             return result;
@@ -475,33 +512,13 @@ public class ImportGoogleCalendarActivity extends AppCompatActivity
          *
          * @param eventList
          */
-        private void transferOnlineCalendarDataToLocal(List<Event> eventList) {
+        private void transferOnlineCalendarDataToLocal(List<Event> eventList, String calendarId) throws IOException {
             Map<String, JSONObject> events = com.itime.team.itime.bean.Events.rawEvents;
             JSONArray localEvents = new JSONArray();
-            Set<String> idSet = new HashSet<>();
             for (Event event : eventList) {
                 if (!events.containsKey(event.getId())) {
-                    // update calendar type
-                    ParcelableCalendarType calendarType = new ParcelableCalendarType(User.ID);
-                    calendarType.calendarId = User.ID + "_" + event.getCreator().getEmail();
-                    if (!idSet.contains(calendarType.calendarId)) {
-                        idSet.add(calendarType.calendarId);
-                        calendarType.calendarName = event.getCreator().getDisplayName();
-                        calendarType.calendarOwnerId = User.ID + "_Google";
-                        calendarType.calendarOwnerName = "Google";
-                        UserTask userTask = UserTask.getInstance(getApplicationContext());
-                        userTask.updateCalendarType(calendarType, new UserTask.CallBackResult<String>() {
-                            @Override
-                            public void callback(String data) {
-                                // Don't flood my logcat
-                                Log.i("MakeRequestTask", "update calendar type success");
-                            }
-                        });
-                    }
-
-
                     // sync event
-                    JSONObject object = toEventJSONObject(event, calendarType.calendarId);
+                    JSONObject object = toEventJSONObject(event, calendarId);
                     localEvents.put(object);
                 }
             }
@@ -536,17 +553,16 @@ public class ImportGoogleCalendarActivity extends AppCompatActivity
                 }
                 object.put("event_ends_datetime", end_datetime);
 
-
                 final String location = event.getLocation() == null ? "" : event.getLocation();
                 object.put("event_venue_show", location);
                 object.put("event_venue_location", location);
                 object.put("event_venue_show_new", location);
                 object.put("event_venue_location_new", location);
 
-                object.put("event_repeats_type", "");
+                object.put("event_repeats_type", EventUtil.ONE_TIME);
 
-                object.put("event_latitude", "");
-                object.put("event_longitude", "");
+                object.put("event_latitude", "-37.799137");
+                object.put("event_longitude", "144.96078");
 
                 object.put("event_last_sug_dep_time", start_datetime);
                 object.put("event_last_time_on_way_in_second", "0");
@@ -559,8 +575,8 @@ public class ImportGoogleCalendarActivity extends AppCompatActivity
                 object.put("event_ends_datetime_new", end_datetime);
 
 
-                object.put("event_repeats_type_new", "");
-                //punctual
+                object.put("event_repeats_type_new", EventUtil.ONE_TIME);
+
                 object.put("event_latitude_new", "");
                 object.put("event_longitude_new", "");
 
@@ -577,14 +593,15 @@ public class ImportGoogleCalendarActivity extends AppCompatActivity
                 object.put("event_repeat_to_date", end_datetime);
 
 
-                object.put("is_long_repeat", 0);
+                object.put("is_long_repeat", 1);
 
-                object.put("event_alert", "");
+                object.put("event_alert", User.defaultAlert);
                 object.put("calendar_id", calendarId);
 
                 object.put("event_last_update_datetime", "");
                 object.put("if_deleted", 0);
 
+                //punctual
                 object.put("event_is_punctual", 1);
                 object.put("event_is_punctual_new", 1);
 
@@ -596,7 +613,7 @@ public class ImportGoogleCalendarActivity extends AppCompatActivity
             return object;
         }
 
-        private void syncEvents(JSONArray events) {
+        private void syncEvents(JSONArray events) throws IOException {
             final String url = URLs.SYNC;
             JSONObject jsonObject = new JSONObject();
 
@@ -607,19 +624,18 @@ public class ImportGoogleCalendarActivity extends AppCompatActivity
                 e.printStackTrace();
             }
 
-            JsonArrayAuthRequest request = new JsonArrayAuthRequest(Request.Method.POST, url, jsonObject.toString(), new Response.Listener<JSONArray>() {
-                @Override
-                public void onResponse(JSONArray response) {
-                    Log.i("MakeRequestTask", response.toString());
-                }
-            }, new Response.ErrorListener() {
-                @Override
-                public void onErrorResponse(VolleyError error) {
+            String postBody = jsonObject.toString();
 
-                }
-            });
-            MySingleton.getInstance(getApplicationContext()).addToRequestQueue(request);
+            okhttp3.Request request = new okhttp3.Request.Builder()
+                    .url(url)
+                    .addHeader("Authorization", "Bearer " + User.token)
+                    .post(RequestBody.create(JSON, postBody))
+                    .build();
 
+            okhttp3.Response response = mClient.newCall(request).execute();
+            if (!response.isSuccessful()) throw new IOException("Unexpected code " + response);
+            Log.i("MakeRequestTask", response.body().string());
+            Log.i("MakeRequestTask", "sync google events success");
         }
 
 

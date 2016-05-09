@@ -2,12 +2,17 @@
 <resources>
     <string-array name="entry_default_alert_time">
         <item>None</item>
-        <item>At time of Departure</item>
+        <item>At time of event</item>
         <item>5 minutes before</item>
         <item>10 minutes before</item>
         <item>15 minutes before</item>
         <item>30 minutes before</item>
         <item>1 hour before</item>
+        <item>2 hours before</item>
+        <item>4 hours before</item>
+        <item>1 day before</item>
+        <item>2 days before</item>
+        <item>1 week before</item>
     </string-array>
     <string-array name="entry_values_default_alert_time">
         <item>None</item>

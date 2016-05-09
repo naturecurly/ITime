@@ -29,6 +29,7 @@ import com.android.volley.toolbox.JsonArrayRequest;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.bluelinelabs.logansquare.LoganSquare;
 import com.itime.team.itime.bean.URLs;
+import com.itime.team.itime.bean.User;
 import com.itime.team.itime.database.ITimeDataStore;
 import com.itime.team.itime.model.ParcelableCalendarType;
 import com.itime.team.itime.model.ParcelableUser;
@@ -187,6 +188,9 @@ public class UserTask {
         } else {
             mContext.getContentResolver().insert(userInfoByIdUri, values);
         }
+        // TODO: 10/05/16 Should place to callback outside this function
+        User.defaultAlert = user.defaultAlert;
+        User.lastCalendarType = user.userProfilePicture; // don't ask me, ask Gu Ye!
     }
 
     public void loadCalendarType(String userId, final CallBackCalType callback) {

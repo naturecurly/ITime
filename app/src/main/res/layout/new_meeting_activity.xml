@@ -12,7 +12,7 @@
             android:id="@+id/new_meeting_toolbar"
             android:layout_width="match_parent"
             android:layout_height="?attr/actionBarSize"
-            android:background="?attr/colorPrimary"
+            android:background="@drawable/topbg"
             app:popupTheme="@style/AppTheme.PopupOverlay"
             />
     </android.support.design.widget.AppBarLayout>
@@ -104,7 +104,8 @@
 
             <LinearLayout
                 style="@style/MeetingTimeLayout"
-                android:layout_marginBottom="20dp">
+                android:layout_marginBottom="20dp"
+                android:visibility="gone">
                 <TextView
                     style="@style/MeetingText"
                     android:text="@string/new_meeting_punctual" />
@@ -122,6 +123,7 @@
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_marginTop="20dp"
                 android:text="Notes:"/>
             <EditText
                 android:layout_width="match_parent"

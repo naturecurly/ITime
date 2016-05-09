@@ -32,10 +32,10 @@
         android:gravity="center"
         android:tag="delete_bottom">
 
-
-
     </LinearLayout>
     <!-- Bottom View End-->
+
+    <!-- Upper View Start-->
     <LinearLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content">
@@ -47,7 +47,9 @@
             android:layout_height="wrap_content"
             android:layout_margin="10dp"
             android:textSize="16dp"
-            android:backgroundTint="@color/transparent"/>
+            android:backgroundTint="@color/transparent"
+            />
     </LinearLayout>
+    <!-- Upper View End-->
 
 </com.daimajia.swipe.SwipeLayout>

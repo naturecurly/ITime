@@ -46,6 +46,5 @@
 
     <string-array name="import_calendars_list">
         <item>@string/import_google_calendar</item>
-        <item>@string/import_ios_calendar</item>
     </string-array>
 </resources>

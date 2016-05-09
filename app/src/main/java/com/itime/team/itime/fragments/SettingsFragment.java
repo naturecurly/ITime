@@ -351,8 +351,6 @@ public class SettingsFragment extends Fragment implements View.OnClickListener, 
                         Intent intent = new Intent(getActivity(), ImportGoogleCalendarActivity.class);
                         startActivity(intent);
                         break;
-                    case 1:
-                        break;
                     default:
                         break;
                 }

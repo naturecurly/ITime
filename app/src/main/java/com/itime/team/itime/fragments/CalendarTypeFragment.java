@@ -26,6 +26,7 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AbsListView;
 import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.TextView;
@@ -78,6 +79,7 @@ public class CalendarTypeFragment extends Fragment {
         }
         mAdapter = new CalendarTypeAdapter(getContext(), mData);
         mCalendarTypeListView.setAdapter(mAdapter);
+        mCalendarTypeListView.setChoiceMode(AbsListView.CHOICE_MODE_MULTIPLE);
         // click
         mCalendarTypeListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override

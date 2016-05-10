@@ -109,7 +109,7 @@
                 android:background="@color/cardview_dark_background"
                 android:button="@null"
                 android:drawableTint="@color/color_radiobutton"
-                android:drawableTop="@drawable/ic_email_black_s"
+                android:drawableTop="@drawable/ic_inbox"
                 android:gravity="center_horizontal|bottom"
                 android:paddingTop="2dp"
                 android:text="Inbox"

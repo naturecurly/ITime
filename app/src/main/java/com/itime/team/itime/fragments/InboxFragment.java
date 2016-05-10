@@ -16,6 +16,7 @@
 
 package com.itime.team.itime.fragments;
 
+import android.app.Activity;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -25,6 +26,7 @@ import android.os.Handler;
 import android.os.Message;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentActivity;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -40,6 +42,7 @@ import android.widget.TextView;
 import com.android.volley.VolleyError;
 import com.daimajia.swipe.util.Attributes;
 import com.itime.team.itime.R;
+import com.itime.team.itime.activities.MainActivity;
 import com.itime.team.itime.bean.User;
 import com.itime.team.itime.model.ParcelableMessage;
 import com.itime.team.itime.task.InboxTask;
@@ -65,6 +68,8 @@ public class InboxFragment extends Fragment implements View.OnClickListener {
 
     private static final int UNREAD = 0;
     private static final int ALL = 1;
+
+    private FragmentActivity mActivity;
 
     /* message create time comparator used for sorting message time in reverse order */
     public static final Comparator<ParcelableMessage> MESSAGE_TIME_ORDER =
@@ -157,6 +162,7 @@ public class InboxFragment extends Fragment implements View.OnClickListener {
         return view;
     }
 
+
     @Override
     public void onClick(View v) {
         final int id = v.getId();
@@ -210,6 +216,8 @@ public class InboxFragment extends Fragment implements View.OnClickListener {
                 public void callback(String result) {
                     if (result.equals("success")) {
                         mAdapter.unRead(message);
+                        // Assume this fragment attach to MainActivity, actually it does
+                        ((MainActivity) getActivity()).setBadgeCount(getActivity(), mAdapter.getUnreadMessageCount() + "");
                     }
                 }
             };
@@ -225,6 +233,8 @@ public class InboxFragment extends Fragment implements View.OnClickListener {
             public void callback(String result) {
                 if (result.equals("success")) {
                     mAdapter.deleteMessage(view, position);
+                    // Assume this fragment attach to MainActivity, actually it does
+                    ((MainActivity) getActivity()).setBadgeCount(getActivity(), mAdapter.getUnreadMessageCount() + "");
                 }
             }
         };
@@ -282,6 +292,9 @@ public class InboxFragment extends Fragment implements View.OnClickListener {
             public void callback(List<ParcelableMessage> messages) {
                 Collections.sort(messages, MESSAGE_TIME_ORDER);
                 mAdapter.loadMessages(messages);
+                Log.i(LOG_TAG, "load message");
+                // Assume this fragment attach to MainActivity, actually it does
+                ((MainActivity) getActivity()).setBadgeCount(getActivity(), mAdapter.getUnreadMessageCount() + "");
             }
 
             @Override

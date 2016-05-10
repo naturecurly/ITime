@@ -907,7 +907,7 @@ public class EventUtil {
 
     public static Set<String> findEventsByCalendarType(Set<String> calendarTypeIds) {
         Set<String> events = new HashSet<>();
-        Log.i("EventUtils", ""+Events.rawEvents.size());
+        Log.i("EventUtils", "" + Events.rawEvents.size());
         for (JSONObject o : Events.rawEvents.values()) {
             try {
                 String calType = o.getString("calendar_id");
@@ -919,6 +919,23 @@ public class EventUtil {
             }
         }
         return events;
+    }
+
+    public static List<JSONObject> searchByName(String query) {
+        List<JSONObject> result = new ArrayList<>();
+        for (JSONObject rawEvent : Events.rawEvents.values()) {
+            try {
+                Log.d("search", rawEvent.getString("event_name"));
+                if (isValidEvent(rawEvent)) {
+                    if (rawEvent.getString("event_name").indexOf(query) >= 0) {
+                        result.add(rawEvent);
+                    }
+                }
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+        }
+        return result;
     }
 
 }

@@ -72,6 +72,7 @@ import java.util.Map;
  * Created by leveyleonhardt on 12/17/15.
  */
 public class CalendarFragment extends Fragment {
+    private static final int JUMP_TO_EVENT_LIST = 103;
     private String action = "com.itime.team.itime.registerReciver";
     private IntentFilter filter = new IntentFilter();
     private static final int YEAR_REQUEST = 100;
@@ -126,7 +127,7 @@ public class CalendarFragment extends Fragment {
     private Calendar selectedCalendar = Calendar.getInstance();
     private boolean isStop = false;
     private int loadNum = 0;
-    private int selectedPosition;
+    private int selectedPosition = 6;
 
 
     public static CalendarFragment newInstance(Bundle bundle) {
@@ -544,12 +545,16 @@ public class CalendarFragment extends Fragment {
 
                 if (isStop || loadNum < 64) {
                     loadNum += 1;
-                    if (Events.response != null && Events.daysHaveEvents.contains(cal.get(Calendar.DAY_OF_MONTH) + "-" + (cal.get(Calendar.MONTH) + 1) + "-" + cal.get(Calendar.YEAR))) {
+                    if (Events.daysHaveEvents.contains(cal.get(Calendar.DAY_OF_MONTH) + "-" + (cal.get(Calendar.MONTH) + 1) + "-" + cal.get(Calendar.YEAR))) {
                         ifEvents[i] = true;
 //                        Log.d("testdate", eventDateList.size() + "");
                     } else if (Events.repeatEvent != null) {
                         try {
-                            ifEvents[i] = EventUtil.hasRepeatEvent(cal);
+                            boolean hasRepeat = EventUtil.hasRepeatEvent(cal);
+                            if (hasRepeat) {
+                                Events.daysHaveEvents.add(cal.get(Calendar.DAY_OF_MONTH) + "-" + (cal.get(Calendar.MONTH) + 1) + "-" + cal.get(Calendar.YEAR));
+                            }
+                            ifEvents[i] = hasRepeat;
                         } catch (JSONException e) {
                             e.printStackTrace();
                         }
@@ -718,17 +723,16 @@ public class CalendarFragment extends Fragment {
     }
 
     public void reSetMenuOnClickListener(ImageButton imageButton) {
-        imageButton.setImageResource(R.drawable.ic_calendar_list_white);
+        imageButton.setImageResource(R.drawable.ic_event_search);
         imageButton.setVisibility(View.VISIBLE);
         imageButton.setOnTouchListener(new View.OnTouchListener() {
             @Override
             public boolean onTouch(View v, MotionEvent event) {
                 if (event.getAction() == MotionEvent.ACTION_DOWN) {
-                    ((ImageButton) v).setImageDrawable(ContextCompat.getDrawable(getActivity(), R.drawable.ic_calendar_list));
-
+                    ((ImageButton) v).setImageDrawable(ContextCompat.getDrawable(getActivity(), R.drawable.ic_event_search_black));
                 }
                 if (event.getAction() == MotionEvent.ACTION_UP) {
-                    ((ImageButton) v).setImageDrawable(ContextCompat.getDrawable(getActivity(), R.drawable.ic_calendar_list_white));
+                    ((ImageButton) v).setImageDrawable(ContextCompat.getDrawable(getActivity(), R.drawable.ic_event_search));
                 }
 
                 return false;
@@ -741,7 +745,7 @@ public class CalendarFragment extends Fragment {
 //                FragmentTransaction ft = fm.beginTransaction();
                 //ft.detach(getFragmentManager().findFragmentById(R.id.realtab_content)).add(fragment,"list");
                 Intent intent = new Intent(getActivity(), EventsActivity.class);
-                startActivity(intent);
+                startActivityForResult(intent, JUMP_TO_EVENT_LIST);
                 //ft.replace(R.id.realtab_content, fragment);
 
                 //ft.addToBackStack(null);
@@ -1033,7 +1037,6 @@ public class CalendarFragment extends Fragment {
                                     bundle.putString("event_id", eventID);
                                     bundle.putString("json", jsonString);
                                     detailIntent.putExtras(bundle);
-//                                                startActivity(detailIntent);
                                     startActivityForResult(detailIntent, EDIT_EVENT_REQUEST);
                                 }
                             } catch (JSONException e) {
@@ -1243,9 +1246,15 @@ public class CalendarFragment extends Fragment {
             }
         }
 
-        if (requestCode == CHANGE_MEETING){
+        if (requestCode == CHANGE_MEETING) {
             if (resultCode == getActivity().RESULT_OK) {
                 refresh();
+            }
+            if (requestCode == JUMP_TO_EVENT_LIST) {
+                Log.d("return", "return");
+//            if (resultCode == getActivity().RESULT_OK) {
+                refresh();
+//            }
             }
         }
     }

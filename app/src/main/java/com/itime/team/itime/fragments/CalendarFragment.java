@@ -1,20 +1,14 @@
 package com.itime.team.itime.fragments;
 
 import android.animation.ValueAnimator;
-import android.app.usage.UsageEvents;
-import android.content.BroadcastReceiver;
-import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.graphics.Color;
-import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentTransaction;
 import android.support.v4.content.ContextCompat;
-import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.DisplayMetrics;
@@ -49,16 +43,12 @@ import com.itime.team.itime.bean.Events;
 import com.itime.team.itime.bean.URLs;
 import com.itime.team.itime.bean.User;
 import com.itime.team.itime.listener.OnDateSelectedListener;
-import com.itime.team.itime.listener.RecyclerItemClickListener;
 import com.itime.team.itime.listener.ScrollMeetingViewListener;
 import com.itime.team.itime.listener.ScrollViewInterceptTouchListener;
 import com.itime.team.itime.model.ParcelableCalendarType;
-import com.itime.team.itime.receivers.RefreshBroadcastReceiver;
-import com.itime.team.itime.task.ReadMonthEventTask;
 import com.itime.team.itime.utils.DateUtil;
 import com.itime.team.itime.utils.DensityUtil;
 import com.itime.team.itime.utils.EventUtil;
-import com.itime.team.itime.utils.JsonArrayFormRequest;
 import com.itime.team.itime.utils.JsonObjectFormRequest;
 import com.itime.team.itime.utils.MySingleton;
 import com.itime.team.itime.views.CalendarView;
@@ -76,7 +66,6 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 
 
 /**
@@ -88,6 +77,7 @@ public class CalendarFragment extends Fragment {
     private static final int YEAR_REQUEST = 100;
     private static final int NEW_EVENT_REQUEST = 101;
     private static final int EDIT_EVENT_REQUEST = 102;
+    private static final int CHANGE_MEETING = 103;
     private RecyclerView recyclerView;
     private List<Map<String, Integer>> dates = new ArrayList<>();
     private int lastPosition = -1;
@@ -996,7 +986,8 @@ public class CalendarFragment extends Fragment {
                                         intent.putExtra("arg_meeting_id", meeting_id);
                                         intent.putExtra("event_id", eventID);
                                         intent.putExtra("host_id", hostID);
-                                        startActivity(intent);
+                                        startActivityForResult(intent, CHANGE_MEETING);
+//                                        startActivity(intent);
                                     } else {
 
                                         Intent intent = new Intent(getActivity(), MeetingDetailActivity.class);
@@ -1004,7 +995,8 @@ public class CalendarFragment extends Fragment {
                                         intent.putExtra("event_id", eventID);
                                         intent.putExtra("host_id", hostID);
                                         Log.i("userId", user_id);
-                                        startActivity(intent);
+                                        startActivityForResult(intent, CHANGE_MEETING);
+//                                        startActivity(intent);
                                     }
                                              /*
                                             * add intent to start activity here
@@ -1114,12 +1106,12 @@ public class CalendarFragment extends Fragment {
                                             Intent intent = new Intent(getActivity(), MeetingDetaiHostlActivity.class);
                                             intent.putExtra("arg_meeting_id", meeting_id);
                                             intent.putExtra("event_id", eventID);
-                                            startActivity(intent);
+                                            startActivityForResult(intent, CHANGE_MEETING);
                                         } else {
                                             Intent intent = new Intent(getActivity(), MeetingDetailActivity.class);
                                             intent.putExtra("arg_meeting_id", meeting_id);
                                             intent.putExtra("event_id", eventID);
-                                            startActivity(intent);
+                                            startActivityForResult(intent, CHANGE_MEETING);
                                         }
                                              /*
                                             * add intent to start activity here
@@ -1246,6 +1238,12 @@ public class CalendarFragment extends Fragment {
         }
 
         if (requestCode == EDIT_EVENT_REQUEST) {
+            if (resultCode == getActivity().RESULT_OK) {
+                refresh();
+            }
+        }
+
+        if (requestCode == CHANGE_MEETING){
             if (resultCode == getActivity().RESULT_OK) {
                 refresh();
             }

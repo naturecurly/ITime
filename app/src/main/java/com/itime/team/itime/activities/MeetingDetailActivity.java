@@ -391,7 +391,7 @@ public class MeetingDetailActivity extends AppCompatActivity implements RadioGro
 
     private void deleteMeeting(){
         MeetingDetailCancelReasonDialogFragment dialog
-                = new MeetingDetailCancelReasonDialogFragment(mMeetingId, mMeetingInfo.getToken(),false);
+                = new MeetingDetailCancelReasonDialogFragment(mMeetingId, mMeetingInfo.getToken(), mEventId ,false);
         dialog.show(getSupportFragmentManager(),"reasonQuitDialog");
     }
 }

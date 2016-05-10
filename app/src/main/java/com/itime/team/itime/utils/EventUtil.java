@@ -2,6 +2,7 @@ package com.itime.team.itime.utils;
 
 import android.util.Log;
 
+import com.google.api.services.calendar.model.Event;
 import com.itime.team.itime.bean.Events;
 import com.itime.team.itime.fragments.EventDetailFragment;
 import com.itime.team.itime.model.ParcelableCalendarType;
@@ -903,5 +904,21 @@ public class EventUtil {
 //            ignoredEvents.get(i)
 //        }
 //    }
+
+    public static Set<String> findEventsByCalendarType(Set<String> calendarTypeIds) {
+        Set<String> events = new HashSet<>();
+        Log.i("EventUtils", ""+Events.rawEvents.size());
+        for (JSONObject o : Events.rawEvents.values()) {
+            try {
+                String calType = o.getString("calendar_id");
+                if (calendarTypeIds.contains(calType)) {
+                    events.add(o.getString("event_id"));
+                }
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+        }
+        return events;
+    }
 
 }

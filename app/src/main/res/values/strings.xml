@@ -199,6 +199,10 @@
     <string name="import_google_calendar">Import Google Calendar</string>
     <string name="import_ios_calendar">Import  IOS Calendar</string>
 
+    <!-- clear calendars -->
+    <string name="clear_calendars_success">Clear calendar success</string>
+    <string name="clear_calendars_fail">Clear calendar failed</string>
+
     <!-- language -->
     <string name="set_language">Set Language</string>
     <string name="activate_language_change">Please restart app to activate the language change</string>

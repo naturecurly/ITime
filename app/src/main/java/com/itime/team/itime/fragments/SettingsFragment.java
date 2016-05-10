@@ -181,6 +181,8 @@ public class SettingsFragment extends Fragment implements View.OnClickListener, 
                 break;
 
             case SETTINGS_CLEAR_CALENDAR_ID:
+                intent.putExtra(SETTINGS, CLEAR_CALENDAR_SETTINGS);
+                startActivity(intent);
                 break;
 
             case SETTING_LOGOUT_ID: {

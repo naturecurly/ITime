@@ -462,7 +462,8 @@ public class ImportGoogleCalendarActivity extends AppCompatActivity
                     calendarIds.add(calendarListEntry.getId());
                     // update calendar type
                     ParcelableCalendarType calendarType = new ParcelableCalendarType(User.ID);
-                    calendarType.calendarId = User.ID + "_" + calendarListEntry.getId();
+                    final String calendarId = User.ID + "_" + calendarListEntry.getId();
+                    calendarType.calendarId = calendarId;
                     calendarType.calendarName = calendarListEntry.getSummary();
                     calendarType.calendarOwnerId = User.ID + "_Google";
                     calendarType.calendarOwnerName = "Google";
@@ -502,7 +503,8 @@ public class ImportGoogleCalendarActivity extends AppCompatActivity
                         .setTimeZone("UTC")
                         .execute();
 
-                transferOnlineCalendarDataToLocal(events.getItems(), calendar);
+                final String calendarId = User.ID + "_" + calendar;
+                transferOnlineCalendarDataToLocal(events.getItems(), calendarId);
                 result.add(String.format("Import calendar %s success", calendar));
             }
             return result;

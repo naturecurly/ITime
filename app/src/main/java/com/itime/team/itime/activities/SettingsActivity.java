@@ -120,17 +120,28 @@ public class SettingsActivity extends AppCompatActivity {
                             .commit();
                     break;
 
-                case CALENDAR_TYPE_SETTINGS:
+                case CALENDAR_TYPE_SETTINGS: {
 
                     CalendarTypeFragment ctf = new CalendarTypeFragment();
+                    Bundle args = new Bundle();
+                    args.putInt(CalendarTypeFragment.CALENDAR_TYPE_ACTION_TYPE, CalendarTypeFragment.ADD_CALENDAR_TYPE);
+                    ctf.setArguments(args);
                     getSupportFragmentManager().beginTransaction()
                             .add(R.id.setting_content, ctf)
                             .commit();
                     break;
+                }
 
-                case CLEAR_CALENDAR_SETTINGS:
-                    // TODO: 22/03/16 show clear calendar dialog
+                case CLEAR_CALENDAR_SETTINGS: {
+                    CalendarTypeFragment ctf = new CalendarTypeFragment();
+                    Bundle args = new Bundle();
+                    args.putInt(CalendarTypeFragment.CALENDAR_TYPE_ACTION_TYPE, CalendarTypeFragment.CLEAR_CALENDAR_TYPE);
+                    ctf.setArguments(args);
+                    getSupportFragmentManager().beginTransaction()
+                            .add(R.id.setting_content, ctf)
+                            .commit();
                     break;
+                }
 
                 case MEETING_SUB_SETTINGS:
                     MeetingSubPreferenceFragment mspf = new MeetingSubPreferenceFragment();

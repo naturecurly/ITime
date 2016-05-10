@@ -128,8 +128,10 @@ public class MainActivity extends AppCompatActivity implements
         meetingFragment = new MeetingFragment();
         settingsFragment = new SettingsFragment();
         inboxFragment = new InboxFragment();
-        getSupportFragmentManager().beginTransaction().add(R.id.realtab_content, calendarFragment).commit();
-        getSupportFragmentManager().beginTransaction().add(R.id.realtab_content, inboxFragment).commit();
+        getSupportFragmentManager().beginTransaction()
+                .add(R.id.realtab_content, inboxFragment)
+                .add(R.id.realtab_content, calendarFragment)
+                .commit();
     }
 
     private void showFragment(Fragment me) {
@@ -178,6 +180,8 @@ public class MainActivity extends AppCompatActivity implements
             settingsFragment.handleConfilct(mEventList, mToday);
         } else if (me == inboxFragment) {
             //inboxFragment.setTitle();
+            mEventList.setVisibility(View.GONE);
+            mToday.setVisibility(View.GONE);
             title.setText("Unread");
 
         }

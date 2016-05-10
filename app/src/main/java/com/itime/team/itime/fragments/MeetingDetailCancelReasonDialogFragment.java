@@ -114,7 +114,7 @@ public class MeetingDetailCancelReasonDialogFragment extends DialogFragment impl
         }, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {
-
+                deleteEvent();
             }
         });
         MySingleton.getInstance(getContext()).addToRequestQueue(request);
@@ -154,7 +154,7 @@ public class MeetingDetailCancelReasonDialogFragment extends DialogFragment impl
         }, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {
-
+                deleteEvent();
             }
         });
         MySingleton.getInstance(getContext()).addToRequestQueue(request);

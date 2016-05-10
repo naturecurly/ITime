@@ -346,24 +346,20 @@ public class NewMeetingActivity extends AppCompatActivity implements View.OnTouc
             startActivityForResult(intent, 1);
         }else if(v.getId() == mCalendar.getId()) {
             mCalendar.setText(Events.calendarTypeList.get(0).calendarName);
-            mCalendar.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
+                NewEventCalendarTypeDialogFragment dialog = new NewEventCalendarTypeDialogFragment();
+                Bundle bundle = new Bundle();
+                bundle.putInt(NewEventCalendarTypeDialogFragment.SELECTED, Events.calendarTypeList.indexOf(calendarTypeString));
+                dialog.setArguments(bundle);
+                dialog.setListener(new RepeatSelectionListener() {
+                    @Override
+                    public void selectItem(int positon) {
+                        calendarTypeString = Events.calendarTypeList.get(positon);
+                        mCalendar.setText(Events.calendarTypeList.get(positon).calendarName);
+                    }
+                });
+                dialog.show(getSupportFragmentManager(), "calendar_dialog");
 
-                    NewEventCalendarTypeDialogFragment dialog = new NewEventCalendarTypeDialogFragment();
-                    Bundle bundle = new Bundle();
-                    bundle.putInt(NewEventCalendarTypeDialogFragment.SELECTED, Events.calendarTypeList.indexOf(calendarTypeString));
-                    dialog.setArguments(bundle);
-                    dialog.setListener(new RepeatSelectionListener() {
-                        @Override
-                        public void selectItem(int positon) {
-                            calendarTypeString = Events.calendarTypeList.get(positon);
-                            mCalendar.setText(Events.calendarTypeList.get(positon).calendarName);
-                        }
-                    });
-                    dialog.show(getSupportFragmentManager(), "calendar_dialog");
-                }
-            });
+
         }
     }
 
@@ -451,7 +447,11 @@ public class NewMeetingActivity extends AppCompatActivity implements View.OnTouc
         }, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {
-
+                setResult(RESULT_OK);
+                User.hasNewMeeting = true;
+                Toast.makeText(getApplicationContext(),
+                        getString(R.string.new_meeting_send_invitation_successful), Toast.LENGTH_SHORT).show();
+                finish();
             }
         });
         MySingleton.getInstance(this).addToRequestQueue(request);

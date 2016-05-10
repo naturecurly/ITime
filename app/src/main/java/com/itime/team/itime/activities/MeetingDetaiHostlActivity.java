@@ -530,7 +530,7 @@ public class MeetingDetaiHostlActivity extends AppCompatActivity implements View
 
     private void deleteMeeting(){
         MeetingDetailCancelReasonDialogFragment dialog
-                = new MeetingDetailCancelReasonDialogFragment(mMeetingId, mMeetingInfo.getToken(),true);
+                = new MeetingDetailCancelReasonDialogFragment(mMeetingId, mMeetingInfo.getToken(),mEventId,true);
         dialog.show(getSupportFragmentManager(),"reasonQuitDialog");
     }
 

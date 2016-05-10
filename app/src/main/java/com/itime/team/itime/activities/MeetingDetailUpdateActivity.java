@@ -357,24 +357,18 @@ public class MeetingDetailUpdateActivity extends AppCompatActivity implements Vi
             startActivityForResult(intent, 1);
         }else if (v.getId() == mCalendar.getId()) {
             mCalendar.setText(Events.calendarTypeList.get(0).calendarName);
-            mCalendar.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-
-                    NewEventCalendarTypeDialogFragment dialog = new NewEventCalendarTypeDialogFragment();
-                    Bundle bundle = new Bundle();
-                    bundle.putInt(NewEventCalendarTypeDialogFragment.SELECTED, Events.calendarTypeList.indexOf(calendarTypeString));
-                    dialog.setArguments(bundle);
-                    dialog.setListener(new RepeatSelectionListener() {
-                        @Override
-                        public void selectItem(int positon) {
-                            calendarTypeString = Events.calendarTypeList.get(positon);
-                            mCalendar.setText(Events.calendarTypeList.get(positon).calendarName);
-                        }
-                    });
-                    dialog.show(getSupportFragmentManager(), "calendar_dialog");
-                }
-            });
+                NewEventCalendarTypeDialogFragment dialog = new NewEventCalendarTypeDialogFragment();
+                Bundle bundle = new Bundle();
+                bundle.putInt(NewEventCalendarTypeDialogFragment.SELECTED, Events.calendarTypeList.indexOf(calendarTypeString));
+                dialog.setArguments(bundle);
+                dialog.setListener(new RepeatSelectionListener() {
+                    @Override
+                    public void selectItem(int positon) {
+                        calendarTypeString = Events.calendarTypeList.get(positon);
+                        mCalendar.setText(Events.calendarTypeList.get(positon).calendarName);
+                    }
+                });
+                dialog.show(getSupportFragmentManager(), "calendar_dialog");
         }
     }
 

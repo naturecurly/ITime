@@ -73,6 +73,7 @@ import org.json.JSONObject;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -365,7 +366,7 @@ public class ImportGoogleCalendarActivity extends AppCompatActivity
      * An asynchronous task that handles the Google Calendar API call.
      * Placing the API calls in their own task ensures the UI stays responsive.
      */
-    private class MakeRequestTask extends AsyncTask<Void, Void, List<String>> {
+    private class MakeRequestTask extends AsyncTask<Void, String, List<String>> {
         private com.google.api.services.calendar.Calendar mService = null;
         private Exception mLastError = null;
         final MediaType JSON = MediaType.parse("application/json; charset=utf-8");
@@ -390,7 +391,7 @@ public class ImportGoogleCalendarActivity extends AppCompatActivity
         protected List<String> doInBackground(Void... params) {
             try {
                 //return getDataFromApi();
-                List<String> calendars =  getCalendarLists();
+                Map<String, String> calendars =  getCalendarLists();
                 List<String> result = importEvents(calendars);
                 /*
                 http://stackoverflow.com/questions/18030486/google-oauth2-application-remove-self-from-user-authenticated-applications
@@ -416,42 +417,12 @@ public class ImportGoogleCalendarActivity extends AppCompatActivity
         }
 
         /**
-         * Fetch a list of the next 10 events from the primary calendar.
-         * @return List of Strings describing returned events.
-         * @throws IOException
-         */
-        private List<String> getDataFromApi() throws IOException {
-            // List the next 10 events from the primary calendar.
-            DateTime now = new DateTime(System.currentTimeMillis());
-            List<String> eventStrings = new ArrayList<String>();
-            Events events = mService.events().list("primary")
-                    .setMaxResults(10)
-                            //.setTimeMin(now)
-                    .setOrderBy("startTime")
-                    .setSingleEvents(true)
-                    .execute();
-            List<Event> items = events.getItems();
-
-            for (Event event : items) {
-                DateTime start = event.getStart().getDateTime();
-                if (start == null) {
-                    // All-day events don't have start times, so just use
-                    // the start date.
-                    start = event.getStart().getDate();
-                }
-                eventStrings.add(
-                        String.format("%s (%s)", event.getSummary(), start));
-            }
-            return eventStrings;
-        }
-
-        /**
          * get all calendars and return their ids
          * @return a list of calendar ids
          * @throws IOException
          */
-        private List<String> getCalendarLists() throws IOException {
-            List<String> calendarIds = new ArrayList();
+        private Map<String, String> getCalendarLists() throws IOException {
+            Map<String, String> calendarIds = new HashMap<>();
             // Iterate through entries in calendar list
             String pageToken = null;
             do {
@@ -459,7 +430,7 @@ public class ImportGoogleCalendarActivity extends AppCompatActivity
                 List<CalendarListEntry> items = calendarList.getItems();
 
                 for (CalendarListEntry calendarListEntry : items) {
-                    calendarIds.add(calendarListEntry.getId());
+                    calendarIds.put(calendarListEntry.getId(), calendarListEntry.getSummary());
                     // update calendar type
                     ParcelableCalendarType calendarType = new ParcelableCalendarType(User.ID);
                     final String calendarId = User.ID + "_" + calendarListEntry.getId();
@@ -486,26 +457,34 @@ public class ImportGoogleCalendarActivity extends AppCompatActivity
                 }
                 pageToken = calendarList.getNextPageToken();
             } while (pageToken != null);
+            publishProgress("Getting calendar list success. Total calendars count is " + calendarIds.size());
             return calendarIds;
         }
 
         /**
          * get all calendars events
-         * @param calendars  a list of calendar ids
+         * @param calendars  a map of calendar ids and its name
          * @return all events of all calendars
          */
-        private List<String> importEvents(List<String> calendars) throws IOException{
+        private List<String> importEvents(Map<String, String> calendars) throws IOException{
             List<String> result = new ArrayList<String>();
-            for (String calendar : calendars) {
-                Events events = mService.events().list(calendar)
+            int total = calendars.size();
+            int i = 0;
+            for (Map.Entry<String, String> calendar : calendars.entrySet()) {
+                publishProgress(String.format("Importing calendar %s. %d/%d", calendar.getValue()
+                        , i, total));
+                Events events = mService.events().list(calendar.getKey())
                         .setOrderBy("startTime")
                         .setSingleEvents(true)
                         .setTimeZone("UTC")
                         .execute();
 
-                final String calendarId = User.ID + "_" + calendar;
+                final String calendarId = User.ID + "_" + calendar.getKey();
                 transferOnlineCalendarDataToLocal(events.getItems(), calendarId);
-                result.add(String.format("Import calendar %s success", calendar));
+                result.add(String.format("Import calendar %s success", calendar.getValue()));
+                i++;
+                publishProgress(String.format("Import calendar %s success. %d/%d", calendar.getValue()
+                , i, total));
             }
             return result;
         }
@@ -650,12 +629,14 @@ public class ImportGoogleCalendarActivity extends AppCompatActivity
         @Override
         protected void onPostExecute(List<String> output) {
             mProgress.hide();
+            mProgress.setMessage("");
             if (output == null || output.size() == 0) {
                 mOutputText.setText("No results returned.");
             } else {
                 output.add(0, "Data retrieved using the Google Calendar API:");
                 mOutputText.setText(TextUtils.join("\n", output));
             }
+            mCredential.setSelectedAccountName(null);
         }
 
         @Override
@@ -677,6 +658,11 @@ public class ImportGoogleCalendarActivity extends AppCompatActivity
             } else {
                 mOutputText.setText("Request cancelled.");
             }
+        }
+
+        @Override
+        protected void onProgressUpdate(String... values) {
+            mProgress.setMessage(values[0]);
         }
     }
 

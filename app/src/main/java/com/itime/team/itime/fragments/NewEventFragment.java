@@ -160,7 +160,6 @@ public class NewEventFragment extends Fragment {
         alert = (TextView) view.findViewById(R.id.new_event_alert);
         calendar_type = (TextView) view.findViewById(R.id.new_event_calendar_type);
         punctual = (CheckBox) view.findViewById(R.id.new_event_punctual);
-
         punctual.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {

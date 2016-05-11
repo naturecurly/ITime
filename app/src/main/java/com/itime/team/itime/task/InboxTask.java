@@ -27,6 +27,8 @@ import com.android.volley.toolbox.JsonObjectRequest;
 import com.bluelinelabs.logansquare.LoganSquare;
 import com.itime.team.itime.bean.URLs;
 import com.itime.team.itime.model.ParcelableMessage;
+import com.itime.team.itime.utils.JsonArrayAuthRequest;
+import com.itime.team.itime.utils.JsonObjectAuthRequest;
 import com.itime.team.itime.utils.MySingleton;
 
 import org.json.JSONArray;
@@ -83,7 +85,7 @@ public class InboxTask {
         }
 
         String url = URLs.LOAD_INBOX;
-        JsonArrayRequest request = new JsonArrayRequest(
+        JsonArrayAuthRequest request = new JsonArrayAuthRequest(
                 Request.Method.POST, url, jsonObject.toString(),
                 new Response.Listener<JSONArray>() {
                     @Override
@@ -140,7 +142,7 @@ public class InboxTask {
         }
 
         String url = URLs.UNREAD_MESSAGE_COUNT;
-        JsonObjectRequest request = new JsonObjectRequest(
+        JsonObjectAuthRequest request = new JsonObjectAuthRequest(
                 Request.Method.POST, url, jsonObject.toString(),
                 new Response.Listener<JSONObject>() {
                     @Override
@@ -177,7 +179,7 @@ public class InboxTask {
         }
 
         String url = URLs.MARK_MESSAGE_TO_READ;
-        JsonObjectRequest request = new JsonObjectRequest(
+        JsonObjectAuthRequest request = new JsonObjectAuthRequest(
                 Request.Method.POST, url, jsonObject.toString(),
                 new Response.Listener<JSONObject>() {
                     @Override
@@ -214,7 +216,7 @@ public class InboxTask {
         }
 
         String url = URLs.MARK_MESSAGE_TO_USELESS;
-        JsonObjectRequest request = new JsonObjectRequest(
+        JsonObjectAuthRequest request = new JsonObjectAuthRequest(
                 Request.Method.POST, url, jsonObject.toString(),
                 new Response.Listener<JSONObject>() {
                     @Override
@@ -251,7 +253,7 @@ public class InboxTask {
         }
 
         String url = URLs.MARK_ALL_MESSAGES_TO_READ;
-        JsonObjectRequest request = new JsonObjectRequest(
+        JsonObjectAuthRequest request = new JsonObjectAuthRequest(
                 Request.Method.POST, url, jsonObject.toString(),
                 new Response.Listener<JSONObject>() {
                     @Override
@@ -288,7 +290,7 @@ public class InboxTask {
         }
 
         String url = URLs.DELETE_MESSAGE;
-        JsonObjectRequest request = new JsonObjectRequest(
+        JsonObjectAuthRequest request = new JsonObjectAuthRequest(
                 Request.Method.POST, url, jsonObject.toString(),
                 new Response.Listener<JSONObject>() {
                     @Override
@@ -325,7 +327,7 @@ public class InboxTask {
         }
 
         String url = URLs.DELETE_ALL_MESSAGES;
-        JsonObjectRequest request = new JsonObjectRequest(
+        JsonObjectAuthRequest request = new JsonObjectAuthRequest(
                 Request.Method.POST, url, jsonObject.toString(),
                 new Response.Listener<JSONObject>() {
                     @Override

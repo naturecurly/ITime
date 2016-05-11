@@ -208,7 +208,8 @@
 
                 <LinearLayout
                     style="@style/MeetingTimeLayout"
-                    android:layout_height="40dp">
+                    android:layout_height="40dp"
+                    android:visibility="gone">
 
                     <TextView
                         style="@style/MeetingText"

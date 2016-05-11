@@ -3,12 +3,14 @@ package com.itime.team.itime.fragments;
 
 import android.app.DatePickerDialog;
 import android.app.TimePickerDialog;
+import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
+import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -38,7 +40,9 @@ import com.itime.team.itime.bean.URLs;
 import com.itime.team.itime.bean.User;
 import com.itime.team.itime.listener.RepeatSelectionListener;
 import com.itime.team.itime.model.ParcelableCalendarType;
+import com.itime.team.itime.receivers.RefreshBroadcastReceiver;
 import com.itime.team.itime.utils.DateUtil;
+import com.itime.team.itime.utils.JsonArrayFormRequest;
 import com.itime.team.itime.utils.JsonManager;
 import com.itime.team.itime.utils.JsonObjectFormRequest;
 import com.itime.team.itime.utils.MySingleton;
@@ -95,7 +99,7 @@ public class NewEventFragment extends Fragment {
     private String alertString = "At time of Departure";
     public String event_longitude = "";
     public String event_latitude = "";
-
+    JSONObject geoLocation = null;
     private ParcelableCalendarType calendarTypeString = Events.calendarTypeList.get(0);
     public String event_venue_location = "";
     private int is_punctual;
@@ -109,6 +113,7 @@ public class NewEventFragment extends Fragment {
         mDayOfMonth = Integer.valueOf(dateSelected.split("-")[0]);
         mMonthOfYear = Integer.valueOf(dateSelected.split("-")[1]) - 1;
         mYear = Integer.valueOf(dateSelected.split("-")[2]);
+        Context context = getActivity();
     }
 
     @Override
@@ -131,6 +136,9 @@ public class NewEventFragment extends Fragment {
 
 
     public void init(View view) {
+        for (ParcelableCalendarType p : Events.calendarTypeList) {
+            Log.d("calendar_test", p.calendarName);
+        }
         mHour = c.get(Calendar.HOUR_OF_DAY);
         mMin = 0;
         calendar.set(mYear, mMonthOfYear, mDayOfMonth, mHour, mMin);
@@ -152,7 +160,6 @@ public class NewEventFragment extends Fragment {
         alert = (TextView) view.findViewById(R.id.new_event_alert);
         calendar_type = (TextView) view.findViewById(R.id.new_event_calendar_type);
         punctual = (CheckBox) view.findViewById(R.id.new_event_punctual);
-
         punctual.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
@@ -272,7 +279,7 @@ public class NewEventFragment extends Fragment {
             }
         });
 
-        alert.setText("At time of Departure");
+        alert.setText(alertString);
         alert.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -346,8 +353,7 @@ public class NewEventFragment extends Fragment {
             case R.id.new_event_menu_send:
                 Toast.makeText(getContext(), "hello, it's me", Toast.LENGTH_LONG).show();
                 postEvent();
-                getActivity().setResult(getActivity().RESULT_OK, new Intent());
-                getActivity().finish();
+
                 break;
         }
         return super.onOptionsItemSelected(item);
@@ -377,13 +383,16 @@ public class NewEventFragment extends Fragment {
             object.put("event_venue_location", event_venue_location);
 
             object.put("event_repeats_type", repeatString);
-
-            object.put("event_latitude", event_latitude);
-            object.put("event_longitude", event_longitude);
-
+            if (geoLocation != null) {
+                object.put("event_latitude", geoLocation.getDouble("lat"));
+                object.put("event_longitude", geoLocation.getDouble("lng"));
+            } else {
+                object.put("event_latitude", "");
+                object.put("event_longitude", "");
+            }
             object.put("event_last_sug_dep_time", start_datetime);
-            object.put("event_last_time_on_way_in_second", "0");
-            object.put("event_last_distance_in_meter", "0");
+            object.put("event_last_time_on_way_in_second", 0);
+            object.put("event_last_distance_in_meter", 0);
 
             object.put("event_name_new", event_name.getText());
             object.put("event_comment_new", event_comment.getText());
@@ -396,12 +405,16 @@ public class NewEventFragment extends Fragment {
 
             object.put("event_repeats_type_new", repeatString);
             //punctual
-            object.put("event_latitude_new", event_latitude);
-            object.put("event_longitude_new", event_longitude);
-
+            if (geoLocation != null) {
+                object.put("event_latitude_new", geoLocation.getDouble("lat"));
+                object.put("event_longitude_new", geoLocation.getDouble("lng"));
+            } else {
+                object.put("event_latitude_new", "");
+                object.put("event_longitude_new", "");
+            }
             object.put("event_last_sug_dep_time_new", start_datetime);
-            object.put("event_last_time_on_way_in_second_new", "0");
-            object.put("event_last_distance_in_meter_new", "0");
+            object.put("event_last_time_on_way_in_second_new", 0);
+            object.put("event_last_distance_in_meter_new", 0);
 
             object.put("is_meeting", 0);
             object.put("is_host", 0);
@@ -444,10 +457,11 @@ public class NewEventFragment extends Fragment {
 
         Map<String, String> params = new HashMap();
         params.put("json", jsonObject.toString());
-        JsonObjectFormRequest request = new JsonObjectFormRequest(Request.Method.POST, url, params, new Response.Listener<JSONObject>() {
+        JsonArrayFormRequest request = new JsonArrayFormRequest(Request.Method.POST, url, params, new Response.Listener<JSONArray>() {
             @Override
-            public void onResponse(JSONObject response) {
-
+            public void onResponse(JSONArray response) {
+                getActivity().setResult(getActivity().RESULT_OK, new Intent());
+                getActivity().finish();
             }
         }, new Response.ErrorListener() {
             @Override
@@ -457,7 +471,9 @@ public class NewEventFragment extends Fragment {
         });
         MySingleton.getInstance(getActivity()).addToRequestQueue(request);
 
+
     }
+
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
@@ -476,7 +492,7 @@ public class NewEventFragment extends Fragment {
                             JSONObject result = response.getJSONObject("result");
                             String locations = result.getString("formatted_address");
                             JSONObject geo = result.getJSONObject("geometry");
-                            JSONObject geoLocation = geo.getJSONObject("location");
+                            geoLocation = geo.getJSONObject("location");
                             event_latitude = Double.toString(geoLocation.getDouble("lat"));
                             event_longitude = Double.toString(geoLocation.getDouble("lng"));
                             event_venue_location = locations;

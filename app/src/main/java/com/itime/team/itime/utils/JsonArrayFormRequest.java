@@ -16,6 +16,7 @@
 
 package com.itime.team.itime.utils;
 
+import com.android.volley.AuthFailureError;
 import com.android.volley.NetworkResponse;
 import com.android.volley.ParseError;
 import com.android.volley.Response;
@@ -27,6 +28,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.UnsupportedEncodingException;
+import java.util.HashMap;
 import java.util.Map;
 
 /**
@@ -34,6 +36,25 @@ import java.util.Map;
  * PROTOCOL_CONTENT_TYPE is `application/x-www-form-urlencoded` derived from Request
  */
 public class JsonArrayFormRequest extends JsonFormRequest<JSONArray> {
+
+    private String mToken;
+    private Map<String, String> mHeaders;
+
+    /**
+     * Creates a new request.
+     * @param method the HTTP method to use
+     * @param url URL to fetch the JSON from
+     * @param params A {@link Map<String, String>} contains all params in <Key, Value> to post with
+     *   the request. Null is allowed and indicates no parameters will be posted along with request.
+     * @param listener Listener to receive the JSON response
+     * @param errorListener Error listener, or null to ignore errors.
+     */
+    public JsonArrayFormRequest(int method, String url, Map<String, String> params, String token,
+                                Response.Listener<JSONArray> listener, Response.ErrorListener errorListener) {
+        super(method, url, params, listener,
+                errorListener);
+        mToken = token;
+    }
 
     /**
      * Creates a new request.
@@ -84,5 +105,20 @@ public class JsonArrayFormRequest extends JsonFormRequest<JSONArray> {
         } catch (JSONException je) {
             return Response.error(new ParseError(je));
         }
+    }
+
+    @Override
+    public Map<String, String> getHeaders() throws AuthFailureError {
+        if (mToken != null) {
+            mHeaders = new HashMap<>();
+            mHeaders.put("Authorization", "Bearer " + mToken);
+            return mHeaders;
+        } else {
+            return super.getHeaders();
+        }
+    }
+
+    public void setmToken(String mToken) {
+        this.mToken = mToken;
     }
 }

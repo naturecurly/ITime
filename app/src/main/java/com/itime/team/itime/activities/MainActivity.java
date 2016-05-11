@@ -1,10 +1,9 @@
 package com.itime.team.itime.activities;
 
 import android.content.BroadcastReceiver;
-import android.content.ContentValues;
 import android.content.Context;
-import android.content.Intent;
-import android.database.sqlite.SQLiteDatabase;
+import android.graphics.drawable.Drawable;
+import android.graphics.drawable.LayerDrawable;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -30,22 +29,17 @@ import com.android.volley.Request;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.bugtags.library.Bugtags;
-import com.facebook.login.LoginManager;
 import com.itime.team.itime.R;
 import com.itime.team.itime.bean.URLs;
 import com.itime.team.itime.bean.User;
-import com.itime.team.itime.database.UserTableHelper;
 import com.itime.team.itime.fragments.CalendarFragment;
 import com.itime.team.itime.fragments.InboxFragment;
 import com.itime.team.itime.fragments.MeetingFragment;
 import com.itime.team.itime.fragments.SettingsFragment;
-import com.itime.team.itime.model.ParcelableMessage;
-import com.itime.team.itime.model.utils.MessageType;
-import com.itime.team.itime.task.MessageHandler;
-import com.itime.team.itime.utils.ITimeGcmPreferences;
 import com.itime.team.itime.utils.JsonArrayFormRequest;
 import com.itime.team.itime.utils.JsonObjectFormRequest;
 import com.itime.team.itime.utils.MySingleton;
+import com.itime.team.itime.views.widget.BadgeDrawable;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -75,6 +69,8 @@ public class MainActivity extends AppCompatActivity implements
 
     private boolean mIsFriend;
 
+    private LayerDrawable mBadgeIcon;
+
 
     // GCM Notification Receiver
     private BroadcastReceiver mNotificationBroadcastReceiver;
@@ -85,7 +81,12 @@ public class MainActivity extends AppCompatActivity implements
         super.onCreate(savedInstanceState);
         Bugtags.start("26329ac444b1350d86677cfe9eec71d6", getApplication(), Bugtags.BTGInvocationEventBubble);
         setContentView(R.layout.activity_main);
+
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        RadioButton br = (RadioButton) findViewById(R.id.button_inbox);
+        mBadgeIcon = (LayerDrawable) (br.getCompoundDrawables()[1]); // left, top, right, bottom
+        setBadgeCount(this, "0");
+
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayShowTitleEnabled(false);
         fragmentManager = getSupportFragmentManager();
@@ -127,7 +128,10 @@ public class MainActivity extends AppCompatActivity implements
         meetingFragment = new MeetingFragment();
         settingsFragment = new SettingsFragment();
         inboxFragment = new InboxFragment();
-        getSupportFragmentManager().beginTransaction().add(R.id.realtab_content, calendarFragment).commit();
+        getSupportFragmentManager().beginTransaction()
+                .add(R.id.realtab_content, inboxFragment)
+                .add(R.id.realtab_content, calendarFragment)
+                .commit();
     }
 
     private void showFragment(Fragment me) {
@@ -140,6 +144,10 @@ public class MainActivity extends AppCompatActivity implements
             fragmentManager.beginTransaction().hide(settingsFragment).commit();
             fragmentManager.beginTransaction().hide(inboxFragment).commit();
             fragmentManager.beginTransaction().show(calendarFragment).commit();
+            if(User.hasNewMeeting){
+                calendarFragment.refresh();
+                User.hasNewMeeting = false;
+            }
         } else if (me == meetingFragment) {
             fragmentManager.beginTransaction().hide(calendarFragment).commit();
             fragmentManager.beginTransaction().hide(settingsFragment).commit();
@@ -172,6 +180,8 @@ public class MainActivity extends AppCompatActivity implements
             settingsFragment.handleConfilct(mEventList, mToday);
         } else if (me == inboxFragment) {
             //inboxFragment.setTitle();
+            mEventList.setVisibility(View.GONE);
+            mToday.setVisibility(View.GONE);
             title.setText("Unread");
 
         }
@@ -228,6 +238,7 @@ public class MainActivity extends AppCompatActivity implements
     protected void onResume() {
         super.onResume();
         Log.i(LOG_TAG, "onResume");
+        isFriend();
         Bugtags.onResume(this);
     }
 
@@ -270,8 +281,13 @@ public class MainActivity extends AppCompatActivity implements
         MySingleton.getInstance(this).addToRequestQueue(request);
     }
 
+
     private void isFriend(){
-        final String id = getIntent().getStringExtra("invitation");
+        String id = getIntent().getStringExtra("invitation");
+        if (!User.addFriendResume.equals("")){
+            id = User.addFriendResume;
+            User.addFriendResume = "";
+        }
         if (id == null || id.equals("")){
             return;
         }
@@ -292,21 +308,22 @@ public class MainActivity extends AppCompatActivity implements
         Map<String, String> params = new HashMap();
         params.put("json", jsonObject.toString());
 
+        final String finalId = id;
         JsonArrayFormRequest request = new JsonArrayFormRequest(Request.Method.POST, url, params, new Response.Listener<JSONArray>() {
             @Override
             public void onResponse(JSONArray response) {
                 try {
                     for (int i = 0; i < response.length(); i++) {
                         JSONObject json = response.getJSONObject(i);
-                        if (json.get("user_id").toString().equals(id)){
+                        if (json.get("user_id").toString().equals(finalId)){
                             mIsFriend = true;
                             break;
                         }
                     }
                     if(mIsFriend == false) {
-                        addFriend(id);
+                        addFriend(finalId);
                     } else {
-                        String warning = String.format(getString(R.string.repeat_add_friend), id);
+                        String warning = String.format(getString(R.string.repeat_add_friend), finalId);
                         Toast.makeText(getApplication(), warning, Toast.LENGTH_LONG).show();
                     }
                 } catch (JSONException e){
@@ -321,4 +338,23 @@ public class MainActivity extends AppCompatActivity implements
         });
         MySingleton.getInstance(this).addToRequestQueue(request);
     }
+
+    public static void setBadgeCount(Context context, LayerDrawable icon, String count) {
+        BadgeDrawable badge; // Reuse drawable if possible
+        Drawable reuse = icon.findDrawableByLayerId(R.id.ic_badge); //getting the layer 2
+        if (reuse != null && reuse instanceof BadgeDrawable) {
+            badge = (BadgeDrawable) reuse;
+        }
+        else {
+            badge = new BadgeDrawable(context);
+        }
+        badge.setCount(count);
+        icon.mutate();
+        icon.setDrawableByLayerId(R.id.ic_badge, badge);
+    }
+
+    public void setBadgeCount(Context context, String count) {
+        setBadgeCount(context, mBadgeIcon, count);
+    }
+
 }

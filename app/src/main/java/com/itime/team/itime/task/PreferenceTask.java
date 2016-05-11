@@ -30,6 +30,7 @@ import com.itime.team.itime.bean.URLs;
 import com.itime.team.itime.database.ITimeDataStore;
 import com.itime.team.itime.model.ParcelablePreference;
 import com.itime.team.itime.utils.ContentValuesCreator;
+import com.itime.team.itime.utils.JsonArrayAuthRequest;
 import com.itime.team.itime.utils.MySingleton;
 
 import org.json.JSONArray;
@@ -102,7 +103,7 @@ public class PreferenceTask {
             return;
         }
 
-        JsonArrayRequest request = new JsonArrayRequest(
+        JsonArrayAuthRequest request = new JsonArrayAuthRequest(
                 Request.Method.POST, url, jsonObject.toString(),
                 new Response.Listener<JSONArray>() {
                     @Override

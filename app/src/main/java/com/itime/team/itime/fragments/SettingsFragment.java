@@ -20,10 +20,12 @@ import android.app.AlertDialog;
 import android.content.ContentValues;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.LoaderManager;
@@ -37,6 +39,7 @@ import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.android.volley.Request;
 import com.android.volley.Response;
@@ -52,6 +55,7 @@ import com.itime.team.itime.database.ITimeDataStore.User;
 import com.itime.team.itime.database.UserTableHelper;
 import com.itime.team.itime.model.ParcelableUser;
 import com.itime.team.itime.task.UserTask;
+import com.itime.team.itime.utils.ITimeGcmPreferences;
 import com.itime.team.itime.utils.JsonObjectFormRequest;
 import com.itime.team.itime.utils.MySingleton;
 
@@ -78,6 +82,7 @@ public class SettingsFragment extends Fragment implements View.OnClickListener, 
     private static final int SETTINGS_CALENDAR_TYPE_ID = R.id.setting_calendar_type;
     private static final int SETTINGS_CLEAR_CALENDAR_ID = R.id.setting_clear_calendar;
     private static final int SETTING_LOGOUT_ID = R.id.settings_btn_logout;
+    private static final int SETTINGS_LANGUAGE_ID = R.id.setting_language;
 
     private static final String SETTINGS = "Settings";
     private static final int PROFILE_SETTINGS = 1;
@@ -86,6 +91,7 @@ public class SettingsFragment extends Fragment implements View.OnClickListener, 
     private static final int ALERT_TIME_SETTINGS = 4;
     private static final int CALENDAR_TYPE_SETTINGS = 7;
     private static final int CLEAR_CALENDAR_SETTINGS = 8;
+    private static final int LANGUAGE_SETTINGS = 9;
 
     //Views
     private TextView mUserNameTextView;
@@ -123,6 +129,8 @@ public class SettingsFragment extends Fragment implements View.OnClickListener, 
         v5.setOnClickListener(this);
         View v6 = view.findViewById(SETTING_LOGOUT_ID);
         v6.setOnClickListener(this);
+        View languageSettingView = view.findViewById(SETTINGS_LANGUAGE_ID);
+        languageSettingView.setOnClickListener(this);
 
         // Hold the views
         mUserIdTextView = (TextView) view.findViewById(R.id.setting_profile_id);
@@ -173,6 +181,8 @@ public class SettingsFragment extends Fragment implements View.OnClickListener, 
                 break;
 
             case SETTINGS_CLEAR_CALENDAR_ID:
+                intent.putExtra(SETTINGS, CLEAR_CALENDAR_SETTINGS);
+                startActivity(intent);
                 break;
 
             case SETTING_LOGOUT_ID: {
@@ -191,6 +201,11 @@ public class SettingsFragment extends Fragment implements View.OnClickListener, 
                     }
                 };
                 userTask.logout(com.itime.team.itime.bean.User.ID, callback);
+                break;
+            }
+
+            case SETTINGS_LANGUAGE_ID: {
+                setLanguage();
                 break;
             }
             default:
@@ -351,14 +366,30 @@ public class SettingsFragment extends Fragment implements View.OnClickListener, 
                         Intent intent = new Intent(getActivity(), ImportGoogleCalendarActivity.class);
                         startActivity(intent);
                         break;
-                    case 1:
-                        break;
                     default:
                         break;
                 }
             }
         })
                 .setTitle(getString(R.string.import_calendar));
+        builder.show();
+    }
+
+    public static final String ITIME_LOCALE = "itime_locale";
+
+    private void setLanguage() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+        builder.setItems(R.array.language_settings_list, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                String localeCode = getResources().getStringArray(R.array.language_settings_list_values)[which];
+                SharedPreferences sharedPreferences =
+                        PreferenceManager.getDefaultSharedPreferences(getActivity().getApplicationContext());
+                sharedPreferences.edit().putString(ITIME_LOCALE, localeCode).apply();
+                Toast.makeText(getActivity().getApplicationContext(), getString(R.string.activate_language_change), Toast.LENGTH_SHORT);
+            }
+        })
+                .setTitle(getString(R.string.set_language));
         builder.show();
     }
 }

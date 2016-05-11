@@ -6,6 +6,7 @@
         android:minSdkVersion="8"
         android:targetSdkVersion="17" />
 
+    <uses-permission android:name="android.permission.AUTHENTICATE_ACCOUNTS" />
     <uses-permission android:name="android.permission.WAKE_LOCK" />
 
 
@@ -26,6 +27,9 @@
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <!-- access to calendar require permission of get accounts-->
     <uses-permission android:name="android.permission.GET_ACCOUNTS" />
+    <uses-permission android:name="android.permission.MANAGE_ACCOUNTS" />
+    <uses-permission android:name="android.permission.USE_CREDENTIALS" />
+
 
 
     <!-- Creating Permission to receive Google Maps -->
@@ -78,7 +82,7 @@
                 <action android:name="android.intent.action.VIEW" />
                 <data
                     android:host="54.200.31.237"
-                    android:pathPrefix="/openwith"
+                    android:pathPrefix="/redirect_friend_request"
                     android:scheme="http" />
                 <!--<data android:scheme="http" android:host="itime.app" android:pathPrefix="/openwith"/>-->
                 <category android:name="android.intent.category.DEFAULT" />

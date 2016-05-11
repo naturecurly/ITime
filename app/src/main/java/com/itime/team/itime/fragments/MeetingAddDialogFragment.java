@@ -66,7 +66,7 @@ public class MeetingAddDialogFragment extends DialogFragment implements DataRequ
         String[] info = User.ID.split("@");
         String name = info[0];
         String address = info.length > 1 ? info[1] : "";
-        String request = URLs.HEAD + "openwith?id=" + name + "&address=" + address;
+        String request = URLs.HEAD + "redirect_friend_request?id=" + name + "&address=" + address;
         invitationContent = new StringBuilder()
                 .append("<p style='font-weight:bold;'>Hello, this is ")
                 .append(User.ID)
@@ -166,10 +166,6 @@ public class MeetingAddDialogFragment extends DialogFragment implements DataRequ
                     Intent intent = new Intent(getActivity(), CaptureActivity.class);
                     startActivityForResult(intent, 0);
                 }else if (position == 4){   // Add friend by FaceBook
-//                    StringBuffer info = new StringBuffer();
-//                    info.append("Hello, this is ").append(User.ID).append(", please click the link ")
-//                            .append(Html.fromHtml("<a>http://itime.app/openwith?id=" + User.ID + "</a>")).append(" to be my iTime firend. If you do not install the iTime yet, please click following ")
-//                            .append("link to find the App Install iTime");
                     Intent sendIntent = new Intent();
                     sendIntent.setAction(Intent.ACTION_SEND);
                     sendIntent.putExtra(Intent.EXTRA_TEXT, Html.fromHtml(invitationContent).toString());
@@ -193,10 +189,6 @@ public class MeetingAddDialogFragment extends DialogFragment implements DataRequ
                         builder.show();
                     }
                 }else if(position == 5){    // Add friend by WeChat
-//                    StringBuffer info = new StringBuffer();
-//                    info.append("Hello, this is ").append(User.ID).append(", please click the link ")
-//                            .append(Html.fromHtml("<a>http://54.200.31.237:8000/openwith?id=" + User.ID + "</a>").toString()).append(" to be my iTime firend. If you do not install the iTime yet, please click following ")
-//                            .append("link to find the App Install iTime ").append(Html.fromHtml("<a href='http://54.200.31.237:8000/'>click</a>").toString());
                     WXTextObject textObject = new WXTextObject(Html.fromHtml(invitationContent).toString());
 
                     WXMediaMessage msg = new WXMediaMessage();

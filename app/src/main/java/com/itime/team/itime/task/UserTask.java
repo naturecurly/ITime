@@ -29,10 +29,13 @@ import com.android.volley.toolbox.JsonArrayRequest;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.bluelinelabs.logansquare.LoganSquare;
 import com.itime.team.itime.bean.URLs;
+import com.itime.team.itime.bean.User;
 import com.itime.team.itime.database.ITimeDataStore;
 import com.itime.team.itime.model.ParcelableCalendarType;
 import com.itime.team.itime.model.ParcelableUser;
 import com.itime.team.itime.utils.ContentValuesCreator;
+import com.itime.team.itime.utils.JsonArrayAuthRequest;
+import com.itime.team.itime.utils.JsonObjectAuthRequest;
 import com.itime.team.itime.utils.MySingleton;
 
 import org.json.JSONArray;
@@ -88,7 +91,7 @@ public class UserTask {
 
         final String url = URLs.LOAD_USER_INFO;
 
-        JsonObjectRequest request = new JsonObjectRequest(Request.Method.POST, url, jsonObject.toString(),
+        JsonObjectAuthRequest request = new JsonObjectAuthRequest(Request.Method.POST, url, jsonObject.toString(),
                 new Response.Listener<JSONObject>() {
                     @Override
                     public void onResponse(JSONObject response) {
@@ -109,7 +112,7 @@ public class UserTask {
                 new Response.ErrorListener() {
                     @Override
                     public void onErrorResponse(VolleyError error) {
-                        Log.e(LOG_TAG, error.getMessage());
+                        //Log.e(LOG_TAG, error.getMessage());
                     }
                 }
         );
@@ -133,7 +136,7 @@ public class UserTask {
 
         Log.i(LOG_TAG, jsonObject.toString());
         final String url = URLs.UPDATE_USER_INFO;
-        JsonObjectRequest request = new JsonObjectRequest(Request.Method.POST, url, jsonObject.toString(),
+        JsonObjectAuthRequest request = new JsonObjectAuthRequest(Request.Method.POST, url, jsonObject.toString(),
                 new Response.Listener<JSONObject>() {
 
                     @Override
@@ -185,6 +188,9 @@ public class UserTask {
         } else {
             mContext.getContentResolver().insert(userInfoByIdUri, values);
         }
+        // TODO: 10/05/16 Should place to callback outside this function
+        User.defaultAlert = user.defaultAlert;
+        User.lastCalendarType = user.userProfilePicture; // don't ask me, ask Gu Ye!
     }
 
     public void loadCalendarType(String userId, final CallBackCalType callback) {
@@ -199,7 +205,7 @@ public class UserTask {
 
         final String url = URLs.LOAD_USER_CALENDAR_TYPES;
 
-        JsonArrayRequest request = new JsonArrayRequest(Request.Method.POST, url, jsonObject.toString(),
+        JsonArrayAuthRequest request = new JsonArrayAuthRequest(Request.Method.POST, url, jsonObject.toString(),
                 new Response.Listener<JSONArray>() {
                     @Override
                     public void onResponse(JSONArray response) {
@@ -233,7 +239,7 @@ public class UserTask {
         try {
             String calType = LoganSquare.serialize(calendarType);
             final String url = URLs.INSERT_OR_UPDATE_USER_CALENDAR_TYPE;
-            JsonObjectRequest request = new JsonObjectRequest(Request.Method.POST, url, calType,
+            JsonObjectAuthRequest request = new JsonObjectAuthRequest(Request.Method.POST, url, calType,
                     new Response.Listener<JSONObject>() {
                         @Override
                         public void onResponse(JSONObject response) {
@@ -274,7 +280,7 @@ public class UserTask {
             return;
         }
         final String url = URLs.LOG_OUT;
-        JsonObjectRequest request = new JsonObjectRequest(Request.Method.POST, url, jsonObject.toString(),
+        JsonObjectAuthRequest request = new JsonObjectAuthRequest(Request.Method.POST, url, jsonObject.toString(),
                 new Response.Listener<JSONObject>() {
                     @Override
                     public void onResponse(JSONObject response) {
@@ -312,7 +318,7 @@ public class UserTask {
         }
 
         final String url = URLs.SYNC_GCM_REGISTRATION_TOKEN;
-        JsonObjectRequest request = new JsonObjectRequest(Request.Method.POST, url, jsonObject.toString(),
+        JsonObjectAuthRequest request = new JsonObjectAuthRequest(Request.Method.POST, url, jsonObject.toString(),
                 new Response.Listener<JSONObject>() {
                     @Override
                     public void onResponse(JSONObject response) {

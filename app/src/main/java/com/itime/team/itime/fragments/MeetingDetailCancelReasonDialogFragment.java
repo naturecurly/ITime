@@ -17,12 +17,16 @@ import com.android.volley.VolleyError;
 import com.itime.team.itime.R;
 import com.itime.team.itime.bean.URLs;
 import com.itime.team.itime.bean.User;
+import com.itime.team.itime.utils.DateUtil;
+import com.itime.team.itime.utils.JsonArrayFormRequest;
 import com.itime.team.itime.utils.JsonObjectFormRequest;
 import com.itime.team.itime.utils.MySingleton;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -37,10 +41,12 @@ public class MeetingDetailCancelReasonDialogFragment extends DialogFragment impl
     private String meetingID;
     private String token;
     private boolean mIsHost;
+    private String mEventID;
 
-    public MeetingDetailCancelReasonDialogFragment(String meetingID, String token, boolean isHost){
+    public MeetingDetailCancelReasonDialogFragment(String meetingID, String token,String eventID , boolean isHost){
         this.meetingID = meetingID;
         this.token = token;
+        this.mEventID = eventID;
         mIsHost = isHost;
     }
     @Nullable
@@ -96,8 +102,10 @@ public class MeetingDetailCancelReasonDialogFragment extends DialogFragment impl
                     if (!result.equals("success")){
                         Toast.makeText(getContext(), getString(R.string.time_out), Toast.LENGTH_LONG);
                     }else{
-                        MeetingDetailCancelReasonDialogFragment.this.dismiss();
-                        getActivity().finish();
+//                        MeetingDetailCancelReasonDialogFragment.this.dismiss();
+//                        getActivity().setResult(Activity.RESULT_OK);
+//                        getActivity().finish();
+                        deleteEvent();
                     }
                 } catch (JSONException e) {
                     e.printStackTrace();
@@ -106,7 +114,7 @@ public class MeetingDetailCancelReasonDialogFragment extends DialogFragment impl
         }, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {
-
+                deleteEvent();
             }
         });
         MySingleton.getInstance(getContext()).addToRequestQueue(request);
@@ -134,8 +142,10 @@ public class MeetingDetailCancelReasonDialogFragment extends DialogFragment impl
                     if (!result.equals("success")){
                         Toast.makeText(getContext(), getString(R.string.time_out), Toast.LENGTH_LONG);
                     }else{
-                        MeetingDetailCancelReasonDialogFragment.this.dismiss();
-                        getActivity().finish();
+//                        MeetingDetailCancelReasonDialogFragment.this.dismiss();
+                        deleteEvent();
+//                        getActivity().setResult(Activity.RESULT_OK);
+//                        getActivity().finish();
                     }
                 } catch (JSONException e) {
                     e.printStackTrace();
@@ -144,9 +154,55 @@ public class MeetingDetailCancelReasonDialogFragment extends DialogFragment impl
         }, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {
-
+                deleteEvent();
             }
         });
         MySingleton.getInstance(getContext()).addToRequestQueue(request);
+    }
+
+    private void deleteEvent(){
+        JSONObject jsonObject = new JSONObject();
+        JSONObject event = new JSONObject();
+        JSONArray array = new JSONArray();
+        try {
+            event.put("if_deleted", 1);
+            event.put("event_id", mEventID);
+            event.put("event_starts_datetime", DateUtil.formatLocalDateObject(new Date()));
+            event.put("event_ends_datetime", DateUtil.formatLocalDateObject(new Date()));
+            event.put("event_ends_datetime_new", DateUtil.formatLocalDateObject(new Date()));
+            event.put("event_starts_datetime_new", DateUtil.formatLocalDateObject(new Date()));
+            event.put("event_is_punctual", 0);
+            event.put("event_is_punctual_new", 0);
+            event.put("is_long_repeat", 0);
+            array.put(event);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+        try {
+            jsonObject.put("user_id", User.ID);
+            jsonObject.put("local_events", array);
+
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        Map<String, String> params = new HashMap();
+        params.put("json", jsonObject.toString());
+        String url = URLs.SYNC;
+        JsonArrayFormRequest request = new JsonArrayFormRequest(Request.Method.POST, url, params, new Response.Listener<JSONArray>() {
+            @Override
+            public void onResponse(JSONArray response) {
+                getActivity().setResult(getActivity().RESULT_OK);
+                getActivity().finish();
+            }
+        }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+
+            }
+        });
+        MySingleton.getInstance(getActivity()).addToRequestQueue(request);
+
+        Toast.makeText(getActivity(), "Deleted", Toast.LENGTH_SHORT).show();
     }
 }

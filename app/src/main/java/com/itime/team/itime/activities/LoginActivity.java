@@ -23,13 +23,7 @@ import com.android.volley.Request;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.facebook.CallbackManager;
-import com.facebook.FacebookCallback;
-import com.facebook.FacebookException;
-import com.facebook.FacebookSdk;
 import com.facebook.Profile;
-import com.facebook.ProfileTracker;
-import com.facebook.login.LoginResult;
-import com.facebook.login.widget.LoginButton;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GoogleApiAvailability;
 import com.itime.team.itime.R;
@@ -106,7 +100,7 @@ public class LoginActivity extends FragmentActivity implements View.OnClickListe
 
         setTexts();
 
-        linkFaceBook();
+//        linkFaceBook();
 
     }
 
@@ -196,6 +190,8 @@ public class LoginActivity extends FragmentActivity implements View.OnClickListe
                 }else {
                     updateUserTable();
                 }
+
+                User.token = json.getString("connect_token");
                 User.ID = mUsernameStr;
 
                 PreferenceTask preferenceTask = PreferenceTask.getInstance(getApplicationContext());
@@ -329,6 +325,8 @@ public class LoginActivity extends FragmentActivity implements View.OnClickListe
                 }
                 //Intent intent = new Intent(this, MainActivity.class);
 
+                User.token = json.getString("connect_token");
+                Log.i(LOG_TAG, "connect_token: " + User.token);
                 User.ID = mUsernameStr;
 
                 PreferenceTask preferenceTask = PreferenceTask.getInstance(getApplicationContext());
@@ -407,39 +405,39 @@ public class LoginActivity extends FragmentActivity implements View.OnClickListe
                 ,Toast.LENGTH_LONG).show();
     }
 
-    private void linkFaceBook(){
-        FacebookSdk.sdkInitialize(getApplicationContext());
-        callbackManager = CallbackManager.Factory.create();
-        LoginButton loginButton = (LoginButton) findViewById(R.id.login_button);
-        loginButton.registerCallback(callbackManager, new FacebookCallback<LoginResult>() {
-            private ProfileTracker mProfileTracker;
-
-            @Override
-            public void onSuccess(LoginResult loginResult) {
-                if (Profile.getCurrentProfile() == null) {
-
-                    mProfileTracker = new ProfileTracker() {
-                        @Override
-                        protected void onCurrentProfileChanged(Profile profile, Profile profile2) {
-                            redirect();
-                            mProfileTracker.stopTracking();
-                        }
-                    };
-                    mProfileTracker.startTracking();
-                } else {
-                    redirect();
-                }
-            }
-
-            @Override
-            public void onCancel() {
-            }
-
-            @Override
-            public void onError(FacebookException e) {
-            }
-        });
-    }
+//    private void linkFaceBook(){
+//        FacebookSdk.sdkInitialize(getApplicationContext());
+//        callbackManager = CallbackManager.Factory.create();
+//        LoginButton loginButton = (LoginButton) findViewById(R.id.login_button);
+//        loginButton.registerCallback(callbackManager, new FacebookCallback<LoginResult>() {
+//            private ProfileTracker mProfileTracker;
+//
+//            @Override
+//            public void onSuccess(LoginResult loginResult) {
+//                if (Profile.getCurrentProfile() == null) {
+//
+//                    mProfileTracker = new ProfileTracker() {
+//                        @Override
+//                        protected void onCurrentProfileChanged(Profile profile, Profile profile2) {
+//                            redirect();
+//                            mProfileTracker.stopTracking();
+//                        }
+//                    };
+//                    mProfileTracker.startTracking();
+//                } else {
+//                    redirect();
+//                }
+//            }
+//
+//            @Override
+//            public void onCancel() {
+//            }
+//
+//            @Override
+//            public void onError(FacebookException e) {
+//            }
+//        });
+//    }
 
     private void redirect(){
         mUsernameStr = Profile.getCurrentProfile().getId();

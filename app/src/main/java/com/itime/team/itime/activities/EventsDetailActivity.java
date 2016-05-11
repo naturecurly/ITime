@@ -44,6 +44,19 @@ public class EventsDetailActivity extends AppCompatActivity {
 //        return true;
 //    }
 
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        if (item.getItemId() == android.R.id.home) {
+            EventDetailFragment fragment = (EventDetailFragment) getSupportFragmentManager().getFragments().get(0);
+            if (fragment.isEdited()) {
+                setResult(RESULT_OK);
+                finish();
+            }
+        }
+        return super.onOptionsItemSelected(item);
+    }
+
+
 //    @Override
 //    public boolean onOptionsItemSelected(MenuItem item) {
 //        if (item.getItemId() == R.id.event_detail_edit) {

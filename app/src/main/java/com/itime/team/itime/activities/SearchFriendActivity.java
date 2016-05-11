@@ -137,6 +137,10 @@ public class SearchFriendActivity extends AppCompatActivity implements SearchVie
 
     @Override
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+        if(User.ID.equals((String) mListItem.get(position).get("ItemID"))){
+            notAllowAddYourself();
+            return;
+        }
         if(isCurrentFriend((String) mListItem.get(position).get("ItemID"))){
             notAllowedSendRequest(position);
         }else {
@@ -211,5 +215,19 @@ public class SearchFriendActivity extends AppCompatActivity implements SearchVie
             }
         }
         return false;
+    }
+
+    private void notAllowAddYourself(){
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setMessage(getString(R.string.add_friend_myself));
+        builder.setIcon(R.mipmap.ic_launcher);
+        builder.setTitle("failed");
+
+        builder.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+            }
+        });
+        builder.show();
     }
 }

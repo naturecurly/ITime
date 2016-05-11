@@ -304,7 +304,7 @@ public class DateUtil {
     }
 
     public static final DateFormat dateFormatter = new SimpleDateFormat("yyyy-MM-dd");
-    public static final DateFormat dateTimeFormatter = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'");
+    public static final DateFormat dateTimeFormatter = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.S'Z'");
     public static final DateFormat serverDateformatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss Z");
 
     static {
@@ -322,6 +322,7 @@ public class DateUtil {
             try {
                 return serverDateformatter.format(dateTimeFormatter.parse(dateTime));
             } catch (ParseException e) {
+                Log.e("DateUtil", dateTime);
                 return null;
             }
         } else {
@@ -334,6 +335,7 @@ public class DateUtil {
             try {
                 return serverDateformatter.format(dateFormatter.parse(date));
             } catch (ParseException e) {
+                Log.e("DateUtil", date);
                 return null;
             }
         } else {

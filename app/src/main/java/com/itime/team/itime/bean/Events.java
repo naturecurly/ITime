@@ -16,7 +16,7 @@ import java.util.Set;
  * Created by leveyleonhardt on 3/18/16.
  */
 public class Events {
-    public static JSONArray response;
+    public static JSONArray response = new JSONArray();
 
     public static List<JSONObject> repeatEvent = new ArrayList<>();
 
@@ -41,4 +41,5 @@ public class Events {
     public static Map<String, JSONObject> rawEvents = new HashMap<>();
 
     public static Map<String, List<JSONObject>> ignoredEventMap = new HashMap<>();
+
 }

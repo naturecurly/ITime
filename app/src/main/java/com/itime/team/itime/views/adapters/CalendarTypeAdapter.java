@@ -21,6 +21,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CheckBox;
+import android.widget.CheckedTextView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -30,9 +31,12 @@ import com.itime.team.itime.R;
 import com.itime.team.itime.model.ParcelableCalendarType;
 import com.itime.team.itime.model.ParcelableMessage;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 /**
  * Created by Xuhui Chen (yorkfine) on 23/04/16.
@@ -76,28 +80,69 @@ public class CalendarTypeAdapter extends BaseSwipeAdapter {
             };
 
     private void processCalendarList() {
-        // Group by ownerName and then sort by name
-        Collections.sort(mData, CALENDAR_TYPE_COMPARATOR);
+        // split into different kinds of calendars, e.g. ITime, Google, Apple...
+        // currently, there are three kinds of calendars
+        Set<ParcelableCalendarType> iTimeCalendar = new HashSet();
+        Set<ParcelableCalendarType> googleCalendar = new HashSet<>();
+        Set<ParcelableCalendarType> appleCalendar = new HashSet<>();
 
-        // add two extra title
-        ParcelableCalendarType iTimeTitle = new ParcelableCalendarType();
-        iTimeTitle.calendarId = "";
-        iTimeTitle.calendarOwnerName = "iTIME";
-        iTimeTitle.calendarName = "iTIME";
-        ParcelableCalendarType googleCalendarTitle = new ParcelableCalendarType();
-        googleCalendarTitle.calendarId = "";
-        googleCalendarTitle.calendarOwnerName = "Google";
-        googleCalendarTitle.calendarName = "Google";
-
-        mData.add(0, iTimeTitle);
-        int i = 0;
-        for (i = 0; i < mData.size(); i++) {
-            if (mData.get(i).calendarOwnerName.equals("Google")) {
-                break;
+        for (ParcelableCalendarType cal : mData) {
+            if (cal.calendarOwnerName.equalsIgnoreCase("iTIME")) {
+                iTimeCalendar.add(cal);
+            } else if (cal.calendarOwnerName.equalsIgnoreCase("Google")) {
+                googleCalendar.add(cal);
+            } else if (cal.calendarOwnerName.equalsIgnoreCase("Apple")) {
+                appleCalendar.add(cal);
             }
         }
-        mData.add(i, googleCalendarTitle);
 
+        // join them into a new list for this list view adapter
+        mData.clear();
+        if (!iTimeCalendar.isEmpty()) {
+            // add extra title
+            ParcelableCalendarType iTimeTitle = new ParcelableCalendarType();
+            iTimeTitle.calendarId = "";
+            iTimeTitle.calendarOwnerName = "iTIME";
+            iTimeTitle.calendarName = "iTIME";
+            mData.add(iTimeTitle);
+            List<ParcelableCalendarType> list = new ArrayList<>();
+            for (ParcelableCalendarType p : iTimeCalendar) {
+                list.add(p);
+            }
+            // Group by ownerName and then sort by name
+            Collections.sort(list, CALENDAR_TYPE_COMPARATOR);
+            mData.addAll(list);
+        }
+
+        if (!googleCalendar.isEmpty()) {
+            ParcelableCalendarType googleCalendarTitle = new ParcelableCalendarType();
+            googleCalendarTitle.calendarId = "";
+            googleCalendarTitle.calendarOwnerName = "Google";
+            googleCalendarTitle.calendarName = "Google";
+            mData.add(googleCalendarTitle);
+            List<ParcelableCalendarType> list = new ArrayList<>();
+            for (ParcelableCalendarType p : googleCalendar) {
+                list.add(p);
+            }
+            // Group by ownerName and then sort by name
+            Collections.sort(list, CALENDAR_TYPE_COMPARATOR);
+            mData.addAll(list);
+        }
+
+        if (!appleCalendar.isEmpty()) {
+            ParcelableCalendarType appleCalendarTitle = new ParcelableCalendarType();
+            appleCalendarTitle.calendarId = "";
+            appleCalendarTitle.calendarOwnerName = "Apple";
+            appleCalendarTitle.calendarName = "Apple";
+            mData.add(appleCalendarTitle);
+            List<ParcelableCalendarType> list = new ArrayList<>();
+            for (ParcelableCalendarType p : appleCalendar) {
+                list.add(p);
+            }
+            // Group by ownerName and then sort by name
+            Collections.sort(list, CALENDAR_TYPE_COMPARATOR);
+            mData.addAll(list);
+        }
 
     }
 
@@ -118,6 +163,7 @@ public class CalendarTypeAdapter extends BaseSwipeAdapter {
             // add a checkbox and hide it
             LinearLayout linearLayout = (LinearLayout) v.findViewById(R.id.setting_list_right);
             CheckBox isShow = new CheckBox(mContext);
+            isShow.setClickable(false);
             isShow.setTag("isShow");
             linearLayout.addView(isShow);
             isShow.setVisibility(View.GONE);

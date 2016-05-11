@@ -31,7 +31,7 @@ public class NewEventCalendarTypeDialogFragment extends DialogFragment {
 
         Bundle bundle = getArguments();
         AlertDialog.Builder dialog = new AlertDialog.Builder(getActivity());
-        dialog.setTitle("Repeats");
+        dialog.setTitle("Calendar");
         dialog.setPositiveButton("Cancel", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {

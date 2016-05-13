@@ -22,10 +22,12 @@ import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
@@ -63,6 +65,7 @@ import com.itime.team.itime.model.ParcelableCalendarType;
 import com.itime.team.itime.task.UserTask;
 import com.itime.team.itime.utils.DateUtil;
 import com.itime.team.itime.utils.EventUtil;
+import com.itime.team.itime.utils.ITimePreferences;
 import com.itime.team.itime.utils.JsonArrayAuthRequest;
 import com.itime.team.itime.utils.MySingleton;
 
@@ -637,6 +640,11 @@ public class ImportGoogleCalendarActivity extends AppCompatActivity
                 mOutputText.setText(TextUtils.join("\n", output));
             }
             mCredential.setSelectedAccountName(null);
+
+            // post calendar change event
+            SharedPreferences sharedPreferences =
+                    PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
+            sharedPreferences.edit().putBoolean(ITimePreferences.CALENDAR_TYPE_CHANGED, true).apply();
         }
 
         @Override

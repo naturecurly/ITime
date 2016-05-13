@@ -44,7 +44,7 @@ public class CalendarTypeSubFragment extends Fragment {
 
     public static final int RESULT_ADD_CALENDAR_TYPE = 1;
     private static final String SETTINGS_DATA = "Settings_data";
-    public static final String RETURN_IF_ADDED = "return_if_added";
+    public static final String RETURN_IF_UPDATED = "return_if_updated";
 
     private EditText mCalendarType;
     private ParcelableCalendarType calendarType;
@@ -113,7 +113,7 @@ public class CalendarTypeSubFragment extends Fragment {
                         Events.notShownId.add(calendarType.calendarId);
                     }
                     final Intent intent = new Intent();
-                    intent.putExtra(RETURN_IF_ADDED, true);
+                    intent.putExtra(RETURN_IF_UPDATED, true);
                     getActivity().setResult(RESULT_ADD_CALENDAR_TYPE, intent);
                     getActivity().finish();
                 }

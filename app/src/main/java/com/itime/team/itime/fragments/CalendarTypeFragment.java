@@ -17,7 +17,9 @@
 package com.itime.team.itime.fragments;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.util.Log;
@@ -47,6 +49,8 @@ import com.itime.team.itime.model.ParcelableCalendarType;
 import com.itime.team.itime.task.UserTask;
 import com.itime.team.itime.utils.DateUtil;
 import com.itime.team.itime.utils.EventUtil;
+import com.itime.team.itime.utils.ITimeGcmPreferences;
+import com.itime.team.itime.utils.ITimePreferences;
 import com.itime.team.itime.utils.JsonArrayAuthRequest;
 import com.itime.team.itime.utils.MySingleton;
 import com.itime.team.itime.views.adapters.CalendarClearAdapter;
@@ -172,6 +176,10 @@ public class CalendarTypeFragment extends Fragment {
                         Events.notShownId.add(calendarType.calendarId);
                     }
 
+                    // post calendar change event
+                    SharedPreferences sharedPreferences =
+                            PreferenceManager.getDefaultSharedPreferences(getActivity());
+                    sharedPreferences.edit().putBoolean(ITimePreferences.CALENDAR_TYPE_CHANGED, true).apply();
                 }
             }
         };
@@ -238,7 +246,7 @@ public class CalendarTypeFragment extends Fragment {
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (requestCode == REQUEST_EDIT_CALENDAR_TYPE) {
             if (resultCode == CalendarTypeSubFragment.RESULT_ADD_CALENDAR_TYPE) {
-                if (data != null && data.getBooleanExtra(CalendarTypeSubFragment.RETURN_IF_ADDED, false)) {
+                if (data != null && data.getBooleanExtra(CalendarTypeSubFragment.RETURN_IF_UPDATED, false)) {
                     // reload data from server
                     loadCalendarType();
                 }
@@ -315,6 +323,11 @@ public class CalendarTypeFragment extends Fragment {
             public void onResponse(JSONArray response) {
                 Log.i(LOG_TAG, "Clear calendar success");
                 Toast.makeText(getActivity(), getString(R.string.clear_calendars_success), Toast.LENGTH_SHORT).show();
+                // post calendar change event
+                SharedPreferences sharedPreferences =
+                        PreferenceManager.getDefaultSharedPreferences(getActivity());
+                sharedPreferences.edit().putBoolean(ITimePreferences.CALENDAR_TYPE_CHANGED, true).apply();
+
             }
         }, new Response.ErrorListener() {
             @Override

@@ -3,9 +3,11 @@ package com.itime.team.itime.fragments;
 import android.animation.ValueAnimator;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.os.Build;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.content.ContextCompat;
@@ -49,6 +51,8 @@ import com.itime.team.itime.model.ParcelableCalendarType;
 import com.itime.team.itime.utils.DateUtil;
 import com.itime.team.itime.utils.DensityUtil;
 import com.itime.team.itime.utils.EventUtil;
+import com.itime.team.itime.utils.ITimeGcmPreferences;
+import com.itime.team.itime.utils.ITimePreferences;
 import com.itime.team.itime.utils.JsonObjectFormRequest;
 import com.itime.team.itime.utils.MySingleton;
 import com.itime.team.itime.views.CalendarView;
@@ -1314,6 +1318,8 @@ public class CalendarFragment extends Fragment {
     public void onResume() {
         super.onResume();
         Log.d("onResume", "OnResume");
+        // // TODO: 13/05/16 for example, reload the data according to the boolean value of isCalendarChanged
+        isCalendarChanged();
     }
 
 
@@ -1324,6 +1330,22 @@ public class CalendarFragment extends Fragment {
         Events.daysHaveEvents.clear();
         fetchEvents(User.ID, true);
 
+    }
+
+    /**
+     * you should use this method to before you load and draw your data on the view.
+     * @return
+     */
+    public boolean isCalendarChanged() {
+        SharedPreferences sharedPreferences =
+                PreferenceManager.getDefaultSharedPreferences(getActivity());
+        Boolean isChanged = sharedPreferences.getBoolean(ITimePreferences.CALENDAR_TYPE_CHANGED, false);
+        Toast.makeText(getContext(), "isCalendarChanged: " + isChanged, Toast.LENGTH_SHORT).show();
+        if (isChanged) {
+            sharedPreferences.edit().putBoolean(ITimePreferences.CALENDAR_TYPE_CHANGED, false).apply();
+        }
+
+        return isChanged;
     }
 
 }

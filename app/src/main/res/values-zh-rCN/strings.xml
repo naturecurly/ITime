@@ -1,0 +1,206 @@
+<!--
+  ~ Copyright (C) 2016 Yorkfine Chan <yorkfinechan@gmail.com>
+  ~
+  ~ Licensed under the Apache License, Version 2.0 (the "License");
+  ~ you may not use this file except in compliance with the License.
+  ~ You may obtain a copy of the License at
+  ~
+  ~      http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+
+<resources>
+    <string name="app_name">ITime</string>
+    <string name="app_label">ITime</string>
+    <string name="action_settings">设置</string>
+    <string name="Meeting">会议</string>
+    <string name="Calendar">日历</string>
+    <string name="Mail">邮件</string>
+    <string name="Setting">设置</string>
+    <string name="meeting_setting">会议设置</string>
+    <string name="meeting_friend">我的 iTIME 通讯录</string>
+    <string name="meeting_duration">持续时间</string>
+    <string name="Save">保存</string>
+    <string name="Cancel">取消</string>
+    <string name="send">发送</string>
+    <string name="Logout">退出登录</string>
+    <string name="warning">警告</string>
+    <string name="yes">是</string>
+    <string name="no">否</string>
+    <string name="confirm">确认</string>
+    <string name="reset">重置</string>
+    <string name="edit">编辑</string>
+    <string name="settings_meeting_preference">会议偏好</string>
+    <string name="settings_import_calendar">导入日历</string>
+    <string name="settings_default_alert_time">默认提醒时间</string>
+    <string name="settings_calendar_type">日历类型设置</string>
+    <string name="settings_clear_calendar">清空日历</string>
+    <string name="settings_language">语言设置</string>
+    <string name="add_friend">添加朋友</string>
+
+    <string name="time_out">对不起，超时</string>
+
+    <string name="profile_photo">头像</string>
+
+    <string name="calendar_title">日历</string>
+    <string name="meeting_title">会议</string>
+    <string name="inbox_title">邮箱</string>
+    <string name="setting_title">设置</string>
+
+    <string name="meeting_start_time">开始时间</string>
+    <string name="meeting_end_time">结束时间</string>
+    <string name="meeting_time_button">时间</string>
+    <string name="meeting_date_button">日期</string>
+    <string name="meeting_send_invitation_name">名字</string>
+    <string name="meeting_send_invitation_venue">地点</string>
+    <string name="meeting_search_friend_title">查找好友</string>
+    <string name="meeting_searchbar">查找你的好友</string>
+    <string name="meeting_duraiton_dialog_title">持续时间</string>
+    <string name="meeting_add_dialog_title">搜索</string>
+    <string name="meeting_duration_textview">持续时间</string>
+    <string name="meeting_select_title">选择会议时间</string>
+
+    <string name="meeting_dialog_search">搜索 iTIME 好友</string>
+    <string name="meeting_dialog_sms">通过短信添加</string>
+    <string name="meeting_dialog_email">通过邮件添加</string>
+    <string name="meeting_dialog_qrcode">扫描二维码</string>
+    <string name="meeting_dialog_facebook">添加 Facebook 好友</string>
+    <string name="meeting_dialog_wechat">添加微信好友</string>
+
+
+    <string name="phone_contact_title">Search Contacts</string>
+    <string name="phone_contact_addway_title">Add Method</string>
+
+    <string name="new_meeting_namehit">Name</string>
+    <string name="new_meeting_venuehit">Venue</string>
+    <string name="new_meeting_repeat">Repeats</string>
+    <string name="new_meeting_punctual">Punctual</string>
+    <string name="new_meeting_alert">Alert -- At Time Of Event</string>
+    <string name="alert_event">At Time Of Event</string>
+    <string name="new_meeting_title">New Meeting</string>
+    <string name="new_meeting_repeat_dialog_title">Repeats</string>
+    <string name="new_meeting_alert_dialog_title">Alert Time</string>
+    <string name="new_meeting_alert_button">Alert -- </string>
+    <string name="new_meeting_send_invitation_successful">Meeting invitation has been sent successfully</string>
+    <string name="new_meeting_confirm_title">Sending Invitation</string>
+    <string name="new_meeting_confirm_content">Do you want to send the Meeting Invitation</string>
+    <string name="new_meeting">New Meeting</string>
+
+    <string name="new_event_title">New Event</string>
+
+
+    <string name="login_username">Username</string>
+    <string name="login_password">Password</string>
+    <string name="login_remember">If remember?</string>
+    <string name="login_login">Login</string>
+    <string name="login_register">Register</string>
+    <string name="login_warning_username">Please input your username</string>
+    <string name="login_warning_password">Please input your password</string>
+    <string name="login_warning_exist">Sorry, this username has been used</string>
+    <string name="login_warning_login_fail">Sorry, your username and password do not match</string>
+    <string name="login_warning_username_illegal">Sorry, please use real email address as your username</string>
+    <string name="login_warning_password_illegal">Sorry, the length of your password should be more than 5</string>
+
+    <string name="meeting_detail_attendees">Attendees</string>
+    <string name="meeting_detail_invite">Invitation from</string>
+    <string name="meeting_detail_depture">Depture at</string>
+    <string name="meeting_detail_starts">Starts</string>
+    <string name="meeting_detail_ends">Ends</string>
+    <string name="meeting_detail_repeats">Repeats</string>
+    <string name="meeting_detail_Punctual">Punctual</string>
+    <string name="meeting_detail_note">Note</string>
+    <string name="meeting_detail_email">Send to Email</string>
+    <string name="meeting_detail_accept">Accept</string>
+    <string name="meeting_detail_Maybe">Maybe</string>
+    <string name="meeting_detail_Decline">Decline</string>
+    <string name="meeting_detail_quit">Quit Meeting</string>
+    <string name="meeting_detail_reason">Reason</string>
+    <string name="meeting_detail_reason_content">Why do you reject the meeting?</string>
+    <string name="meeting_detail_title">Meeting Detail</string>
+    <string name="meeting_attendees_title">Attendees</string>
+    <string name="meeting_detail_new_name">New Meeting Name</string>
+    <string name="meeting_detail_new_venue">New Venue</string>
+    <string name="meeting_detail_new_start_time">New Start Time</string>
+    <string name="meeting_detail_new_end_time">New End Time</string>
+    <string name="meeting_detail_new_repeat">New Repeat Type</string>
+    <string name="meeting_detail_new_Punctual">If Punctual</string>
+    <string name="meeting_detail_new_note">New Note</string>
+    <string name="meeting_update">Update Meeting Successful</string>
+    <string name="meeting_detail_email_content">Hi, please check this meeting.</string>
+    <string name="meeting_detail_quit_reason_title">Quit Reason</string>
+    <string name="meeting_detail_quit_reason">Please Type the Reason</string>
+
+
+    <string name="repeat_add_friend">Sorry, %1s is aready your friend</string>
+    <string name="add_friend_myself">Sorry, You cannot add yourself</string>
+    <string name="add_friend_login">Sorry, you need to login first.</string>
+    <string name="check_login_timeout">Timeout, please check your internet</string>
+
+    <string name="search_friend_added_friend_info">Please wait for your friend\'s reply</string>
+
+    <string name="auto_titile">Search Venue</string>
+
+
+    <string name="add_friend_facebook_install">You do not install Messenger yat, would you like to install?</string>
+
+    <string name="facebook_app_id">450185851844736</string>
+    <string name="google_app_id_me">AIzaSyDjDteQOjuWYV7ST_Wi7k34i36j2OngA88</string>
+    <string name="google_web_id">AIzaSyBC4zDmkarugKY0Njs_n2TtEUVEyeESn0c</string>
+    <string name="wechat_app_id">wx3f4cf39b8038b21a</string>
+
+    <string name="action_today">Today</string>
+    <string name="action_day_view">Daily</string>
+    <string name="action_three_day_view">3 day view</string>
+    <string name="action_week_view">Week view</string>
+    <string name="title_activity_basic">Basic Example</string>
+    <string name="title_activity_asynchronous">Asynchronous Events</string>
+    <string name="async_error">Could not download events from the internet</string>
+
+    <!-- calendar type strings -->
+    <string name="calendar_type_delete">Delete</string>
+    <string name="new_calendar_type_title">New Calendar Type</string>
+    <string name="edit_calendar_type_title">Edit Calendar Type</string>
+    <string name="unread">未读消息</string>
+    <string name="all_message">全部消息</string>
+
+    <!-- inbox strings -->
+    <string name="inbox_mark_all_read">标记所有为已读</string>
+    <string name="inbox_delete_all">删除所有消息</string>
+    <string name="inbox_message_delete">删除</string>
+    <string name="accept">接受</string>
+    <string name="reject">拒绝</string>
+    <string name="show_detail">显示详情</string>
+    <string name="later">以后</string>
+    <string name="departure_time">出发时间</string>
+
+    <!-- gcm strings -->
+    <string name="gcm_send_message">收到 Token 并将 Token 发送到服务器，可以使用 GCM 服务接收消息</string>
+    <string name="registering_message">生成 InstanceID token...</string>
+    <string name="token_error_message">获取 InstanceID token 或发送到服务器时出错</string>
+    <string name="event_detail_alert">闹铃</string>
+    <string name="event_detail_edit">编辑</string>
+    <string name="event_detail_delete">删除</string>
+
+    <!-- import calendars -->
+    <string name="import_calendar">导入日历</string>
+    <string name="import_google_calendar">导入 Google 日历</string>
+    <string name="import_ios_calendar">Import  IOS Calendar</string>
+
+    <!-- clear calendars -->
+    <string name="clear_calendars_success">清空日历成功</string>
+    <string name="clear_calendars_fail">清空日历失败</string>
+
+    <!-- language -->
+    <string name="set_language">设置语言</string>
+    <string name="activate_language_change">Please restart app to activate the language change</string>
+    <string name="english">English</string>
+    <string name="simple_chinese">简体中文</string>
+
+    <string name="post_null">NOT PROVIDED</string>
+
+</resources>

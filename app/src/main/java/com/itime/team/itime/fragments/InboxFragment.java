@@ -247,11 +247,11 @@ public class InboxFragment extends Fragment implements View.OnClickListener {
     private void setItemTitle(MenuItem item) {
         switch (mStatus) {
             case UNREAD:
-                item.setTitle("All");
+                item.setTitle(getString(R.string.all_message));
                 break;
 
             case ALL:
-                item.setTitle("UnRead");
+                item.setTitle(getString(R.string.unread));
                 break;
         }
     }
@@ -260,11 +260,11 @@ public class InboxFragment extends Fragment implements View.OnClickListener {
         TextView title = (TextView) getActivity().findViewById(R.id.toolbar_title);
         switch (mStatus) {
             case UNREAD:
-                title.setText("UnRead");
+                title.setText(getString(R.string.unread));
                 break;
 
             case ALL:
-                title.setText("All");
+                title.setText(getString(R.string.all_message));
                 break;
         }
 

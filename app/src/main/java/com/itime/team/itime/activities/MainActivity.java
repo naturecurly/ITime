@@ -182,7 +182,7 @@ public class MainActivity extends AppCompatActivity implements
             //inboxFragment.setTitle();
             mEventList.setVisibility(View.GONE);
             mToday.setVisibility(View.GONE);
-            title.setText("Unread");
+            title.setText(getString(R.string.unread));
 
         }
 

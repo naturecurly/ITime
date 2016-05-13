@@ -296,8 +296,13 @@ public class CheckLoginActivity extends AppCompatActivity{
         SharedPreferences sharedPreferences =
                 PreferenceManager.getDefaultSharedPreferences(this);
         String localeCode = sharedPreferences.getString(ITIME_LOCALE, "en_US");
-        Locale locale = new Locale(localeCode);
-        Locale.setDefault(locale);
+        String language = localeCode.split("_")[0];
+        String countryCode = "";
+        if (localeCode.split("_").length == 2) {
+            countryCode = localeCode.split("_")[1];
+        }
+        Locale locale = new Locale(language, countryCode);
+        //Locale.setDefault(locale);
         Configuration config = new Configuration();
         config.locale = locale;
         this.getApplicationContext().getResources().updateConfiguration(config, null);

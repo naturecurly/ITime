@@ -172,6 +172,8 @@
     <string name="calendar_type_delete">Delete</string>
     <string name="new_calendar_type_title">New Calendar Type</string>
     <string name="edit_calendar_type_title">Edit Calendar Type</string>
+    <string name="unread">Unread</string>
+    <string name="all_message">All</string>
 
     <!-- inbox strings -->
     <string name="inbox_mark_all_read">Mark all read</string>

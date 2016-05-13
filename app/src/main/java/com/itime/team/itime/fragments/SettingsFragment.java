@@ -46,8 +46,10 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.facebook.login.LoginManager;
 import com.itime.team.itime.R;
+import com.itime.team.itime.activities.CheckLoginActivity;
 import com.itime.team.itime.activities.ImportGoogleCalendarActivity;
 import com.itime.team.itime.activities.LoginActivity;
+import com.itime.team.itime.activities.MainActivity;
 import com.itime.team.itime.activities.SettingsActivity;
 import com.itime.team.itime.bean.URLs;
 import com.itime.team.itime.database.ITimeDataStore;
@@ -111,9 +113,6 @@ public class SettingsFragment extends Fragment implements View.OnClickListener, 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_settings, container, false);
-
-        TextView title = (TextView) getActivity().findViewById(R.id.toolbar_title);
-        title.setText("Setting");
 
         View v1 = view.findViewById(SETTINGS_PROFILE_ID);
         v1.setOnClickListener(this);
@@ -386,7 +385,13 @@ public class SettingsFragment extends Fragment implements View.OnClickListener, 
                 SharedPreferences sharedPreferences =
                         PreferenceManager.getDefaultSharedPreferences(getActivity().getApplicationContext());
                 sharedPreferences.edit().putString(ITIME_LOCALE, localeCode).apply();
-                Toast.makeText(getActivity().getApplicationContext(), getString(R.string.activate_language_change), Toast.LENGTH_SHORT);
+                Toast.makeText(getActivity().getApplicationContext(), getString(R.string.activate_language_change), Toast.LENGTH_SHORT).show();
+                // startMainActivity again with clearTop
+                Intent intent = new Intent(getActivity(), CheckLoginActivity.class);
+                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                startActivity(intent);
+                getActivity().finish();
             }
         })
                 .setTitle(getString(R.string.set_language));

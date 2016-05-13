@@ -7,6 +7,6 @@ Menu of inbox fragment. Switch between 'All' and 'Unread'
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
     <item android:id="@+id/inbox_action"
-        android:title="All"
+        android:title="@string/all_message"
         app:showAsAction="always" />
 </menu>

@@ -16,6 +16,7 @@
 
 package com.itime.team.itime.fragments;
 
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
@@ -87,6 +88,7 @@ public class CalendarTypeFragment extends Fragment {
     private ListView  mCalendarTypeListView;
     private CalendarTypeAdapter mAdapter;
     private List<ParcelableCalendarType> mData;
+    private ProgressDialog mProgress;
 
     private String mUserId;
 
@@ -110,6 +112,10 @@ public class CalendarTypeFragment extends Fragment {
                 initCalendarClearAdapter();
             }
         }
+
+        mProgress = new ProgressDialog(getActivity());
+        mProgress.setCancelable(false);
+        mProgress.setCanceledOnTouchOutside(false);
 
         mUserId = User.ID;
         return mCalendarTypeView;
@@ -164,6 +170,7 @@ public class CalendarTypeFragment extends Fragment {
         UserTask.CallBackResult<String> callback = new UserTask.CallBackResult<String>() {
             @Override
             public void callback(String data) {
+                mProgress.cancel();
                 if (data.equalsIgnoreCase("success")) {
                     final String s = calendarType.calendarName + (calendarType.ifShow ? " shows" : " does not show");
                     Toast.makeText(getContext(), s, Toast.LENGTH_SHORT).show();
@@ -184,6 +191,7 @@ public class CalendarTypeFragment extends Fragment {
             }
         };
         userTask.updateCalendarType(calendarType, callback);
+        mProgress.show();
     }
 
     private void toggleIfClear(final ParcelableCalendarType calendarType) {
@@ -321,6 +329,7 @@ public class CalendarTypeFragment extends Fragment {
         JsonArrayAuthRequest request = new JsonArrayAuthRequest(Request.Method.POST, url, jsonObject.toString(), new Response.Listener<JSONArray>() {
             @Override
             public void onResponse(JSONArray response) {
+                mProgress.hide();
                 Log.i(LOG_TAG, "Clear calendar success");
                 Toast.makeText(getActivity(), getString(R.string.clear_calendars_success), Toast.LENGTH_SHORT).show();
                 // post calendar change event
@@ -332,6 +341,7 @@ public class CalendarTypeFragment extends Fragment {
         }, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {
+                mProgress.hide();
                 Log.e(LOG_TAG, "Clear calendar failed");
                 Log.e(LOG_TAG, error.toString());
 
@@ -346,5 +356,6 @@ public class CalendarTypeFragment extends Fragment {
         RetryPolicy policy = new DefaultRetryPolicy(socketTimeout, DefaultRetryPolicy.DEFAULT_MAX_RETRIES, DefaultRetryPolicy.DEFAULT_BACKOFF_MULT);
         request.setRetryPolicy(policy);
         MySingleton.getInstance(getActivity().getApplicationContext()).addToRequestQueue(request);
+        mProgress.show();
     }
 }

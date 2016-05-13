@@ -153,6 +153,8 @@ public class ImportGoogleCalendarActivity extends AppCompatActivity
 
         mProgress = new ProgressDialog(this);
         mProgress.setMessage("Calling Google Calendar API ...");
+        mProgress.setCancelable(false);
+        mProgress.setCanceledOnTouchOutside(false);
 
         setContentView(activityLayout);
 

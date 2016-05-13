@@ -16,6 +16,7 @@
 
 package com.itime.team.itime.fragments;
 
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -48,6 +49,7 @@ public class CalendarTypeSubFragment extends Fragment {
 
     private EditText mCalendarType;
     private ParcelableCalendarType calendarType;
+    private ProgressDialog mProgress;
 
     @Nullable
     @Override
@@ -76,6 +78,9 @@ public class CalendarTypeSubFragment extends Fragment {
         // Method2
         getActivity().getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_VISIBLE);
 
+        mProgress = new ProgressDialog(getActivity());
+        mProgress.setCancelable(false);
+        mProgress.setCanceledOnTouchOutside(false);
         return view;
     }
 
@@ -104,6 +109,7 @@ public class CalendarTypeSubFragment extends Fragment {
         UserTask.CallBackResult<String> callback = new UserTask.CallBackResult<String>() {
             @Override
             public void callback(String data) {
+                mProgress.hide();
                 if (data.equalsIgnoreCase("success")) {
                     // Fuck! No need to do this because it force to load calendar type again
                     // add new calendar type to static list
@@ -120,7 +126,7 @@ public class CalendarTypeSubFragment extends Fragment {
             }
         };
         userTask.updateCalendarType(calendarType, callback);
-
+        mProgress.show();
 
     }
 }

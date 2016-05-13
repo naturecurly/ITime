@@ -258,7 +258,10 @@ public class UserTask {
                     new Response.ErrorListener() {
                         @Override
                         public void onErrorResponse(VolleyError error) {
-
+                            if (callback != null) {
+                                String result = "failed";
+                                callback.callback(result);
+                            }
                         }
                     }
             );

@@ -942,7 +942,7 @@ public class EventUtil {
             try {
                 Log.d("search", rawEvent.getString("event_name"));
                 if (isValidEvent(rawEvent)) {
-                    if (rawEvent.getString("event_name").indexOf(query) >= 0) {
+                    if (rawEvent.getString("event_name").toLowerCase().indexOf(query.toLowerCase()) >= 0) {
                         result.add(rawEvent);
                     }
                 }

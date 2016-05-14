@@ -98,6 +98,7 @@ public class CalendarFragment extends Fragment {
     private boolean scroll_flag;
     private boolean isPress;
     private boolean shouldScrollCalendar;
+    private int firstEventHour = 0;
 
     public String getTitle_string() {
         return title_string;
@@ -654,6 +655,7 @@ public class CalendarFragment extends Fragment {
                     if (row.getCells()[DateUtil.analysePosition(x, rowHeight)].hasEvents) {
                         paintLowerPanel(day, month, year, true);
                     } else {
+                        firstEventHour = 0;
                         relativeLayout.removeAllViews();
                         addLowerViews(relativeLayout);
 
@@ -675,6 +677,7 @@ public class CalendarFragment extends Fragment {
                             bundle.putInt("year", year);
                             bundle.putInt("month", month);
                             bundle.putInt("day", day);
+                            bundle.putInt("hour", firstEventHour);
                             intent.putExtras(bundle);
                             startActivity(intent);
                         } else {
@@ -852,6 +855,7 @@ public class CalendarFragment extends Fragment {
                 String firstTimeString = firstObject.getString("event_starts_datetime");
                 Date firstTimeDate = DateUtil.getLocalDateObject(firstTimeString);
                 firstTimeCal = DateUtil.getLocalDateObjectToCalendar(firstTimeDate);
+                firstEventHour = firstTimeCal.get(Calendar.HOUR_OF_DAY);
 
             } catch (JSONException e) {
                 e.printStackTrace();
@@ -1238,6 +1242,7 @@ public class CalendarFragment extends Fragment {
 
 
         } else {
+            firstEventHour = 0;
             relativeLayout.removeAllViews();
             addLowerViews(relativeLayout);
         }
@@ -1323,7 +1328,7 @@ public class CalendarFragment extends Fragment {
         super.onResume();
         // // TODO: 13/05/16 for example, reload the data according to the boolean value of isCalendarChanged
         isCalendarChanged();
-        if(User.hasNewMeeting){
+        if (User.hasNewMeeting) {
             User.hasNewMeeting = false;
             refresh();
         }
@@ -1341,6 +1346,7 @@ public class CalendarFragment extends Fragment {
 
     /**
      * you should use this method to before you load and draw your data on the view.
+     *
      * @return
      */
     public boolean isCalendarChanged() {

@@ -1317,9 +1317,12 @@ public class CalendarFragment extends Fragment {
     @Override
     public void onResume() {
         super.onResume();
-        Log.d("onResume", "OnResume");
         // // TODO: 13/05/16 for example, reload the data according to the boolean value of isCalendarChanged
         isCalendarChanged();
+        if(User.hasNewMeeting){
+            User.hasNewMeeting = false;
+            refresh();
+        }
     }
 
 

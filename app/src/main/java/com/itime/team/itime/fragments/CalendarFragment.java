@@ -552,7 +552,7 @@ public class CalendarFragment extends Fragment {
                     if (Events.daysHaveEvents.contains(cal.get(Calendar.DAY_OF_MONTH) + "-" + (cal.get(Calendar.MONTH) + 1) + "-" + cal.get(Calendar.YEAR))) {
                         ifEvents[i] = true;
 //                        Log.d("testdate", eventDateList.size() + "");
-                    } else if (Events.repeatEvent != null) {
+                    } else if (Events.repeatEvent.size() > 0) {
                         try {
                             boolean hasRepeat = EventUtil.hasRepeatEvent(cal);
                             if (hasRepeat) {
@@ -817,6 +817,8 @@ public class CalendarFragment extends Fragment {
                 } catch (IOException e) {
                     e.printStackTrace();
                 } catch (Exception e) {
+//                    Log.d("issues", e.getMessage());
+                    e.printStackTrace();
                     Toast.makeText(getActivity(), "Network Issues", Toast.LENGTH_SHORT).show();
                 }
 
@@ -978,7 +980,7 @@ public class CalendarFragment extends Fragment {
                         @Override
                         public boolean onLongClick(View view) {
                             View pressedView = mScrollView.getPressedSubView();
-                            if (pressedView != null){
+                            if (pressedView != null) {
                                 pressedView.performLongClick();
                             }
                             return true;
@@ -1115,7 +1117,7 @@ public class CalendarFragment extends Fragment {
                                 @Override
                                 public boolean onLongClick(View view) {
                                     View pressedView = mScrollView.getPressedSubView();
-                                    if (pressedView != null){
+                                    if (pressedView != null) {
                                         pressedView.performLongClick();
                                     }
                                     return true;

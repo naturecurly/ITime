@@ -96,7 +96,7 @@ public class NewEventFragment extends Fragment {
     private int mEndHour;
     private int mEndMin;
     private String repeatString = "One-time event";
-    private String alertString = "At time of Departure";
+    private String alertString = "At time of Event";
     public String event_longitude = "";
     public String event_latitude = "";
     JSONObject geoLocation = null;

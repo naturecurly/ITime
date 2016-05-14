@@ -475,7 +475,11 @@ public class MeetingDetailUpdateActivity extends AppCompatActivity implements Vi
                 try {
                     if(response.getString("result").equals("success")){
                         User.hasNewMeeting = true;
-                        setResult(RESULT_OK);
+                        Intent intent = new Intent();
+                        intent.putExtra("calendar",mCalendar.getText());
+                        intent.putExtra("alert", mAlert.getText().toString().split("--")[1]);
+
+                        setResult(RESULT_OK,intent);
                         Toast.makeText(getApplicationContext(),
                                 getString(R.string.meeting_update), Toast.LENGTH_SHORT).show();
                         finish();

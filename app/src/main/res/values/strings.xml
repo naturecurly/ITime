@@ -124,6 +124,7 @@
     <string name="add_friend_myself">Sorry, You cannot add yourself</string>
     <string name="add_friend_login">Sorry, you need to login first.</string>
     <string name="check_login_timeout">Timeout, please check your internet</string>
+    <string name="add_friend_confirm">Would you like to add %1s as your friend?</string>
 
     <string name="search_friend_added_friend_info">Please wait for your friend\'s reply</string>
 
@@ -184,6 +185,7 @@
     <string name="show_detail">Show Detail</string>
     <string name="later">Later</string>
     <string name="departure_time">Departure at</string>
+    <string name="alert_default">At time of Event</string>
 
     <!-- gcm strings -->
     <string name="gcm_send_message">Token retrieved and sent to server! You can now use gcmsender to

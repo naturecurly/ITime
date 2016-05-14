@@ -61,10 +61,13 @@ public class MeetingDetaiHostlActivity extends AppCompatActivity implements View
     private CheckBox mPunctual;
     private EditText mNote;
     private EditText mNewNote;
-    private Button mEmail, mQuit;
+    private Button mQuit;
+    private LinearLayout mEmail;
     private ImageView mImage;
     private Button mConfirm, mReset, mConfirmUpdate;
     private File ICSFile;
+
+    private TextView mAlert, mCalendar;
 
     private LinearLayout mLNewName, mLNewVenue, mLNewStart, mLNewEnd, mLNewRepeat, mLNewPunctual, mLNewNote;
 
@@ -118,11 +121,22 @@ public class MeetingDetaiHostlActivity extends AppCompatActivity implements View
 
 
             }
-            startActivity(intent);
+            startActivityForResult(intent, 1);
+//            startActivity(intent);
         }
         return super.onOptionsItemSelected(item);
     }
 
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (requestCode == 1){
+            if(resultCode == RESULT_OK){
+                mCalendar.setText(data.getStringExtra("calendar"));
+                mAlert.setText(data.getStringExtra("alert"));
+            }
+        }
+    }
 
     private void init(){
         Toolbar toolbar = (Toolbar) findViewById(R.id.meeting_detail_toolbar);
@@ -153,7 +167,7 @@ public class MeetingDetaiHostlActivity extends AppCompatActivity implements View
         mEnd = (TextView) findViewById(R.id.meeting_detail_ends);
         mRepeat = (TextView) findViewById(R.id.meeting_detail_repeats);
         mPunctual = (CheckBox) findViewById(R.id.meeting_detail_punctual);
-        mEmail = (Button) findViewById(R.id.meeting_detail_email);
+        mEmail = (LinearLayout) findViewById(R.id.meeting_detail_email);
         mEmail.setOnClickListener(this);
         mQuit = (Button) findViewById(R.id.meeting_detail_quit);
         mQuit.setOnClickListener(this);
@@ -186,6 +200,9 @@ public class MeetingDetaiHostlActivity extends AppCompatActivity implements View
         mLNewNote = (LinearLayout) findViewById(R.id.meeting_detail_note_layout);
         mConfirmUpdate= (Button) findViewById(R.id.meeting_detail_confirm_update);
         mConfirmUpdate.setOnClickListener(this);
+
+        mAlert = (TextView) findViewById(R.id.meeting_detail_alert);
+        mCalendar = (TextView) findViewById(R.id.meeting_detail_calendar);
     }
 
     // Before setting which Layout should be shown, just hiding all relative layout. If the new

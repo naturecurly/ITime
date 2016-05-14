@@ -28,19 +28,24 @@ import com.android.volley.VolleyError;
 import com.itime.team.itime.R;
 import com.itime.team.itime.activities.MeetingDetaiHostlActivity;
 import com.itime.team.itime.activities.MeetingDetailActivity;
+import com.itime.team.itime.bean.MeetingInfo;
 import com.itime.team.itime.bean.URLs;
 import com.itime.team.itime.bean.User;
 import com.itime.team.itime.model.ParcelableMessage;
 import com.itime.team.itime.model.utils.MessageType;
 import com.itime.team.itime.utils.AlertUtil;
+import com.itime.team.itime.utils.DateUtil;
 import com.itime.team.itime.utils.JsonObjectFormRequest;
 import com.itime.team.itime.utils.MySingleton;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.util.Calendar;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.UUID;
 
 /**
  * Created by Xuhui Chen (yorkfine) on 21/04/16.
@@ -133,6 +138,8 @@ public class MessageHandler {
     }
 
     public static void memberReceiveMeetingMessage(final Context context, final ParcelableMessage message) {
+        createEvent(context, message.meetingId);
+        User.hasNewMeeting = true;
         AlertDialog.Builder builder = new AlertDialog.Builder(context);
         builder.setTitle(message.messageTitle)
                 .setMessage(message.messageBody)
@@ -190,6 +197,182 @@ public class MessageHandler {
 
         builder.show();
     }
+
+    private static void createEvent(final Context context, final String meetingID){
+        JSONObject jsonObject = new JSONObject();
+        try {
+            jsonObject.put("meeting_id", meetingID);
+            jsonObject.put("user_id", User.ID);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+        final String url = URLs.LOAD_MEETING_INFO;
+        Map<String, String> params = new HashMap();
+        params.put("json", jsonObject.toString());
+
+        JsonObjectFormRequest request = new JsonObjectFormRequest(Request.Method.POST, url, params, new Response.Listener<JSONObject>() {
+            @Override
+            public void onResponse(JSONObject response) {
+                handleMeetingInfo(context,meetingID,response);
+            }
+        }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+
+            }
+        });
+        MySingleton.getInstance(context).addToRequestQueue(request);
+    }
+
+    private static void handleMeetingInfo(Context context, String meetingID,JSONObject json){
+
+        MeetingInfo mMeetingInfo = new MeetingInfo();
+        try {
+            mMeetingInfo.setLatitude("");
+            mMeetingInfo.setNewLocation(json.getString("event_venue_location_new"));
+            mMeetingInfo.setNewName(json.getString("event_name_new"));
+            mMeetingInfo.setStatus(json.getString("meeting_status"));
+            mMeetingInfo.setNewRepeat(json.getString("event_repeats_type_new"));
+            mMeetingInfo.setLongitude("");
+            mMeetingInfo.setLocation(json.getString("event_venue_location"));
+            mMeetingInfo.setNewPunctual(json.getBoolean("event_is_punctual_new"));
+            mMeetingInfo.setComment(json.getString("event_comment"));
+            mMeetingInfo.setPunctual(json.getBoolean("event_is_punctual"));
+            mMeetingInfo.setEnd(json.getString("event_ends_datetime"));
+            mMeetingInfo.setId(json.getString("meeting_id"));
+            mMeetingInfo.setVenue(json.getString("event_venue_show"));
+            mMeetingInfo.setHostID(json.getString("host_id"));
+            mMeetingInfo.setRepeat(json.getString("event_repeats_type"));
+            mMeetingInfo.setNewStart(json.getString("event_starts_datetime_new"));
+            mMeetingInfo.setNewVenue(json.getString("event_venue_show_new"));
+            mMeetingInfo.setStart(json.getString("event_starts_datetime"));
+            mMeetingInfo.setNewLongitude("");
+            mMeetingInfo.setName(json.getString("event_name"));
+            mMeetingInfo.setNewLatitude("");
+            mMeetingInfo.setToken(json.getString("meeting_valid_token"));
+            mMeetingInfo.setNewEnd(json.getString("event_ends_datetime_new"));
+            mMeetingInfo.setNewComment(json.getString("event_comment_new"));
+
+            postEvent(context,meetingID,mMeetingInfo);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+    }
+
+
+    private static void postEvent(Context context, String meetingID,MeetingInfo meetingInfo) {
+        String startDateForPost = DateUtil.getDateStringFromCalendar(meetingInfo.getNewStart());
+        String endDateForPost = DateUtil.getDateStringFromCalendar(meetingInfo.getNewEnd());
+        String comment = meetingInfo.getNewComment();
+        String name = meetingInfo.getNewName();
+        String punctual = "false";
+        String repeative = meetingInfo.getRepeat();
+
+
+        String address = meetingInfo.getNewVenue();
+        String location = meetingInfo.getLocation();
+
+//        String location = mAddress.equals("") ? getString(R.string.post_null) : mAddress;
+//        String showLocation = address[0].equals("") ? getString(R.string.post_null) : address[0];
+
+        JSONObject object = new JSONObject();
+        try {
+            object.put("event_id", meetingID);
+            object.put("user_id", User.ID);
+            object.put("host_id", meetingInfo.getHostID());
+            object.put("meeting_id", meetingID);
+
+            object.put("event_name", name.equals("") ? context.getString(R.string.new_meeting) : name);
+            object.put("event_comment", comment);
+            object.put("event_starts_datetime", startDateForPost);
+            object.put("event_ends_datetime", endDateForPost);
+
+            object.put("event_venue_show", address);
+            object.put("event_venue_location", location);
+
+            object.put("event_repeats_type", repeative);
+
+            object.put("event_latitude", 0);
+            object.put("event_longitude", 0);
+
+            object.put("event_last_sug_dep_time", startDateForPost);
+            object.put("event_last_time_on_way_in_second", "0");
+            object.put("event_last_distance_in_meter", "0");
+
+            object.put("event_name_new", name);
+            object.put("event_comment_new", comment);
+
+            object.put("event_starts_datetime_new", startDateForPost);
+            object.put("event_ends_datetime_new", endDateForPost);
+
+            object.put("event_venue_show_new", address);
+            object.put("event_venue_location_new", location);
+
+            object.put("event_repeats_type_new", repeative);
+            //punctual
+            object.put("event_latitude_new", 0);
+            object.put("event_longitude_new", 0);
+
+            object.put("event_last_sug_dep_time_new", startDateForPost);
+            object.put("event_last_time_on_way_in_second_new", "0");
+            object.put("event_last_distance_in_meter_new", "0");
+
+            object.put("is_meeting", 1);
+            object.put("is_host", 1);
+
+            object.put("meeting_status", "");
+            object.put("meeting_valid_token", UUID.randomUUID().toString());
+
+            object.put("event_repeat_to_date", endDateForPost);
+
+
+            if (!repeative.equals("One-time event")) {
+                object.put("is_long_repeat", 1);
+            } else {
+                object.put("is_long_repeat", 0);
+            }
+            object.put("event_alert", "");
+            object.put("calendar_id", "");
+
+            object.put("event_last_update_datetime", DateUtil.getDateStringFromCalendarGMT(Calendar.getInstance()));
+            object.put("if_deleted", 0);
+
+            object.put("event_is_punctual", punctual);
+            object.put("event_is_punctual_new", punctual);
+
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        final String url = URLs.SYNC;
+        JSONObject jsonObject = new JSONObject();
+        JSONArray jsonArray = new JSONArray();
+        jsonArray.put(object);
+        try {
+            jsonObject.put("user_id", User.ID);
+            jsonObject.put("local_events", jsonArray);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+        Map<String, String> params = new HashMap();
+        params.put("json", jsonObject.toString());
+        JsonObjectFormRequest request = new JsonObjectFormRequest(Request.Method.POST, url, params, new Response.Listener<JSONObject>() {
+            @Override
+            public void onResponse(JSONObject response) {
+
+            }
+        }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+
+            }
+        });
+        MySingleton.getInstance(context).addToRequestQueue(request);
+
+    }
+
 
     private static void receiveFriendRequestMessage(final Context context, final ParcelableMessage message) {
         final String friendId = message.relevantId;

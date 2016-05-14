@@ -1,7 +1,9 @@
 package com.itime.team.itime.activities;
 
+import android.app.AlertDialog;
 import android.content.BroadcastReceiver;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.LayerDrawable;
 import android.os.Bundle;
@@ -320,7 +322,24 @@ public class MainActivity extends AppCompatActivity implements
                         }
                     }
                     if(mIsFriend == false) {
-                        addFriend(finalId);
+                        String warning = String.format(getString(R.string.add_friend_confirm), finalId);
+                        AlertDialog.Builder builder = new AlertDialog.Builder(getApplicationContext());
+                        builder.setMessage(warning);
+                        builder.setIcon(R.mipmap.ic_launcher);
+                        builder.setTitle(getString(R.string.new_meeting_confirm_title));
+                        builder.setNegativeButton("No", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                            }
+                        });
+                        builder.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                addFriend(finalId);
+                            }
+                        });
+                        builder.show();
+
                     } else {
                         String warning = String.format(getString(R.string.repeat_add_friend), finalId);
                         Toast.makeText(getApplication(), warning, Toast.LENGTH_LONG).show();

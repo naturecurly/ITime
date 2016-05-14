@@ -375,8 +375,8 @@ public class MeetingFragment extends Fragment implements View.OnClickListener,Se
         if(mIsFeasible) {
             boolean isChecked = false;
             ArrayList<String> IDs = new ArrayList<>();
-            for (HashMap<String, Object> map : listItemForPresent ){
-                if((Boolean)map.get("CheckBox")){
+            for (HashMap<String, Object> map : listItemForPresent){
+                if(map.get("CheckBox") != null && (Boolean)map.get("CheckBox")){
                     isChecked = true;
                     IDs.add((String) map.get("ItemID"));
                 }

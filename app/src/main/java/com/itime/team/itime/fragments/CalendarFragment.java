@@ -26,6 +26,7 @@ import android.view.animation.DecelerateInterpolator;
 import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.RelativeLayout;
+import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -48,6 +49,7 @@ import com.itime.team.itime.listener.OnDateSelectedListener;
 import com.itime.team.itime.listener.ScrollMeetingViewListener;
 import com.itime.team.itime.listener.ScrollViewInterceptTouchListener;
 import com.itime.team.itime.model.ParcelableCalendarType;
+import com.itime.team.itime.utils.CalendarTypeUtil;
 import com.itime.team.itime.utils.DateUtil;
 import com.itime.team.itime.utils.DensityUtil;
 import com.itime.team.itime.utils.EventUtil;
@@ -56,7 +58,7 @@ import com.itime.team.itime.utils.JsonObjectFormRequest;
 import com.itime.team.itime.utils.MySingleton;
 import com.itime.team.itime.views.CalendarView;
 import com.itime.team.itime.views.CustomizedTextView;
-import com.itime.team.itime.views.MeetingScrollView;
+import com.itime.team.itime.views.EventsScrollView;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -90,12 +92,13 @@ public class CalendarFragment extends Fragment {
     public boolean loading = true;
     private int visibleThreshold = 5;
     private int firstVisibleItem, visibleItemCount, totalItemCount;
-    private MeetingScrollView mScrollView;
+    private EventsScrollView mScrollView;
     private boolean isExpended = false;
     private JSONArray mResponse;
     private boolean scroll_flag;
     private boolean isPress;
     private boolean shouldScrollCalendar;
+    private int firstEventHour = 0;
 
     public String getTitle_string() {
         return title_string;
@@ -256,10 +259,10 @@ public class CalendarFragment extends Fragment {
 
 
         //scrollView transaction
-        mScrollView = (MeetingScrollView) view.findViewById(R.id.lower_scroll_view);
+        mScrollView = (EventsScrollView) view.findViewById(R.id.lower_scroll_view);
         mScrollView.setOnInterceptTouchListener(new ScrollViewInterceptTouchListener() {
             @Override
-            public void touchEventHappend(MeetingScrollView scrollView, MotionEvent ev) {
+            public void touchEventHappend(ScrollView scrollView, MotionEvent ev) {
                 if (ev.getAction() == MotionEvent.ACTION_DOWN) {
                     isPress = false;
                 }
@@ -268,7 +271,7 @@ public class CalendarFragment extends Fragment {
         mScrollView.setOnScrollViewListener(new ScrollMeetingViewListener() {
 
             @Override
-            public void onScrollChanged(MeetingScrollView scrollView, int x, int y, int oldx, int oldy) {
+            public void onScrollChanged(ScrollView scrollView, int x, int y, int oldx, int oldy) {
                 //Toast.makeText(getActivity(), "scrolled", Toast.LENGTH_SHORT).show();
 //                Log.d("if_scroll", selectedPosition + "");
 
@@ -551,7 +554,7 @@ public class CalendarFragment extends Fragment {
                     if (Events.daysHaveEvents.contains(cal.get(Calendar.DAY_OF_MONTH) + "-" + (cal.get(Calendar.MONTH) + 1) + "-" + cal.get(Calendar.YEAR))) {
                         ifEvents[i] = true;
 //                        Log.d("testdate", eventDateList.size() + "");
-                    } else if (Events.repeatEvent != null) {
+                    } else if (Events.repeatEvent.size() > 0) {
                         try {
                             boolean hasRepeat = EventUtil.hasRepeatEvent(cal);
                             if (hasRepeat) {
@@ -652,6 +655,7 @@ public class CalendarFragment extends Fragment {
                     if (row.getCells()[DateUtil.analysePosition(x, rowHeight)].hasEvents) {
                         paintLowerPanel(day, month, year, true);
                     } else {
+                        firstEventHour = 0;
                         relativeLayout.removeAllViews();
                         addLowerViews(relativeLayout);
 
@@ -673,6 +677,7 @@ public class CalendarFragment extends Fragment {
                             bundle.putInt("year", year);
                             bundle.putInt("month", month);
                             bundle.putInt("day", day);
+                            bundle.putInt("hour", firstEventHour);
                             intent.putExtras(bundle);
                             startActivity(intent);
                         } else {
@@ -799,6 +804,7 @@ public class CalendarFragment extends Fragment {
                 try {
                     Events.rawEvents = EventUtil.processRawEvents(response.getJSONArray("events"));
                     Events.calendarTypeList = LoganSquare.parseList(response.getJSONArray("calendar_types").toString(), ParcelableCalendarType.class);
+                    CalendarTypeUtil.sortCalendarType();
                     Events.notShownId = EventUtil.getNotShownCalendarId();
                     Events.response = EventUtil.initialEvents(response.getJSONArray("events"));
                     Events.ignoredEventMap = EventUtil.processIgnoredEvents(response.getJSONArray("events_ignore"));
@@ -816,6 +822,8 @@ public class CalendarFragment extends Fragment {
                 } catch (IOException e) {
                     e.printStackTrace();
                 } catch (Exception e) {
+//                    Log.d("issues", e.getMessage());
+                    e.printStackTrace();
                     Toast.makeText(getActivity(), "Network Issues", Toast.LENGTH_SHORT).show();
                 }
 
@@ -847,6 +855,7 @@ public class CalendarFragment extends Fragment {
                 String firstTimeString = firstObject.getString("event_starts_datetime");
                 Date firstTimeDate = DateUtil.getLocalDateObject(firstTimeString);
                 firstTimeCal = DateUtil.getLocalDateObjectToCalendar(firstTimeDate);
+                firstEventHour = firstTimeCal.get(Calendar.HOUR_OF_DAY);
 
             } catch (JSONException e) {
                 e.printStackTrace();
@@ -977,7 +986,7 @@ public class CalendarFragment extends Fragment {
                         @Override
                         public boolean onLongClick(View view) {
                             View pressedView = mScrollView.getPressedSubView();
-                            if (pressedView != null){
+                            if (pressedView != null) {
                                 pressedView.performLongClick();
                             }
                             return true;
@@ -1114,7 +1123,7 @@ public class CalendarFragment extends Fragment {
                                 @Override
                                 public boolean onLongClick(View view) {
                                     View pressedView = mScrollView.getPressedSubView();
-                                    if (pressedView != null){
+                                    if (pressedView != null) {
                                         pressedView.performLongClick();
                                     }
                                     return true;
@@ -1233,6 +1242,7 @@ public class CalendarFragment extends Fragment {
 
 
         } else {
+            firstEventHour = 0;
             relativeLayout.removeAllViews();
             addLowerViews(relativeLayout);
         }
@@ -1316,9 +1326,7 @@ public class CalendarFragment extends Fragment {
     @Override
     public void onResume() {
         super.onResume();
-        // // TODO: 13/05/16 for example, reload the data according to the boolean value of isCalendarChanged
-        isCalendarChanged();
-        if(User.hasNewMeeting){
+        if(User.hasNewMeeting || isCalendarChanged()){
             User.hasNewMeeting = false;
             refresh();
         }

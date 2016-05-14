@@ -136,7 +136,7 @@
                         android:layout_alignParentEnd="true"
                         android:layout_alignParentRight="true"
                         android:layout_centerVertical="true"
-                        android:layout_marginRight="12dp"
+                        android:layout_marginRight="18dp"
                         android:gravity="center_vertical"
                         android:text="00:00" />
 
@@ -174,7 +174,7 @@
                         android:layout_alignParentEnd="true"
                         android:layout_alignParentRight="true"
                         android:layout_alignParentTop="true"
-                        android:layout_marginRight="12dp"
+                        android:layout_marginRight="18dp"
                         android:gravity="center_vertical"
                         android:text="00:00" />
 
@@ -202,7 +202,8 @@
                         android:gravity="center_vertical"
                         android:paddingRight="12dp"
                         android:text="test"
-                        android:textAlignment="textEnd" />
+                        android:textAlignment="textEnd"
+                        android:layout_marginRight="6dp" />
 
                 </LinearLayout>
 

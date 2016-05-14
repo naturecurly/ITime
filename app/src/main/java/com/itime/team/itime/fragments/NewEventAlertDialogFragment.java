@@ -13,7 +13,7 @@ import com.itime.team.itime.listener.RepeatSelectionListener;
  * Created by leveyleonhardt on 4/28/16.
  */
 public class NewEventAlertDialogFragment extends DialogFragment {
-    final private String[] alertArray = {"None", "At time of Departure", "5 minutes before", "10 minutes before", "15 minutes before", "30 minutes before","1 hour before"};
+    final private String[] alertArray = {"None", "At time of Event", "5 minutes before", "10 minutes before", "15 minutes before", "30 minutes before","1 hour before"};
     private RepeatSelectionListener listener;
     public static final String SELECTED = "selected";
 

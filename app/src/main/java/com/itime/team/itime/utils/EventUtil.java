@@ -180,7 +180,7 @@ public class EventUtil {
         }
         Log.d("length", array.length() + "");
         Events.daysHaveEvents = stringSet;
-        Events.repeatEvent = repeatEvents;
+        Events.repeatEvent = sortEvents(repeatEvents);
         Events.eventsByMonth = eventsByMonth;
         return array;
     }
@@ -265,7 +265,14 @@ public class EventUtil {
                 new_cal.set(year, month - 1, day);
                 Calendar cal = DateUtil.getLocalDateObjectToCalendar(date);
                 Calendar endCal = DateUtil.getLocalDateObjectToCalendar(enddate);
-                Calendar repeatToCal = DateUtil.getLocalDateObjectToCalendar(repeatToDate);
+//                Calendar repeatToCal = null;
+//                try {
+//                    repeatToCal = DateUtil.getLocalDateObjectToCalendar(repeatToDate);
+//                } catch (Exception e) {
+////                    Log.d("repeatlog",e.printStackTrace())
+//                    e.printStackTrace();
+//                    repeatToCal = (Calendar) endCal.clone();
+//                }
                 int duration = calDuration(cal, calendar);
                 Boolean isLong = object.getBoolean("is_long_repeat");
                 if (hasIgn) {
@@ -280,9 +287,12 @@ public class EventUtil {
                     }
                 }
                 if (!skip) {
+                    Calendar repeatToCal = DateUtil.getLocalDateObjectToCalendar(repeatToDate);
+
                     if (type.equals("Daily") && duration >= 0) {
                         if (isLong) {
                             //                            if (calendar.compareTo(cal) > 0 || (cal.get(Calendar.DAY_OF_MONTH) == calendar.get(Calendar.DAY_OF_MONTH) && (cal.get(Calendar.MONTH)) == calendar.get(Calendar.MONTH) && cal.get(Calendar.YEAR) == calendar.get(Calendar.YEAR))) {
+
                             cal.add(Calendar.DAY_OF_MONTH, duration);
                             endCal.add(Calendar.DAY_OF_MONTH, duration);
                             list.add(changeObjectDate(cal, endCal, object));
@@ -558,6 +568,7 @@ public class EventUtil {
 
     public static boolean hasRepeatEvent(Calendar calendar) throws JSONException {
         List<JSONObject> list = Events.repeatEvent;
+//        list = sortEvents(list);
         boolean hasIgn = false;
         String dateString = calendar.get(Calendar.DAY_OF_MONTH) + "-" + calendar.get(Calendar.MONTH) + "-" + calendar.get(Calendar.YEAR);
         if (Events.ignoredEventMap.containsKey(dateString)) {
@@ -571,7 +582,6 @@ public class EventUtil {
             String type = object.getString("event_repeats_type");
             Boolean isLong = object.getBoolean("is_long_repeat");
             Calendar eventCal = DateUtil.getLocalDateObjectToCalendar(DateUtil.getLocalDateObject(object.getString("event_starts_datetime")));
-            Calendar repeatToCal = DateUtil.getLocalDateObjectToCalendar(DateUtil.getLocalDateObject(object.getString("event_repeat_to_date")));
             int day = calDuration(eventCal, calendar);
             if (hasIgn) {
                 for (JSONObject ignoreObject : Events.ignoredEventMap.get(dateString)) {
@@ -584,6 +594,8 @@ public class EventUtil {
                 }
             }
             if (skip == false) {
+                Calendar repeatToCal = DateUtil.getLocalDateObjectToCalendar(DateUtil.getLocalDateObject(object.getString("event_repeat_to_date")));
+
                 if (type.equals("Daily") && day >= 0) {
                     if (isLong) {
                         return true;
@@ -654,6 +666,9 @@ public class EventUtil {
                 String id = object.getString("event_id");
                 String dateString = object.getString("event_starts_datetime");
                 Calendar calendar = DateUtil.getLocalDateObjectToCalendar(DateUtil.getLocalDateObject(dateString));
+                if (findEventById(id) == null) {
+                    continue;
+                }
                 int day = calDuration(findEventById(id));
 
 
@@ -927,7 +942,7 @@ public class EventUtil {
             try {
                 Log.d("search", rawEvent.getString("event_name"));
                 if (isValidEvent(rawEvent)) {
-                    if (rawEvent.getString("event_name").indexOf(query) >= 0) {
+                    if (rawEvent.getString("event_name").toLowerCase().indexOf(query.toLowerCase()) >= 0) {
                         result.add(rawEvent);
                     }
                 }

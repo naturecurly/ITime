@@ -40,10 +40,10 @@ public class NewEventCalendarTypeDialogFragment extends DialogFragment {
         });
 
         for (ParcelableCalendarType calendarType : Events.calendarTypeList) {
-            calendarTypes.add(calendarType.calendarName);
+            calendarTypes.add(calendarType.calendarName + "-" + calendarType.calendarOwnerName);
         }
         calendarArray = calendarTypes.toArray(new String[calendarTypes.size()]);
-        Log.d("types", calendarArray.length+"");
+        Log.d("types", calendarArray.length + "");
 
         dialog.setSingleChoiceItems(calendarTypes.toArray(new String[calendarTypes.size()]), bundle.getInt(SELECTED), new DialogInterface.OnClickListener() {
             @Override

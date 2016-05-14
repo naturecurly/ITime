@@ -19,6 +19,7 @@ import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.ListAdapter;
 import android.widget.ListView;
+import android.widget.ScrollView;
 import android.widget.TimePicker;
 import android.widget.Toast;
 
@@ -450,7 +451,7 @@ public class MeetingFragment extends Fragment implements View.OnClickListener,Se
 
 
     @Override
-    public void onScrollChanged(MeetingScrollView scrollView, int x, int y, int oldx, int oldy) {
+    public void onScrollChanged(ScrollView scrollView, int x, int y, int oldx, int oldy) {
         index ++;
         if(index == 1){
             mScrollView.scrollTo(0,oldy);

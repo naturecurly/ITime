@@ -8,6 +8,8 @@ import android.support.v7.widget.Toolbar;
 import android.util.TypedValue;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -37,6 +39,12 @@ public abstract class WeeklyBaseActivity extends AppCompatActivity implements We
     private boolean isLoaded = false;
     private Calendar calendar;
     private TextView title;
+    private Button todayButton;
+    private Calendar today = Calendar.getInstance();
+    private int hour;
+    private int day;
+    private int month;
+    private int year;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -45,16 +53,24 @@ public abstract class WeeklyBaseActivity extends AppCompatActivity implements We
         Intent intent = getIntent();
         Bundle bundle = intent.getExtras();
         Toast.makeText(this, "test" + bundle.getInt("day"), Toast.LENGTH_SHORT).show();
-        int day = bundle.getInt("day");
-        int month = bundle.getInt("month");
-        int year = bundle.getInt("year");
+        day = bundle.getInt("day");
+        month = bundle.getInt("month");
+        year = bundle.getInt("year");
+        hour = bundle.getInt("hour");
         calendar = Calendar.getInstance();
         calendar.set(year, month - 1, day);
         Toolbar toolbar = (Toolbar) findViewById(R.id.week_toolbar);
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayShowTitleEnabled(false);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        todayButton = (Button) findViewById(R.id.weekly_today);
+        todayButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mWeekView.goToToday();
 
+            }
+        });
         title = (TextView) findViewById(R.id.weekview_title);
         // Get a reference for the week view in the layout.
         mWeekView = (WeekView) findViewById(R.id.weekView);
@@ -92,7 +108,13 @@ public abstract class WeeklyBaseActivity extends AppCompatActivity implements We
         // Set up a date time interpreter to interpret how the date and time will be formatted in
         // the week view. This is optional.
         setupDateTimeInterpreter(false);
+        if (day == today.get(Calendar.DAY_OF_MONTH) && month == (today.get(Calendar.MONTH) + 1) && year == today.get(Calendar.YEAR)) {
+            mWeekView.goToHour(today.get(Calendar.HOUR_OF_DAY));
+        } else
+            mWeekView.goToHour(hour);
         mWeekView.goToDate(calendar);
+
+
     }
 
 
@@ -129,6 +151,8 @@ public abstract class WeeklyBaseActivity extends AppCompatActivity implements We
                         Calendar visibleDay = mWeekView.getFirstVisibleDay();
                         if (visibleDay.get(Calendar.YEAR) == now.get(Calendar.YEAR) && visibleDay.get(Calendar.MONTH) == now.get(Calendar.MONTH) && visibleDay.get(Calendar.DAY_OF_MONTH) == now.get(Calendar.DAY_OF_MONTH)) {
                             mWeekView.goToHour(now.get(Calendar.HOUR_OF_DAY));
+                        } else {
+                            mWeekView.goToHour(hour);
                         }
 
                         isWeekView = false;
@@ -149,6 +173,10 @@ public abstract class WeeklyBaseActivity extends AppCompatActivity implements We
                         mWeekView.setTextSize((int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_SP, 10, getResources().getDisplayMetrics()));
                         mWeekView.setEventTextSize((int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_SP, 10, getResources().getDisplayMetrics()));
                         mWeekView.goToDate(calendar);
+                        if (day == today.get(Calendar.DAY_OF_MONTH) && month == (today.get(Calendar.MONTH) + 1) && year == today.get(Calendar.YEAR)) {
+                            mWeekView.goToHour(today.get(Calendar.HOUR_OF_DAY));
+                        } else
+                            mWeekView.goToHour(hour);
                         isWeekView = true;
 
                     }

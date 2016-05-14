@@ -3,8 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#fff"
-    tools:context=".BaseActivity">
+    android:background="#fff">
 
     <android.support.v7.widget.Toolbar
         android:id="@+id/week_toolbar"
@@ -13,6 +12,13 @@
         android:background="@drawable/topbg"
         android:theme="@style/AppTheme.AppBarOverlay"
         app:popupTheme="@style/AppTheme.PopupOverlay">
+
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Today"
+            android:id="@+id/weekly_today"
+            android:backgroundTint="#00ffffff" />
 
         <TextView
             android:id="@+id/weekview_title"

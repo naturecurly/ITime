@@ -59,6 +59,9 @@ public class EventsActivity extends AppCompatActivity {
 
             @Override
             public boolean onQueryTextChange(String newText) {
+
+                result = EventUtil.searchByName(newText);
+                eventRecyclerView.getAdapter().notifyDataSetChanged();
                 return false;
             }
         });

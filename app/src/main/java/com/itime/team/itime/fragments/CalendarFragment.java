@@ -51,7 +51,6 @@ import com.itime.team.itime.model.ParcelableCalendarType;
 import com.itime.team.itime.utils.DateUtil;
 import com.itime.team.itime.utils.DensityUtil;
 import com.itime.team.itime.utils.EventUtil;
-import com.itime.team.itime.utils.ITimeGcmPreferences;
 import com.itime.team.itime.utils.ITimePreferences;
 import com.itime.team.itime.utils.JsonObjectFormRequest;
 import com.itime.team.itime.utils.MySingleton;

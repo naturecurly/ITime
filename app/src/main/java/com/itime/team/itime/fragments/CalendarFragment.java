@@ -1350,7 +1350,7 @@ public class CalendarFragment extends Fragment {
         SharedPreferences sharedPreferences =
                 PreferenceManager.getDefaultSharedPreferences(getActivity());
         Boolean isChanged = sharedPreferences.getBoolean(ITimePreferences.CALENDAR_TYPE_CHANGED, false);
-        Toast.makeText(getContext(), "isCalendarChanged: " + isChanged, Toast.LENGTH_SHORT).show();
+        //Toast.makeText(getContext(), "isCalendarChanged: " + isChanged, Toast.LENGTH_SHORT).show();
         if (isChanged) {
             sharedPreferences.edit().putBoolean(ITimePreferences.CALENDAR_TYPE_CHANGED, false).apply();
         }

@@ -233,7 +233,6 @@ public class MainActivity extends AppCompatActivity implements
     @Override
     protected void onResume() {
         super.onResume();
-        Log.i(LOG_TAG, "onResume");
         isFriend();
         Bugtags.onResume(this);
     }
@@ -333,6 +332,7 @@ public class MainActivity extends AppCompatActivity implements
             }
         });
         MySingleton.getInstance(this).addToRequestQueue(request);
+        User.addFriendResume = "";
     }
 
     public static void setBadgeCount(Context context, LayerDrawable icon, String count) {

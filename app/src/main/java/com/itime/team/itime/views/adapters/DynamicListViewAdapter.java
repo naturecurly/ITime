@@ -19,12 +19,15 @@ import android.widget.TextView;
 
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
 import com.itime.team.itime.R;
 import com.itime.team.itime.bean.URLs;
 import com.itime.team.itime.bean.User;
 import com.itime.team.itime.fragments.MeetingFragment;
 import com.itime.team.itime.interfaces.DataRequest;
 import com.itime.team.itime.utils.JsonManager;
+import com.itime.team.itime.utils.JsonObjectFormRequest;
 import com.itime.team.itime.utils.MySingleton;
 
 import org.json.JSONArray;
@@ -178,9 +181,30 @@ public class DynamicListViewAdapter extends BaseAdapter implements DataRequest{
             JSONObject json = new JSONObject();
             json.put("user_id", User.ID);
             json.put("friend_id",friendID);
-            requestJSONObject(mJsonManager, json, URLs.DELETE_FRIEND,
-                    "delete_friend");
-            handleJSON(mJsonManager);
+            final String url = URLs.DELETE_FRIEND;
+            Map<String, String> params = new HashMap();
+            params.put("json", json.toString());
+
+            JsonObjectFormRequest request = new JsonObjectFormRequest(Request.Method.POST, url, params, new Response.Listener<JSONObject>() {
+                @Override
+                public void onResponse(JSONObject response) {
+                    try {
+                        if(response.get("result").toString().equals("success")){
+                            mMeetingFragment.initListView();
+                            checkBoxKeeper.clear();
+                            mLinearLayout.removeAllViews();
+                        }
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+                }
+            }, new Response.ErrorListener() {
+                @Override
+                public void onErrorResponse(VolleyError error) {
+
+                }
+            });
+            MySingleton.getInstance(context).addToRequestQueue(request);
         } catch (JSONException e) {
             e.printStackTrace();
         }

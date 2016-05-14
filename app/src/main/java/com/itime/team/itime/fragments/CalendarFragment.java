@@ -1291,7 +1291,11 @@ public class CalendarFragment extends Fragment {
     @Override
     public void onResume() {
         super.onResume();
-        Log.d("onResume", "OnResume");
+        if(User.hasNewMeeting){
+            User.hasNewMeeting = false;
+            refresh();
+        }
+        Log.i("onResume", "OnResume");
     }
 
 

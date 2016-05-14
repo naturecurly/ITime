@@ -7,7 +7,6 @@ package com.itime.team.itime.utils;
 import android.annotation.SuppressLint;
 import android.util.Log;
 
-import java.sql.Time;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -153,6 +152,16 @@ public class DateUtil {
         Calendar cal2 = Calendar.getInstance();
         cal2.set(year, month - 1, day);
         long result = Math.abs((cal1.getTimeInMillis() - cal2.getTimeInMillis()) / (1000 * 60 * 60 * 24));
+        return (int) result + 1;
+    }
+
+    public static int diffMin(int oldYear, int oldMonth, int oldDay,int oldHour, int oldMin,
+                               int year, int month, int day, int hour, int min) {
+        Calendar cal1 = Calendar.getInstance();
+        cal1.set(oldYear, oldMonth - 1, oldDay, oldHour, oldMin);
+        Calendar cal2 = Calendar.getInstance();
+        cal2.set(year, month - 1, day, hour, min);
+        long result = Math.abs((cal1.getTimeInMillis() - cal2.getTimeInMillis()) / (1000 * 60 * 60));
         return (int) result + 1;
     }
 

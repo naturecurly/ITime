@@ -42,11 +42,15 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.UUID;
 
 /**
  * Created by Weiwei Cai on 16/2/17.
@@ -110,6 +114,8 @@ public class MeetingDetailUpdateActivity extends AppCompatActivity implements Vi
     private String mMRepeat;
     private String mNote;
 
+    private int mDuration;
+
 
     private String mMeetingName;
     private String mLocation;
@@ -145,6 +151,7 @@ public class MeetingDetailUpdateActivity extends AppCompatActivity implements Vi
     public boolean onOptionsItemSelected(MenuItem item) {
         if(item.getItemId() == R.id.update_meeting){
             postInformation();
+            postEvent();
         }
         return super.onOptionsItemSelected(item);
     }
@@ -244,7 +251,8 @@ public class MeetingDetailUpdateActivity extends AppCompatActivity implements Vi
         mMeetingID = receiver.getStringExtra("meeting_id");
         mEventID = receiver.getStringExtra("event_id");
         mToken = receiver.getStringExtra("token");
-
+        mDuration = DateUtil.diffMin(mStartYear,mStartMonth,mStartDay,mStartHour,mStartMin
+                ,mEndYear, mEndMonth, mEndDay,mEndHour,mEndMin);
 
         mOldStartDay = mStartDay;
         mOldEndDay = mEndDay;
@@ -307,7 +315,9 @@ public class MeetingDetailUpdateActivity extends AppCompatActivity implements Vi
                     mStartTime.setText(timeFormat(hourOfDay, minute));
                     mStartHour = hourOfDay;
                     mStartMin = minute;
+                    reSetEndTime();
                     checkTime();
+
                 }
             },mStartHour,mStartMin,false);
             mTimePicker1.show();
@@ -319,7 +329,9 @@ public class MeetingDetailUpdateActivity extends AppCompatActivity implements Vi
                     mStartYear = year;
                     mStartMonth = monthOfYear;
                     mStartDay = dayOfMonth;
+                    reSetEndTime();
                     checkTime();
+                    
                 }
             },mStartYear, mStartMonth, mStartDay);
             mDatePicker1.show();
@@ -462,6 +474,7 @@ public class MeetingDetailUpdateActivity extends AppCompatActivity implements Vi
             public void onResponse(JSONObject response) {
                 try {
                     if(response.getString("result").equals("success")){
+                        User.hasNewMeeting = true;
                         setResult(RESULT_OK);
                         Toast.makeText(getApplicationContext(),
                                 getString(R.string.meeting_update), Toast.LENGTH_SHORT).show();
@@ -481,6 +494,123 @@ public class MeetingDetailUpdateActivity extends AppCompatActivity implements Vi
         MySingleton.getInstance(this).addToRequestQueue(request);
 
     }
+
+    private void postEvent() {
+        String startDateForPost = DateUtil.getDateWithTimeZone(mStartYear, mStartMonth + 1, mStartDay, mStartHour, mStartMin);
+        String endDateForPost = DateUtil.getDateWithTimeZone(mEndYear, mEndMonth + 1, mEndDay, mEndHour, mEndMin);
+        String comment = mMessage.getText().toString();
+        String name = mName.getText().toString();
+        String punctual = mPunctual.isChecked() ? "true" : "false";
+        String repeative = mRpeatValue.get(0);
+
+        String status = "NO CONFIRM NEW MEETING";
+
+        String[] address = mAddress.split(",");
+        String location = mAddress;
+        String showLocation = address[0];
+
+//        String location = mAddress.equals("") ? getString(R.string.post_null) : mAddress;
+//        String showLocation = address[0].equals("") ? getString(R.string.post_null) : address[0];
+
+        Log.i("meetingID",mMeetingID);
+        JSONObject object = new JSONObject();
+        try {
+            object.put("event_id", mMeetingID);
+            object.put("user_id", User.ID);
+            object.put("host_id", User.ID);
+            object.put("meeting_id", mMeetingID);
+
+            object.put("event_name", name.equals("") ? getString(R.string.new_meeting) : name);
+            object.put("event_comment", comment);
+            object.put("event_starts_datetime", startDateForPost);
+            object.put("event_ends_datetime", endDateForPost);
+
+            object.put("event_venue_show", showLocation);
+            object.put("event_venue_location", location);
+
+            object.put("event_repeats_type", repeative);
+
+            object.put("event_latitude", 0);
+            object.put("event_longitude", 0);
+
+            object.put("event_last_sug_dep_time", startDateForPost);
+            object.put("event_last_time_on_way_in_second", "0");
+            object.put("event_last_distance_in_meter", "0");
+
+            object.put("event_name_new", name);
+            object.put("event_comment_new", comment);
+
+            object.put("event_starts_datetime_new", startDateForPost);
+            object.put("event_ends_datetime_new", endDateForPost);
+
+            object.put("event_venue_show_new", showLocation);
+            object.put("event_venue_location_new", location);
+
+            object.put("event_repeats_type_new", repeative);
+            //punctual
+            object.put("event_latitude_new", 0);
+            object.put("event_longitude_new", 0);
+
+            object.put("event_last_sug_dep_time_new", startDateForPost);
+            object.put("event_last_time_on_way_in_second_new", "0");
+            object.put("event_last_distance_in_meter_new", "0");
+
+            object.put("is_meeting", 1);
+            object.put("is_host", 1);
+
+            object.put("meeting_status", "");
+            object.put("meeting_valid_token", UUID.randomUUID().toString());
+
+            object.put("event_repeat_to_date", endDateForPost);
+
+
+            if (!repeative.equals("One-time event")) {
+                object.put("is_long_repeat", 1);
+            } else {
+                object.put("is_long_repeat", 0);
+            }
+            object.put("event_alert", "");
+            object.put("calendar_id", calendarTypeString.calendarId);
+
+            object.put("event_last_update_datetime", DateUtil.getDateStringFromCalendarGMT(Calendar.getInstance()));
+            object.put("if_deleted", 0);
+
+            object.put("event_is_punctual", punctual);
+            object.put("event_is_punctual_new", punctual);
+
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        final String url = URLs.SYNC;
+        JSONObject jsonObject = new JSONObject();
+        JSONArray jsonArray = new JSONArray();
+        jsonArray.put(object);
+        try {
+            jsonObject.put("user_id", User.ID);
+            jsonObject.put("local_events", jsonArray);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+        Map<String, String> params = new HashMap();
+        params.put("json", jsonObject.toString());
+        Log.i("showJONS", jsonObject.toString());
+        JsonObjectFormRequest request = new JsonObjectFormRequest(Request.Method.POST, url, params, new Response.Listener<JSONObject>() {
+            @Override
+            public void onResponse(JSONObject response) {
+
+            }
+        }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+
+            }
+        });
+        MySingleton.getInstance(this).addToRequestQueue(request);
+
+    }
+
+
 
     private void getLoaction(String address) {
         StringBuilder sb = new StringBuilder(PLACES_API_BASE + TYPE_DETAILS + OUT_JSON);
@@ -547,5 +677,27 @@ public class MeetingDetailUpdateActivity extends AppCompatActivity implements Vi
 
 // Access the RequestQueue through your singleton class.
         MySingleton.getInstance(this).addToRequestQueue(jsObjRequest);
+    }
+
+    private void reSetEndTime(){
+        Date endTime = null;
+        Date date;
+        DateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm");
+        String d = mStartYear + "-" + (mStartMonth+1) + "-" + mStartDay + " " + mStartHour + ":" + mStartMin;
+        Log.i("date",d);
+        try {
+            date = formatter.parse(d);
+            endTime = DateUtil.plusMinute(date, 60);
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+
+        mEndYear = endTime.getYear() + 1900;
+        mEndMonth = endTime.getMonth();
+        mEndDay = endTime.getDate();
+        mEndHour = endTime.getHours();
+        mEndMin = endTime.getMinutes();
+        mEndTime.setText(timeFormat(mEndHour, mEndMin));
+        mEndDate.setText(dateFormat(mEndDay, mEndMonth, mEndYear));
     }
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2009 ZXing authors
+ * Copyright (C) 2016 Yorkfine Chan <yorkfinechan@gmail.com>
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,21 +14,12 @@
  * limitations under the License.
  */
 
-package com.zxing.view;
+package com.itime.team.itime.activities;
 
-import com.google.zxing.ResultPoint;
-import com.google.zxing.ResultPointCallback;
+import com.journeyapps.barcodescanner.CaptureActivity;
 
-public final class ViewfinderResultPointCallback implements ResultPointCallback {
-
-  private final ViewfinderView viewfinderView;
-
-  public ViewfinderResultPointCallback(ViewfinderView viewfinderView) {
-    this.viewfinderView = viewfinderView;
-  }
-
-  public void foundPossibleResultPoint(ResultPoint point) {
-    viewfinderView.addPossibleResultPoint(point);
-  }
-
+/**
+ * Created by Xuhui Chen (yorkfine) on 15/05/16.
+ */
+public class CaptureActivityPortraitOrientation extends CaptureActivity {
 }

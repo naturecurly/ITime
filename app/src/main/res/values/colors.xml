@@ -43,4 +43,7 @@
     <color name="backgroundColor">#FFFFFF</color>
     <color name="backgroundColorPress">#DBDBD3</color>
     <color name="red_press">#990000</color>
+
+    <color name="transparent">#00000000</color>
+
 </resources>

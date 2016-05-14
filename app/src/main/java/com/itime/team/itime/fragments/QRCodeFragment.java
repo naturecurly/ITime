@@ -29,9 +29,10 @@ import android.view.WindowManager;
 import android.widget.ImageView;
 import android.widget.Toast;
 
+import com.google.zxing.BarcodeFormat;
 import com.google.zxing.WriterException;
 import com.itime.team.itime.R;
-import com.zxing.encoding.EncodingHandler;
+import com.journeyapps.barcodescanner.BarcodeEncoder;
 
 /**
  * Created by Xuhui Chen (yorkfine) on 15/03/16.
@@ -41,6 +42,8 @@ public class QRCodeFragment extends DialogFragment {
     private String mUserId;
 
     public static final String QRCODE_STRING = "qrcode_string";
+
+    private static final BarcodeEncoder barcodeEncoder = new BarcodeEncoder();
 
     @NonNull
     @Override
@@ -72,7 +75,7 @@ public class QRCodeFragment extends DialogFragment {
         final int dim = smallerDimension * 7 / 8;
 
         try {
-            qrCodeBitmap = EncodingHandler.createQRCode(mUserId, dim);
+            qrCodeBitmap = barcodeEncoder.encodeBitmap(mUserId, BarcodeFormat.QR_CODE, dim, dim);
             imageView.setImageBitmap(qrCodeBitmap);
         } catch (WriterException e) {
             Toast.makeText(getActivity(), "QRCode text can not be empty", Toast.LENGTH_SHORT).show();

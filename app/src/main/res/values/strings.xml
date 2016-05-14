@@ -44,6 +44,7 @@
     <string name="meeting_send_invitation_venue">Venue</string>
     <string name="meeting_search_friend_title">Search Friend</string>
     <string name="meeting_searchbar">Search your friend</string>
+    <string name="meeting_search_scan_qrcode">Scan QRCode</string>
     <string name="meeting_duraiton_dialog_title">Duration</string>
     <string name="meeting_add_dialog_title">Search</string>
     <string name="meeting_duration_textview">Duration</string>

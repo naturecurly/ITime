@@ -18,18 +18,25 @@ import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.SimpleAdapter;
 
+import com.android.volley.Request;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.google.zxing.integration.android.IntentIntegrator;
+import com.google.zxing.integration.android.IntentResult;
 import com.itime.team.itime.R;
+import com.itime.team.itime.activities.CaptureActivityPortraitOrientation;
 import com.itime.team.itime.activities.SearchFriendActivity;
 import com.itime.team.itime.bean.URLs;
 import com.itime.team.itime.bean.User;
 import com.itime.team.itime.interfaces.DataRequest;
 import com.itime.team.itime.utils.JsonManager;
+import com.itime.team.itime.utils.JsonObjectAuthRequest;
+import com.itime.team.itime.utils.MySingleton;
 import com.tencent.mm.sdk.modelmsg.SendMessageToWX;
 import com.tencent.mm.sdk.modelmsg.WXMediaMessage;
 import com.tencent.mm.sdk.modelmsg.WXTextObject;
 import com.tencent.mm.sdk.openapi.IWXAPI;
 import com.tencent.mm.sdk.openapi.WXAPIFactory;
-import com.zxing.activity.CaptureActivity;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -55,7 +62,7 @@ public class MeetingAddDialogFragment extends DialogFragment implements DataRequ
 
     public String invitationContent;
 
-
+    MeetingAddDialogFragment meetingAddDialogFragment;
 
 
     public MeetingAddDialogFragment(ArrayList<HashMap<String, Object>> mUserInfo){
@@ -77,6 +84,7 @@ public class MeetingAddDialogFragment extends DialogFragment implements DataRequ
                 .append("Install iTime</p>")
                 .toString();
         Log.i("info",invitationContent);
+        meetingAddDialogFragment = this;
     }
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -163,8 +171,10 @@ public class MeetingAddDialogFragment extends DialogFragment implements DataRequ
 
                     startActivity(Intent.createChooser(myIntent, "mail"));
                 }else if (position == 3){   // Add friend by QR code
-                    Intent intent = new Intent(getActivity(), CaptureActivity.class);
-                    startActivityForResult(intent, 0);
+                    IntentIntegrator.forSupportFragment(meetingAddDialogFragment)
+                            .setCaptureActivity(CaptureActivityPortraitOrientation.class)
+                            .setPrompt(getString(R.string.meeting_search_scan_qrcode))
+                            .initiateScan();
                 }else if (position == 4){   // Add friend by FaceBook
                     Intent sendIntent = new Intent();
                     sendIntent.setAction(Intent.ACTION_SEND);
@@ -226,6 +236,39 @@ public class MeetingAddDialogFragment extends DialogFragment implements DataRequ
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
+
+        // result from bar code capture activity
+        final IntentResult intentResult = IntentIntegrator.parseActivityResult(requestCode, resultCode, data);
+        if (intentResult != null) {
+            String friendId = intentResult.getContents();
+            String url = URLs.ADD_FRIEND_REQUEST;
+            JSONObject object = new JSONObject();
+            try {
+                object.put("user_id", User.ID);
+                object.put("friend_id", friendId);
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+            JsonObjectAuthRequest request = new JsonObjectAuthRequest(Request.Method.POST, url, object.toString(),
+                    new Response.Listener<JSONObject>() {
+
+                        @Override
+                        public void onResponse(JSONObject response) {
+
+                        }
+                    },
+                    new Response.ErrorListener() {
+                        @Override
+                        public void onErrorResponse(VolleyError error) {
+
+                        }
+                    }
+            );
+            MySingleton.getInstance(getContext()).addToRequestQueue(request);
+            // return so that it won't interfere other result processing below
+            return;
+        }
+
         if (resultCode == getActivity().RESULT_OK) {
             String result = data.getExtras().getString("result");
             String url = URLs.ADD_FRIEND_REQUEST;

@@ -48,6 +48,7 @@ import com.itime.team.itime.listener.OnDateSelectedListener;
 import com.itime.team.itime.listener.ScrollMeetingViewListener;
 import com.itime.team.itime.listener.ScrollViewInterceptTouchListener;
 import com.itime.team.itime.model.ParcelableCalendarType;
+import com.itime.team.itime.utils.CalendarTypeUtil;
 import com.itime.team.itime.utils.DateUtil;
 import com.itime.team.itime.utils.DensityUtil;
 import com.itime.team.itime.utils.EventUtil;
@@ -800,6 +801,7 @@ public class CalendarFragment extends Fragment {
                 try {
                     Events.rawEvents = EventUtil.processRawEvents(response.getJSONArray("events"));
                     Events.calendarTypeList = LoganSquare.parseList(response.getJSONArray("calendar_types").toString(), ParcelableCalendarType.class);
+                    CalendarTypeUtil.sortCalendarType();
                     Events.notShownId = EventUtil.getNotShownCalendarId();
                     Events.response = EventUtil.initialEvents(response.getJSONArray("events"));
                     Events.ignoredEventMap = EventUtil.processIgnoredEvents(response.getJSONArray("events_ignore"));

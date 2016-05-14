@@ -70,7 +70,7 @@ public class NewEventFragment extends Fragment {
     private static String API_KEY = "AIzaSyBC4zDmkarugKY0Njs_n2TtEUVEyeESn0c";
 
     final public String[] repeatArray = {"One-time event", "Daily", "Weekly", "Bi-Weekly", "Monthly", "Yearly"};
-    final public String[] alertArray = {"None", "At time of Departure", "5 minutes before", "10 minutes before", "15 minutes before", "30 minutes before", "1 hour before"};
+    final public String[] alertArray = {"None", "At time of Event", "5 minutes before", "10 minutes before", "15 minutes before", "30 minutes before", "1 hour before"};
 
     private EditText event_name;
     private EditText event_comment;

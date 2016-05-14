@@ -1326,9 +1326,7 @@ public class CalendarFragment extends Fragment {
     @Override
     public void onResume() {
         super.onResume();
-        // // TODO: 13/05/16 for example, reload the data according to the boolean value of isCalendarChanged
-        isCalendarChanged();
-        if (User.hasNewMeeting) {
+        if(User.hasNewMeeting || isCalendarChanged()){
             User.hasNewMeeting = false;
             refresh();
         }
@@ -1346,7 +1344,6 @@ public class CalendarFragment extends Fragment {
 
     /**
      * you should use this method to before you load and draw your data on the view.
-     *
      * @return
      */
     public boolean isCalendarChanged() {

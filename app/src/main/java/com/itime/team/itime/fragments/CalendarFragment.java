@@ -26,6 +26,7 @@ import android.view.animation.DecelerateInterpolator;
 import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.RelativeLayout;
+import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -58,7 +59,7 @@ import com.itime.team.itime.utils.JsonObjectFormRequest;
 import com.itime.team.itime.utils.MySingleton;
 import com.itime.team.itime.views.CalendarView;
 import com.itime.team.itime.views.CustomizedTextView;
-import com.itime.team.itime.views.MeetingScrollView;
+import com.itime.team.itime.views.EventsScrollView;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -92,7 +93,7 @@ public class CalendarFragment extends Fragment {
     public boolean loading = true;
     private int visibleThreshold = 5;
     private int firstVisibleItem, visibleItemCount, totalItemCount;
-    private MeetingScrollView mScrollView;
+    private EventsScrollView mScrollView;
     private boolean isExpended = false;
     private JSONArray mResponse;
     private boolean scroll_flag;
@@ -259,10 +260,10 @@ public class CalendarFragment extends Fragment {
 
 
         //scrollView transaction
-        mScrollView = (MeetingScrollView) view.findViewById(R.id.lower_scroll_view);
+        mScrollView = (EventsScrollView) view.findViewById(R.id.lower_scroll_view);
         mScrollView.setOnInterceptTouchListener(new ScrollViewInterceptTouchListener() {
             @Override
-            public void touchEventHappend(MeetingScrollView scrollView, MotionEvent ev) {
+            public void touchEventHappend(ScrollView scrollView, MotionEvent ev) {
                 if (ev.getAction() == MotionEvent.ACTION_DOWN) {
                     isPress = false;
                 }
@@ -271,7 +272,7 @@ public class CalendarFragment extends Fragment {
         mScrollView.setOnScrollViewListener(new ScrollMeetingViewListener() {
 
             @Override
-            public void onScrollChanged(MeetingScrollView scrollView, int x, int y, int oldx, int oldy) {
+            public void onScrollChanged(ScrollView scrollView, int x, int y, int oldx, int oldy) {
                 //Toast.makeText(getActivity(), "scrolled", Toast.LENGTH_SHORT).show();
 //                Log.d("if_scroll", selectedPosition + "");
 

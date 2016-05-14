@@ -109,7 +109,7 @@
         android:fadingEdgeLength="0dp"
         android:splitMotionEvents="false" />
 
-    <com.itime.team.itime.views.MeetingScrollView
+    <com.itime.team.itime.views.EventsScrollView
         android:id="@+id/lower_scroll_view"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -127,6 +127,6 @@
 
 
         </RelativeLayout>
-    </com.itime.team.itime.views.MeetingScrollView>
+    </com.itime.team.itime.views.EventsScrollView>
 
 </LinearLayout>

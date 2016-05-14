@@ -48,6 +48,7 @@ import com.itime.team.itime.bean.URLs;
 import com.itime.team.itime.bean.User;
 import com.itime.team.itime.model.ParcelableCalendarType;
 import com.itime.team.itime.task.UserTask;
+import com.itime.team.itime.utils.CalendarTypeUtil;
 import com.itime.team.itime.utils.DateUtil;
 import com.itime.team.itime.utils.EventUtil;
 import com.itime.team.itime.utils.ITimeGcmPreferences;
@@ -276,6 +277,7 @@ public class CalendarTypeFragment extends Fragment {
                         Events.notShownId.add(c.calendarId);
                     }
                 }
+                CalendarTypeUtil.sortCalendarType();
                 mAdapter.refresh(calendarType);
 
             }

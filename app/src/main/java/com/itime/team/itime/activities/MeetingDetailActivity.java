@@ -23,11 +23,16 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.google.android.gms.maps.MapFragment;
 import com.itime.team.itime.R;
+import com.itime.team.itime.bean.Events;
 import com.itime.team.itime.bean.MeetingInfo;
 import com.itime.team.itime.bean.URLs;
 import com.itime.team.itime.bean.User;
 import com.itime.team.itime.fragments.MeetingDetailCancelReasonDialogFragment;
 import com.itime.team.itime.fragments.MeetingDetailReasonDialogFragment;
+import com.itime.team.itime.fragments.NewEventAlertDialogFragment;
+import com.itime.team.itime.fragments.NewEventCalendarTypeDialogFragment;
+import com.itime.team.itime.listener.RepeatSelectionListener;
+import com.itime.team.itime.model.ParcelableCalendarType;
 import com.itime.team.itime.utils.DateUtil;
 import com.itime.team.itime.utils.ICS;
 import com.itime.team.itime.utils.Invitation;
@@ -39,6 +44,7 @@ import org.json.JSONObject;
 
 import java.io.File;
 import java.text.SimpleDateFormat;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.HashMap;
 import java.util.Map;
@@ -66,11 +72,18 @@ public class MeetingDetailActivity extends AppCompatActivity implements RadioGro
     private CheckBox mPunctual;
     private EditText mNote;
     private EditText mNewNote;
-    private Button mEmail, mQuit;
+    private Button mQuit;
+    private LinearLayout mEmail;
     private ImageView mImage;
     private String mEventId;
     private File ICSFile;
+    private LinearLayout mAlertLayout, mCalendarLayout;
+    private TextView mAlertText,mCalendarText;
+    private ParcelableCalendarType calendarTypeString = Events.calendarTypeList.get(0);
+    private String mCalendarID,mAlertID;
 
+
+    private String alertString;
     private LinearLayout mLNewName, mLNewVenue, mLNewStart, mLNewEnd, mLNewRepeat, mLNewPunctual, mLNewNote;
 
     private float mLat;
@@ -103,6 +116,8 @@ public class MeetingDetailActivity extends AppCompatActivity implements RadioGro
 
         mMeetingId = getIntent().getStringExtra(ARG_MEETING_ID);
         mEventId = getIntent().getStringExtra("event_id");
+        mCalendarID = getIntent().getStringExtra("calendar_id");
+        mAlertID = getIntent().getStringExtra("event_alert");
 
         mRadioGroup = (RadioGroup) findViewById(R.id.meeting_detail_radio_group);
         mAccept = (RadioButton) findViewById(R.id.meeting_detail_radio_accept);
@@ -121,7 +136,7 @@ public class MeetingDetailActivity extends AppCompatActivity implements RadioGro
         mEnd = (TextView) findViewById(R.id.meeting_detail_ends);
         mRepeat = (TextView) findViewById(R.id.meeting_detail_repeats);
         mPunctual = (CheckBox) findViewById(R.id.meeting_detail_punctual);
-        mEmail = (Button) findViewById(R.id.meeting_detail_email);
+        mEmail = (LinearLayout) findViewById(R.id.meeting_detail_email);
         mEmail.setOnClickListener(this);
         mQuit = (Button) findViewById(R.id.meeting_detail_quit);
         mQuit.setOnClickListener(this);
@@ -147,6 +162,18 @@ public class MeetingDetailActivity extends AppCompatActivity implements RadioGro
         mLNewPunctual = (LinearLayout) findViewById(R.id.meeting_detail_event_punctual_layout);
         mLNewRepeat = (LinearLayout) findViewById(R.id.meeting_detail_event_repeat_layout);
         mLNewNote = (LinearLayout) findViewById(R.id.meeting_detail_note_layout);
+
+        alertString = getString(R.string.alert_default);
+        mAlertLayout = (LinearLayout) findViewById(R.id.meeting_detail_alert_layout);
+        mAlertLayout.setOnClickListener(this);
+        mCalendarLayout = (LinearLayout) findViewById(R.id.meeting_detail_calendar_layout);
+        mCalendarLayout.setOnClickListener(this);
+        mAlertText = (TextView) findViewById(R.id.meeting_detail_alert);
+        mCalendarText = (TextView) findViewById(R.id.meeting_detail_calendar);
+
+        mCalendarText.setText(Events.calendarTypeList.get(0).calendarName);
+        mCalendarText.setText(mCalendarID);
+        mAlertText.setText(mAlertID);
     }
 
     private void showLayout(MeetingInfo meetingInfo){
@@ -386,6 +413,32 @@ public class MeetingDetailActivity extends AppCompatActivity implements RadioGro
             deleteMeeting();
         } else if (v.getId() == mEmail.getId()) {
             email();
+        } else if (v.getId() == mCalendarLayout.getId()) {
+            NewEventCalendarTypeDialogFragment dialog = new NewEventCalendarTypeDialogFragment();
+            Bundle bundle = new Bundle();
+            bundle.putInt(NewEventCalendarTypeDialogFragment.SELECTED, Events.calendarTypeList.indexOf(calendarTypeString));
+            dialog.setArguments(bundle);
+            dialog.setListener(new RepeatSelectionListener() {
+                @Override
+                public void selectItem(int positon) {
+                    calendarTypeString = Events.calendarTypeList.get(positon);
+                    mCalendarText.setText(Events.calendarTypeList.get(positon).calendarName);
+                }
+            });
+            dialog.show(getSupportFragmentManager(), "calendar_dialog");
+        } else if (v.getId() == mAlertLayout.getId()) {
+            NewEventAlertDialogFragment dialog = new NewEventAlertDialogFragment();
+            Bundle bundle = new Bundle();
+            bundle.putInt(NewEventAlertDialogFragment.SELECTED, Arrays.asList(Events.alertArray).indexOf(alertString));
+            dialog.setArguments(bundle);
+            dialog.setListener(new RepeatSelectionListener() {
+                @Override
+                public void selectItem(int positon) {
+                    alertString = Events.alertArray[positon];
+                    mAlertText.setText(Events.alertArray[positon]);
+                }
+            });
+            dialog.show(getSupportFragmentManager(), "alert_dialog");
         }
     }
 

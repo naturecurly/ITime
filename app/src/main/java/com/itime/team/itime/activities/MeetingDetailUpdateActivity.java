@@ -4,6 +4,7 @@ import android.app.DatePickerDialog;
 import android.app.TimePickerDialog;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.v4.app.FragmentManager;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
@@ -29,9 +30,9 @@ import com.itime.team.itime.R;
 import com.itime.team.itime.bean.Events;
 import com.itime.team.itime.bean.URLs;
 import com.itime.team.itime.bean.User;
+import com.itime.team.itime.fragments.NewEventAlertDialogFragment;
 import com.itime.team.itime.fragments.NewEventCalendarTypeDialogFragment;
-import com.itime.team.itime.fragments.NewMeetingAlertDialogFragment;
-import com.itime.team.itime.fragments.NewMeetingRepeatDialogFragment;
+import com.itime.team.itime.fragments.NewEventRepeatDialogFragment;
 import com.itime.team.itime.listener.RepeatSelectionListener;
 import com.itime.team.itime.model.ParcelableCalendarType;
 import com.itime.team.itime.utils.DateUtil;
@@ -46,6 +47,7 @@ import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
@@ -130,6 +132,15 @@ public class MeetingDetailUpdateActivity extends AppCompatActivity implements Vi
     private String mHostID;
     private ParcelableCalendarType calendarTypeString = Events.calendarTypeList.get(0);
 
+    private Map<Integer,String> positionMap;
+    private Map<Integer, String> repeatMap;
+    private int mPosition = 1;
+    private int mRepeatPosition = 0;
+    private String repeatString;
+    private String alertString;
+
+    private String mAlertString;
+
 //    private JsonManager mJsonManager;
 
 
@@ -209,7 +220,26 @@ public class MeetingDetailUpdateActivity extends AppCompatActivity implements Vi
         mAlertValue.add(1);
 
         mAddress = mVeune.getText().toString();
-        //simpleRequest();
+
+        repeatString = getString(R.string.repeat_default);
+        alertString = getString(R.string.alert_default);
+        positionMap = new HashMap<>();
+        positionMap.put(0,"None");
+        positionMap.put(1, "At time of Departure");
+        positionMap.put(2, "5 minutes before");
+        positionMap.put(3, "10 minutes before");
+        positionMap.put(4, "15 minutes before");
+        positionMap.put(5, "30 minutes before");
+        positionMap.put(6, "1 hour before");
+        repeatMap = new HashMap<>();
+        repeatMap.put(0,"One-time event");
+        repeatMap.put(1,"Daily");
+        repeatMap.put(2,"Every weekday (Mon - Fri)");
+        repeatMap.put(3,"Weekly");
+        repeatMap.put(4,"Bi-Weekly");
+        repeatMap.put(5,"Monthly");
+        repeatMap.put(6,"Yearly");
+
     }
 
     private Date getCurrentDate(){
@@ -241,6 +271,9 @@ public class MeetingDetailUpdateActivity extends AppCompatActivity implements Vi
         mShow = receiver.getStringExtra("show");
         mNote = receiver.getStringExtra("note");
         mHostID = receiver.getStringExtra("host_id");
+        mAlertString = receiver.getStringExtra("alert");
+        mAlert.setText(mAlertString);
+
 
         mRepeat.setText(mMRepeat);
         mPunctual.setChecked(mMPunctual);
@@ -359,11 +392,38 @@ public class MeetingDetailUpdateActivity extends AppCompatActivity implements Vi
             },mEndYear, mEndMonth, mEndDay);
             mDatePicker2.show();
         }else if(v.getId() == R.id.new_meeting_repeat){
-            NewMeetingRepeatDialogFragment dialogFragment = new NewMeetingRepeatDialogFragment(mRepeat, mRpeatValue);
-            dialogFragment.show(getSupportFragmentManager(),"newMeetingRepeat");
+//            NewMeetingRepeatDialogFragment dialogFragment = new NewMeetingRepeatDialogFragment(mRepeat, mRpeatValue);
+//            dialogFragment.show(getSupportFragmentManager(),"newMeetingRepeat");
+            FragmentManager fm = getSupportFragmentManager();
+            NewEventRepeatDialogFragment dialog = new NewEventRepeatDialogFragment();
+            Bundle bundle = new Bundle();
+            bundle.putInt(NewEventRepeatDialogFragment.SELECTED, Arrays.asList(Events.repeatArray).indexOf(repeatString));
+            dialog.setArguments(bundle);
+            dialog.setListener(new RepeatSelectionListener() {
+                @Override
+                public void selectItem(int positon) {
+                    repeatString = Events.repeatArray[positon];
+                    mRepeat.setText(Events.repeatArray[positon]);
+                    mRepeatPosition = positon;
+                }
+            });
+            dialog.show(fm, "repeat_dialog");
         }else if(v.getId() == R.id.new_meeting_alert){
-            NewMeetingAlertDialogFragment dialogFragment = new NewMeetingAlertDialogFragment(mAlert, mAlertValue);
-            dialogFragment.show(getSupportFragmentManager(), "newMeetingAlert");
+//            NewMeetingAlertDialogFragment dialogFragment = new NewMeetingAlertDialogFragment(mAlert, mAlertValue);
+//            dialogFragment.show(getSupportFragmentManager(), "newMeetingAlert");
+            NewEventAlertDialogFragment dialog = new NewEventAlertDialogFragment();
+            Bundle bundle = new Bundle();
+            bundle.putInt(NewEventAlertDialogFragment.SELECTED, Arrays.asList(Events.alertArray).indexOf(alertString));
+            dialog.setArguments(bundle);
+            dialog.setListener(new RepeatSelectionListener() {
+                @Override
+                public void selectItem(int positon) {
+                    alertString = Events.alertArray[positon];
+                    mAlert.setText(Events.alertArray[positon]);
+                    mPosition = positon;
+                }
+            });
+            dialog.show(getSupportFragmentManager(), "alert_dialog");
         }else if(v.getId() == R.id.new_meeting_venue){
             Intent intent = new Intent(this,GooglePlacesAutocompleteActivity.class);
             startActivityForResult(intent, 1);
@@ -407,7 +467,7 @@ public class MeetingDetailUpdateActivity extends AppCompatActivity implements Vi
         String comment = mMessage.getText().toString();
         String name = mName.getText().toString();
         String punctual = mPunctual.isChecked() ? "true" : "false";
-        String repeative = mRpeatValue.get(0);
+        String repeative = repeatMap.get(mRepeatPosition);
 
         String status = "NO CONFIRM NEW MEETING";
         String[] address = mAddress.split(",");
@@ -420,7 +480,7 @@ public class MeetingDetailUpdateActivity extends AppCompatActivity implements Vi
             Log.i("currentTime",currentTime);
             json.put("event_id", mEventID);
             json.put("event_venue_location_new", mLocation);
-            json.put("event_repeats_type_new",mMRepeat);
+            json.put("event_repeats_type_new",repeative);
             json.put("event_last_sug_dep_time",currentTime);
             json.put("is_long_repeat",1);
             json.put("event_starts_datetime_new",DateUtil.getDateWithTimeZone(mStartYear,mStartMonth + 1,mStartDay,mStartHour,mStartMin));
@@ -437,7 +497,7 @@ public class MeetingDetailUpdateActivity extends AppCompatActivity implements Vi
             json.put("is_meeting",1);
             json.put("event_venue_show_new", mShow);
             json.put("event_last_time_on_way_in_second",currentTime);
-            json.put("event_alert", mAlert.getText().toString().split(" -- ")[1]); //Need to be changed
+            json.put("event_alert", positionMap.get(mPosition)); //Need to be changed
             json.put("if_deleted",0);
             json.put("event_last_distance_in_meter",0);
             json.put("event_comment_new",mMessage.getText());
@@ -477,7 +537,7 @@ public class MeetingDetailUpdateActivity extends AppCompatActivity implements Vi
                         User.hasNewMeeting = true;
                         Intent intent = new Intent();
                         intent.putExtra("calendar",mCalendar.getText());
-                        intent.putExtra("alert", mAlert.getText().toString().split("--")[1]);
+                        intent.putExtra("alert",positionMap.get(mPosition) );
 
                         setResult(RESULT_OK,intent);
                         Toast.makeText(getApplicationContext(),
@@ -505,7 +565,7 @@ public class MeetingDetailUpdateActivity extends AppCompatActivity implements Vi
         String comment = mMessage.getText().toString();
         String name = mName.getText().toString();
         String punctual = mPunctual.isChecked() ? "true" : "false";
-        String repeative = mRpeatValue.get(0);
+        String repeative = repeative = repeatMap.get(mRepeatPosition);
 
         String status = "NO CONFIRM NEW MEETING";
 
@@ -573,7 +633,7 @@ public class MeetingDetailUpdateActivity extends AppCompatActivity implements Vi
             } else {
                 object.put("is_long_repeat", 0);
             }
-            object.put("event_alert", "");
+            object.put("event_alert", positionMap.get(mPosition));
             object.put("calendar_id", calendarTypeString.calendarId);
 
             object.put("event_last_update_datetime", DateUtil.getDateStringFromCalendarGMT(Calendar.getInstance()));

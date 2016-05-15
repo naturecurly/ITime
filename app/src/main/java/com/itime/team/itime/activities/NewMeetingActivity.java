@@ -6,6 +6,7 @@ import android.app.TimePickerDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.v4.app.FragmentManager;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
@@ -31,9 +32,9 @@ import com.itime.team.itime.R;
 import com.itime.team.itime.bean.Events;
 import com.itime.team.itime.bean.URLs;
 import com.itime.team.itime.bean.User;
+import com.itime.team.itime.fragments.NewEventAlertDialogFragment;
 import com.itime.team.itime.fragments.NewEventCalendarTypeDialogFragment;
-import com.itime.team.itime.fragments.NewMeetingAlertDialogFragment;
-import com.itime.team.itime.fragments.NewMeetingRepeatDialogFragment;
+import com.itime.team.itime.fragments.NewEventRepeatDialogFragment;
 import com.itime.team.itime.listener.RepeatSelectionListener;
 import com.itime.team.itime.model.ParcelableCalendarType;
 import com.itime.team.itime.utils.DateUtil;
@@ -48,6 +49,7 @@ import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
@@ -102,7 +104,13 @@ public class NewMeetingActivity extends AppCompatActivity implements View.OnTouc
     private ArrayList<String> mRpeatValue;
     private ArrayList<Integer> mAlertValue;
     private String mAddress;
+    private String alertString;
 
+    private Map<Integer,String> positionMap;
+    private Map<Integer, String> repeatMap;
+    private int mPosition = 1;
+    private int mRepeatPosition = 0;
+    private String repeatString;
 //    private JsonManager mJsonManager;
 
 
@@ -160,9 +168,29 @@ public class NewMeetingActivity extends AppCompatActivity implements View.OnTouc
             actionBar.setDisplayHomeAsUpEnabled(true);
         }
 
+        repeatString = getString(R.string.repeat_default);
+        positionMap = new HashMap<>();
+        positionMap.put(0,"None");
+        positionMap.put(1, "At time of Departure");
+        positionMap.put(2, "5 minutes before");
+        positionMap.put(3, "10 minutes before");
+        positionMap.put(4, "15 minutes before");
+        positionMap.put(5, "30 minutes before");
+        positionMap.put(6, "1 hour before");
+        repeatMap = new HashMap<>();
+        repeatMap.put(0,"One-time event");
+        repeatMap.put(1,"Daily");
+        repeatMap.put(2,"Every weekday (Mon - Fri)");
+        repeatMap.put(3,"Weekly");
+        repeatMap.put(4,"Bi-Weekly");
+        repeatMap.put(5,"Monthly");
+        repeatMap.put(6,"Yearly");
+
+
 
 
         mAddress = "";
+        alertString = getString(R.string.alert_default);
         mMessage = (EditText) findViewById(R.id.new_meeting_message);
         mMessage.setOnTouchListener(this);
         mStartDate = (Button) findViewById(R.id.new_meeting_start_date);
@@ -182,6 +210,7 @@ public class NewMeetingActivity extends AppCompatActivity implements View.OnTouc
         mStartTime.setOnClickListener(this);
         mEndTime.setOnClickListener(this);
         mRepeat.setOnClickListener(this);
+        mRepeat.setText(repeatString);
         mPunctual.setOnCheckedChangeListener(this);
         mMain.setOnTouchListener(this);
         mAlert.setOnClickListener(this);
@@ -336,11 +365,38 @@ public class NewMeetingActivity extends AppCompatActivity implements View.OnTouc
             },mEndYear, mEndMonth, mEndDay);
             mDatePicker2.show();
         }else if(v.getId() == R.id.new_meeting_repeat){
-            NewMeetingRepeatDialogFragment dialogFragment = new NewMeetingRepeatDialogFragment(mRepeat, mRpeatValue);
-            dialogFragment.show(getSupportFragmentManager(),"newMeetingRepeat");
+//            NewMeetingRepeatDialogFragment dialogFragment = new NewMeetingRepeatDialogFragment(mRepeat, mRpeatValue);
+//            dialogFragment.show(getSupportFragmentManager(),"newMeetingRepeat");
+            FragmentManager fm = getSupportFragmentManager();
+            NewEventRepeatDialogFragment dialog = new NewEventRepeatDialogFragment();
+            Bundle bundle = new Bundle();
+            bundle.putInt(NewEventRepeatDialogFragment.SELECTED, Arrays.asList(Events.repeatArray).indexOf(repeatString));
+            dialog.setArguments(bundle);
+            dialog.setListener(new RepeatSelectionListener() {
+                @Override
+                public void selectItem(int positon) {
+                    repeatString = Events.repeatArray[positon];
+                    mRepeat.setText(Events.repeatArray[positon]);
+                    mRepeatPosition = positon;
+                }
+            });
+            dialog.show(fm, "repeat_dialog");
         }else if(v.getId() == R.id.new_meeting_alert){
-            NewMeetingAlertDialogFragment dialogFragment = new NewMeetingAlertDialogFragment(mAlert, mAlertValue);
-            dialogFragment.show(getSupportFragmentManager(), "newMeetingAlert");
+//            NewMeetingAlertDialogFragment dialogFragment = new NewMeetingAlertDialogFragment(mAlert, mAlertValue);
+//            dialogFragment.show(getSupportFragmentManager(), "newMeetingAlert");
+            NewEventAlertDialogFragment dialog = new NewEventAlertDialogFragment();
+            Bundle bundle = new Bundle();
+            bundle.putInt(NewEventAlertDialogFragment.SELECTED, Arrays.asList(Events.alertArray).indexOf(alertString));
+            dialog.setArguments(bundle);
+            dialog.setListener(new RepeatSelectionListener() {
+                @Override
+                public void selectItem(int positon) {
+                    alertString = Events.alertArray[positon];
+                    mAlert.setText(Events.alertArray[positon]);
+                    mPosition = positon;
+                }
+            });
+            dialog.show(getSupportFragmentManager(), "alert_dialog");
         }else if(v.getId() == R.id.new_meeting_venue){
             Intent intent = new Intent(this,GooglePlacesAutocompleteActivity.class);
             startActivityForResult(intent, 1);
@@ -387,7 +443,7 @@ public class NewMeetingActivity extends AppCompatActivity implements View.OnTouc
         String comment = mMessage.getText().toString();
         String name = mName.getText().toString();
         String punctual = mPunctual.isChecked() ? "true" : "false";
-        String repeative = mRpeatValue.get(0);
+        String repeative = repeatMap.get(mRepeatPosition);
 
         String status = "NO CONFIRM NEW MEETING";
 
@@ -503,7 +559,7 @@ public class NewMeetingActivity extends AppCompatActivity implements View.OnTouc
         String comment = mMessage.getText().toString();
         String name = mName.getText().toString();
         String punctual = mPunctual.isChecked() ? "true" : "false";
-        String repeative = mRpeatValue.get(0);
+        String repeative = repeatMap.get(mRepeatPosition);
 
         String status = "NO CONFIRM NEW MEETING";
 
@@ -571,7 +627,7 @@ public class NewMeetingActivity extends AppCompatActivity implements View.OnTouc
             } else {
                 object.put("is_long_repeat", 0);
             }
-            object.put("event_alert", "");
+            object.put("event_alert", positionMap.get(mPosition));
             object.put("calendar_id", calendarTypeString.calendarId);
 
             object.put("event_last_update_datetime", DateUtil.getDateStringFromCalendarGMT(Calendar.getInstance()));

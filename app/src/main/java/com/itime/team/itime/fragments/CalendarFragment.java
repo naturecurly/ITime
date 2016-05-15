@@ -1008,19 +1008,25 @@ public class CalendarFragment extends Fragment {
                                     bundle.putString("meeting_id", meeting_id);
                                     bundle.putString("user_id", user_id);
                                     if (hostID.equals(User.ID)) {
+                                        String alert = objectList.get(eventGroupFinal.get(flag)).getString("event_alert");
+                                        String calendarId = objectList.get(eventGroupFinal.get(flag)).getString("calendar_id");
                                         Intent intent = new Intent(getActivity(), MeetingDetaiHostlActivity.class);
                                         intent.putExtra("arg_meeting_id", meeting_id);
                                         intent.putExtra("event_id", eventID);
                                         intent.putExtra("host_id", hostID);
+                                        intent.putExtra("event_alert",alert);
+                                        intent.putExtra("calendar_id",calendarId);
                                         startActivityForResult(intent, CHANGE_MEETING);
 //                                        startActivity(intent);
                                     } else {
-
+                                        String alert = objectList.get(eventGroupFinal.get(flag)).getString("event_alert");
+                                        String calendarId = objectList.get(eventGroupFinal.get(flag)).getString("calendar_id");
                                         Intent intent = new Intent(getActivity(), MeetingDetailActivity.class);
                                         intent.putExtra("arg_meeting_id", meeting_id);
                                         intent.putExtra("event_id", eventID);
                                         intent.putExtra("host_id", hostID);
-                                        Log.i("userId", user_id);
+                                        intent.putExtra("event_alert",alert);
+                                        intent.putExtra("calendar_id",calendarId);
                                         startActivityForResult(intent, CHANGE_MEETING);
 //                                        startActivity(intent);
                                     }
@@ -1141,11 +1147,28 @@ public class CalendarFragment extends Fragment {
                                         bundle.putString("user_id", user_id);
                                         if (hostID.equals(User.ID)) {
                                             Intent intent = new Intent(getActivity(), MeetingDetaiHostlActivity.class);
+                                            try {
+                                                String calendarId = objectList.get(finalNum).getString("calendar_id");
+                                                String alert = objectList.get(finalNum).getString("event_alert");
+                                                intent.putExtra("event_alert",alert);
+                                                intent.putExtra("calendar_id",calendarId);
+                                            } catch (JSONException e) {
+                                                e.printStackTrace();
+                                            }
+
                                             intent.putExtra("arg_meeting_id", meeting_id);
                                             intent.putExtra("event_id", eventID);
                                             startActivityForResult(intent, CHANGE_MEETING);
                                         } else {
                                             Intent intent = new Intent(getActivity(), MeetingDetailActivity.class);
+                                            try {
+                                                String calendarId = objectList.get(finalNum).getString("calendar_id");
+                                                String alert = objectList.get(finalNum).getString("event_alert");
+                                                intent.putExtra("event_alert",alert);
+                                                intent.putExtra("calendar_id",calendarId);
+                                            } catch (JSONException e) {
+                                                e.printStackTrace();
+                                            }
                                             intent.putExtra("arg_meeting_id", meeting_id);
                                             intent.putExtra("event_id", eventID);
                                             startActivityForResult(intent, CHANGE_MEETING);

@@ -476,6 +476,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:background="@color/white"
+                android:id="@+id/meeting_detail_alert_layout"
                 android:padding="10dp">
                 <TextView
                     android:layout_width="wrap_content"
@@ -495,6 +496,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:background="@color/white"
+                android:id="@+id/meeting_detail_calendar_layout"
                 android:padding="10dp">
                 <TextView
                     android:layout_width="wrap_content"

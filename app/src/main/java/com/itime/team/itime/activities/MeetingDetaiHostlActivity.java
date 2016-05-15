@@ -24,10 +24,12 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.google.android.gms.maps.MapFragment;
 import com.itime.team.itime.R;
+import com.itime.team.itime.bean.Events;
 import com.itime.team.itime.bean.MeetingInfo;
 import com.itime.team.itime.bean.URLs;
 import com.itime.team.itime.bean.User;
 import com.itime.team.itime.fragments.MeetingDetailCancelReasonDialogFragment;
+import com.itime.team.itime.model.ParcelableCalendarType;
 import com.itime.team.itime.utils.DateUtil;
 import com.itime.team.itime.utils.ICS;
 import com.itime.team.itime.utils.Invitation;
@@ -68,6 +70,12 @@ public class MeetingDetaiHostlActivity extends AppCompatActivity implements View
     private File ICSFile;
 
     private TextView mAlert, mCalendar;
+    private ParcelableCalendarType calendarTypeString = Events.calendarTypeList.get(0);
+    private String mCalendarID,mAlertID;
+    private LinearLayout mAlertLayout, mCalendarLayout;
+    private String alertString;
+
+
 
     private LinearLayout mLNewName, mLNewVenue, mLNewStart, mLNewEnd, mLNewRepeat, mLNewPunctual, mLNewNote;
 
@@ -118,6 +126,8 @@ public class MeetingDetaiHostlActivity extends AppCompatActivity implements View
                 intent.putExtra("token", mMeetingInfo.getToken());
                 intent.putExtra("meeting_id",mMeetingInfo.getId());
                 intent.putExtra("event_id", mEventId);
+                intent.putExtra("alert", mAlertID);
+                intent.putExtra("calendar",mCalendarID);
 
 
             }
@@ -155,6 +165,8 @@ public class MeetingDetaiHostlActivity extends AppCompatActivity implements View
 
         mMeetingId = getIntent().getStringExtra(ARG_MEETING_ID);
         mEventId = getIntent().getStringExtra("event_id");
+        mCalendarID = getIntent().getStringExtra("calendar_id");
+        mAlertID = getIntent().getStringExtra("event_alert");
 
 
 
@@ -203,6 +215,16 @@ public class MeetingDetaiHostlActivity extends AppCompatActivity implements View
 
         mAlert = (TextView) findViewById(R.id.meeting_detail_alert);
         mCalendar = (TextView) findViewById(R.id.meeting_detail_calendar);
+
+        alertString = getString(R.string.alert_default);
+        mAlertLayout = (LinearLayout) findViewById(R.id.meeting_detail_alert_layout);
+        mAlertLayout.setOnClickListener(this);
+        mCalendarLayout = (LinearLayout) findViewById(R.id.meeting_detail_calendar_layout);
+        mCalendarLayout.setOnClickListener(this);
+
+        mCalendar.setText(Events.calendarTypeList.get(0).calendarName);
+        mCalendar.setText(mCalendarID);
+        mAlert.setText(mAlertID);
     }
 
     // Before setting which Layout should be shown, just hiding all relative layout. If the new

@@ -1,5 +1,6 @@
 package com.itime.team.itime.activities;
 
+import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
@@ -7,6 +8,7 @@ import android.support.v4.content.FileProvider;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.CheckBox;
@@ -40,6 +42,7 @@ import com.itime.team.itime.utils.Invitation;
 import com.itime.team.itime.utils.JsonObjectFormRequest;
 import com.itime.team.itime.utils.MySingleton;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -49,6 +52,7 @@ import java.util.Arrays;
 import java.util.Calendar;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.UUID;
 
 /**
  * Created by Weiwei Cai on 16/4/5.
@@ -398,7 +402,7 @@ public class MeetingDetailActivity extends AppCompatActivity implements RadioGro
         String description = mNote.getText().toString();
         String start = "";
         String end = "";
-        if(!mMeetingInfo.getName().equals("")){
+        if(mMeetingInfo!=null && !mMeetingInfo.getName().equals("")){
             start = DateUtil.getICSTime(mMeetingInfo.getStart());
             end = DateUtil.getICSTime(mMeetingInfo.getEnd());
         }
@@ -431,6 +435,9 @@ public class MeetingDetailActivity extends AppCompatActivity implements RadioGro
                 public void selectItem(int positon) {
                     calendarTypeString = Events.calendarTypeList.get(positon);
                     mCalendarText.setText(Events.calendarTypeList.get(positon).calendarName);
+                    mCalendarID = Events.calendarTypeList.get(positon).calendarId;
+                    postEvent(getApplicationContext(),mEventId,mMeetingInfo);
+
                 }
             });
             dialog.show(getSupportFragmentManager(), "calendar_dialog");
@@ -444,6 +451,9 @@ public class MeetingDetailActivity extends AppCompatActivity implements RadioGro
                 public void selectItem(int positon) {
                     alertString = Events.alertArray[positon];
                     mAlertText.setText(Events.alertArray[positon]);
+                    mAlertID = Events.alertArray[positon];
+                    postEvent(getApplicationContext(),mEventId,mMeetingInfo);
+
                 }
             });
             dialog.show(getSupportFragmentManager(), "alert_dialog");
@@ -455,4 +465,118 @@ public class MeetingDetailActivity extends AppCompatActivity implements RadioGro
                 = new MeetingDetailCancelReasonDialogFragment(mMeetingId, mMeetingInfo.getToken(), mEventId ,false);
         dialog.show(getSupportFragmentManager(),"reasonQuitDialog");
     }
+
+    private void postEvent(Context context, String meetingID, MeetingInfo meetingInfo) {
+        String startDateForPost = DateUtil.getDateStringFromCalendar(meetingInfo.getNewStart());
+        String endDateForPost = DateUtil.getDateStringFromCalendar(meetingInfo.getNewEnd());
+        String comment = meetingInfo.getNewComment();
+        String name = meetingInfo.getNewName();
+        String punctual = "false";
+        String repeative = meetingInfo.getRepeat();
+
+        String address = meetingInfo.getNewVenue();
+        String location = meetingInfo.getLocation();
+
+//        String location = mAddress.equals("") ? getString(R.string.post_null) : mAddress;
+//        String showLocation = address[0].equals("") ? getString(R.string.post_null) : address[0];
+
+        JSONObject object = new JSONObject();
+        try {
+            object.put("event_id", meetingID);
+            object.put("user_id", User.ID);
+            object.put("host_id", meetingInfo.getHostID());
+            object.put("meeting_id", meetingID);
+
+            object.put("event_name", name.equals("") ? context.getString(R.string.new_meeting) : name);
+            object.put("event_comment", comment);
+            object.put("event_starts_datetime", startDateForPost);
+            object.put("event_ends_datetime", endDateForPost);
+
+            object.put("event_venue_show", address);
+            object.put("event_venue_location", location);
+
+            object.put("event_repeats_type", repeative);
+
+            object.put("event_latitude", 0);
+            object.put("event_longitude", 0);
+
+            object.put("event_last_sug_dep_time", startDateForPost);
+            object.put("event_last_time_on_way_in_second", "0");
+            object.put("event_last_distance_in_meter", "0");
+
+            object.put("event_name_new", name);
+            object.put("event_comment_new", comment);
+
+            object.put("event_starts_datetime_new", startDateForPost);
+            object.put("event_ends_datetime_new", endDateForPost);
+
+            object.put("event_venue_show_new", address);
+            object.put("event_venue_location_new", location);
+
+            object.put("event_repeats_type_new", repeative);
+            //punctual
+            object.put("event_latitude_new", 0);
+            object.put("event_longitude_new", 0);
+
+            object.put("event_last_sug_dep_time_new", startDateForPost);
+            object.put("event_last_time_on_way_in_second_new", "0");
+            object.put("event_last_distance_in_meter_new", "0");
+
+            object.put("is_meeting", 1);
+            object.put("is_host", 1);
+
+            object.put("meeting_status", "");
+            object.put("meeting_valid_token", UUID.randomUUID().toString());
+
+            object.put("event_repeat_to_date", endDateForPost);
+
+
+            if (!repeative.equals("One-time event")) {
+                object.put("is_long_repeat", 1);
+            } else {
+                object.put("is_long_repeat", 0);
+            }
+            object.put("event_alert",mAlertID);
+            object.put("calendar_id", mCalendarID);
+            Log.i("alertttt",mAlertID);
+            Log.i("calendaraf",mCalendarID);
+
+
+            object.put("event_last_update_datetime", DateUtil.getDateStringFromCalendarGMT(Calendar.getInstance()));
+            object.put("if_deleted", 0);
+
+            object.put("event_is_punctual", punctual);
+            object.put("event_is_punctual_new", punctual);
+
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        final String url = URLs.SYNC;
+        JSONObject jsonObject = new JSONObject();
+        JSONArray jsonArray = new JSONArray();
+        jsonArray.put(object);
+        try {
+            jsonObject.put("user_id", User.ID);
+            jsonObject.put("local_events", jsonArray);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+        Map<String, String> params = new HashMap();
+        params.put("json", jsonObject.toString());
+        JsonObjectFormRequest request = new JsonObjectFormRequest(Request.Method.POST, url, params, new Response.Listener<JSONObject>() {
+            @Override
+            public void onResponse(JSONObject response) {
+
+            }
+        }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+
+            }
+        });
+        MySingleton.getInstance(context).addToRequestQueue(request);
+
+    }
+
 }

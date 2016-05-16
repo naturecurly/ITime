@@ -145,6 +145,7 @@ public class MeetingDetaiHostlActivity extends AppCompatActivity implements View
             if(resultCode == RESULT_OK){
                 mCalendar.setText(data.getStringExtra("calendar"));
                 mAlert.setText(data.getStringExtra("alert"));
+                mAlertID = data.getStringExtra("alert");
             }
         }
     }
@@ -169,6 +170,8 @@ public class MeetingDetaiHostlActivity extends AppCompatActivity implements View
         mCalendarID = getIntent().getStringExtra("calendar_id");
         mAlertID = getIntent().getStringExtra("event_alert");
         if (mAlertID != null && mAlertID.equals("At time of Departure")){
+            mAlertID = getString(R.string.alert_default);
+        } else if(mAlertID.equals("At time of Departure")){
             mAlertID = getString(R.string.alert_default);
         }
 

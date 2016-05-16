@@ -138,6 +138,8 @@ public class MeetingDetailUpdateActivity extends AppCompatActivity implements Vi
     private Map<Integer, String> repeatMap;
     private int mPosition = 1;
     private int mRepeatPosition = 0;
+    private Map<String,Integer> positionRecordMap;
+    private Map<String, Integer> repeatRecordMap;
 
     private String repeatString;
     private String alertString;
@@ -212,19 +214,6 @@ public class MeetingDetailUpdateActivity extends AppCompatActivity implements Vi
         mCalendar.setOnClickListener(this);
 
 
-        setEndTime();
-
-        mStartTime.setText(timeFormat(mStartHour, mStartMin));
-        mEndTime.setText(timeFormat(mEndHour, mEndMin));
-        mStartDate.setText(dateFormat(mStartDay, mStartMonth, mStartYear));
-        mEndDate.setText(dateFormat(mEndDay, mEndMonth, mEndYear));
-
-        mRpeatValue = new ArrayList();
-        mAlertValue = new ArrayList();
-        mRpeatValue.add("One-time event");
-        mAlertValue.add(1);
-
-        mAddress = mVeune.getText().toString();
 
         repeatString = getString(R.string.repeat_default);
         alertString = getString(R.string.alert_default);
@@ -239,11 +228,42 @@ public class MeetingDetailUpdateActivity extends AppCompatActivity implements Vi
         repeatMap = new HashMap<>();
         repeatMap.put(0,"One-time event");
         repeatMap.put(1,"Daily");
-        repeatMap.put(2,"Every weekday (Mon - Fri)");
-        repeatMap.put(3,"Weekly");
-        repeatMap.put(4,"Bi-Weekly");
-        repeatMap.put(5,"Monthly");
-        repeatMap.put(6,"Yearly");
+        repeatMap.put(2,"Weekly");
+        repeatMap.put(3,"Bi-Weekly");
+        repeatMap.put(4,"Monthly");
+        repeatMap.put(5,"Yearly");
+
+        positionRecordMap = new HashMap<>();
+        positionRecordMap.put("None",0);
+        positionRecordMap.put("At time of Event",1);
+        positionRecordMap.put("5 minutes before",2);
+        positionRecordMap.put("10 minutes before",3);
+        positionRecordMap.put("15 minutes before",4);
+        positionRecordMap.put("30 minutes before",5);
+        positionRecordMap.put("1 hour before",6);
+        repeatRecordMap = new HashMap<>();
+        repeatRecordMap.put("One-time event",0);
+        repeatRecordMap.put("Daily",1);
+        repeatRecordMap.put("Weekly",2);
+        repeatRecordMap.put("Bi-Weekly",3);
+        repeatRecordMap.put("Monthly",4);
+        repeatRecordMap.put("Yearly",5);
+
+
+        setEndTime();
+
+        mStartTime.setText(timeFormat(mStartHour, mStartMin));
+        mEndTime.setText(timeFormat(mEndHour, mEndMin));
+        mStartDate.setText(dateFormat(mStartDay, mStartMonth, mStartYear));
+        mEndDate.setText(dateFormat(mEndDay, mEndMonth, mEndYear));
+
+        mRpeatValue = new ArrayList();
+        mAlertValue = new ArrayList();
+        mRpeatValue.add("One-time event");
+        mAlertValue.add(1);
+
+        mAddress = mVeune.getText().toString();
+
 
     }
 
@@ -278,9 +298,13 @@ public class MeetingDetailUpdateActivity extends AppCompatActivity implements Vi
         mHostID = receiver.getStringExtra("host_id");
         mAlertString = receiver.getStringExtra("alert");
         mAlert.setText(mAlertString);
+        mPosition = positionRecordMap.get(mAlertString);
+
 
 
         mRepeat.setText(mMRepeat);
+        mRepeatPosition = repeatRecordMap.get(mMRepeat);
+
         mPunctual.setChecked(mMPunctual);
         mName.setText(mMeetingName);
         mVeune.setText(mShow);

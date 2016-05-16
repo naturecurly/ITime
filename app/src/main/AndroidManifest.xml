@@ -94,7 +94,8 @@
         <activity
             android:name=".activities.LoginActivity"
             android:screenOrientation="portrait"
-            android:theme="@style/MyAppTheme"></activity>
+            android:theme="@style/MyAppTheme"
+            android:windowSoftInputMode="stateVisible|adjustResize"></activity>
 
         <activity
             android:name=".activities.MainActivity"

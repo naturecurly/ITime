@@ -447,6 +447,7 @@ public class CalendarFragment extends Fragment {
 
             View lineView = new View(getActivity());
             lineView.setId(100 + i);
+            lineView.setTag((100 + i) + "");
             RelativeLayout.LayoutParams line_param = new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
             lineView.setBackgroundColor(Color.LTGRAY);
             line_param.height = DensityUtil.dip2px(getActivity(), 1);
@@ -471,7 +472,11 @@ public class CalendarFragment extends Fragment {
                 @Override
                 public boolean onLongClick(View v) {
                     Intent intent = new Intent(getActivity(), NewEventActivity.class);
-                    startActivity(intent);
+                    Bundle bundle = new Bundle();
+                    bundle.putInt("hour", v.getId() - 1000);
+                    intent.putExtras(bundle);
+                    Log.d("occupied", (v.getId() - 1000) + "");
+                    startActivityForResult(intent, NEW_EVENT_REQUEST);
                     return true;
                 }
             });
@@ -841,6 +846,7 @@ public class CalendarFragment extends Fragment {
     private void paintLowerPanel(int day, int month, int year, boolean hasEvent) {
         final List<JSONObject> objectList = EventUtil.sortEvents(EventUtil.getEventFromDate(day, month, year));
         List<Integer> eventGroup = new ArrayList<>();
+        Log.d("dateSelected", objectList.size() + "");
         if (hasEvent || objectList.size() > 0) {
             relativeLayout.removeAllViews();
             addLowerViews(relativeLayout);
@@ -862,9 +868,11 @@ public class CalendarFragment extends Fragment {
             }
             Log.d("first_event_hour", firstTimeCal.get(Calendar.HOUR_OF_DAY) + "");
             final int firstPosition = firstTimeCal.get(Calendar.HOUR_OF_DAY);
-            View firstEventView = relativeLayout.findViewById(100 + firstPosition);
+            View firstEventView = relativeLayout.findViewWithTag((100 + firstPosition) + "");
             if (!(today.get(Calendar.YEAR) == year && today.get(Calendar.MONTH) == month - 1 && today.get(Calendar.DAY_OF_MONTH) == day)) {
-                mScrollView.smoothScrollTo(0, DensityUtil.dip2px(getActivity(), 30 * firstPosition));
+                Log.d("firstPosition", firstPosition + "");
+
+                mScrollView.smoothScrollTo(0, DensityUtil.dip2px(getActivity(), 40) * firstPosition);
             }
 
             String start = null;
@@ -1349,7 +1357,7 @@ public class CalendarFragment extends Fragment {
     @Override
     public void onResume() {
         super.onResume();
-        if(User.hasNewMeeting || isCalendarChanged()){
+        if (User.hasNewMeeting || isCalendarChanged()) {
             User.hasNewMeeting = false;
             refresh();
         }
@@ -1367,6 +1375,7 @@ public class CalendarFragment extends Fragment {
 
     /**
      * you should use this method to before you load and draw your data on the view.
+     *
      * @return
      */
     public boolean isCalendarChanged() {

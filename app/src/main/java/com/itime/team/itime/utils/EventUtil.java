@@ -225,16 +225,17 @@ public class EventUtil {
                 try {
 
                     JSONObject object = response.get(i);
+                    Log.d("yyyyyy", object.toString());
                     String event_id = object.getString("event_id");
                     Date date = DateUtil.getLocalDateObject(object.getString("event_starts_datetime"));
                     Date enddate = DateUtil.getLocalDateObject(object.getString("event_ends_datetime"));
-                    Date repeatToDate = DateUtil.getLocalDateObject(object.getString("event_repeat_to_date"));
+//                    Date repeatToDate = DateUtil.getLocalDateObject(object.getString("event_repeat_to_date"));
                     Calendar calendar = DateUtil.getCalendarFromInteger(day, month, year);
                     Calendar new_cal = Calendar.getInstance();
                     new_cal.set(year, month - 1, day);
                     Calendar cal = DateUtil.getLocalDateObjectToCalendar(date);
                     Calendar endCal = DateUtil.getLocalDateObjectToCalendar(enddate);
-                    Calendar repeatToCal = DateUtil.getLocalDateObjectToCalendar(repeatToDate);
+//                    Calendar repeatToCal = DateUtil.getLocalDateObjectToCalendar(repeatToDate);
 //                Log.d("tttttt", cal.get(Calendar.DAY_OF_MONTH) + "");
 
                     String type = object.getString("event_repeats_type");
@@ -583,6 +584,9 @@ public class EventUtil {
             Boolean isLong = object.getBoolean("is_long_repeat");
             Calendar eventCal = DateUtil.getLocalDateObjectToCalendar(DateUtil.getLocalDateObject(object.getString("event_starts_datetime")));
             int day = calDuration(eventCal, calendar);
+            if (day < 0) {
+                break;
+            }
             if (hasIgn) {
                 for (JSONObject ignoreObject : Events.ignoredEventMap.get(dateString)) {
                     if (ignoreObject.getString("event_id").equals(event_id)) {
@@ -952,5 +956,28 @@ public class EventUtil {
         }
         return result;
     }
+
+//    public static Set<String> newHasRepeateEventOneMonth(int month, int year) {
+//        List<JSONObject> repeats = Events.repeatEvent;
+//        Set<String> dateHasRepeatEvent = new HashSet<>();
+//        Calendar cal = Calendar.getInstance();
+//        cal.set(year, month - 1, 1);
+//        for (int i = 0; i < repeats.size(); i++) {
+//            JSONObject repeat = repeats.get(i);
+//            try {
+//                String dateStart = repeat.getString("event_starts_datetime");
+//                Calendar calStart = DateUtil.getLocalDateObjectToCalendar(DateUtil.getLocalDateObject(dateStart));
+//                if (calDuration(cal, calStart) <= DateUtil.getMonthDays(year, month)) {
+//
+//                } else {
+//                    break;
+//                }
+//
+//            } catch (JSONException e) {
+//                e.printStackTrace();
+//            }
+//        }
+//
+//    }
 
 }

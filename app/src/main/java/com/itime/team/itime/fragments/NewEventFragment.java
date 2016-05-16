@@ -104,11 +104,20 @@ public class NewEventFragment extends Fragment {
     public String event_venue_location = "";
     private int is_punctual;
     private Calendar calendar = Calendar.getInstance();
+    private boolean hasHourExtra;
 
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        Intent intent = getActivity().getIntent();
+        try {
+            Bundle bundle = intent.getExtras();
+            mHour = bundle.getInt("hour");
+            hasHourExtra = true;
+        } catch (Exception e) {
+
+        }
         String dateSelected = Events.daySelected;
         mDayOfMonth = Integer.valueOf(dateSelected.split("-")[0]);
         mMonthOfYear = Integer.valueOf(dateSelected.split("-")[1]) - 1;
@@ -139,7 +148,8 @@ public class NewEventFragment extends Fragment {
         for (ParcelableCalendarType p : Events.calendarTypeList) {
             Log.d("calendar_test", p.calendarName);
         }
-        mHour = c.get(Calendar.HOUR_OF_DAY);
+        if (!hasHourExtra)
+            mHour = c.get(Calendar.HOUR_OF_DAY);
         mMin = 0;
         calendar.set(mYear, mMonthOfYear, mDayOfMonth, mHour, mMin);
         calendar.add(Calendar.HOUR_OF_DAY, 1);

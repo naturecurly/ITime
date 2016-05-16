@@ -95,7 +95,7 @@
 
     <string name="meeting_detail_attendees">Attendees</string>
     <string name="meeting_detail_invite">Invitation from</string>
-    <string name="meeting_detail_depture">Depture at</string>
+    <string name="meeting_detail_depture">Departure at</string>
     <string name="meeting_detail_starts">Starts</string>
     <string name="meeting_detail_ends">Ends</string>
     <string name="meeting_detail_repeats">Repeats</string>

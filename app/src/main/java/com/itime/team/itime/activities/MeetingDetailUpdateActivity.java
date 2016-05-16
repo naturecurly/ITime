@@ -35,6 +35,7 @@ import com.itime.team.itime.fragments.NewEventCalendarTypeDialogFragment;
 import com.itime.team.itime.fragments.NewEventRepeatDialogFragment;
 import com.itime.team.itime.listener.RepeatSelectionListener;
 import com.itime.team.itime.model.ParcelableCalendarType;
+import com.itime.team.itime.utils.CalendarTypeUtil;
 import com.itime.team.itime.utils.DateUtil;
 import com.itime.team.itime.utils.JsonObjectFormRequest;
 import com.itime.team.itime.utils.MySingleton;
@@ -71,6 +72,7 @@ public class MeetingDetailUpdateActivity extends AppCompatActivity implements Vi
     private Button mAlert;
     private EditText mName, mVeune;
     private Button mCalendar;
+    private String mCalendarID;
 
     private int mStartYear;
     private int mStartMonth;
@@ -136,8 +138,10 @@ public class MeetingDetailUpdateActivity extends AppCompatActivity implements Vi
     private Map<Integer, String> repeatMap;
     private int mPosition = 1;
     private int mRepeatPosition = 0;
+
     private String repeatString;
     private String alertString;
+
 
     private String mAlertString;
 
@@ -206,6 +210,7 @@ public class MeetingDetailUpdateActivity extends AppCompatActivity implements Vi
         mAlert.setOnClickListener(this);
         mVeune.setOnClickListener(this);
         mCalendar.setOnClickListener(this);
+
 
         setEndTime();
 
@@ -284,6 +289,7 @@ public class MeetingDetailUpdateActivity extends AppCompatActivity implements Vi
         mMeetingID = receiver.getStringExtra("meeting_id");
         mEventID = receiver.getStringExtra("event_id");
         mToken = receiver.getStringExtra("token");
+        mCalendarID = receiver.getStringExtra("calendar");
         mDuration = DateUtil.diffMin(mStartYear,mStartMonth,mStartDay,mStartHour,mStartMin
                 ,mEndYear, mEndMonth, mEndDay,mEndHour,mEndMin);
 
@@ -303,6 +309,8 @@ public class MeetingDetailUpdateActivity extends AppCompatActivity implements Vi
         mOldLocation = mLocation;
         mOldShow = mShow;
         mOldNote = mNote;
+
+        mCalendar.setText(CalendarTypeUtil.findCalendarById(mCalendarID).calendarName);
     }
 
     private String timeFormat(int hour, int min){
@@ -428,7 +436,6 @@ public class MeetingDetailUpdateActivity extends AppCompatActivity implements Vi
             Intent intent = new Intent(this,GooglePlacesAutocompleteActivity.class);
             startActivityForResult(intent, 1);
         }else if (v.getId() == mCalendar.getId()) {
-            mCalendar.setText(Events.calendarTypeList.get(0).calendarName);
                 NewEventCalendarTypeDialogFragment dialog = new NewEventCalendarTypeDialogFragment();
                 Bundle bundle = new Bundle();
                 bundle.putInt(NewEventCalendarTypeDialogFragment.SELECTED, Events.calendarTypeList.indexOf(calendarTypeString));
@@ -438,6 +445,7 @@ public class MeetingDetailUpdateActivity extends AppCompatActivity implements Vi
                     public void selectItem(int positon) {
                         calendarTypeString = Events.calendarTypeList.get(positon);
                         mCalendar.setText(Events.calendarTypeList.get(positon).calendarName);
+
                     }
                 });
                 dialog.show(getSupportFragmentManager(), "calendar_dialog");

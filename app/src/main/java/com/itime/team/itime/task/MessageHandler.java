@@ -333,8 +333,8 @@ public class MessageHandler {
             } else {
                 object.put("is_long_repeat", 0);
             }
-            object.put("event_alert", "");
-            object.put("calendar_id", "");
+            object.put("event_alert", "At time of Departure");
+            object.put("calendar_id", User.lastCalendarType);
 
             object.put("event_last_update_datetime", DateUtil.getDateStringFromCalendarGMT(Calendar.getInstance()));
             object.put("if_deleted", 0);

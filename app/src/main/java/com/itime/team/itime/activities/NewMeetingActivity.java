@@ -110,6 +110,7 @@ public class NewMeetingActivity extends AppCompatActivity implements View.OnTouc
     private Map<Integer, String> repeatMap;
     private int mPosition = 1;
     private int mRepeatPosition = 0;
+    private int mCalendarPosition = 0;
     private String repeatString;
 //    private JsonManager mJsonManager;
 
@@ -401,7 +402,7 @@ public class NewMeetingActivity extends AppCompatActivity implements View.OnTouc
             Intent intent = new Intent(this,GooglePlacesAutocompleteActivity.class);
             startActivityForResult(intent, 1);
         }else if(v.getId() == mCalendar.getId()) {
-            mCalendar.setText(Events.calendarTypeList.get(0).calendarName);
+                mCalendar.setText(Events.calendarTypeList.get(mCalendarPosition).calendarName);
                 NewEventCalendarTypeDialogFragment dialog = new NewEventCalendarTypeDialogFragment();
                 Bundle bundle = new Bundle();
                 bundle.putInt(NewEventCalendarTypeDialogFragment.SELECTED, Events.calendarTypeList.indexOf(calendarTypeString));
@@ -411,6 +412,7 @@ public class NewMeetingActivity extends AppCompatActivity implements View.OnTouc
                     public void selectItem(int positon) {
                         calendarTypeString = Events.calendarTypeList.get(positon);
                         mCalendar.setText(Events.calendarTypeList.get(positon).calendarName);
+                        mCalendarPosition = positon;
                     }
                 });
                 dialog.show(getSupportFragmentManager(), "calendar_dialog");

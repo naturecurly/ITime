@@ -33,6 +33,7 @@ import com.itime.team.itime.fragments.NewEventAlertDialogFragment;
 import com.itime.team.itime.fragments.NewEventCalendarTypeDialogFragment;
 import com.itime.team.itime.listener.RepeatSelectionListener;
 import com.itime.team.itime.model.ParcelableCalendarType;
+import com.itime.team.itime.utils.CalendarTypeUtil;
 import com.itime.team.itime.utils.DateUtil;
 import com.itime.team.itime.utils.ICS;
 import com.itime.team.itime.utils.Invitation;
@@ -118,6 +119,9 @@ public class MeetingDetailActivity extends AppCompatActivity implements RadioGro
         mEventId = getIntent().getStringExtra("event_id");
         mCalendarID = getIntent().getStringExtra("calendar_id");
         mAlertID = getIntent().getStringExtra("event_alert");
+        if (mAlertID != null && mAlertID.equals("At time of Departure")){
+            mAlertID = getString(R.string.alert_default);
+        }
 
         mRadioGroup = (RadioGroup) findViewById(R.id.meeting_detail_radio_group);
         mAccept = (RadioButton) findViewById(R.id.meeting_detail_radio_accept);
@@ -172,8 +176,12 @@ public class MeetingDetailActivity extends AppCompatActivity implements RadioGro
         mCalendarText = (TextView) findViewById(R.id.meeting_detail_calendar);
 
         mCalendarText.setText(Events.calendarTypeList.get(0).calendarName);
-        mCalendarText.setText(mCalendarID);
-        mAlertText.setText(mAlertID);
+        if (mCalendarID != null && !mCalendarID.equals("")) {
+            mCalendarText.setText(CalendarTypeUtil.findCalendarById(mCalendarID).calendarName);
+        }else{
+            mCalendarText.setText(getString(R.string.Calendar));
+        }
+        mAlertText.setText((mAlertID == null || mAlertID.equals("")) ? getString(R.string.alert_default) : mAlertID);
     }
 
     private void showLayout(MeetingInfo meetingInfo){

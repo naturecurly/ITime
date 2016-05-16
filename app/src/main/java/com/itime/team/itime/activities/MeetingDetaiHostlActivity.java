@@ -30,6 +30,7 @@ import com.itime.team.itime.bean.URLs;
 import com.itime.team.itime.bean.User;
 import com.itime.team.itime.fragments.MeetingDetailCancelReasonDialogFragment;
 import com.itime.team.itime.model.ParcelableCalendarType;
+import com.itime.team.itime.utils.CalendarTypeUtil;
 import com.itime.team.itime.utils.DateUtil;
 import com.itime.team.itime.utils.ICS;
 import com.itime.team.itime.utils.Invitation;
@@ -167,7 +168,9 @@ public class MeetingDetaiHostlActivity extends AppCompatActivity implements View
         mEventId = getIntent().getStringExtra("event_id");
         mCalendarID = getIntent().getStringExtra("calendar_id");
         mAlertID = getIntent().getStringExtra("event_alert");
-
+        if (mAlertID != null && mAlertID.equals("At time of Departure")){
+            mAlertID = getString(R.string.alert_default);
+        }
 
 
         mMeetingName = (TextView) findViewById(R.id.meeting_detail_event_name);
@@ -223,7 +226,7 @@ public class MeetingDetaiHostlActivity extends AppCompatActivity implements View
         mCalendarLayout.setOnClickListener(this);
 
         mCalendar.setText(Events.calendarTypeList.get(0).calendarName);
-        mCalendar.setText(mCalendarID);
+        mCalendar.setText(CalendarTypeUtil.findCalendarById(mCalendarID).calendarName);
         mAlert.setText(mAlertID);
     }
 

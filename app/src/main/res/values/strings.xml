@@ -26,6 +26,7 @@
     <string name="settings_clear_calendar">Clear Calendar</string>
     <string name="settings_language">Language Change Settings</string>
     <string name="add_friend">AAdd Friend</string>
+    <string name="default_location">Melbourne</string>
 
     <string name="time_out">Sorry, time out.</string>
 

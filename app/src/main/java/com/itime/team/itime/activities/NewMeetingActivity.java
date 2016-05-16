@@ -181,11 +181,10 @@ public class NewMeetingActivity extends AppCompatActivity implements View.OnTouc
         repeatMap = new HashMap<>();
         repeatMap.put(0,"One-time event");
         repeatMap.put(1,"Daily");
-        repeatMap.put(2,"Every weekday (Mon - Fri)");
-        repeatMap.put(3,"Weekly");
-        repeatMap.put(4,"Bi-Weekly");
-        repeatMap.put(5,"Monthly");
-        repeatMap.put(6,"Yearly");
+        repeatMap.put(2,"Weekly");
+        repeatMap.put(3,"Bi-Weekly");
+        repeatMap.put(4,"Monthly");
+        repeatMap.put(5,"Yearly");
 
 
 
@@ -452,6 +451,12 @@ public class NewMeetingActivity extends AppCompatActivity implements View.OnTouc
         String[] address = mAddress.split(",");
         String location = mAddress;
         String showLocation = address[0];
+        if(location.equals("")){
+            location = getString(R.string.default_location);
+        }
+        if (showLocation.equals("")){
+            showLocation = getString(R.string.default_location);
+        }
         mMeetingID = UUID.randomUUID().toString();
         String meetingToken = UUID.randomUUID().toString();
 
@@ -568,11 +573,13 @@ public class NewMeetingActivity extends AppCompatActivity implements View.OnTouc
         String[] address = mAddress.split(",");
         String location = mAddress;
         String showLocation = address[0];
+        if(location.equals("")){
+            location = getString(R.string.default_location);
+        }
+        if (showLocation.equals("")){
+            showLocation = getString(R.string.default_location);
+        }
 
-//        String location = mAddress.equals("") ? getString(R.string.post_null) : mAddress;
-//        String showLocation = address[0].equals("") ? getString(R.string.post_null) : address[0];
-
-        Log.i("meetingID",mMeetingID);
         JSONObject object = new JSONObject();
         try {
             object.put("event_id", mMeetingID);

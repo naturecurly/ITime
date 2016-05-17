@@ -2,12 +2,14 @@ package com.itime.team.itime.activities;
 
 import android.content.BroadcastReceiver;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.LayerDrawable;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.preference.PreferenceFragmentCompat;
 import android.support.v7.preference.PreferenceScreen;
@@ -98,7 +100,7 @@ public class MainActivity extends AppCompatActivity implements
         mEventList = (ImageButton) findViewById(R.id.event_list);
         mToday = (Button) findViewById(R.id.button_today);
 
-        isFriend();
+//        isFriend();
         setFragments();
 
         mRadioGroup = (RadioGroup) findViewById(R.id.tab_menu);
@@ -322,24 +324,7 @@ public class MainActivity extends AppCompatActivity implements
                         }
                     }
                     if(mIsFriend == false) {
-//                        String warning = String.format(getString(R.string.add_friend_confirm), finalId);
-//                        final AlertDialog.Builder builder = new AlertDialog.Builder(getApplicationContext());
-//                        builder.setMessage(warning);
-//                        builder.setIcon(R.mipmap.ic_launcher);
-//                        builder.setTitle(getString(R.string.new_meeting_confirm_title));
-//                        builder.setNegativeButton("No", new DialogInterface.OnClickListener() {
-//                            @Override
-//                            public void onClick(DialogInterface dialog, int which) {
-//                            }
-//                        });
-//                        builder.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
-//                            @Override
-//                            public void onClick(DialogInterface dialog, int which) {
-//
-//                            }
-//                        });
-//                        builder.show();
-                        addFriend(finalId);
+                        showDia(finalId);
                     } else {
                         String warning = String.format(getString(R.string.repeat_add_friend), finalId);
                         Toast.makeText(getApplication(), warning, Toast.LENGTH_LONG).show();
@@ -356,6 +341,26 @@ public class MainActivity extends AppCompatActivity implements
         });
         MySingleton.getInstance(this).addToRequestQueue(request);
         User.addFriendResume = "";
+    }
+
+    private void showDia(final String finalId){
+        String warning = String.format(getString(R.string.add_friend_confirm), finalId);
+        final AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setMessage(warning);
+        builder.setIcon(R.mipmap.ic_launcher);
+        builder.setTitle(getString(R.string.new_meeting_confirm_title));
+        builder.setNegativeButton("No", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+            }
+        });
+        builder.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                addFriend(finalId);
+            }
+        });
+        builder.show();
     }
 
     public static void setBadgeCount(Context context, LayerDrawable icon, String count) {

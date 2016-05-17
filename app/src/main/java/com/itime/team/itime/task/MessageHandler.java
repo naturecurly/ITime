@@ -35,6 +35,7 @@ import com.itime.team.itime.model.ParcelableMessage;
 import com.itime.team.itime.model.utils.MessageType;
 import com.itime.team.itime.utils.AlertUtil;
 import com.itime.team.itime.utils.DateUtil;
+import com.itime.team.itime.utils.EventUtil;
 import com.itime.team.itime.utils.JsonObjectFormRequest;
 import com.itime.team.itime.utils.MySingleton;
 
@@ -139,6 +140,7 @@ public class MessageHandler {
 
     public static void memberReceiveMeetingMessage(final Context context, final ParcelableMessage message) {
         createEvent(context, message.meetingId);
+        final JSONObject event =  EventUtil.findEventById(message.meetingId);
         User.hasNewMeeting = true;
         AlertDialog.Builder builder = new AlertDialog.Builder(context);
         builder.setTitle(message.messageTitle)
@@ -148,9 +150,21 @@ public class MessageHandler {
 
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
+                        String calendarID = null;
+                        String alert = null;
                         // pass meeting information to meeting detail
                         Intent intent = new Intent(context, MeetingDetailActivity.class);
                         intent.putExtra(MeetingDetailActivity.ARG_MEETING_ID, message.meetingId);
+                        if (event != null) {
+                            try {
+                                calendarID = event.getString("calendar_id");
+                                alert = event.getString("event_alert");
+                            } catch (JSONException e) {
+                                e.printStackTrace();
+                            }
+                        }
+                        intent.putExtra("calendar_id",calendarID);
+                        intent.putExtra("event_alert",alert);
                         context.startActivity(intent);
                     }
                 })
@@ -507,5 +521,7 @@ public class MessageHandler {
 
         builder.show();
     }
+
+
 
 }

@@ -450,7 +450,7 @@ public class LoginActivity extends FragmentActivity implements View.OnClickListe
     @Override
     protected void onActivityResult(int requestCode, final int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if (callbackManager.onActivityResult(requestCode, resultCode, data)) {
+        if (callbackManager!= null && callbackManager.onActivityResult(requestCode, resultCode, data)) {
             return;
         }
     }

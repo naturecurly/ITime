@@ -169,12 +169,14 @@ public class MeetingDetaiHostlActivity extends AppCompatActivity implements View
         mEventId = getIntent().getStringExtra("event_id");
         mCalendarID = getIntent().getStringExtra("calendar_id");
         mAlertID = getIntent().getStringExtra("event_alert");
-        if (mAlertID != null && mAlertID.equals("At time of Departure")){
-            mAlertID = getString(R.string.alert_default);
-        } else if(mAlertID.equals("At time of Departure")){
+
+        if(mAlertID != null){
+            if(mAlertID.equals("At time of Departure")){
+                mAlertID = getString(R.string.alert_default);
+            }
+        }else{
             mAlertID = getString(R.string.alert_default);
         }
-
 
         mMeetingName = (TextView) findViewById(R.id.meeting_detail_event_name);
         mMeetingAddress = (TextView) findViewById(R.id.meeting_detail_address);
@@ -228,8 +230,15 @@ public class MeetingDetaiHostlActivity extends AppCompatActivity implements View
         mCalendarLayout = (LinearLayout) findViewById(R.id.meeting_detail_calendar_layout);
         mCalendarLayout.setOnClickListener(this);
 
-        mCalendar.setText(Events.calendarTypeList.get(0).calendarName);
-        mCalendar.setText(CalendarTypeUtil.findCalendarById(mCalendarID).calendarName);
+//        mCalendar.setText(Events.calendarTypeList.get(0).calendarName);
+//        mCalendar.setText(CalendarTypeUtil.findCalendarById(mCalendarID).calendarName);
+
+        if (mCalendarID != null && !mCalendarID.equals("")) {
+            mCalendar.setText(CalendarTypeUtil.findCalendarById(mCalendarID).calendarName);
+        }else{
+            mCalendar.setText(getString(R.string.Calendar));
+        }
+
         mAlert.setText(mAlertID);
     }
 

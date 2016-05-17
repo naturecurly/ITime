@@ -123,7 +123,14 @@ public class MeetingDetailActivity extends AppCompatActivity implements RadioGro
         mEventId = getIntent().getStringExtra("event_id");
         mCalendarID = getIntent().getStringExtra("calendar_id");
         mAlertID = getIntent().getStringExtra("event_alert");
-        if (mAlertID != null && mAlertID.equals("At time of Departure")){
+//        if (mAlertID != null && mAlertID.equals("At time of Departure")){
+//            mAlertID = getString(R.string.alert_default);
+//        }
+        if(mAlertID != null){
+            if(mAlertID.equals("At time of Departure")){
+                mAlertID = getString(R.string.alert_default);
+            }
+        }else{
             mAlertID = getString(R.string.alert_default);
         }
 

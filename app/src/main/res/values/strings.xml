@@ -26,6 +26,7 @@
     <string name="settings_clear_calendar">Clear Calendar</string>
     <string name="settings_language">Language Change Settings</string>
     <string name="add_friend">AAdd Friend</string>
+    <string name="default_location">Melbourne</string>
 
     <string name="time_out">Sorry, time out.</string>
 
@@ -94,7 +95,7 @@
 
     <string name="meeting_detail_attendees">Attendees</string>
     <string name="meeting_detail_invite">Invitation from</string>
-    <string name="meeting_detail_depture">Depture at</string>
+    <string name="meeting_detail_depture">Departure at</string>
     <string name="meeting_detail_starts">Starts</string>
     <string name="meeting_detail_ends">Ends</string>
     <string name="meeting_detail_repeats">Repeats</string>

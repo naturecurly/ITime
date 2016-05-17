@@ -17,10 +17,15 @@
 package com.itime.team.itime.fragments;
 
 
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.database.Cursor;
+import android.graphics.Bitmap;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.storage.StorageManager;
+import android.provider.MediaStore;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.LoaderManager;
@@ -32,12 +37,30 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.ImageRequest;
 import com.itime.team.itime.R;
 import com.itime.team.itime.activities.InputDialogActivity;
+import com.itime.team.itime.bean.URLs;
+import com.itime.team.itime.bean.User;
 import com.itime.team.itime.database.ITimeDataStore;
 import com.itime.team.itime.model.ParcelableUser;
 import com.itime.team.itime.task.UserTask;
+import com.itime.team.itime.utils.FileUtil;
+import com.itime.team.itime.utils.MySingleton;
+
+import java.io.File;
+import java.io.IOException;
+import java.util.List;
+
+import okhttp3.MediaType;
+import okhttp3.MultipartBody;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.RequestBody;
+import okhttp3.Response;
 
 
 /**
@@ -55,6 +78,9 @@ public class ProfileFragment extends Fragment implements View.OnClickListener,
     private View mProfileImage;
     private View mEmail;
     private View mPhoneNumber;
+
+    private ProgressDialog mProgress;
+
 
     //Views
     private TextView mUserNameTextView;
@@ -75,6 +101,9 @@ public class ProfileFragment extends Fragment implements View.OnClickListener,
     private static final int REQUEST_SET_PHONE_NUMBER = 3;
     private static final int REQUEST_IMAGE_SELECT = 4;
 
+    public static final int RESULT_UPDATE_PROFILE = 1;
+    public static final String RESULT_UPDATE_PROFILE_DATA = "result_update_profile_data";
+
 
     private static final int PROFILE_LOADER = 0;
 
@@ -88,6 +117,10 @@ public class ProfileFragment extends Fragment implements View.OnClickListener,
         init();
         setHasOptionsMenu(true);
 
+        mProgress = new ProgressDialog(getActivity());
+        mProgress.setCancelable(false);
+        mProgress.setCanceledOnTouchOutside(false);
+
         return mProfileView;
     }
 
@@ -98,7 +131,7 @@ public class ProfileFragment extends Fragment implements View.OnClickListener,
         mProfileImage = mProfileView.findViewById(R.id.setting_profile_picture);
         mQRCode = mProfileView.findViewById(R.id.setting_profile_qrcode);
 
-        View [] views = new View[]{mName, mEmail, mPhoneNumber, mProfileImage, mQRCode};
+        View[] views = new View[]{mName, mEmail, mPhoneNumber, mProfileImage, mQRCode};
         bindOnClickListener(views);
 
         mUserNameTextView = (TextView) mProfileView.findViewById(R.id.setting_profile_name_text);
@@ -112,7 +145,7 @@ public class ProfileFragment extends Fragment implements View.OnClickListener,
         mUser = new ParcelableUser();
     }
 
-    private void bindOnClickListener (View [] views) {
+    private void bindOnClickListener(View[] views) {
         for (View v : views) {
             v.setOnClickListener(this);
         }
@@ -168,6 +201,7 @@ public class ProfileFragment extends Fragment implements View.OnClickListener,
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         getLoaderManager().initLoader(PROFILE_LOADER, null, this);
+        loadProfileImage();
         super.onActivityCreated(savedInstanceState);
     }
 
@@ -176,7 +210,14 @@ public class ProfileFragment extends Fragment implements View.OnClickListener,
         switch (requestCode) {
             case REQUEST_IMAGE_SELECT: {
                 if (data != null) {
-                    mUserProfileImageView.setImageURI(data.getData());
+                    Log.i(LOG_TAG, data.getData().toString());
+                    String filePath = FileUtil.getFileAbsolutePath(getActivity(), data.getData());
+                    if (filePath != null) {
+                        Log.i(LOG_TAG, filePath);
+                    }
+                    //getActivity().openFileInput()
+
+                    new MakeRequestTask(data.getData(), filePath, User.ID).execute();
                 }
                 break;
             }
@@ -256,6 +297,101 @@ public class ProfileFragment extends Fragment implements View.OnClickListener,
             phone = mCursor.getColumnIndex(ITimeDataStore.User.PHONE_NUMBER);
             defaultAlert = mCursor.getColumnIndex(ITimeDataStore.User.DEFAULT_ALERT);
             profilePicture = mCursor.getColumnIndex(ITimeDataStore.User.USER_PROFILE_PICTURE);
+        }
+    }
+
+    private void loadProfileImage() {
+        String url = URLs.PROFILE_PICTURE +
+                User.ID + "/profile_picture.png";
+        ImageRequest request = new ImageRequest(url,
+                new com.android.volley.Response.Listener<Bitmap>() {
+                    @Override
+                    public void onResponse(Bitmap bitmap) {
+                        mUserProfileImageView.setImageBitmap(bitmap);
+                    }
+                }, 0, 0, null,
+                new com.android.volley.Response.ErrorListener() {
+                    public void onErrorResponse(VolleyError error) {
+                        mUserProfileImageView.setImageResource(R.drawable.default_profile_image);
+                    }
+                });
+        MySingleton.getInstance(getContext()).addToRequestQueue(request);
+    }
+
+
+
+    private class MakeRequestTask extends AsyncTask<Void, String, String> {
+        private Uri mFile;
+        private String mFilePath;
+        private String mFileName;
+        private Exception mLastError = null;
+
+        public MakeRequestTask(Uri file, String filePath, String fileName) {
+            mFile = file;
+            mFilePath = filePath;
+            mFileName = fileName;
+        }
+
+        private void uploadProfilePicture(String file, String fileName) throws IOException {
+            final MediaType MEDIA_TYPE_PNG = MediaType.parse("image/png");
+
+            final OkHttpClient client = new OkHttpClient();
+
+            RequestBody requestBody = new MultipartBody.Builder()
+                    .setType(MultipartBody.FORM)
+                    //.addFormDataPart("name", "image")
+                    .addFormDataPart("image", fileName,
+                            RequestBody.create(MEDIA_TYPE_PNG, new File(file)))
+                    .build();
+            Request request = new Request.Builder()
+                    .header("Authorization", "Bearer " + User.token)
+                    .url(URLs.USER_PROFILE_PIC_UPLOAD)
+                    .post(requestBody)
+                    .build();
+
+            Response response = client.newCall(request).execute();
+            if (!response.isSuccessful()) throw new IOException("Unexpected code " + response);
+
+            Log.i(LOG_TAG, response.body().string());
+        }
+
+        @Override
+        protected String doInBackground(Void... params) {
+            try {
+                uploadProfilePicture(mFilePath, mFileName);
+                return "success";
+            } catch (IOException e) {
+                mLastError = e;
+                cancel(true);
+                return "error";
+            }
+        }
+
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+            //mProgress.show();
+        }
+
+        @Override
+        protected void onPostExecute(String s) {
+            mProgress.hide();
+
+            Toast.makeText(getContext(), getString(R.string.upload_profile_photo_success), Toast.LENGTH_SHORT).show();
+            mUserProfileImageView.setImageURI(mFile);
+            Intent intent = new Intent();
+            intent.putExtra(RESULT_UPDATE_PROFILE_DATA, true);
+            getActivity().setResult(RESULT_UPDATE_PROFILE, intent);
+
+        }
+
+        @Override
+        protected void onCancelled() {
+            mProgress.hide();
+            if (mLastError != null) {
+                System.out.println(mLastError.getMessage());
+                Toast.makeText(getContext(), getString(R.string.upload_profile_photo_fail), Toast.LENGTH_SHORT).show();
+            }
         }
     }
 }

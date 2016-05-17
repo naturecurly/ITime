@@ -10,6 +10,7 @@ public class URLs {
     public static final String LOAD_FRDS_PERFER_PREFERENCES = HEAD + "load_frds_prefer_preferences";
     public static final String MATCH_TIME_WITH_FRIENDS = HEAD + "match_time_with_friends";
     public static final String PROFILE_PICTURE = HEAD + "static/user_profiles/";
+    public static final String USER_PROFILE_PIC_UPLOAD = HEAD + "upload_pic";
     public static final String LOAD_FRDS_PREFER_PREFERENCE = HEAD + "load_frds_prefer_preferences";
     public static final String SEARCH_FRIENDS = HEAD + "search_friends";
     public static final String REGISTER = HEAD + "sign_up";

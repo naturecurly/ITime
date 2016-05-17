@@ -23,6 +23,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
@@ -44,6 +45,7 @@ import android.widget.Toast;
 import com.android.volley.Request;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
+import com.android.volley.toolbox.ImageRequest;
 import com.facebook.login.LoginManager;
 import com.itime.team.itime.R;
 import com.itime.team.itime.activities.CheckLoginActivity;
@@ -146,6 +148,7 @@ public class SettingsFragment extends Fragment implements View.OnClickListener, 
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         getLoaderManager().initLoader(SETTINGS_LOADER, null, this);
+        loadProfileImage();
         super.onActivityCreated(savedInstanceState);
     }
 
@@ -156,7 +159,7 @@ public class SettingsFragment extends Fragment implements View.OnClickListener, 
         switch (v.getId()) {
             case SETTINGS_PROFILE_ID:
                 intent.putExtra(SETTINGS, PROFILE_SETTINGS);
-                startActivity(intent);
+                startActivityForResult(intent, PROFILE_SETTINGS);
                 break;
 
             case SETTINGS_MEETING_ID:
@@ -243,6 +246,12 @@ public class SettingsFragment extends Fragment implements View.OnClickListener, 
                 UserTask task = UserTask.getInstance(getActivity());
                 mUser.defaultAlert = text;
                 task.updateUserInfo(mUserId, mUser, null);
+            }
+        } else if (requestCode == PROFILE_SETTINGS) {
+            if (resultCode == ProfileFragment.RESULT_UPDATE_PROFILE) {
+                if (data != null && data.getBooleanExtra(ProfileFragment.RESULT_UPDATE_PROFILE_DATA, false) == true) {
+                    loadProfileImage();
+                }
             }
         }
     }
@@ -396,5 +405,23 @@ public class SettingsFragment extends Fragment implements View.OnClickListener, 
         })
                 .setTitle(getString(R.string.set_language));
         builder.show();
+    }
+
+    private void loadProfileImage() {
+        String url = URLs.PROFILE_PICTURE +
+                com.itime.team.itime.bean.User.ID + "/profile_picture.png";
+        ImageRequest request = new ImageRequest(url,
+                new com.android.volley.Response.Listener<Bitmap>() {
+                    @Override
+                    public void onResponse(Bitmap bitmap) {
+                        mUserProfileImageView.setImageBitmap(bitmap);
+                    }
+                }, 0, 0, null,
+                new com.android.volley.Response.ErrorListener() {
+                    public void onErrorResponse(VolleyError error) {
+                        mUserProfileImageView.setImageResource(R.drawable.default_profile_image);
+                    }
+                });
+        MySingleton.getInstance(getContext()).addToRequestQueue(request);
     }
 }

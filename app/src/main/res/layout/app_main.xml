@@ -82,7 +82,7 @@
                 android:drawableTop="@drawable/ic_date_range_s"
                 android:gravity="center_horizontal|bottom"
                 android:paddingTop="2dp"
-                android:text="Calendar"
+                android:text="@string/Calendar"
                 android:textColor="@color/color_radiobutton" />
 
             <RadioButton
@@ -97,7 +97,7 @@
                 android:drawableTop="@drawable/ic_group_s"
                 android:gravity="center_horizontal|bottom"
                 android:paddingTop="2dp"
-                android:text="Meeting"
+                android:text="@string/Meeting"
                 android:textColor="@color/color_radiobutton" />
 
             <RadioButton
@@ -112,7 +112,7 @@
                 android:drawableTop="@drawable/ic_inbox"
                 android:gravity="center_horizontal|bottom"
                 android:paddingTop="2dp"
-                android:text="Inbox"
+                android:text="@string/Mail"
                 android:textColor="@color/color_radiobutton" />
 
             <RadioButton
@@ -127,7 +127,7 @@
                 android:drawableTop="@drawable/ic_setting_s"
                 android:gravity="center_horizontal|bottom"
                 android:paddingTop="2dp"
-                android:text="Setting"
+                android:text="@string/Setting"
                 android:textColor="@color/color_radiobutton" />
         </RadioGroup>
 

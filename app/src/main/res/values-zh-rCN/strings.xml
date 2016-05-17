@@ -73,98 +73,98 @@
     <string name="meeting_dialog_wechat">添加微信好友</string>
 
 
-    <string name="phone_contact_title">Search Contacts</string>
-    <string name="phone_contact_addway_title">Add Method</string>
+    <string name="phone_contact_title">搜索联系人</string>
+    <string name="phone_contact_addway_title">添加好友方式</string>
 
-    <string name="new_meeting_namehit">Name</string>
-    <string name="new_meeting_venuehit">Venue</string>
-    <string name="new_meeting_repeat">Repeats</string>
-    <string name="new_meeting_punctual">Punctual</string>
-    <string name="new_meeting_alert">Alert -- At Time Of Event</string>
-    <string name="alert_event">At Time Of Event</string>
-    <string name="new_meeting_title">New Meeting</string>
-    <string name="new_meeting_repeat_dialog_title">Repeats</string>
-    <string name="new_meeting_alert_dialog_title">Alert Time</string>
-    <string name="new_meeting_alert_button">Alert -- </string>
-    <string name="new_meeting_send_invitation_successful">Meeting invitation has been sent successfully</string>
-    <string name="new_meeting_confirm_title">Sending Invitation</string>
-    <string name="new_meeting_confirm_content">Do you want to send the Meeting Invitation</string>
-    <string name="new_meeting">New Meeting</string>
+    <string name="new_meeting_namehit">名字</string>
+    <string name="new_meeting_venuehit">地点</string>
+    <string name="new_meeting_repeat">重复</string>
+    <string name="new_meeting_punctual">准时</string>
+    <string name="new_meeting_alert">提醒 -- 定时事件</string>
+    <string name="alert_event">定时事件</string>
+    <string name="new_meeting_title">新会议</string>
+    <string name="new_meeting_repeat_dialog_title">重复</string>
+    <string name="new_meeting_alert_dialog_title">提醒时间</string>
+    <string name="new_meeting_alert_button">提醒 --</string>
+    <string name="new_meeting_send_invitation_successful">会议邀请发送成功</string>
+    <string name="new_meeting_confirm_title">发送邀请</string>
+    <string name="new_meeting_confirm_content">你想发送会议邀请吗？</string>
+    <string name="new_meeting">新会议</string>
 
-    <string name="new_event_title">New Event</string>
-
-
-    <string name="login_username">Username</string>
-    <string name="login_password">Password</string>
-    <string name="login_remember">If remember?</string>
-    <string name="login_login">Login</string>
-    <string name="login_register">Register</string>
-    <string name="login_warning_username">Please input your username</string>
-    <string name="login_warning_password">Please input your password</string>
-    <string name="login_warning_exist">Sorry, this username has been used</string>
-    <string name="login_warning_login_fail">Sorry, your username and password do not match</string>
-    <string name="login_warning_username_illegal">Sorry, please use real email address as your username</string>
-    <string name="login_warning_password_illegal">Sorry, the length of your password should be more than 5</string>
-
-    <string name="meeting_detail_attendees">Attendees</string>
-    <string name="meeting_detail_invite">Invitation from</string>
-    <string name="meeting_detail_depture">Depture at</string>
-    <string name="meeting_detail_starts">Starts</string>
-    <string name="meeting_detail_ends">Ends</string>
-    <string name="meeting_detail_repeats">Repeats</string>
-    <string name="meeting_detail_Punctual">Punctual</string>
-    <string name="meeting_detail_note">Note</string>
-    <string name="meeting_detail_email">Send to Email</string>
-    <string name="meeting_detail_accept">Accept</string>
-    <string name="meeting_detail_Maybe">Maybe</string>
-    <string name="meeting_detail_Decline">Decline</string>
-    <string name="meeting_detail_quit">Quit Meeting</string>
-    <string name="meeting_detail_reason">Reason</string>
-    <string name="meeting_detail_reason_content">Why do you reject the meeting?</string>
-    <string name="meeting_detail_title">Meeting Detail</string>
-    <string name="meeting_attendees_title">Attendees</string>
-    <string name="meeting_detail_new_name">New Meeting Name</string>
-    <string name="meeting_detail_new_venue">New Venue</string>
-    <string name="meeting_detail_new_start_time">New Start Time</string>
-    <string name="meeting_detail_new_end_time">New End Time</string>
-    <string name="meeting_detail_new_repeat">New Repeat Type</string>
-    <string name="meeting_detail_new_Punctual">If Punctual</string>
-    <string name="meeting_detail_new_note">New Note</string>
-    <string name="meeting_update">Update Meeting Successful</string>
-    <string name="meeting_detail_email_content">Hi, please check this meeting.</string>
-    <string name="meeting_detail_quit_reason_title">Quit Reason</string>
-    <string name="meeting_detail_quit_reason">Please Type the Reason</string>
+    <string name="new_event_title">新事件</string>
 
 
-    <string name="repeat_add_friend">Sorry, %1s is aready your friend</string>
-    <string name="add_friend_myself">Sorry, You cannot add yourself</string>
-    <string name="add_friend_login">Sorry, you need to login first.</string>
-    <string name="check_login_timeout">Timeout, please check your internet</string>
+    <string name="login_username">用户名</string>
+    <string name="login_password">密码</string>
+    <string name="login_remember">是否记住密码?</string>
+    <string name="login_login">登录</string>
+    <string name="login_register">注册</string>
+    <string name="login_warning_username">请输入用户名</string>
+    <string name="login_warning_password">请输入密码</string>
+    <string name="login_warning_exist">对不起，用户名已经被使用</string>
+    <string name="login_warning_login_fail">对不起，你的用户名与密码不匹配</string>
+    <string name="login_warning_username_illegal">对不起，请用真实邮箱作为用户名</string>
+    <string name="login_warning_password_illegal">密码长度应该大于6</string>
 
-    <string name="search_friend_added_friend_info">Please wait for your friend\'s reply</string>
+    <string name="meeting_detail_attendees">参与人</string>
+    <string name="meeting_detail_invite">邀请来自</string>
+    <string name="meeting_detail_depture">出发</string>
+    <string name="meeting_detail_starts">开始</string>
+    <string name="meeting_detail_ends">结束</string>
+    <string name="meeting_detail_repeats">重复</string>
+    <string name="meeting_detail_Punctual">准时</string>
+    <string name="meeting_detail_note">日志</string>
+    <string name="meeting_detail_email">发到邮箱</string>
+    <string name="meeting_detail_accept">接受</string>
+    <string name="meeting_detail_Maybe">可能</string>
+    <string name="meeting_detail_Decline">拒绝</string>
+    <string name="meeting_detail_quit">退出会议</string>
+    <string name="meeting_detail_reason">理由</string>
+    <string name="meeting_detail_reason_content">为什么你拒绝会议</string>
+    <string name="meeting_detail_title">会议详情</string>
+    <string name="meeting_attendees_title">参与人</string>
+    <string name="meeting_detail_new_name">新的会议名称</string>
+    <string name="meeting_detail_new_venue">新的地点</string>
+    <string name="meeting_detail_new_start_time">新的开始时间</string>
+    <string name="meeting_detail_new_end_time">新的结束时间</string>
+    <string name="meeting_detail_new_repeat">新的重复类型</string>
+    <string name="meeting_detail_new_Punctual">是否准时</string>
+    <string name="meeting_detail_new_note">新的日志</string>
+    <string name="meeting_update">更新会议成功</string>
+    <string name="meeting_detail_email_content">你好，请查看这个会议</string>
+    <string name="meeting_detail_quit_reason_title">退出理由</string>
+    <string name="meeting_detail_quit_reason">请输入理由</string>
 
-    <string name="auto_titile">Search Venue</string>
+
+    <string name="repeat_add_friend">对不起, %1s 已经是你的朋友</string>
+    <string name="add_friend_myself">对不起，你不可以添加你自己</string>
+    <string name="add_friend_login">对不起，请先登录</string>
+    <string name="check_login_timeout">连接超时，请检查网络</string>
+
+    <string name="search_friend_added_friend_info">请等我朋友的回复</string>
+
+    <string name="auto_titile">搜索地点</string>
 
 
-    <string name="add_friend_facebook_install">You do not install Messenger yat, would you like to install?</string>
+    <string name="add_friend_facebook_install">你没有安装短信软件，你希望安装吗？</string>
 
     <string name="facebook_app_id">450185851844736</string>
     <string name="google_app_id_me">AIzaSyDjDteQOjuWYV7ST_Wi7k34i36j2OngA88</string>
     <string name="google_web_id">AIzaSyBC4zDmkarugKY0Njs_n2TtEUVEyeESn0c</string>
     <string name="wechat_app_id">wx3f4cf39b8038b21a</string>
 
-    <string name="action_today">Today</string>
+    <string name="action_today">今天</string>
     <string name="action_day_view">Daily</string>
-    <string name="action_three_day_view">3 day view</string>
-    <string name="action_week_view">Week view</string>
-    <string name="title_activity_basic">Basic Example</string>
-    <string name="title_activity_asynchronous">Asynchronous Events</string>
-    <string name="async_error">Could not download events from the internet</string>
+    <string name="action_three_day_view">三天视图</string>
+    <string name="action_week_view">周视图</string>
+    <string name="title_activity_basic">基础例子</string>
+    <string name="title_activity_asynchronous">异步事件</string>
+    <string name="async_error">不能下载事件</string>
 
     <!-- calendar type strings -->
-    <string name="calendar_type_delete">Delete</string>
-    <string name="new_calendar_type_title">New Calendar Type</string>
-    <string name="edit_calendar_type_title">Edit Calendar Type</string>
+    <string name="calendar_type_delete">删除</string>
+    <string name="new_calendar_type_title">新日历类型</string>
+    <string name="edit_calendar_type_title">编辑日历</string>
     <string name="unread">未读消息</string>
     <string name="all_message">全部消息</string>
 
@@ -175,7 +175,7 @@
     <string name="accept">接受</string>
     <string name="reject">拒绝</string>
     <string name="show_detail">显示详情</string>
-    <string name="later">以后</string>
+    <string name="later">以后再看</string>
     <string name="departure_time">出发时间</string>
 
     <!-- gcm strings -->
@@ -189,7 +189,7 @@
     <!-- import calendars -->
     <string name="import_calendar">导入日历</string>
     <string name="import_google_calendar">导入 Google 日历</string>
-    <string name="import_ios_calendar">Import  IOS Calendar</string>
+    <string name="import_ios_calendar">导入 IOS 日历</string>
 
     <!-- clear calendars -->
     <string name="clear_calendars_success">清空日历成功</string>
@@ -197,13 +197,17 @@
 
     <!-- language -->
     <string name="set_language">设置语言</string>
-    <string name="activate_language_change">Please restart app to activate the language change</string>
-    <string name="english">English</string>
+    <string name="activate_language_change">请重启应用激活语言设置</string>
+    <string name="english">英语</string>
     <string name="simple_chinese">简体中文</string>
 
-    <string name="post_null">NOT PROVIDED</string>
+    <string name="post_null">没有提供</string>
     <string name="meeting_search_scan_qrcode">扫描二维码</string>
     <string name="upload_profile_photo_fail">上传用户头像失败</string>
     <string name="upload_profile_photo_success">上传用户头像成功</string>
+    <string name="repeat_default">一次性事件</string>
+    <string name="add_friend_confirm">你希望添加 %1s 为朋友吗？</string>
+    <string name="alert_default">定时事件</string>
+    <string name="default_location">墨尔本</string>
 
 </resources>

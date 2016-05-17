@@ -333,8 +333,11 @@ public class MeetingDetailUpdateActivity extends AppCompatActivity implements Vi
         mOldLocation = mLocation;
         mOldShow = mShow;
         mOldNote = mNote;
-
-        mCalendar.setText(CalendarTypeUtil.findCalendarById(mCalendarID).calendarName);
+        if(mCalendarID==null || CalendarTypeUtil.findCalendarById(mCalendarID) == null){
+            mCalendar.setText(getString(R.string.Calendar));
+        }else {
+            mCalendar.setText(CalendarTypeUtil.findCalendarById(mCalendarID).calendarName);
+        }
     }
 
     private String timeFormat(int hour, int min){

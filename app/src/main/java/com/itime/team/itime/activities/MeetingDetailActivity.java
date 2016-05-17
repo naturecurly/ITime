@@ -8,7 +8,6 @@ import android.support.v4.content.FileProvider;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.CheckBox;
@@ -545,8 +544,6 @@ public class MeetingDetailActivity extends AppCompatActivity implements RadioGro
             }
             object.put("event_alert",mAlertID);
             object.put("calendar_id", mCalendarID);
-            Log.i("alertttt",mAlertID);
-            Log.i("calendaraf",mCalendarID);
 
 
             object.put("event_last_update_datetime", DateUtil.getDateStringFromCalendarGMT(Calendar.getInstance()));

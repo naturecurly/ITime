@@ -10,7 +10,7 @@ public class User {
     public static boolean hasNewMeeting = false;
     public static String addFriendResume = "";
     public static String token = "";
-    public static String defaultAlert = "At time of event";
+    public static String defaultAlert = "At time of Event";
     public static String lastCalendarType = "";
 
 //    private String profilePicture = "";

@@ -146,6 +146,7 @@ public class MeetingDetaiHostlActivity extends AppCompatActivity implements View
                 mCalendar.setText(data.getStringExtra("calendar"));
                 mAlert.setText(data.getStringExtra("alert"));
                 mAlertID = data.getStringExtra("alert");
+                mCalendarID = data.getStringExtra("calendar_id");
             }
         }
     }

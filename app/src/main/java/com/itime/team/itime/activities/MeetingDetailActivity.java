@@ -187,7 +187,11 @@ public class MeetingDetailActivity extends AppCompatActivity implements RadioGro
 
         mCalendarText.setText(Events.calendarTypeList.get(0).calendarName);
         if (mCalendarID != null && !mCalendarID.equals("")) {
-            mCalendarText.setText(CalendarTypeUtil.findCalendarById(mCalendarID).calendarName);
+            if (CalendarTypeUtil.findCalendarById(mCalendarID) == null) {
+                mCalendarText.setText(getString(R.string.Calendar));
+            }else {
+                mCalendarText.setText(CalendarTypeUtil.findCalendarById(mCalendarID).calendarName);
+            }
         }else{
             mCalendarText.setText(getString(R.string.Calendar));
         }

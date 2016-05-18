@@ -47,7 +47,6 @@ import org.json.JSONObject;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
@@ -107,8 +106,8 @@ public class MeetingDetailUpdateActivity extends AppCompatActivity implements Vi
     private ScrollView mMain;
     private boolean mIsFeasible;
 
-    private ArrayList<String> mRpeatValue;
-    private ArrayList<Integer> mAlertValue;
+//    private ArrayList<String> mRpeatValue;
+//    private ArrayList<Integer> mAlertValue;
 
     private String mAddress;
     private String mMeetingID;
@@ -138,6 +137,7 @@ public class MeetingDetailUpdateActivity extends AppCompatActivity implements Vi
     private Map<Integer, String> repeatMap;
     private int mPosition = 1;
     private int mRepeatPosition = 0;
+    private int mCalendarPosition = 0;
     private Map<String,Integer> positionRecordMap;
     private Map<String, Integer> repeatRecordMap;
 
@@ -257,10 +257,10 @@ public class MeetingDetailUpdateActivity extends AppCompatActivity implements Vi
         mStartDate.setText(dateFormat(mStartDay, mStartMonth, mStartYear));
         mEndDate.setText(dateFormat(mEndDay, mEndMonth, mEndYear));
 
-        mRpeatValue = new ArrayList();
-        mAlertValue = new ArrayList();
-        mRpeatValue.add("One-time event");
-        mAlertValue.add(1);
+//        mRpeatValue = new ArrayList();
+//        mAlertValue = new ArrayList();
+//        mRpeatValue.add("One-time event");
+//        mAlertValue.add(1);
 
         mAddress = mVeune.getText().toString();
 
@@ -297,8 +297,13 @@ public class MeetingDetailUpdateActivity extends AppCompatActivity implements Vi
         mNote = receiver.getStringExtra("note");
         mHostID = receiver.getStringExtra("host_id");
         mAlertString = receiver.getStringExtra("alert");
-        mAlert.setText(mAlertString);
-        mPosition = positionRecordMap.get(mAlertString);
+        if (mAlertString == null) {
+            mAlertString = User.defaultAlert;
+
+        }else {
+            mAlert.setText(mAlertString);
+            mPosition = positionRecordMap.get(mAlertString);
+        }
 
 
 
@@ -337,6 +342,8 @@ public class MeetingDetailUpdateActivity extends AppCompatActivity implements Vi
             mCalendar.setText(getString(R.string.Calendar));
         }else {
             mCalendar.setText(CalendarTypeUtil.findCalendarById(mCalendarID).calendarName);
+            mCalendarPosition = Events.calendarTypeList.indexOf(CalendarTypeUtil.findCalendarById(mCalendarID));
+
         }
     }
 
@@ -465,14 +472,15 @@ public class MeetingDetailUpdateActivity extends AppCompatActivity implements Vi
         }else if (v.getId() == mCalendar.getId()) {
                 NewEventCalendarTypeDialogFragment dialog = new NewEventCalendarTypeDialogFragment();
                 Bundle bundle = new Bundle();
-                bundle.putInt(NewEventCalendarTypeDialogFragment.SELECTED, Events.calendarTypeList.indexOf(calendarTypeString));
+                bundle.putInt(NewEventCalendarTypeDialogFragment.SELECTED, mCalendarPosition);
                 dialog.setArguments(bundle);
                 dialog.setListener(new RepeatSelectionListener() {
                     @Override
                     public void selectItem(int positon) {
                         calendarTypeString = Events.calendarTypeList.get(positon);
                         mCalendar.setText(Events.calendarTypeList.get(positon).calendarName);
-
+                        mCalendarID = Events.calendarTypeList.get(positon).calendarId;
+                        mCalendarPosition = Events.calendarTypeList.indexOf(CalendarTypeUtil.findCalendarById(mCalendarID));
                     }
                 });
                 dialog.show(getSupportFragmentManager(), "calendar_dialog");
@@ -572,7 +580,8 @@ public class MeetingDetailUpdateActivity extends AppCompatActivity implements Vi
                         User.hasNewMeeting = true;
                         Intent intent = new Intent();
                         intent.putExtra("calendar",mCalendar.getText());
-                        intent.putExtra("alert",positionMap.get(mPosition) );
+                        intent.putExtra("alert",positionMap.get(mPosition));
+                        intent.putExtra("calendar_id",mCalendarID);
 
                         setResult(RESULT_OK,intent);
                         Toast.makeText(getApplicationContext(),

@@ -37,6 +37,7 @@ import com.itime.team.itime.fragments.NewEventCalendarTypeDialogFragment;
 import com.itime.team.itime.fragments.NewEventRepeatDialogFragment;
 import com.itime.team.itime.listener.RepeatSelectionListener;
 import com.itime.team.itime.model.ParcelableCalendarType;
+import com.itime.team.itime.utils.CalendarTypeUtil;
 import com.itime.team.itime.utils.DateUtil;
 import com.itime.team.itime.utils.JsonObjectFormRequest;
 import com.itime.team.itime.utils.MySingleton;
@@ -60,7 +61,7 @@ import java.util.UUID;
  * Created by Weiwei Cai on 16/2/17.
  * This activity creates new meeting.
  */
-public class NewMeetingActivity extends AppCompatActivity implements View.OnTouchListener, View.OnClickListener, CompoundButton.OnCheckedChangeListener{
+public class NewMeetingActivity extends AppCompatActivity implements View.OnTouchListener, View.OnClickListener, CompoundButton.OnCheckedChangeListener {
     private static final String PLACES_API_BASE = "https://maps.googleapis.com/maps/api/place";
     private static final String TYPE_DETAILS = "/details";
     private static final String OUT_JSON = "/json";
@@ -106,7 +107,7 @@ public class NewMeetingActivity extends AppCompatActivity implements View.OnTouc
     private String mAddress;
     private String alertString;
 
-    private Map<Integer,String> positionMap;
+    private Map<Integer, String> positionMap;
     private Map<Integer, String> repeatMap;
     private int mPosition = 1;
     private int mRepeatPosition = 0;
@@ -132,7 +133,7 @@ public class NewMeetingActivity extends AppCompatActivity implements View.OnTouc
     // To allow users to make sure whether wanting to create a new meeting.
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        if(item.getItemId() == R.id.new_meeting_menu_send){
+        if (item.getItemId() == R.id.new_meeting_menu_send) {
             AlertDialog.Builder builder = new AlertDialog.Builder(this);
             builder.setMessage(getString(R.string.new_meeting_confirm_content));
             builder.setIcon(R.mipmap.ic_launcher);
@@ -154,7 +155,7 @@ public class NewMeetingActivity extends AppCompatActivity implements View.OnTouc
         return super.onOptionsItemSelected(item);
     }
 
-    private void init(){
+    private void init() {
         Toolbar toolbar = (Toolbar) findViewById(R.id.new_meeting_toolbar);
         setSupportActionBar(toolbar);
         setTitle(R.string.new_meeting_title);
@@ -171,7 +172,7 @@ public class NewMeetingActivity extends AppCompatActivity implements View.OnTouc
 
         repeatString = getString(R.string.repeat_default);
         positionMap = new HashMap<>();
-        positionMap.put(0,"None");
+        positionMap.put(0, "None");
         positionMap.put(1, "At time of Departure");
         positionMap.put(2, "5 minutes before");
         positionMap.put(3, "10 minutes before");
@@ -179,14 +180,12 @@ public class NewMeetingActivity extends AppCompatActivity implements View.OnTouc
         positionMap.put(5, "30 minutes before");
         positionMap.put(6, "1 hour before");
         repeatMap = new HashMap<>();
-        repeatMap.put(0,"One-time event");
-        repeatMap.put(1,"Daily");
-        repeatMap.put(2,"Weekly");
-        repeatMap.put(3,"Bi-Weekly");
-        repeatMap.put(4,"Monthly");
-        repeatMap.put(5,"Yearly");
-
-
+        repeatMap.put(0, "One-time event");
+        repeatMap.put(1, "Daily");
+        repeatMap.put(2, "Weekly");
+        repeatMap.put(3, "Bi-Weekly");
+        repeatMap.put(4, "Monthly");
+        repeatMap.put(5, "Yearly");
 
 
         mAddress = "";
@@ -227,21 +226,34 @@ public class NewMeetingActivity extends AppCompatActivity implements View.OnTouc
         mRpeatValue.add("One-time event");
         mAlertValue.add(1);
 
+        try {
+            mPosition = Arrays.asList(Events.alertArray).indexOf(User.defaultAlert);
+            mAlert.setText(Arrays.asList(Events.alertArray).get(mPosition));
+        } catch (Exception e) {
+        }
+
+        try{
+            mCalendarPosition = Events.calendarTypeList.indexOf(CalendarTypeUtil.findCalendarById(User.lastCalendarType).calendarName);
+            mCalendar.setText(CalendarTypeUtil.findCalendarById(User.lastCalendarType).calendarName + "--" +
+                    CalendarTypeUtil.findCalendarById(User.lastCalendarType).calendarOwnerName);
+        }catch (Exception e){
+            Log.i("asd",CalendarTypeUtil.findCalendarById(User.lastCalendarType).calendarName);
+        }
 
         //simpleRequest();
     }
 
-    private Date getCurrentDate(){
+    private Date getCurrentDate() {
         Date date = null;
         Intent receiver = getIntent();
-        mStartYear = receiver.getIntExtra("year",0);
-        mStartMonth = receiver.getIntExtra("month",0);
-        mStartDay = receiver.getIntExtra("day",0);
-        mDuration = receiver.getIntExtra("duration",0);
-        mStartHour = receiver.getIntExtra("hour",0);
-        mStartMin = receiver.getIntExtra("min",0);
+        mStartYear = receiver.getIntExtra("year", 0);
+        mStartMonth = receiver.getIntExtra("month", 0);
+        mStartDay = receiver.getIntExtra("day", 0);
+        mDuration = receiver.getIntExtra("duration", 0);
+        mStartHour = receiver.getIntExtra("hour", 0);
+        mStartMin = receiver.getIntExtra("min", 0);
         mFriendIDs = receiver.getStringArrayExtra("friendids");
-        int currentDay = receiver.getIntExtra("currentDay",0);
+        int currentDay = receiver.getIntExtra("currentDay", 0);
         date = DateUtil.plusDay(mStartYear, mStartMonth, mStartDay, mStartHour, mStartMin, currentDay);
         mStartYear = date.getYear() + 1900;
         mStartMonth = date.getMonth();
@@ -252,15 +264,15 @@ public class NewMeetingActivity extends AppCompatActivity implements View.OnTouc
     }
 
     // The end time equals the start time plus the duration of a meeting.
-    private void setEndTime(boolean isInit){
+    private void setEndTime(boolean isInit) {
         Date endTime = null;
         if (isInit) {
             endTime = DateUtil.plusMinute(getCurrentDate(), mDuration);
         } else {
             Date date;
             DateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm");
-            String d = mStartYear + "-" + (mStartMonth+1) + "-" + mStartDay + " " + mStartHour + ":" + mStartMin;
-            Log.i("date",d);
+            String d = mStartYear + "-" + (mStartMonth + 1) + "-" + mStartDay + " " + mStartHour + ":" + mStartMin;
+            Log.i("date", d);
             try {
                 date = formatter.parse(d);
                 endTime = DateUtil.plusMinute(date, mDuration);
@@ -277,26 +289,26 @@ public class NewMeetingActivity extends AppCompatActivity implements View.OnTouc
         mEndDate.setText(dateFormat(mEndDay, mEndMonth, mEndYear));
     }
 
-    private String timeFormat(int hour, int min){
-        String hourReturn =     hour < 10 ? "0" + hour : String.valueOf(hour);
+    private String timeFormat(int hour, int min) {
+        String hourReturn = hour < 10 ? "0" + hour : String.valueOf(hour);
         String minReturn = min < 10 ? "0" + min : String.valueOf(min);
         return hourReturn + " : " + minReturn;
     }
 
-    private String dateFormat(int day, int month, int year){
+    private String dateFormat(int day, int month, int year) {
         String dayReturn = day < 10 ? "0" + day : String.valueOf(day);
-        return  DateUtil.weekName[DateUtil.getDateOfWeek_M(year, month, day) - 1] +
+        return DateUtil.weekName[DateUtil.getDateOfWeek_M(year, month, day) - 1] +
                 ", " + dayReturn + " " + DateUtil.month[month] + " " + year;
     }
 
     // The end time is not allow earlier than start time.
-    private void checkTime(){
-        if(DateUtil.isFeasible(mStartYear,mStartMonth,mStartDay,mStartHour,mStartMin,mEndYear,mEndMonth,
-                mEndDay,mEndHour,mEndMin)) {
+    private void checkTime() {
+        if (DateUtil.isFeasible(mStartYear, mStartMonth, mStartDay, mStartHour, mStartMin, mEndYear, mEndMonth,
+                mEndDay, mEndHour, mEndMin)) {
             mEndDate.setTextColor(getResources().getColor(R.color.bottom_bar));
             mEndTime.setTextColor(getResources().getColor(R.color.bottom_bar));
             mIsFeasible = true;
-        }else{
+        } else {
             mEndDate.setTextColor(getResources().getColor(R.color.colorAccent));
             mEndTime.setTextColor(getResources().getColor(R.color.colorAccent));
             mIsFeasible = false;
@@ -306,7 +318,7 @@ public class NewMeetingActivity extends AppCompatActivity implements View.OnTouc
     // Handling the EditView get focus problem.
     @Override
     public boolean onTouch(View v, MotionEvent event) {
-        if(v.getId() == R.id.new_meeting_message && mMessage.isFocused()){
+        if (v.getId() == R.id.new_meeting_message && mMessage.isFocused()) {
             v.getParent().requestDisallowInterceptTouchEvent(true);
         }
 
@@ -316,8 +328,8 @@ public class NewMeetingActivity extends AppCompatActivity implements View.OnTouc
     @Override
     public void onClick(View v) {
         checkTime();
-        if(v.getId() == R.id.new_meeting_start_time){
-            mTimePicker1 = new TimePickerDialog(this,new TimePickerDialog.OnTimeSetListener() {
+        if (v.getId() == R.id.new_meeting_start_time) {
+            mTimePicker1 = new TimePickerDialog(this, new TimePickerDialog.OnTimeSetListener() {
                 @Override
                 public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
                     mStartTime.setText(timeFormat(hourOfDay, minute));
@@ -326,22 +338,22 @@ public class NewMeetingActivity extends AppCompatActivity implements View.OnTouc
                     setEndTime(false);
                     checkTime();
                 }
-            },mStartHour,mStartMin,false);
+            }, mStartHour, mStartMin, false);
             mTimePicker1.show();
-        }else if (v.getId() == R.id.new_meeting_start_date){
+        } else if (v.getId() == R.id.new_meeting_start_date) {
             mDatePicker1 = new DatePickerDialog(this, new DatePickerDialog.OnDateSetListener() {
                 @Override
                 public void onDateSet(DatePicker view, int year, int monthOfYear, int dayOfMonth) {
-                    mStartDate.setText(dateFormat(dayOfMonth,monthOfYear,year));
+                    mStartDate.setText(dateFormat(dayOfMonth, monthOfYear, year));
                     mStartYear = year;
                     mStartMonth = monthOfYear;
                     mStartDay = dayOfMonth;
                     setEndTime(false);
                     checkTime();
                 }
-            },mStartYear, mStartMonth, mStartDay);
+            }, mStartYear, mStartMonth, mStartDay);
             mDatePicker1.show();
-        }else if (v.getId() == R.id.new_meeting_end_time){
+        } else if (v.getId() == R.id.new_meeting_end_time) {
             mTimePicker2 = new TimePickerDialog(this, new TimePickerDialog.OnTimeSetListener() {
                 @Override
                 public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
@@ -350,21 +362,21 @@ public class NewMeetingActivity extends AppCompatActivity implements View.OnTouc
                     mEndMin = minute;
                     checkTime();
                 }
-            },mEndHour, mEndMin,false);
+            }, mEndHour, mEndMin, false);
             mTimePicker2.show();
-        }else if(v.getId() == R.id.new_meeting_end_date){
+        } else if (v.getId() == R.id.new_meeting_end_date) {
             mDatePicker2 = new DatePickerDialog(this, new DatePickerDialog.OnDateSetListener() {
                 @Override
                 public void onDateSet(DatePicker view, int year, int monthOfYear, int dayOfMonth) {
-                    mEndDate.setText(dateFormat(dayOfMonth, monthOfYear,year));
+                    mEndDate.setText(dateFormat(dayOfMonth, monthOfYear, year));
                     mEndYear = year;
                     mEndMonth = monthOfYear;
                     mEndDay = dayOfMonth;
                     checkTime();
                 }
-            },mEndYear, mEndMonth, mEndDay);
+            }, mEndYear, mEndMonth, mEndDay);
             mDatePicker2.show();
-        }else if(v.getId() == R.id.new_meeting_repeat){
+        } else if (v.getId() == R.id.new_meeting_repeat) {
 //            NewMeetingRepeatDialogFragment dialogFragment = new NewMeetingRepeatDialogFragment(mRepeat, mRpeatValue);
 //            dialogFragment.show(getSupportFragmentManager(),"newMeetingRepeat");
             FragmentManager fm = getSupportFragmentManager();
@@ -381,12 +393,12 @@ public class NewMeetingActivity extends AppCompatActivity implements View.OnTouc
                 }
             });
             dialog.show(fm, "repeat_dialog");
-        }else if(v.getId() == R.id.new_meeting_alert){
+        } else if (v.getId() == R.id.new_meeting_alert) {
 //            NewMeetingAlertDialogFragment dialogFragment = new NewMeetingAlertDialogFragment(mAlert, mAlertValue);
 //            dialogFragment.show(getSupportFragmentManager(), "newMeetingAlert");
             NewEventAlertDialogFragment dialog = new NewEventAlertDialogFragment();
             Bundle bundle = new Bundle();
-            bundle.putInt(NewEventAlertDialogFragment.SELECTED, Arrays.asList(Events.alertArray).indexOf(alertString));
+            bundle.putInt(NewEventAlertDialogFragment.SELECTED, mPosition);
             dialog.setArguments(bundle);
             dialog.setListener(new RepeatSelectionListener() {
                 @Override
@@ -397,24 +409,24 @@ public class NewMeetingActivity extends AppCompatActivity implements View.OnTouc
                 }
             });
             dialog.show(getSupportFragmentManager(), "alert_dialog");
-        }else if(v.getId() == R.id.new_meeting_venue){
-            Intent intent = new Intent(this,GooglePlacesAutocompleteActivity.class);
+        } else if (v.getId() == R.id.new_meeting_venue) {
+            Intent intent = new Intent(this, GooglePlacesAutocompleteActivity.class);
             startActivityForResult(intent, 1);
-        }else if(v.getId() == mCalendar.getId()) {
-                mCalendar.setText(Events.calendarTypeList.get(mCalendarPosition).calendarName);
-                NewEventCalendarTypeDialogFragment dialog = new NewEventCalendarTypeDialogFragment();
-                Bundle bundle = new Bundle();
-                bundle.putInt(NewEventCalendarTypeDialogFragment.SELECTED, Events.calendarTypeList.indexOf(calendarTypeString));
-                dialog.setArguments(bundle);
-                dialog.setListener(new RepeatSelectionListener() {
-                    @Override
-                    public void selectItem(int positon) {
-                        calendarTypeString = Events.calendarTypeList.get(positon);
-                        mCalendar.setText(Events.calendarTypeList.get(positon).calendarName);
-                        mCalendarPosition = positon;
-                    }
-                });
-                dialog.show(getSupportFragmentManager(), "calendar_dialog");
+        } else if (v.getId() == mCalendar.getId()) {
+            mCalendar.setText(Events.calendarTypeList.get(mCalendarPosition).calendarName);
+            NewEventCalendarTypeDialogFragment dialog = new NewEventCalendarTypeDialogFragment();
+            Bundle bundle = new Bundle();
+            bundle.putInt(NewEventCalendarTypeDialogFragment.SELECTED, Events.calendarTypeList.indexOf(calendarTypeString));
+            dialog.setArguments(bundle);
+            dialog.setListener(new RepeatSelectionListener() {
+                @Override
+                public void selectItem(int positon) {
+                    calendarTypeString = Events.calendarTypeList.get(positon);
+                    mCalendar.setText(Events.calendarTypeList.get(positon).calendarName);
+                    mCalendarPosition = positon;
+                }
+            });
+            dialog.show(getSupportFragmentManager(), "calendar_dialog");
 
 
         }
@@ -423,8 +435,8 @@ public class NewMeetingActivity extends AppCompatActivity implements View.OnTouc
     // Get results from GooglePlacesAutoCompleteActivity.
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if (requestCode == 1){
-            if(resultCode == RESULT_OK){
+        if (requestCode == 1) {
+            if (resultCode == RESULT_OK) {
                 mAddress = data.getStringExtra("address");
                 getLoaction(mAddress);
                 //mVeune.setText(mAddress);
@@ -438,7 +450,7 @@ public class NewMeetingActivity extends AppCompatActivity implements View.OnTouc
     public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
     }
 
-    private void postInformation(){
+    private void postInformation() {
         String startDateForPost = DateUtil.getDateWithTimeZone(mStartYear, mStartMonth + 1, mStartDay, mStartHour, mStartMin);
         String endDateForPost = DateUtil.getDateWithTimeZone(mEndYear, mEndMonth + 1, mEndDay, mEndHour, mEndMin);
         String comment = mMessage.getText().toString();
@@ -451,37 +463,37 @@ public class NewMeetingActivity extends AppCompatActivity implements View.OnTouc
         String[] address = mAddress.split(",");
         String location = mAddress;
         String showLocation = address[0];
-        if(location.equals("")){
+        if (location.equals("")) {
             location = getString(R.string.default_location);
         }
-        if (showLocation.equals("")){
+        if (showLocation.equals("")) {
             showLocation = getString(R.string.default_location);
         }
         mMeetingID = UUID.randomUUID().toString();
         String meetingToken = UUID.randomUUID().toString();
 
         JSONArray friendID = new JSONArray();
-        for(String ids : mFriendIDs){
+        for (String ids : mFriendIDs) {
             friendID.put(ids);
         }
         JSONObject json = new JSONObject();
         try {
-            json.put("event_is_punctual",punctual);
+            json.put("event_is_punctual", punctual);
             json.put("event_starts_datetime", startDateForPost);
             json.put("event_ends_datetime", endDateForPost);
-            json.put("event_comment",comment);
-            json.put("event_name",name.equals("") ? getString(R.string.new_meeting) : name);
-            json.put("friends_id",friendID);
-            json.put("event_repeats_type",repeative);
-            json.put("event_latitude",mLat);
+            json.put("event_comment", comment);
+            json.put("event_name", name.equals("") ? getString(R.string.new_meeting) : name);
+            json.put("friends_id", friendID);
+            json.put("event_repeats_type", repeative);
+            json.put("event_latitude", mLat);
             json.put("event_longitude", mLng);
             json.put("event_venue_location", location);
-            json.put("meeting_id",mMeetingID);
-            json.put("meeting_valid_token",meetingToken);
+            json.put("meeting_id", mMeetingID);
+            json.put("meeting_valid_token", meetingToken);
             json.put("user_id", User.ID);
             json.put("meeting_status", status);
-            json.put("event_venue_show",showLocation);
-            Log.i("resu",json.toString());
+            json.put("event_venue_show", showLocation);
+            Log.i("resu", json.toString());
 
         } catch (JSONException e) {
             e.printStackTrace();
@@ -495,7 +507,7 @@ public class NewMeetingActivity extends AppCompatActivity implements View.OnTouc
             @Override
             public void onResponse(JSONObject response) {
                 try {
-                    if(response.getString("result").equals("success")){
+                    if (response.getString("result").equals("success")) {
                         setResult(RESULT_OK);
                         User.hasNewMeeting = true;
                         Toast.makeText(getApplicationContext(),
@@ -523,11 +535,11 @@ public class NewMeetingActivity extends AppCompatActivity implements View.OnTouc
 
     // get coordinate based on address. The method is that post address name to the url, then it will
     // return the coordinate.
-    private void getCoordinate(String address){
+    private void getCoordinate(String address) {
         StringBuffer buffer = new StringBuffer();
         buffer.append("https://maps.googleapis.com/maps/api/geocode/json?address=");
-        String words = address.replaceAll(",","");
-        words = words.replaceAll(" ","+");
+        String words = address.replaceAll(",", "");
+        words = words.replaceAll(" ", "+");
         buffer.append(words).append(getResources().getString(R.string.google_web_id));
         String url = buffer.toString();
 
@@ -551,7 +563,7 @@ public class NewMeetingActivity extends AppCompatActivity implements View.OnTouc
                     @Override
                     public void onErrorResponse(VolleyError error) {
                         // TODO Auto-generated method stub
-                        Log.i("rerror",error.toString());
+                        Log.i("rerror", error.toString());
 
                     }
                 });
@@ -573,10 +585,10 @@ public class NewMeetingActivity extends AppCompatActivity implements View.OnTouc
         String[] address = mAddress.split(",");
         String location = mAddress;
         String showLocation = address[0];
-        if(location.equals("")){
+        if (location.equals("")) {
             location = getString(R.string.default_location);
         }
-        if (showLocation.equals("")){
+        if (showLocation.equals("")) {
             showLocation = getString(R.string.default_location);
         }
 
@@ -661,7 +673,7 @@ public class NewMeetingActivity extends AppCompatActivity implements View.OnTouc
 
         Map<String, String> params = new HashMap();
         params.put("json", jsonObject.toString());
-        Log.i("showJONS",jsonObject.toString());
+        Log.i("showJONS", jsonObject.toString());
         JsonObjectFormRequest request = new JsonObjectFormRequest(Request.Method.POST, url, params, new Response.Listener<JSONObject>() {
             @Override
             public void onResponse(JSONObject response) {

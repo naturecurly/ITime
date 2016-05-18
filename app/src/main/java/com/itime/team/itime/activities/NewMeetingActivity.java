@@ -41,6 +41,7 @@ import com.itime.team.itime.utils.CalendarTypeUtil;
 import com.itime.team.itime.utils.DateUtil;
 import com.itime.team.itime.utils.JsonObjectFormRequest;
 import com.itime.team.itime.utils.MySingleton;
+import com.itime.team.itime.utils.UserUtil;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -232,12 +233,15 @@ public class NewMeetingActivity extends AppCompatActivity implements View.OnTouc
         } catch (Exception e) {
         }
 
+        String cID = "";
         try{
-            mCalendarPosition = Events.calendarTypeList.indexOf(CalendarTypeUtil.findCalendarById(User.lastCalendarType).calendarName);
-            mCalendar.setText(CalendarTypeUtil.findCalendarById(User.lastCalendarType).calendarName + "--" +
-                    CalendarTypeUtil.findCalendarById(User.lastCalendarType).calendarOwnerName);
+            cID = UserUtil.getLastUserCalendarId(this);
+            Log.i("cid",cID);
+            mCalendarPosition = Events.calendarTypeList.indexOf(CalendarTypeUtil.findCalendarById(cID));
+            mCalendar.setText(CalendarTypeUtil.findCalendarById(cID).calendarName + "--" +
+                    CalendarTypeUtil.findCalendarById(cID).calendarOwnerName);
         }catch (Exception e){
-            Log.i("asd",CalendarTypeUtil.findCalendarById(User.lastCalendarType).calendarName);
+            Log.i("asd",cID);
         }
 
         //simpleRequest();
@@ -422,8 +426,11 @@ public class NewMeetingActivity extends AppCompatActivity implements View.OnTouc
                 @Override
                 public void selectItem(int positon) {
                     calendarTypeString = Events.calendarTypeList.get(positon);
+                    UserUtil.setLastUserCalendarId(getApplicationContext(), calendarTypeString.calendarId);
                     mCalendar.setText(Events.calendarTypeList.get(positon).calendarName);
                     mCalendarPosition = positon;
+
+
                 }
             });
             dialog.show(getSupportFragmentManager(), "calendar_dialog");

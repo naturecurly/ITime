@@ -13,7 +13,6 @@ import com.itime.team.itime.listener.RepeatSelectionListener;
 import com.itime.team.itime.model.ParcelableCalendarType;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -49,6 +48,7 @@ public class NewEventCalendarTypeDialogFragment extends DialogFragment {
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 if (listener != null) {
+
                     listener.selectItem(which);
                 }
                 dialog.dismiss();

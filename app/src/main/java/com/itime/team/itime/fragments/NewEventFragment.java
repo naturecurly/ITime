@@ -5,26 +5,20 @@ import android.app.DatePickerDialog;
 import android.app.TimePickerDialog;
 import android.content.Context;
 import android.content.Intent;
-import android.net.Uri;
 import android.os.Bundle;
-import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
-import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
-import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.DatePicker;
 import android.widget.EditText;
-import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.TimePicker;
 import android.widget.Toast;
@@ -40,22 +34,17 @@ import com.itime.team.itime.bean.URLs;
 import com.itime.team.itime.bean.User;
 import com.itime.team.itime.listener.RepeatSelectionListener;
 import com.itime.team.itime.model.ParcelableCalendarType;
-import com.itime.team.itime.receivers.RefreshBroadcastReceiver;
 import com.itime.team.itime.utils.DateUtil;
 import com.itime.team.itime.utils.JsonArrayFormRequest;
-import com.itime.team.itime.utils.JsonManager;
-import com.itime.team.itime.utils.JsonObjectFormRequest;
 import com.itime.team.itime.utils.MySingleton;
-import com.itime.team.itime.utils.URLConnectionUtil;
+import com.itime.team.itime.utils.UserUtil;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
@@ -320,6 +309,7 @@ public class NewEventFragment extends Fragment {
                     @Override
                     public void selectItem(int positon) {
                         calendarTypeString = Events.calendarTypeList.get(positon);
+                        UserUtil.setLastUserCalendarId(getActivity(), calendarTypeString.calendarId);
                         calendar_type.setText(Events.calendarTypeList.get(positon).calendarName);
                     }
                 });

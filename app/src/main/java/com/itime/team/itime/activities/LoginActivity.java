@@ -28,23 +28,29 @@ import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GoogleApiAvailability;
 import com.itime.team.itime.R;
 import com.itime.team.itime.bean.Device;
+import com.itime.team.itime.bean.Events;
 import com.itime.team.itime.bean.URLs;
 import com.itime.team.itime.bean.User;
 import com.itime.team.itime.database.DeviceTableHelper;
 import com.itime.team.itime.database.UserTableHelper;
+import com.itime.team.itime.model.ParcelableCalendarType;
+import com.itime.team.itime.model.ParcelableUser;
 import com.itime.team.itime.services.RegistrationIntentService;
 import com.itime.team.itime.task.PreferenceTask;
 import com.itime.team.itime.task.UserTask;
+import com.itime.team.itime.utils.CalendarTypeUtil;
 import com.itime.team.itime.utils.DateUtil;
 import com.itime.team.itime.utils.ITimeGcmPreferences;
 import com.itime.team.itime.utils.JsonObjectFormRequest;
 import com.itime.team.itime.utils.MySingleton;
+import com.itime.team.itime.utils.UserUtil;
 import com.itime.team.itime.views.widget.ClearEditText;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
@@ -193,11 +199,28 @@ public class LoginActivity extends FragmentActivity implements View.OnClickListe
 
                 User.token = json.getString("connect_token");
                 User.ID = mUsernameStr;
+                User.lastCalendarType = User.ID + "_iTIME_default";
 
                 PreferenceTask preferenceTask = PreferenceTask.getInstance(getApplicationContext());
                 preferenceTask.syncPreference(User.ID, null, null);
                 UserTask userTask = UserTask.getInstance(getApplicationContext());
-                userTask.loadUserInfo(User.ID, null);
+                userTask.loadUserInfo(User.ID, new UserTask.Callback() {
+                    @Override
+                    public void callback(ParcelableUser user) {
+                        // after registered, set default calendar
+                        UserUtil.setLastUserCalendarId(getApplicationContext(), User.ID + "_iTIME_default");
+                        // and update the default calendar and update the database and server
+                        user.userProfilePicture = User.ID + "_iTIME_default";
+                        UserTask.getInstance(getApplicationContext()).updateUserInfo(user.userId, user, null);
+                    }
+
+                    @Override
+                    public void callbackError(VolleyError error) {
+
+                    }
+                });
+
+
 
                 Intent intent = new Intent(this,MainActivity.class);
                 startActivity(intent);
@@ -332,7 +355,18 @@ public class LoginActivity extends FragmentActivity implements View.OnClickListe
                 PreferenceTask preferenceTask = PreferenceTask.getInstance(getApplicationContext());
                 preferenceTask.syncPreference(User.ID, null, null);
                 UserTask userTask = UserTask.getInstance(getApplicationContext());
-                userTask.loadUserInfo(User.ID, null);
+                userTask.loadUserInfo(User.ID, new UserTask.Callback() {
+                    @Override
+                    public void callback(ParcelableUser user) {
+                        // after login, set default calendar
+                        UserUtil.setLastUserCalendarId(getApplicationContext(), user.userProfilePicture);
+                    }
+
+                    @Override
+                    public void callbackError(VolleyError error) {
+
+                    }
+                });
 
                 startActivity(mMainIntent);
                 finish();

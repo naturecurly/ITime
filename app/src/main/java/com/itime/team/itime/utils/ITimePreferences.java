@@ -19,4 +19,5 @@ package com.itime.team.itime.utils;
 public class ITimePreferences {
 
     public static final String CALENDAR_TYPE_CHANGED = "calendar_type_changed";
+    public static final String LAST_CALENDAR_TYPE = "last_calendar_type"; // store last calendar type in shared preference;
 }

@@ -100,6 +100,7 @@ public class UserTask {
                         ParcelableUser user = new ParcelableUser();
                         try {
                             user = LoganSquare.parse(response.toString(), ParcelableUser.class);
+                            User.lastCalendarType = user.userProfilePicture; // actually it is default calendar
                         } catch (IOException e) {
                             e.printStackTrace();
                         }

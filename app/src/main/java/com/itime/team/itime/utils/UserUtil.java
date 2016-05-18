@@ -18,9 +18,15 @@ package com.itime.team.itime.utils;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.database.Cursor;
+import android.net.Uri;
 import android.preference.PreferenceManager;
+import android.util.Log;
 
 import com.itime.team.itime.bean.User;
+import com.itime.team.itime.database.ITimeDataStore;
+import com.itime.team.itime.model.ParcelableUser;
+import com.itime.team.itime.task.UserTask;
 
 /**
  * Created by Xuhui Chen (yorkfine) on 18/05/16.
@@ -42,6 +48,15 @@ public class UserUtil {
      * @param calendarId
      */
     public static void setLastUserCalendarId(Context context, String calendarId) {
+        UserTask userTask = UserTask.getInstance(context);
+        Uri userByIdUri = ITimeDataStore.User.CONTENT_URI.buildUpon().appendPath(User.ID).build();
+        Cursor c = context.getContentResolver().query(userByIdUri, null, null, null, null);
+        if (c.moveToFirst()) {
+            ParcelableUser user = new ParcelableUser(c, new ParcelableUser.CursorIndices(c));
+            user.userProfilePicture = calendarId;
+            userTask.updateUserInfo(user.userId, user, null);
+            Log.i("setLastUserCalendarId", calendarId);
+        }
         SharedPreferences sharedPreferences =
                 PreferenceManager.getDefaultSharedPreferences(context);
         sharedPreferences.edit().putString(ITimePreferences.LAST_CALENDAR_TYPE, calendarId).apply();

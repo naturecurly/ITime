@@ -62,6 +62,7 @@ import com.itime.team.itime.task.UserTask;
 import com.itime.team.itime.utils.ITimeGcmPreferences;
 import com.itime.team.itime.utils.JsonObjectFormRequest;
 import com.itime.team.itime.utils.MySingleton;
+import com.itime.team.itime.utils.UserUtil;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -189,6 +190,8 @@ public class SettingsFragment extends Fragment implements View.OnClickListener, 
 
             case SETTING_LOGOUT_ID: {
                 UserTask userTask = UserTask.getInstance(getContext());
+                mUser.userProfilePicture = UserUtil.getLastUserCalendarId(getContext());
+                userTask.updateUserInfo(mUser.userId, mUser, null);
                 UserTask.CallBackResult<String> callback = new UserTask.CallBackResult<String>() {
                     @Override
                     public void callback(String data) {

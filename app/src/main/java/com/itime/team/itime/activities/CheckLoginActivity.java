@@ -28,10 +28,13 @@ import com.itime.team.itime.bean.URLs;
 import com.itime.team.itime.bean.User;
 import com.itime.team.itime.database.DeviceTableHelper;
 import com.itime.team.itime.database.UserTableHelper;
+import com.itime.team.itime.model.ParcelableUser;
+import com.itime.team.itime.task.UserTask;
 import com.itime.team.itime.utils.DateUtil;
 import com.itime.team.itime.utils.ITimeGcmPreferences;
 import com.itime.team.itime.utils.JsonObjectFormRequest;
 import com.itime.team.itime.utils.MySingleton;
+import com.itime.team.itime.utils.UserUtil;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -212,6 +215,9 @@ public class CheckLoginActivity extends AppCompatActivity{
                     try {
                         User.token = response.getString("connect_token");
                         Log.i("CheckLoginActivity", "connect_token: " + User.token);
+                        // after login, set default calendar
+                        String defaultCalendarId = response.getString("user_profile_picture");
+                        UserUtil.setLastUserCalendarId(getApplicationContext(), defaultCalendarId);
                     } catch (JSONException e) {
                         e.printStackTrace();
                     }

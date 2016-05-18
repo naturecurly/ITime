@@ -3,6 +3,9 @@ package com.itime.team.itime.views.adapters;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
+import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -15,6 +18,8 @@ import com.android.volley.Request;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.itime.team.itime.R;
+import com.itime.team.itime.activities.MeetingAttendeesActivity;
+import com.itime.team.itime.activities.SettingsActivity;
 import com.itime.team.itime.bean.URLs;
 import com.itime.team.itime.bean.User;
 import com.itime.team.itime.utils.JsonObjectFormRequest;
@@ -26,6 +31,7 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * Created by Weiwei Cai on 16/4/12.
@@ -61,7 +67,7 @@ public class AttendeesAdapter extends BaseAdapter {
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
         HashMap<String,String> map = mItems.get(position);
-        ViewHolder viewHolder = null;
+        ViewHolder viewHolder;
         if (convertView == null) {
             viewHolder = new ViewHolder();
             convertView = inflater.inflate(R.layout.meeting_detail_listview, null);
@@ -78,6 +84,7 @@ public class AttendeesAdapter extends BaseAdapter {
         viewHolder.name.setText(map.get("name"));
         viewHolder.id.setText(map.get("id"));
         viewHolder.status.setText(map.get("status"));
+        final String userId = map.get("id");
         boolean isGrey = !Boolean.valueOf(map.get("isFriend")) && !User.ID.equals(viewHolder.id.getText().toString());
         if(isGrey){
             convertView.setBackgroundColor(mContext.getResources().getColor(R.color.grey));
@@ -107,7 +114,22 @@ public class AttendeesAdapter extends BaseAdapter {
             });
 
         } else {
-
+            convertView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    try {
+                        MeetingAttendeesActivity activity = ((MeetingAttendeesActivity) mContext);
+                        Intent intent = new Intent(mContext, SettingsActivity.class);
+                        intent.putExtra(SettingsActivity.SETTINGS, SettingsActivity.PROFILE_SETTINGS);
+                        Bundle data = new Bundle();
+                        data.putString(SettingsActivity.PROFILE_USER_DATA, userId);
+                        intent.putExtras(data);
+                        activity.startActivityForResult(intent, SettingsActivity.PROFILE_SETTINGS);
+                    } catch (ClassCastException e) {
+                        Log.e(getClass().getSimpleName(), "Context can not cast to MeetingAttendeesActivity");
+                    }
+                }
+            });
         }
         return convertView;
     }

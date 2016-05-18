@@ -46,17 +46,18 @@ public class SettingsActivity extends AppCompatActivity {
 
     private static final String LOG_TAG = SettingsActivity.class.getSimpleName();
 
-    private static final String SETTINGS = "Settings";
-    private static final String SETTINGS_DATA = "Settings_data";
+    public static final String SETTINGS = "Settings";
+    public static final String SETTINGS_DATA = "Settings_data";
+    public static final String PROFILE_USER_DATA = "profile_user_data"; // currently data is user id
 
-    private static final int PROFILE_SETTINGS = 1;
-    private static final int MEETING_SETTINGS = 2;
-    private static final int IMPORT_SETTINGS = 3;
-    private static final int ALERT_TIME_SETTINGS = 4;
-    private static final int MEETING_SUB_SETTINGS = 5;
-    private static final int CALENDAR_TYPE_SETTINGS = 7;
-    private static final int CLEAR_CALENDAR_SETTINGS = 8;
-    private static final int CALENDAR_TYPE_SUB_SETTINGS = CalendarTypeFragment.CALENDAR_TYPE_SUB_SETTINGS;
+    public static final int PROFILE_SETTINGS = 1;
+    public static final int MEETING_SETTINGS = 2;
+    public static final int IMPORT_SETTINGS = 3;
+    public static final int ALERT_TIME_SETTINGS = 4;
+    public static final int MEETING_SUB_SETTINGS = 5;
+    public static final int CALENDAR_TYPE_SETTINGS = 7;
+    public static final int CLEAR_CALENDAR_SETTINGS = 8;
+    public static final int CALENDAR_TYPE_SUB_SETTINGS = CalendarTypeFragment.CALENDAR_TYPE_SUB_SETTINGS;
 
     private static Bundle fragmentBundle = new Bundle();
 
@@ -90,6 +91,13 @@ public class SettingsActivity extends AppCompatActivity {
                     getSupportFragmentManager().beginTransaction()
                             .add(R.id.setting_content, pf)
                             .commit();
+                    if (getIntent().getExtras().getString(PROFILE_USER_DATA) != null) {
+                        String userId = getIntent().getExtras().getString(PROFILE_USER_DATA);
+                        Log.i(LOG_TAG, userId);
+                        Bundle argument = new Bundle();
+                        argument.putString(ProfileFragment.USER_ID, userId);
+                        pf.setArguments(argument);
+                    }
                     //getSupportFragmentManager().putFragment(fragmentBundle, "ProfileFragment", pf);
                     break;
 

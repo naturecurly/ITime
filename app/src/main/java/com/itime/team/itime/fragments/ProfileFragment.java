@@ -94,6 +94,7 @@ public class ProfileFragment extends Fragment implements View.OnClickListener,
 
     // User ID of this user
     private String mUserId;
+    private boolean isHost = true;
 
     private static final String PROFILE_FRAGMENT_TAG = ProfileFragment.class.getSimpleName();
     private static final int REQUEST_SET_USER_NAME = 1;
@@ -104,6 +105,7 @@ public class ProfileFragment extends Fragment implements View.OnClickListener,
     public static final int RESULT_UPDATE_PROFILE = 1;
     public static final String RESULT_UPDATE_PROFILE_DATA = "result_update_profile_data";
 
+    public static final String USER_ID = "user_id";
 
     private static final int PROFILE_LOADER = 0;
 
@@ -131,8 +133,8 @@ public class ProfileFragment extends Fragment implements View.OnClickListener,
         mProfileImage = mProfileView.findViewById(R.id.setting_profile_picture);
         mQRCode = mProfileView.findViewById(R.id.setting_profile_qrcode);
 
-        View[] views = new View[]{mName, mEmail, mPhoneNumber, mProfileImage, mQRCode};
-        bindOnClickListener(views);
+
+
 
         mUserNameTextView = (TextView) mProfileView.findViewById(R.id.setting_profile_name_text);
         mUserIdTextView = (TextView) mProfileView.findViewById(R.id.setting_profile_id_text);
@@ -143,6 +145,24 @@ public class ProfileFragment extends Fragment implements View.OnClickListener,
         // TODO: 14/03/16 Not a good way to store static data in a model object
         mUserId = com.itime.team.itime.bean.User.ID;
         mUser = new ParcelableUser();
+
+        View[] viewsForHost = new View[]{mName, mEmail, mPhoneNumber, mProfileImage, mQRCode};
+        View[] viewsForFriend = new View[]{mQRCode};
+
+        if (getArguments() != null) {
+            String userId = getArguments().getString(USER_ID);
+            isHost = userId.equals(User.ID);
+            Log.i(LOG_TAG, userId);
+            loadUserInfo(userId);
+            mUserId = userId;
+        }
+
+        if (isHost) {
+            bindOnClickListener(viewsForHost);
+        } else {
+            bindOnClickListener(viewsForFriend);
+        }
+
     }
 
     private void bindOnClickListener(View[] views) {
@@ -393,5 +413,14 @@ public class ProfileFragment extends Fragment implements View.OnClickListener,
                 Toast.makeText(getContext(), getString(R.string.upload_profile_photo_fail), Toast.LENGTH_SHORT).show();
             }
         }
+    }
+
+    /**
+     * Loader is used for load this user profile
+     * this method is used for load other user profile (like friends)
+     */
+    private void loadUserInfo(String userId) {
+
+        UserTask.getInstance(getActivity()).loadUserInfo(userId, null);
     }
 }

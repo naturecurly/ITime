@@ -190,8 +190,6 @@ public class SettingsFragment extends Fragment implements View.OnClickListener, 
 
             case SETTING_LOGOUT_ID: {
                 UserTask userTask = UserTask.getInstance(getContext());
-                mUser.userProfilePicture = UserUtil.getLastUserCalendarId(getContext());
-                userTask.updateUserInfo(mUser.userId, mUser, null);
                 UserTask.CallBackResult<String> callback = new UserTask.CallBackResult<String>() {
                     @Override
                     public void callback(String data) {

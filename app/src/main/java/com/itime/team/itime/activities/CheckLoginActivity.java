@@ -215,9 +215,6 @@ public class CheckLoginActivity extends AppCompatActivity{
                     try {
                         User.token = response.getString("connect_token");
                         Log.i("CheckLoginActivity", "connect_token: " + User.token);
-                        // after login, set default calendar
-                        String defaultCalendarId = response.getString("user_profile_picture");
-                        UserUtil.setLastUserCalendarId(getApplicationContext(), defaultCalendarId);
                     } catch (JSONException e) {
                         e.printStackTrace();
                     }

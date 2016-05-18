@@ -21,6 +21,7 @@ import android.app.PendingIntent;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
+import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.media.RingtoneManager;
 import android.net.Uri;
@@ -33,10 +34,14 @@ import com.google.android.gms.gcm.GcmListenerService;
 import com.itime.team.itime.R;
 import com.itime.team.itime.activities.CheckLoginActivity;
 import com.itime.team.itime.bean.User;
+import com.itime.team.itime.database.ITimeDataStore;
 import com.itime.team.itime.database.UserTableHelper;
 import com.itime.team.itime.model.ParcelableMessage;
+import com.itime.team.itime.model.ParcelableUser;
+import com.itime.team.itime.task.UserTask;
 import com.itime.team.itime.utils.ITimeGcmPreferences;
 import com.itime.team.itime.utils.NotificationID;
+import com.itime.team.itime.utils.UserUtil;
 
 public class ITimeGcmListenerService extends GcmListenerService {
 
@@ -102,6 +107,14 @@ public class ITimeGcmListenerService extends GcmListenerService {
     private void checkLogout(Bundle data) {
         if (data.getString("itime_message_type", "").equals("OTHER_DEVICE_LOGIN")) {
             updateUserTable(this);
+            UserTask userTask = UserTask.getInstance(getApplicationContext());
+            Uri userByIdUri = ITimeDataStore.User.CONTENT_URI.buildUpon().appendPath(User.ID).build();
+            Cursor c = getApplicationContext().getContentResolver().query(userByIdUri, null, null, null, null);
+            if (c.moveToFirst()) {
+                ParcelableUser user = new ParcelableUser(c, new ParcelableUser.CursorIndices(c));
+                user.userProfilePicture = UserUtil.getLastUserCalendarId(getApplicationContext());
+                userTask.updateUserInfo(user.userId, user, null);
+            }
             Intent logoutIntent = new Intent(this, CheckLoginActivity.class);
             logoutIntent.putExtra("username", User.ID);
             Log.i(getClass().getSimpleName(), User.ID);

@@ -17,6 +17,7 @@ import android.view.Window;
 import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.SimpleAdapter;
+import android.widget.Toast;
 
 import com.android.volley.Request;
 import com.android.volley.Response;
@@ -31,6 +32,7 @@ import com.itime.team.itime.bean.User;
 import com.itime.team.itime.interfaces.DataRequest;
 import com.itime.team.itime.utils.JsonManager;
 import com.itime.team.itime.utils.JsonObjectAuthRequest;
+import com.itime.team.itime.utils.JsonObjectFormRequest;
 import com.itime.team.itime.utils.MySingleton;
 import com.tencent.mm.sdk.modelmsg.SendMessageToWX;
 import com.tencent.mm.sdk.modelmsg.WXMediaMessage;
@@ -43,6 +45,7 @@ import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Created by Weiwei Cai on 15/12/15.
@@ -233,6 +236,79 @@ public class MeetingAddDialogFragment extends DialogFragment implements DataRequ
         context.startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(uri)));
     }
 
+    // The same friends will not be added twice.
+    private void allowSendReuqest(final String friendId){
+        AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
+        builder.setMessage("Do you want to add '" + friendId + "' as your " +
+                "new iTIME friend?");
+        builder.setIcon(R.mipmap.ic_launcher);
+        builder.setTitle("Add New Friend");
+        builder.setNegativeButton("No", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+            }
+        });
+        builder.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                String url = URLs.ADD_FRIEND_REQUEST;
+                JSONObject object = new JSONObject();
+                try {
+                    object.put("user_id", User.ID);
+                    object.put("friend_id", friendId);
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+                JsonObjectAuthRequest request = new JsonObjectAuthRequest(Request.Method.POST, url, object.toString(),
+                        new Response.Listener<JSONObject>() {
+
+                            @Override
+                            public void onResponse(JSONObject response) {
+
+                            }
+                        },
+                        new Response.ErrorListener() {
+                            @Override
+                            public void onErrorResponse(VolleyError error) {
+
+                            }
+                        }
+                );
+                MySingleton.getInstance(getContext()).addToRequestQueue(request);
+            }
+        });
+        builder.show();
+    }
+
+    private void notAllowedSendRequest(final String friendId){
+        AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
+        builder.setMessage("'" + friendId + "' " +
+                "is already your friend");
+        builder.setIcon(R.mipmap.ic_launcher);
+        builder.setTitle("failed");
+
+        builder.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+            }
+        });
+        builder.show();
+    }
+
+    private void notAllowAddYourself(){
+        AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
+        builder.setMessage(getString(R.string.add_friend_myself));
+        builder.setIcon(R.mipmap.ic_launcher);
+        builder.setTitle("failed");
+
+        builder.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+            }
+        });
+        builder.show();
+    }
+
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
@@ -241,31 +317,15 @@ public class MeetingAddDialogFragment extends DialogFragment implements DataRequ
         final IntentResult intentResult = IntentIntegrator.parseActivityResult(requestCode, resultCode, data);
         if (intentResult != null) {
             String friendId = intentResult.getContents();
-            String url = URLs.ADD_FRIEND_REQUEST;
-            JSONObject object = new JSONObject();
-            try {
-                object.put("user_id", User.ID);
-                object.put("friend_id", friendId);
-            } catch (JSONException e) {
-                e.printStackTrace();
+            if (friendId.equals(User.ID)) {
+                notAllowAddYourself();
+            } else if (isCurrentFriend(friendId)) {
+                notAllowedSendRequest(friendId);
+            } else {
+                allowSendReuqest(friendId);
             }
-            JsonObjectAuthRequest request = new JsonObjectAuthRequest(Request.Method.POST, url, object.toString(),
-                    new Response.Listener<JSONObject>() {
-
-                        @Override
-                        public void onResponse(JSONObject response) {
-
-                        }
-                    },
-                    new Response.ErrorListener() {
-                        @Override
-                        public void onErrorResponse(VolleyError error) {
-
-                        }
-                    }
-            );
-            MySingleton.getInstance(getContext()).addToRequestQueue(request);
             // return so that it won't interfere other result processing below
+            MeetingAddDialogFragment.this.dismiss();
             return;
         }
 
@@ -284,6 +344,17 @@ public class MeetingAddDialogFragment extends DialogFragment implements DataRequ
             MeetingAddDialogFragment.this.dismiss();
         }
 
+    }
+
+    private boolean isCurrentFriend(String id){
+        for(HashMap<String, Object> info : mUserInfo){
+            String friendId = (String) info.get("ItemID");
+            if (friendId.equals(id)) {
+                return true;
+            }
+
+        }
+        return false;
     }
 
     private ArrayList<String> getFriendIDs(){

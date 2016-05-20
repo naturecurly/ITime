@@ -173,10 +173,10 @@ public class MeetingDetaiHostlActivity extends AppCompatActivity implements View
 
         if(mAlertID != null){
             if(mAlertID.equals("At time of Departure")){
-                mAlertID = getString(R.string.alert_default);
+                mAlertID = "At time of Event";
             }
         }else{
-            mAlertID = getString(R.string.alert_default);
+            mAlertID = "At time of Event";
         }
 
         mMeetingName = (TextView) findViewById(R.id.meeting_detail_event_name);

@@ -28,7 +28,7 @@
     <string name="add_friend">AAdd Friend</string>
     <string name="default_location">Melbourne</string>
 
-    <string name="time_out">Sorry, time out.</string>
+    <string name="time_out">Sorry, time out, please check your Internet</string>
 
     <string name="profile_photo">Profile Photo</string>
     <string name="upload_profile_photo_fail">Failed to upload user profile photo</string>
@@ -197,5 +197,6 @@
     <string name="simple_chinese">简体中文</string>
 
     <string name="post_null">NOT PROVIDED</string>
+
 
 </resources>

@@ -171,7 +171,8 @@ public class NewMeetingActivity extends AppCompatActivity implements View.OnTouc
             actionBar.setDisplayHomeAsUpEnabled(true);
         }
 
-        repeatString = getString(R.string.repeat_default);
+        repeatString = "One-time event";
+
         positionMap = new HashMap<>();
         positionMap.put(0, "None");
         positionMap.put(1, "At time of Departure");
@@ -190,7 +191,9 @@ public class NewMeetingActivity extends AppCompatActivity implements View.OnTouc
 
 
         mAddress = "";
-        alertString = getString(R.string.alert_default);
+        alertString = "5 minutes before";
+
+
         mMessage = (EditText) findViewById(R.id.new_meeting_message);
         mMessage.setOnTouchListener(this);
         mStartDate = (Button) findViewById(R.id.new_meeting_start_date);
@@ -231,6 +234,7 @@ public class NewMeetingActivity extends AppCompatActivity implements View.OnTouc
             mPosition = Arrays.asList(Events.alertArray).indexOf(User.defaultAlert);
             mAlert.setText(Arrays.asList(Events.alertArray).get(mPosition));
         } catch (Exception e) {
+            mPosition = 1;
         }
 
         String cID = "";
@@ -529,11 +533,12 @@ public class NewMeetingActivity extends AppCompatActivity implements View.OnTouc
         }, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {
-                setResult(RESULT_OK);
-                User.hasNewMeeting = true;
-                Toast.makeText(getApplicationContext(),
-                        getString(R.string.new_meeting_send_invitation_successful), Toast.LENGTH_SHORT).show();
-                finish();
+//                setResult(RESULT_OK);
+//                User.hasNewMeeting = true;
+//                Toast.makeText(getApplicationContext(),
+//                        getString(R.string.new_meeting_send_invitation_successful), Toast.LENGTH_SHORT).show();
+//                finish();
+                Toast.makeText(getApplicationContext(), getString(R.string.time_out), Toast.LENGTH_LONG).show();
             }
         });
         MySingleton.getInstance(this).addToRequestQueue(request);
@@ -680,16 +685,16 @@ public class NewMeetingActivity extends AppCompatActivity implements View.OnTouc
 
         Map<String, String> params = new HashMap();
         params.put("json", jsonObject.toString());
-        Log.i("showJONS", jsonObject.toString());
+
         JsonObjectFormRequest request = new JsonObjectFormRequest(Request.Method.POST, url, params, new Response.Listener<JSONObject>() {
             @Override
             public void onResponse(JSONObject response) {
-
+                Log.i("showJONS", response.toString());
             }
         }, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {
-
+                Log.i("showJONS", "error");
             }
         });
         MySingleton.getInstance(this).addToRequestQueue(request);

@@ -215,8 +215,9 @@ public class MeetingDetailUpdateActivity extends AppCompatActivity implements Vi
 
 
 
-        repeatString = getString(R.string.repeat_default);
+        repeatString = "One-time event";
         alertString = getString(R.string.alert_default);
+
         positionMap = new HashMap<>();
         positionMap.put(0,"None");
         positionMap.put(1, "At time of Departure");
@@ -297,9 +298,9 @@ public class MeetingDetailUpdateActivity extends AppCompatActivity implements Vi
         mNote = receiver.getStringExtra("note");
         mHostID = receiver.getStringExtra("host_id");
         mAlertString = receiver.getStringExtra("alert");
+
         if (mAlertString == null) {
             mAlertString = User.defaultAlert;
-
         }else {
             mAlert.setText(mAlertString);
             mPosition = positionRecordMap.get(mAlertString);

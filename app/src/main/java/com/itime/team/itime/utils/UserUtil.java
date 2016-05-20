@@ -61,4 +61,14 @@ public class UserUtil {
                 PreferenceManager.getDefaultSharedPreferences(context);
         sharedPreferences.edit().putString(ITimePreferences.LAST_CALENDAR_TYPE, calendarId).apply();
     }
+
+    public static String getDefaultAlert(Context context) {
+        Uri userByIdUri = ITimeDataStore.User.CONTENT_URI.buildUpon().appendPath(User.ID).build();
+        Cursor c = context.getContentResolver().query(userByIdUri, null, null, null, null);
+        if (c.moveToFirst()) {
+            ParcelableUser user = new ParcelableUser(c, new ParcelableUser.CursorIndices(c));
+            return user.defaultAlert;
+        }
+        return User.defaultAlert;
+    }
 }

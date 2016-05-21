@@ -143,10 +143,12 @@ public class MeetingDetaiHostlActivity extends AppCompatActivity implements View
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (requestCode == 1){
             if(resultCode == RESULT_OK){
-                mCalendar.setText(data.getStringExtra("calendar"));
+//                mCalendar.setText(data.getStringExtra("calendar"));
                 mAlert.setText(data.getStringExtra("alert"));
                 mAlertID = data.getStringExtra("alert");
                 mCalendarID = data.getStringExtra("calendar_id");
+                mCalendar.setText(CalendarTypeUtil.findCalendarById(mCalendarID).calendarName + "--" +
+                        CalendarTypeUtil.findCalendarById(mCalendarID).calendarOwnerName);
             }
         }
     }
@@ -235,7 +237,8 @@ public class MeetingDetaiHostlActivity extends AppCompatActivity implements View
 //        mCalendar.setText(CalendarTypeUtil.findCalendarById(mCalendarID).calendarName);
 
         if (mCalendarID != null && !mCalendarID.equals("")) {
-            mCalendar.setText(CalendarTypeUtil.findCalendarById(mCalendarID).calendarName);
+            mCalendar.setText(CalendarTypeUtil.findCalendarById(mCalendarID).calendarName +
+                    "--" + CalendarTypeUtil.findCalendarById(mCalendarID).calendarOwnerName);
         }else{
             mCalendar.setText(getString(R.string.Calendar));
         }

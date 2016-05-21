@@ -240,10 +240,10 @@ public class NewMeetingActivity extends AppCompatActivity implements View.OnTouc
         String cID = "";
         try{
             cID = UserUtil.getLastUserCalendarId(this);
-            Log.i("cid",cID);
             mCalendarPosition = Events.calendarTypeList.indexOf(CalendarTypeUtil.findCalendarById(cID));
             mCalendar.setText(CalendarTypeUtil.findCalendarById(cID).calendarName + "--" +
                     CalendarTypeUtil.findCalendarById(cID).calendarOwnerName);
+            calendarTypeString = CalendarTypeUtil.findCalendarById(cID);
         }catch (Exception e){
             Log.i("asd",cID);
         }
@@ -421,17 +421,17 @@ public class NewMeetingActivity extends AppCompatActivity implements View.OnTouc
             Intent intent = new Intent(this, GooglePlacesAutocompleteActivity.class);
             startActivityForResult(intent, 1);
         } else if (v.getId() == mCalendar.getId()) {
-            mCalendar.setText(Events.calendarTypeList.get(mCalendarPosition).calendarName);
+//            mCalendar.setText(Events.calendarTypeList.get(mCalendarPosition).calendarName +);
             NewEventCalendarTypeDialogFragment dialog = new NewEventCalendarTypeDialogFragment();
             Bundle bundle = new Bundle();
-            bundle.putInt(NewEventCalendarTypeDialogFragment.SELECTED, Events.calendarTypeList.indexOf(calendarTypeString));
+            bundle.putInt(NewEventCalendarTypeDialogFragment.SELECTED, mCalendarPosition);
             dialog.setArguments(bundle);
             dialog.setListener(new RepeatSelectionListener() {
                 @Override
                 public void selectItem(int positon) {
                     calendarTypeString = Events.calendarTypeList.get(positon);
                     UserUtil.setLastUserCalendarId(getApplicationContext(), calendarTypeString.calendarId);
-                    mCalendar.setText(Events.calendarTypeList.get(positon).calendarName);
+                    mCalendar.setText(Events.calendarTypeList.get(positon).calendarName + "--" + Events.calendarTypeList.get(positon).calendarOwnerName);
                     mCalendarPosition = positon;
 
 

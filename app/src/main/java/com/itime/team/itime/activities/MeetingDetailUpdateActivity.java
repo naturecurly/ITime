@@ -216,7 +216,7 @@ public class MeetingDetailUpdateActivity extends AppCompatActivity implements Vi
 
 
         repeatString = "One-time event";
-        alertString = getString(R.string.alert_default);
+        alertString = "At time of Departure";
 
         positionMap = new HashMap<>();
         positionMap.put(0,"None");
@@ -299,13 +299,17 @@ public class MeetingDetailUpdateActivity extends AppCompatActivity implements Vi
         mHostID = receiver.getStringExtra("host_id");
         mAlertString = receiver.getStringExtra("alert");
 
-        if (mAlertString == null) {
-            mAlertString = User.defaultAlert;
-        }else {
-            mAlert.setText(mAlertString);
-            mPosition = positionRecordMap.get(mAlertString);
+        try {
+            if (mAlertString == null) {
+                mAlertString = User.defaultAlert;
+            } else {
+                mAlert.setText(mAlertString);
+                mPosition = positionRecordMap.get(mAlertString);
+            }
+        } catch (Exception e){
+            mAlert.setText(getString(R.string.alert_default));
+            mPosition = 1;
         }
-
 
 
         mRepeat.setText(mMRepeat);
@@ -342,7 +346,7 @@ public class MeetingDetailUpdateActivity extends AppCompatActivity implements Vi
         if(mCalendarID==null || CalendarTypeUtil.findCalendarById(mCalendarID) == null){
             mCalendar.setText(getString(R.string.Calendar));
         }else {
-            mCalendar.setText(CalendarTypeUtil.findCalendarById(mCalendarID).calendarName);
+            mCalendar.setText(CalendarTypeUtil.findCalendarById(mCalendarID).calendarName + "--" + CalendarTypeUtil.findCalendarById(mCalendarID).calendarOwnerName);
             mCalendarPosition = Events.calendarTypeList.indexOf(CalendarTypeUtil.findCalendarById(mCalendarID));
 
         }
@@ -456,7 +460,7 @@ public class MeetingDetailUpdateActivity extends AppCompatActivity implements Vi
 //            dialogFragment.show(getSupportFragmentManager(), "newMeetingAlert");
             NewEventAlertDialogFragment dialog = new NewEventAlertDialogFragment();
             Bundle bundle = new Bundle();
-            bundle.putInt(NewEventAlertDialogFragment.SELECTED, Arrays.asList(Events.alertArray).indexOf(alertString));
+            bundle.putInt(NewEventAlertDialogFragment.SELECTED,mPosition);
             dialog.setArguments(bundle);
             dialog.setListener(new RepeatSelectionListener() {
                 @Override
@@ -479,7 +483,7 @@ public class MeetingDetailUpdateActivity extends AppCompatActivity implements Vi
                     @Override
                     public void selectItem(int positon) {
                         calendarTypeString = Events.calendarTypeList.get(positon);
-                        mCalendar.setText(Events.calendarTypeList.get(positon).calendarName);
+                        mCalendar.setText(Events.calendarTypeList.get(positon).calendarName + "--" + Events.calendarTypeList.get(positon).calendarOwnerName);
                         mCalendarID = Events.calendarTypeList.get(positon).calendarId;
                         mCalendarPosition = Events.calendarTypeList.indexOf(CalendarTypeUtil.findCalendarById(mCalendarID));
                     }
@@ -580,7 +584,7 @@ public class MeetingDetailUpdateActivity extends AppCompatActivity implements Vi
                     if(response.getString("result").equals("success")){
                         User.hasNewMeeting = true;
                         Intent intent = new Intent();
-                        intent.putExtra("calendar",mCalendar.getText());
+//                        intent.putExtra("calendar",mCalendar.getText());
                         intent.putExtra("alert",positionMap.get(mPosition));
                         intent.putExtra("calendar_id",mCalendarID);
 
@@ -597,7 +601,15 @@ public class MeetingDetailUpdateActivity extends AppCompatActivity implements Vi
         }, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {
+                User.hasNewMeeting = true;
+                Intent intent = new Intent();
+                intent.putExtra("alert",positionMap.get(mPosition));
+                intent.putExtra("calendar_id",mCalendarID);
 
+                setResult(RESULT_OK,intent);
+                Toast.makeText(getApplicationContext(),
+                        getString(R.string.server_unstable), Toast.LENGTH_SHORT).show();
+                finish();
             }
         });
         MySingleton.getInstance(this).addToRequestQueue(request);

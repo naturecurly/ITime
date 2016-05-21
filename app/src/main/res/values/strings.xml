@@ -197,6 +197,6 @@
     <string name="simple_chinese">简体中文</string>
 
     <string name="post_null">NOT PROVIDED</string>
-
+    <string name="server_unstable">Sorry, Network is unstable, your operations may not be executed, please check</string>
 
 </resources>

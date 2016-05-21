@@ -47,7 +47,6 @@ import org.json.JSONObject;
 
 import java.io.File;
 import java.text.SimpleDateFormat;
-import java.util.Arrays;
 import java.util.Calendar;
 import java.util.HashMap;
 import java.util.Map;
@@ -95,6 +94,16 @@ public class MeetingDetailActivity extends AppCompatActivity implements RadioGro
 
     public static final String ARG_MEETING_ID = "arg_meeting_id";
     private String mMeetingId;
+
+    private Map<Integer,String> positionMap;
+    private Map<Integer, String> repeatMap;
+    private int mPosition = 1;
+    private int mRepeatPosition = 0;
+    private int mCalendarPosition = 0;
+    private Map<String,Integer> positionRecordMap;
+    private Map<String, Integer> repeatRecordMap;
+
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -118,6 +127,39 @@ public class MeetingDetailActivity extends AppCompatActivity implements RadioGro
             actionBar.setDisplayHomeAsUpEnabled(true);
         }
 
+        positionMap = new HashMap<>();
+        positionMap.put(0,"None");
+        positionMap.put(1, "At time of Departure");
+        positionMap.put(2, "5 minutes before");
+        positionMap.put(3, "10 minutes before");
+        positionMap.put(4, "15 minutes before");
+        positionMap.put(5, "30 minutes before");
+        positionMap.put(6, "1 hour before");
+        repeatMap = new HashMap<>();
+        repeatMap.put(0,"One-time event");
+        repeatMap.put(1,"Daily");
+        repeatMap.put(2,"Weekly");
+        repeatMap.put(3,"Bi-Weekly");
+        repeatMap.put(4,"Monthly");
+        repeatMap.put(5,"Yearly");
+
+        positionRecordMap = new HashMap<>();
+        positionRecordMap.put("None",0);
+        positionRecordMap.put("At time of Event",1);
+        positionRecordMap.put("5 minutes before",2);
+        positionRecordMap.put("10 minutes before",3);
+        positionRecordMap.put("15 minutes before",4);
+        positionRecordMap.put("30 minutes before",5);
+        positionRecordMap.put("1 hour before",6);
+        repeatRecordMap = new HashMap<>();
+        repeatRecordMap.put("One-time event",0);
+        repeatRecordMap.put("Daily",1);
+        repeatRecordMap.put("Weekly",2);
+        repeatRecordMap.put("Bi-Weekly",3);
+        repeatRecordMap.put("Monthly",4);
+        repeatRecordMap.put("Yearly",5);
+
+
         mMeetingId = getIntent().getStringExtra(ARG_MEETING_ID);
         mEventId = getIntent().getStringExtra("event_id");
         mCalendarID = getIntent().getStringExtra("calendar_id");
@@ -125,13 +167,14 @@ public class MeetingDetailActivity extends AppCompatActivity implements RadioGro
 //        if (mAlertID != null && mAlertID.equals("At time of Departure")){
 //            mAlertID = getString(R.string.alert_default);
 //        }
-        if(mAlertID != null){
-            if(mAlertID.equals("At time of Departure")){
-                mAlertID = getString(R.string.alert_default);
-            }
-        }else{
-            mAlertID = getString(R.string.alert_default);
-        }
+//        if(mAlertID != null){
+//            if(mAlertID.equals("At time of Departure")){
+//                mAlertID = "At time of Event";
+//            }
+//        }else{
+//            mAlertID = "At time of Event";
+//        }
+
 
         mRadioGroup = (RadioGroup) findViewById(R.id.meeting_detail_radio_group);
         mAccept = (RadioButton) findViewById(R.id.meeting_detail_radio_accept);
@@ -186,16 +229,29 @@ public class MeetingDetailActivity extends AppCompatActivity implements RadioGro
         mCalendarText = (TextView) findViewById(R.id.meeting_detail_calendar);
 
         mCalendarText.setText(Events.calendarTypeList.get(0).calendarName);
+        try {
+            if (mAlertID == null) {
+                mAlertID = User.defaultAlert;
+            } else {
+                mAlertText.setText(mAlertID);
+                mPosition = positionRecordMap.get(mAlertID);
+            }
+        } catch (Exception e){
+            mAlertText.setText(getString(R.string.alert_default));
+            mPosition = 1;
+        }
         if (mCalendarID != null && !mCalendarID.equals("")) {
             if (CalendarTypeUtil.findCalendarById(mCalendarID) == null) {
                 mCalendarText.setText(getString(R.string.Calendar));
             }else {
-                mCalendarText.setText(CalendarTypeUtil.findCalendarById(mCalendarID).calendarName);
+                mCalendarText.setText(CalendarTypeUtil.findCalendarById(mCalendarID).calendarName + "--" +
+                        CalendarTypeUtil.findCalendarById(mCalendarID).calendarOwnerName);
+                mCalendarPosition = Events.calendarTypeList.indexOf(CalendarTypeUtil.findCalendarById(mCalendarID));
             }
         }else{
             mCalendarText.setText(getString(R.string.Calendar));
         }
-        mAlertText.setText((mAlertID == null || mAlertID.equals("")) ? getString(R.string.alert_default) : mAlertID);
+//        mAlertText.setText((mAlertID == null || mAlertID.equals("")) ? getString(R.string.alert_default) : mAlertID);
     }
 
     private void showLayout(MeetingInfo meetingInfo){
@@ -438,23 +494,24 @@ public class MeetingDetailActivity extends AppCompatActivity implements RadioGro
         } else if (v.getId() == mCalendarLayout.getId()) {
             NewEventCalendarTypeDialogFragment dialog = new NewEventCalendarTypeDialogFragment();
             Bundle bundle = new Bundle();
-            bundle.putInt(NewEventCalendarTypeDialogFragment.SELECTED, Events.calendarTypeList.indexOf(calendarTypeString));
+            bundle.putInt(NewEventCalendarTypeDialogFragment.SELECTED, mCalendarPosition);
             dialog.setArguments(bundle);
             dialog.setListener(new RepeatSelectionListener() {
                 @Override
                 public void selectItem(int positon) {
                     calendarTypeString = Events.calendarTypeList.get(positon);
-                    mCalendarText.setText(Events.calendarTypeList.get(positon).calendarName);
+                    mCalendarText.setText(Events.calendarTypeList.get(positon).calendarName + "--" +
+                            Events.calendarTypeList.get(positon).calendarOwnerName);
                     mCalendarID = Events.calendarTypeList.get(positon).calendarId;
                     postEvent(getApplicationContext(),mEventId,mMeetingInfo);
-
+                    mCalendarPosition = Events.calendarTypeList.indexOf(CalendarTypeUtil.findCalendarById(mCalendarID));
                 }
             });
             dialog.show(getSupportFragmentManager(), "calendar_dialog");
         } else if (v.getId() == mAlertLayout.getId()) {
             NewEventAlertDialogFragment dialog = new NewEventAlertDialogFragment();
             Bundle bundle = new Bundle();
-            bundle.putInt(NewEventAlertDialogFragment.SELECTED, Arrays.asList(Events.alertArray).indexOf(alertString));
+            bundle.putInt(NewEventAlertDialogFragment.SELECTED, mPosition);
             dialog.setArguments(bundle);
             dialog.setListener(new RepeatSelectionListener() {
                 @Override
@@ -463,6 +520,7 @@ public class MeetingDetailActivity extends AppCompatActivity implements RadioGro
                     mAlertText.setText(Events.alertArray[positon]);
                     mAlertID = Events.alertArray[positon];
                     postEvent(getApplicationContext(),mEventId,mMeetingInfo);
+                    mPosition = positon;
 
                 }
             });

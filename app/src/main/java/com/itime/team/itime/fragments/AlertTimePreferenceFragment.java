@@ -40,9 +40,10 @@ public class AlertTimePreferenceFragment extends Fragment {
     private View alertTimeView;
     private ListView mAlertTimeList;
     private String [] data;
+    private String [] dataValue;
 
     public static final int RESULT_SET_DEFAULT_ALERT = 1;
-    public static final String RETURN_TEXT = "return_text";
+    public static final String RETURN_TEXT_ID = "return_text_id";
 
     @Nullable
     @Override
@@ -51,7 +52,8 @@ public class AlertTimePreferenceFragment extends Fragment {
 
         mAlertTimeList = (ListView) alertTimeView.findViewById(R.id.setting_dft_alert_time_list);
         data = getResources().getStringArray(R.array.entry_default_alert_time);
-        AlertTimeListAdapter alertTimeListAdapter = new AlertTimeListAdapter(getActivity(), R.layout.view_setting_list, data);
+        dataValue = getResources().getStringArray(R.array.entry_values_default_alert_time);
+        AlertTimeListAdapter alertTimeListAdapter = new AlertTimeListAdapter(getActivity(), R.layout.view_setting_list, data, dataValue);
         mAlertTimeList.setAdapter(alertTimeListAdapter);
 
         TextView title = (TextView) getActivity().findViewById(R.id.setting_toolbar_title);
@@ -64,7 +66,7 @@ public class AlertTimePreferenceFragment extends Fragment {
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 // TODO: 15/03/16 refactor
                 final Intent intent = new Intent();
-                intent.putExtra(RETURN_TEXT, data[position]);
+                intent.putExtra(RETURN_TEXT_ID, position);
                 getActivity().setResult(RESULT_SET_DEFAULT_ALERT, intent);
                 getActivity().finish();
             }
@@ -78,12 +80,14 @@ public class AlertTimePreferenceFragment extends Fragment {
         Context context;
         int layoutResourceId;
         String data[] = null;
+        String dataValue[] = null;
 
-        public AlertTimeListAdapter(Context context, int resource, String[] data) {
+        public AlertTimeListAdapter(Context context, int resource, String[] data, String [] dataValue) {
             super(context, resource, data);
             this.context = context;
             this.layoutResourceId = resource;
             this.data = data;
+            this.dataValue = dataValue;
         }
 
         @Override
@@ -99,7 +103,7 @@ public class AlertTimePreferenceFragment extends Fragment {
             else {
                 holder = (ViewHolder) convertView.getTag();
             }
-            holder.getLeftText().setText(data[position]);
+            holder.getLeftText().setText(dataValue[position]);
             //holder.getRightText().setText(data[position]);
             return convertView;
             //return super.getView(position, convertView, parent);

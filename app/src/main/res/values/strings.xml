@@ -170,6 +170,19 @@
     <string name="departure_time">Departure at</string>
     <string name="alert_default">At time of Event</string>
 
+    <!--alert-->
+    <string name="alert_at_time_of_event">At time of Event</string>
+    <string name="alert_five_min_before">5 minutes before</string>
+    <string name="alert_ten_min_before">10 minutes before</string>
+    <string name="alert_fifteen_min_before">15 minutes before</string>
+    <string name="alert_thirty_min_before">30 minutes before</string>
+    <string name="alert_one_hour_before">1 hour before</string>
+    <string name="alert_two_hour_before">2 hours before</string>
+    <string name="alert_four_hour_before">4 hours before</string>
+    <string name="alert_one_day_before">1 day before</string>
+    <string name="alert_two_day_before">2 days before</string>
+    <string name="alert_one_week_before">1 week before</string>
+
     <!-- gcm strings -->
     <string name="gcm_send_message">Token retrieved and sent to server! You can now use gcmsender to
         send downstream messages to this app.</string>

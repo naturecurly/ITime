@@ -2,7 +2,7 @@
 <resources>
     <string-array name="entry_default_alert_time">
         <item>None</item>
-        <item>At time of event</item>
+        <item>At time of Event</item>
         <item>5 minutes before</item>
         <item>10 minutes before</item>
         <item>15 minutes before</item>
@@ -16,12 +16,17 @@
     </string-array>
     <string-array name="entry_values_default_alert_time">
         <item>None</item>
-        <item>At time of Departure</item>
-        <item>5 minutes before</item>
-        <item>10 minutes before</item>
-        <item>15 minutes before</item>
-        <item>30 minutes before</item>
-        <item>1 hour before</item>
+        <item>@string/alert_at_time_of_event</item>
+        <item>@string/alert_five_min_before</item>
+        <item>@string/alert_ten_min_before</item>
+        <item>@string/alert_fifteen_min_before</item>
+        <item>@string/alert_thirty_min_before</item>
+        <item>@string/alert_one_hour_before</item>
+        <item>@string/alert_two_hour_before</item>
+        <item>@string/alert_four_hour_before</item>
+        <item>@string/alert_one_day_before</item>
+        <item>@string/alert_two_day_before</item>
+        <item>@string/alert_one_week_before</item>
     </string-array>
     <string-array name="repeat_options">
         <item>Daily</item>

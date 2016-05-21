@@ -241,11 +241,13 @@ public class SettingsFragment extends Fragment implements View.OnClickListener, 
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == ALERT_TIME_SETTINGS) {
             if (resultCode == AlertTimePreferenceFragment.RESULT_SET_DEFAULT_ALERT) {
-                String text = data.getStringExtra(AlertTimePreferenceFragment.RETURN_TEXT);
+                int position = data.getIntExtra(AlertTimePreferenceFragment.RETURN_TEXT_ID, 0);
                 TextView textView = (TextView) mAlertTimeView.findViewById(R.id.setting_dft_alert_time_text);
-                textView.setText(text);
+                String alert = getResources().getStringArray(R.array.entry_default_alert_time)[position];
+                String alertText = getResources().getStringArray(R.array.entry_values_default_alert_time)[position];
+                textView.setText(alertText);
                 UserTask task = UserTask.getInstance(getActivity());
-                mUser.defaultAlert = text;
+                mUser.defaultAlert = alert;
                 task.updateUserInfo(mUserId, mUser, null);
             }
         } else if (requestCode == PROFILE_SETTINGS) {
@@ -341,7 +343,7 @@ public class SettingsFragment extends Fragment implements View.OnClickListener, 
 
             mUserIdTextView.setText(userId);
             mUserNameTextView.setText(userName);
-            mUserDefaultAlertTimeTv.setText(defaultAlert);
+            mUserDefaultAlertTimeTv.setText(UserUtil.getAlertTimeText(getContext(), defaultAlert));
 
             mUser = new ParcelableUser(data, new ParcelableUser.CursorIndices(data));
         }

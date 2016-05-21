@@ -5,20 +5,27 @@ import android.app.DatePickerDialog;
 import android.app.TimePickerDialog;
 import android.content.Context;
 import android.content.Intent;
+import android.content.res.Resources;
+import android.net.Uri;
 import android.os.Bundle;
+import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
+import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.DatePicker;
 import android.widget.EditText;
+import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.TimePicker;
 import android.widget.Toast;
@@ -34,17 +41,24 @@ import com.itime.team.itime.bean.URLs;
 import com.itime.team.itime.bean.User;
 import com.itime.team.itime.listener.RepeatSelectionListener;
 import com.itime.team.itime.model.ParcelableCalendarType;
+import com.itime.team.itime.receivers.RefreshBroadcastReceiver;
+import com.itime.team.itime.utils.CalendarTypeUtil;
 import com.itime.team.itime.utils.DateUtil;
 import com.itime.team.itime.utils.JsonArrayFormRequest;
+import com.itime.team.itime.utils.JsonManager;
+import com.itime.team.itime.utils.JsonObjectFormRequest;
 import com.itime.team.itime.utils.MySingleton;
+import com.itime.team.itime.utils.URLConnectionUtil;
 import com.itime.team.itime.utils.UserUtil;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
@@ -59,8 +73,8 @@ public class NewEventFragment extends Fragment {
     private static String API_KEY = "AIzaSyBC4zDmkarugKY0Njs_n2TtEUVEyeESn0c";
 
     final public String[] repeatArray = {"One-time event", "Daily", "Weekly", "Bi-Weekly", "Monthly", "Yearly"};
-    final public String[] alertArray = {"None", "At time of Event", "5 minutes before", "10 minutes before", "15 minutes before", "30 minutes before", "1 hour before"};
-
+    //    final public String[] alertArray = {"None", "At time of Event", "5 minutes before", "10 minutes before", "15 minutes before", "30 minutes before", "1 hour before"};
+    static public String[] alertArray;
     private EditText event_name;
     private EditText event_comment;
     public TextView event_venue;
@@ -85,11 +99,11 @@ public class NewEventFragment extends Fragment {
     private int mEndHour;
     private int mEndMin;
     private String repeatString = "One-time event";
-    private String alertString = "At time of Event";
+    private String alertString;
     public String event_longitude = "";
     public String event_latitude = "";
     JSONObject geoLocation = null;
-    private ParcelableCalendarType calendarTypeString = Events.calendarTypeList.get(0);
+    private ParcelableCalendarType calendarTypeString = null;
     public String event_venue_location = "";
     private int is_punctual;
     private Calendar calendar = Calendar.getInstance();
@@ -99,6 +113,9 @@ public class NewEventFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        Resources res = getActivity().getResources();
+        alertArray = res.getStringArray(R.array.entry_default_alert_time);
+        Log.d("alertLength", alertArray.length + "");
         Intent intent = getActivity().getIntent();
         try {
             Bundle bundle = intent.getExtras();
@@ -112,6 +129,8 @@ public class NewEventFragment extends Fragment {
         mMonthOfYear = Integer.valueOf(dateSelected.split("-")[1]) - 1;
         mYear = Integer.valueOf(dateSelected.split("-")[2]);
         Context context = getActivity();
+        calendarTypeString = CalendarTypeUtil.findCalendarById(UserUtil.getLastUserCalendarId(context));
+        alertString = UserUtil.getDefaultAlert(getActivity());
     }
 
     @Override
@@ -297,7 +316,7 @@ public class NewEventFragment extends Fragment {
 
             }
         });
-        calendar_type.setText(Events.calendarTypeList.get(0).calendarName);
+        calendar_type.setText(calendarTypeString.calendarName + "-" + calendarTypeString.calendarOwnerName);
         calendar_type.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -310,7 +329,7 @@ public class NewEventFragment extends Fragment {
                     public void selectItem(int positon) {
                         calendarTypeString = Events.calendarTypeList.get(positon);
                         UserUtil.setLastUserCalendarId(getActivity(), calendarTypeString.calendarId);
-                        calendar_type.setText(Events.calendarTypeList.get(positon).calendarName);
+                        calendar_type.setText(Events.calendarTypeList.get(positon).calendarName + "-" + Events.calendarTypeList.get(positon).calendarOwnerName);
                     }
                 });
                 dialog.show(getFragmentManager(), "calendar_dialog");

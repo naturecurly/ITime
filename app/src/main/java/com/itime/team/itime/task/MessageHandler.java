@@ -38,6 +38,7 @@ import com.itime.team.itime.utils.DateUtil;
 import com.itime.team.itime.utils.EventUtil;
 import com.itime.team.itime.utils.JsonObjectFormRequest;
 import com.itime.team.itime.utils.MySingleton;
+import com.itime.team.itime.utils.UserUtil;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -153,9 +154,13 @@ public class MessageHandler {
     }
 
     public static void memberReceiveMeetingMessage(final Context context, final ParcelableMessage message) {
-        createEvent(context, message.meetingId);
         final JSONObject event =  EventUtil.findEventById(message.meetingId);
-        User.hasNewMeeting = true;
+
+        if(!message.ifRead){
+            createEvent(context, message.meetingId);
+            User.hasNewMeeting = true;
+        }
+
         AlertDialog.Builder builder = new AlertDialog.Builder(context);
         builder.setTitle(message.messageTitle)
                 .setMessage(message.messageBody)
@@ -362,8 +367,8 @@ public class MessageHandler {
             } else {
                 object.put("is_long_repeat", 0);
             }
-            object.put("event_alert", "At time of Departure");
-            object.put("calendar_id", User.lastCalendarType);
+            object.put("event_alert", UserUtil.getDefaultAlert(context));
+            object.put("calendar_id", UserUtil.getLastUserCalendarId(context));
 
             object.put("event_last_update_datetime", DateUtil.getDateStringFromCalendarGMT(Calendar.getInstance()));
             object.put("if_deleted", 0);

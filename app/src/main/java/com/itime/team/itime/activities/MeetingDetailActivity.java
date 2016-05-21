@@ -2,6 +2,7 @@ package com.itime.team.itime.activities;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.res.Resources;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.content.FileProvider;
@@ -40,6 +41,7 @@ import com.itime.team.itime.utils.ICS;
 import com.itime.team.itime.utils.Invitation;
 import com.itime.team.itime.utils.JsonObjectFormRequest;
 import com.itime.team.itime.utils.MySingleton;
+import com.itime.team.itime.utils.UserUtil;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -47,6 +49,7 @@ import org.json.JSONObject;
 
 import java.io.File;
 import java.text.SimpleDateFormat;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.HashMap;
 import java.util.Map;
@@ -95,13 +98,16 @@ public class MeetingDetailActivity extends AppCompatActivity implements RadioGro
     public static final String ARG_MEETING_ID = "arg_meeting_id";
     private String mMeetingId;
 
-    private Map<Integer,String> positionMap;
+//    private Map<Integer,String> positionMap;
     private Map<Integer, String> repeatMap;
     private int mPosition = 1;
     private int mRepeatPosition = 0;
     private int mCalendarPosition = 0;
-    private Map<String,Integer> positionRecordMap;
+//    private Map<String,Integer> positionRecordMap;
     private Map<String, Integer> repeatRecordMap;
+
+    private String[] alertArray;
+
 
 
     @Override
@@ -127,14 +133,14 @@ public class MeetingDetailActivity extends AppCompatActivity implements RadioGro
             actionBar.setDisplayHomeAsUpEnabled(true);
         }
 
-        positionMap = new HashMap<>();
-        positionMap.put(0,"None");
-        positionMap.put(1, "At time of Departure");
-        positionMap.put(2, "5 minutes before");
-        positionMap.put(3, "10 minutes before");
-        positionMap.put(4, "15 minutes before");
-        positionMap.put(5, "30 minutes before");
-        positionMap.put(6, "1 hour before");
+//        positionMap = new HashMap<>();
+//        positionMap.put(0,"None");
+//        positionMap.put(1, "At time of Departure");
+//        positionMap.put(2, "5 minutes before");
+//        positionMap.put(3, "10 minutes before");
+//        positionMap.put(4, "15 minutes before");
+//        positionMap.put(5, "30 minutes before");
+//        positionMap.put(6, "1 hour before");
         repeatMap = new HashMap<>();
         repeatMap.put(0,"One-time event");
         repeatMap.put(1,"Daily");
@@ -143,14 +149,14 @@ public class MeetingDetailActivity extends AppCompatActivity implements RadioGro
         repeatMap.put(4,"Monthly");
         repeatMap.put(5,"Yearly");
 
-        positionRecordMap = new HashMap<>();
-        positionRecordMap.put("None",0);
-        positionRecordMap.put("At time of Event",1);
-        positionRecordMap.put("5 minutes before",2);
-        positionRecordMap.put("10 minutes before",3);
-        positionRecordMap.put("15 minutes before",4);
-        positionRecordMap.put("30 minutes before",5);
-        positionRecordMap.put("1 hour before",6);
+//        positionRecordMap = new HashMap<>();
+//        positionRecordMap.put("None",0);
+//        positionRecordMap.put("At time of Event",1);
+//        positionRecordMap.put("5 minutes before",2);
+//        positionRecordMap.put("10 minutes before",3);
+//        positionRecordMap.put("15 minutes before",4);
+//        positionRecordMap.put("30 minutes before",5);
+//        positionRecordMap.put("1 hour before",6);
         repeatRecordMap = new HashMap<>();
         repeatRecordMap.put("One-time event",0);
         repeatRecordMap.put("Daily",1);
@@ -158,6 +164,9 @@ public class MeetingDetailActivity extends AppCompatActivity implements RadioGro
         repeatRecordMap.put("Bi-Weekly",3);
         repeatRecordMap.put("Monthly",4);
         repeatRecordMap.put("Yearly",5);
+
+        Resources resources = getResources();
+        alertArray = resources.getStringArray(R.array.entry_default_alert_time);
 
 
         mMeetingId = getIntent().getStringExtra(ARG_MEETING_ID);
@@ -231,10 +240,15 @@ public class MeetingDetailActivity extends AppCompatActivity implements RadioGro
         mCalendarText.setText(Events.calendarTypeList.get(0).calendarName);
         try {
             if (mAlertID == null) {
-                mAlertID = User.defaultAlert;
+                mAlertID = UserUtil.getDefaultAlert(this);
             } else {
-                mAlertText.setText(mAlertID);
-                mPosition = positionRecordMap.get(mAlertID);
+//                mAlertText.setText(mAlertID);
+//
+//                mPosition = positionRecordMap.get(mAlertID);
+
+                String alertString = mAlertID;
+                mPosition = Arrays.asList(alertArray).indexOf(alertString);
+                mAlertText.setText(alertString);
             }
         } catch (Exception e){
             mAlertText.setText(getString(R.string.alert_default));
@@ -516,9 +530,9 @@ public class MeetingDetailActivity extends AppCompatActivity implements RadioGro
             dialog.setListener(new RepeatSelectionListener() {
                 @Override
                 public void selectItem(int positon) {
-                    alertString = Events.alertArray[positon];
-                    mAlertText.setText(Events.alertArray[positon]);
-                    mAlertID = Events.alertArray[positon];
+                    alertString = alertArray[positon];
+                    mAlertText.setText(alertArray[positon]);
+                    mAlertID = alertArray[positon];
                     postEvent(getApplicationContext(),mEventId,mMeetingInfo);
                     mPosition = positon;
 

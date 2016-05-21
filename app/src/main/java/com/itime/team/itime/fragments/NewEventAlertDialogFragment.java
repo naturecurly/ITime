@@ -7,13 +7,14 @@ import android.support.annotation.NonNull;
 import android.support.v4.app.DialogFragment;
 import android.support.v7.app.AlertDialog;
 
+import com.itime.team.itime.R;
 import com.itime.team.itime.listener.RepeatSelectionListener;
 
 /**
  * Created by leveyleonhardt on 4/28/16.
  */
 public class NewEventAlertDialogFragment extends DialogFragment {
-    final private String[] alertArray = NewEventFragment.alertArray;
+    static public String[] alertArray;
     private RepeatSelectionListener listener;
     public static final String SELECTED = "selected";
 
@@ -21,6 +22,7 @@ public class NewEventAlertDialogFragment extends DialogFragment {
     @NonNull
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
+        alertArray = getActivity().getResources().getStringArray(R.array.entry_default_alert_time);
         Bundle bundle = getArguments();
         AlertDialog.Builder dialog = new AlertDialog.Builder(getActivity());
         dialog.setTitle("Alert Time");

@@ -3,6 +3,7 @@ package com.itime.team.itime.activities;
 import android.app.DatePickerDialog;
 import android.app.TimePickerDialog;
 import android.content.Intent;
+import android.content.res.Resources;
 import android.os.Bundle;
 import android.support.v4.app.FragmentManager;
 import android.support.v7.app.ActionBar;
@@ -39,6 +40,7 @@ import com.itime.team.itime.utils.CalendarTypeUtil;
 import com.itime.team.itime.utils.DateUtil;
 import com.itime.team.itime.utils.JsonObjectFormRequest;
 import com.itime.team.itime.utils.MySingleton;
+import com.itime.team.itime.utils.UserUtil;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -133,16 +135,17 @@ public class MeetingDetailUpdateActivity extends AppCompatActivity implements Vi
     private String mHostID;
     private ParcelableCalendarType calendarTypeString = Events.calendarTypeList.get(0);
 
-    private Map<Integer,String> positionMap;
+//    private Map<Integer,String> positionMap;
     private Map<Integer, String> repeatMap;
     private int mPosition = 1;
     private int mRepeatPosition = 0;
     private int mCalendarPosition = 0;
-    private Map<String,Integer> positionRecordMap;
+//    private Map<String,Integer> positionRecordMap;
     private Map<String, Integer> repeatRecordMap;
 
     private String repeatString;
     private String alertString;
+    private String[] alertArray;
 
 
     private String mAlertString;
@@ -218,14 +221,14 @@ public class MeetingDetailUpdateActivity extends AppCompatActivity implements Vi
         repeatString = "One-time event";
         alertString = "At time of Departure";
 
-        positionMap = new HashMap<>();
-        positionMap.put(0,"None");
-        positionMap.put(1, "At time of Departure");
-        positionMap.put(2, "5 minutes before");
-        positionMap.put(3, "10 minutes before");
-        positionMap.put(4, "15 minutes before");
-        positionMap.put(5, "30 minutes before");
-        positionMap.put(6, "1 hour before");
+//        positionMap = new HashMap<>();
+//        positionMap.put(0,"None");
+//        positionMap.put(1, "At time of Departure");
+//        positionMap.put(2, "5 minutes before");
+//        positionMap.put(3, "10 minutes before");
+//        positionMap.put(4, "15 minutes before");
+//        positionMap.put(5, "30 minutes before");
+//        positionMap.put(6, "1 hour before");
         repeatMap = new HashMap<>();
         repeatMap.put(0,"One-time event");
         repeatMap.put(1,"Daily");
@@ -234,14 +237,14 @@ public class MeetingDetailUpdateActivity extends AppCompatActivity implements Vi
         repeatMap.put(4,"Monthly");
         repeatMap.put(5,"Yearly");
 
-        positionRecordMap = new HashMap<>();
-        positionRecordMap.put("None",0);
-        positionRecordMap.put("At time of Event",1);
-        positionRecordMap.put("5 minutes before",2);
-        positionRecordMap.put("10 minutes before",3);
-        positionRecordMap.put("15 minutes before",4);
-        positionRecordMap.put("30 minutes before",5);
-        positionRecordMap.put("1 hour before",6);
+//        positionRecordMap = new HashMap<>();
+//        positionRecordMap.put("None",0);
+//        positionRecordMap.put("At time of Event",1);
+//        positionRecordMap.put("5 minutes before",2);
+//        positionRecordMap.put("10 minutes before",3);
+//        positionRecordMap.put("15 minutes before",4);
+//        positionRecordMap.put("30 minutes before",5);
+//        positionRecordMap.put("1 hour before",6);
         repeatRecordMap = new HashMap<>();
         repeatRecordMap.put("One-time event",0);
         repeatRecordMap.put("Daily",1);
@@ -250,6 +253,8 @@ public class MeetingDetailUpdateActivity extends AppCompatActivity implements Vi
         repeatRecordMap.put("Monthly",4);
         repeatRecordMap.put("Yearly",5);
 
+        Resources resources = getResources();
+        alertArray = resources.getStringArray(R.array.entry_default_alert_time);
 
         setEndTime();
 
@@ -301,10 +306,14 @@ public class MeetingDetailUpdateActivity extends AppCompatActivity implements Vi
 
         try {
             if (mAlertString == null) {
-                mAlertString = User.defaultAlert;
+                mAlertString = UserUtil.getDefaultAlert(this);
             } else {
-                mAlert.setText(mAlertString);
-                mPosition = positionRecordMap.get(mAlertString);
+                String alertString = mAlertString;
+                mPosition = Arrays.asList(alertArray).indexOf(alertString);
+                mAlert.setText(alertString);
+
+//                mAlert.setText(mAlertString);
+//                mPosition = positionRecordMap.get(mAlertString);
             }
         } catch (Exception e){
             mAlert.setText(getString(R.string.alert_default));
@@ -465,8 +474,8 @@ public class MeetingDetailUpdateActivity extends AppCompatActivity implements Vi
             dialog.setListener(new RepeatSelectionListener() {
                 @Override
                 public void selectItem(int positon) {
-                    alertString = Events.alertArray[positon];
-                    mAlert.setText(Events.alertArray[positon]);
+                    alertString = alertArray[positon];
+                    mAlert.setText(alertArray[positon]);
                     mPosition = positon;
                 }
             });
@@ -545,7 +554,7 @@ public class MeetingDetailUpdateActivity extends AppCompatActivity implements Vi
             json.put("is_meeting",1);
             json.put("event_venue_show_new", mShow);
             json.put("event_last_time_on_way_in_second",currentTime);
-            json.put("event_alert", positionMap.get(mPosition)); //Need to be changed
+            json.put("event_alert", alertArray[mPosition]);
             json.put("if_deleted",0);
             json.put("event_last_distance_in_meter",0);
             json.put("event_comment_new",mMessage.getText());
@@ -585,7 +594,7 @@ public class MeetingDetailUpdateActivity extends AppCompatActivity implements Vi
                         User.hasNewMeeting = true;
                         Intent intent = new Intent();
 //                        intent.putExtra("calendar",mCalendar.getText());
-                        intent.putExtra("alert",positionMap.get(mPosition));
+                        intent.putExtra("alert",alertArray[mPosition]);
                         intent.putExtra("calendar_id",mCalendarID);
 
                         setResult(RESULT_OK,intent);
@@ -603,7 +612,7 @@ public class MeetingDetailUpdateActivity extends AppCompatActivity implements Vi
             public void onErrorResponse(VolleyError error) {
                 User.hasNewMeeting = true;
                 Intent intent = new Intent();
-                intent.putExtra("alert",positionMap.get(mPosition));
+                intent.putExtra("alert",alertArray[mPosition]);
                 intent.putExtra("calendar_id",mCalendarID);
 
                 setResult(RESULT_OK,intent);
@@ -690,7 +699,7 @@ public class MeetingDetailUpdateActivity extends AppCompatActivity implements Vi
             } else {
                 object.put("is_long_repeat", 0);
             }
-            object.put("event_alert", positionMap.get(mPosition));
+            object.put("event_alert", alertArray[mPosition]);
             object.put("calendar_id", calendarTypeString.calendarId);
 
             object.put("event_last_update_datetime", DateUtil.getDateStringFromCalendarGMT(Calendar.getInstance()));

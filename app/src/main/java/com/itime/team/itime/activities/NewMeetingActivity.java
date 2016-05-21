@@ -5,6 +5,7 @@ import android.app.DatePickerDialog;
 import android.app.TimePickerDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.res.Resources;
 import android.os.Bundle;
 import android.support.v4.app.FragmentManager;
 import android.support.v7.app.ActionBar;
@@ -108,12 +109,14 @@ public class NewMeetingActivity extends AppCompatActivity implements View.OnTouc
     private String mAddress;
     private String alertString;
 
-    private Map<Integer, String> positionMap;
+//    private Map<Integer, String> positionMap;
     private Map<Integer, String> repeatMap;
     private int mPosition = 1;
     private int mRepeatPosition = 0;
     private int mCalendarPosition = 0;
     private String repeatString;
+
+    private String[] alertArray;
 //    private JsonManager mJsonManager;
 
 
@@ -173,14 +176,14 @@ public class NewMeetingActivity extends AppCompatActivity implements View.OnTouc
 
         repeatString = "One-time event";
 
-        positionMap = new HashMap<>();
-        positionMap.put(0, "None");
-        positionMap.put(1, "At time of Departure");
-        positionMap.put(2, "5 minutes before");
-        positionMap.put(3, "10 minutes before");
-        positionMap.put(4, "15 minutes before");
-        positionMap.put(5, "30 minutes before");
-        positionMap.put(6, "1 hour before");
+//        positionMap = new HashMap<>();
+//        positionMap.put(0, "None");
+//        positionMap.put(1, "At time of Departure");
+//        positionMap.put(2, "5 minutes before");
+//        positionMap.put(3, "10 minutes before");
+//        positionMap.put(4, "15 minutes before");
+//        positionMap.put(5, "30 minutes before");
+//        positionMap.put(6, "1 hour before");
         repeatMap = new HashMap<>();
         repeatMap.put(0, "One-time event");
         repeatMap.put(1, "Daily");
@@ -192,6 +195,8 @@ public class NewMeetingActivity extends AppCompatActivity implements View.OnTouc
 
         mAddress = "";
         alertString = "5 minutes before";
+        Resources resources = getResources();
+        alertArray = resources.getStringArray(R.array.entry_default_alert_time);
 
 
         mMessage = (EditText) findViewById(R.id.new_meeting_message);
@@ -231,8 +236,9 @@ public class NewMeetingActivity extends AppCompatActivity implements View.OnTouc
         mAlertValue.add(1);
 
         try {
-            mPosition = Arrays.asList(Events.alertArray).indexOf(User.defaultAlert);
-            mAlert.setText(Arrays.asList(Events.alertArray).get(mPosition));
+            String alertString = UserUtil.getDefaultAlert(this);
+            mPosition = Arrays.asList(alertArray).indexOf(alertString);
+            mAlert.setText(alertString);
         } catch (Exception e) {
             mPosition = 1;
         }
@@ -411,8 +417,8 @@ public class NewMeetingActivity extends AppCompatActivity implements View.OnTouc
             dialog.setListener(new RepeatSelectionListener() {
                 @Override
                 public void selectItem(int positon) {
-                    alertString = Events.alertArray[positon];
-                    mAlert.setText(Events.alertArray[positon]);
+                    alertString = alertArray[positon];
+                    mAlert.setText(alertArray[positon]);
                     mPosition = positon;
                 }
             });
@@ -660,7 +666,7 @@ public class NewMeetingActivity extends AppCompatActivity implements View.OnTouc
             } else {
                 object.put("is_long_repeat", 0);
             }
-            object.put("event_alert", positionMap.get(mPosition));
+            object.put("event_alert", alertArray[mPosition]);
             object.put("calendar_id", calendarTypeString.calendarId);
 
             object.put("event_last_update_datetime", DateUtil.getDateStringFromCalendarGMT(Calendar.getInstance()));

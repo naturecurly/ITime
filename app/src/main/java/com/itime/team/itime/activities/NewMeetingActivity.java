@@ -666,8 +666,13 @@ public class NewMeetingActivity extends AppCompatActivity implements View.OnTouc
             } else {
                 object.put("is_long_repeat", 0);
             }
-            object.put("event_alert", alertArray[mPosition]);
-            object.put("calendar_id", calendarTypeString.calendarId);
+            try {
+                object.put("event_alert", alertArray[mPosition]);
+                object.put("calendar_id", calendarTypeString.calendarId);
+            } catch (Exception e){
+                object.put("event_alert", "At time of Event");
+                object.put("calendar_id", calendarTypeString.calendarId);
+            }
 
             object.put("event_last_update_datetime", DateUtil.getDateStringFromCalendarGMT(Calendar.getInstance()));
             object.put("if_deleted", 0);

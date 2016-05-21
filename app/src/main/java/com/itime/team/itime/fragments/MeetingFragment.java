@@ -423,7 +423,9 @@ public class MeetingFragment extends Fragment implements View.OnClickListener,Se
             if(checkBoxKeeper != null) {
                 checkBoxKeeper.clear();
             }
-            mInvitedFriend.removeAllViews();
+            if(mInvitedFriend != null) {
+                mInvitedFriend.removeAllViews();
+            }
             User.hasNewFriend = false;
         }
         JSONObject jsonObject = new JSONObject();

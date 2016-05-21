@@ -76,6 +76,16 @@ public class UserUtil {
         return User.defaultAlert;
     }
 
+    public static String getAlertTime(Context context, String alert) {
+        String [] alertTimeOption = context.getResources().getStringArray(R.array.entry_default_alert_time);
+        List<String> l = Arrays.asList(alertTimeOption);
+        if (l.indexOf(alert) != -1) {
+            return alert;
+        }
+        // return default when get invalid alert text
+        return alertTimeOption[1];
+    }
+
     /**
      * translate alert time to alert time text that are multi language
      * @param context
@@ -96,7 +106,7 @@ public class UserUtil {
         if (pos != -1) {
             return alertTimeValue[pos];
         }
-        return alertTimeValue[0];
+        return alertTimeValue[1];
 
     }
 }

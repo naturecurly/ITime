@@ -25,8 +25,6 @@ import android.util.Log;
 import com.android.volley.Request;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
-import com.android.volley.toolbox.JsonArrayRequest;
-import com.android.volley.toolbox.JsonObjectRequest;
 import com.bluelinelabs.logansquare.LoganSquare;
 import com.itime.team.itime.bean.URLs;
 import com.itime.team.itime.bean.User;
@@ -37,6 +35,7 @@ import com.itime.team.itime.utils.ContentValuesCreator;
 import com.itime.team.itime.utils.JsonArrayAuthRequest;
 import com.itime.team.itime.utils.JsonObjectAuthRequest;
 import com.itime.team.itime.utils.MySingleton;
+import com.itime.team.itime.utils.UserUtil;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -101,6 +100,8 @@ public class UserTask {
                         try {
                             user = LoganSquare.parse(response.toString(), ParcelableUser.class);
                             User.lastCalendarType = user.userProfilePicture; // actually it is default calendar
+                            // Tricky fix for inconsistent alert string
+                            user.defaultAlert = UserUtil.getAlertTime(mContext, user.defaultAlert);
                         } catch (IOException e) {
                             e.printStackTrace();
                         }

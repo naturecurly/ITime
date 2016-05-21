@@ -39,6 +39,7 @@ import com.itime.team.itime.utils.EventUtil;
 import com.itime.team.itime.utils.JsonArrayFormRequest;
 import com.itime.team.itime.utils.JsonObjectFormRequest;
 import com.itime.team.itime.utils.MySingleton;
+import com.itime.team.itime.utils.UserUtil;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -91,6 +92,7 @@ public class EventDetailEditFragment extends NewEventFragment {
     private Calendar calendar = Calendar.getInstance();
     private ParcelableCalendarType calendarTypeString;
     private int is_punctual;
+    private boolean advancedUpdate = false;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -241,12 +243,16 @@ public class EventDetailEditFragment extends NewEventFragment {
             @Override
             public void onClick(View v) {
                 NewEventAlertDialogFragment dialog = new NewEventAlertDialogFragment();
+                final int originPosition = Arrays.asList(alertArray).indexOf(alertString);
                 Bundle bundle = new Bundle();
-                bundle.putInt(NewEventAlertDialogFragment.SELECTED, Arrays.asList(alertArray).indexOf(alertString));
+                bundle.putInt(NewEventAlertDialogFragment.SELECTED, originPosition);
                 dialog.setArguments(bundle);
                 dialog.setListener(new RepeatSelectionListener() {
                     @Override
                     public void selectItem(int positon) {
+                        if (positon != originPosition) {
+                            advancedUpdate = true;
+                        }
                         alertString = alertArray[positon];
                         alert.setText(alertArray[positon]);
                     }
@@ -269,19 +275,25 @@ public class EventDetailEditFragment extends NewEventFragment {
                 }
             }
         });
-        calendar_type.setText(calendarTypeString.calendarName);
+        calendar_type.setText(calendarTypeString.calendarName + "-" + calendarTypeString.calendarOwnerName);
         calendar_type.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 NewEventCalendarTypeDialogFragment dialog = new NewEventCalendarTypeDialogFragment();
+                final int originPosition = Events.calendarTypeList.indexOf(calendarTypeString);
                 Bundle bundle = new Bundle();
-                bundle.putInt(NewEventCalendarTypeDialogFragment.SELECTED, Events.calendarTypeList.indexOf(calendarTypeString));
+                bundle.putInt(NewEventCalendarTypeDialogFragment.SELECTED, originPosition);
                 dialog.setArguments(bundle);
                 dialog.setListener(new RepeatSelectionListener() {
                     @Override
                     public void selectItem(int positon) {
+                        if (originPosition!=positon){
+                            advancedUpdate = true;
+                        }
                         calendarTypeString = Events.calendarTypeList.get(positon);
-                        calendar_type.setText(Events.calendarTypeList.get(positon).calendarName);
+                        UserUtil.setLastUserCalendarId(getActivity(), calendarTypeString.calendarId);
+
+                        calendar_type.setText(Events.calendarTypeList.get(positon).calendarName + "-" + Events.calendarTypeList.get(positon).calendarOwnerName);
                     }
                 });
                 dialog.show(getFragmentManager(), "calendar_dialog");
@@ -324,15 +336,18 @@ public class EventDetailEditFragment extends NewEventFragment {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         if (item.getItemId() == R.id.new_event_menu_send) {
-            if (repeatString.equals(EventUtil.ONE_TIME) && !repeatStringNew.equals(EventUtil.ONE_TIME)) {
+            if (repeatString.equals(EventUtil.ONE_TIME) && !repeatStringNew.equals(EventUtil.ONE_TIME)&&!advancedUpdate) {
                 postEvent(event_id, repeatStringNew);
 
-            } else if (repeatString.equals(EventUtil.ONE_TIME) && repeatStringNew.equals(EventUtil.ONE_TIME)) {
+            } else if (repeatString.equals(EventUtil.ONE_TIME) && repeatStringNew.equals(EventUtil.ONE_TIME)&&!advancedUpdate) {
                 postEvent(event_id, repeatStringNew);
-            } else if (!repeatString.equals(EventUtil.ONE_TIME)) {
-                if (!repeatString.equals(repeatStringNew)) {
+            } else if (!repeatString.equals(EventUtil.ONE_TIME)||advancedUpdate) {
+                if (!repeatString.equals(repeatStringNew)||advancedUpdate) {
                     FragmentManager fm = getFragmentManager();
                     EventDetailRepeatDeleteDialogFragment dialog = new EventDetailRepeatDeleteDialogFragment();
+                    dialog.setDialogTitle("Save");
+                    dialog.setThisEvent("Save for this event only");
+                    dialog.setFutureEvent("Save for the future events");
                     dialog.setTargetFragment(this, DELETE_REPEAT_EVENTS_REQUEST);
                     dialog.show(fm, "event_detail_repeat_delete_dialog");
                 }

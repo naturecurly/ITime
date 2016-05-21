@@ -27,6 +27,7 @@ import com.itime.team.itime.R;
 import com.itime.team.itime.activities.EventsDetailEditActivity;
 import com.itime.team.itime.bean.URLs;
 import com.itime.team.itime.bean.User;
+import com.itime.team.itime.model.ParcelableCalendarType;
 import com.itime.team.itime.utils.CalendarTypeUtil;
 import com.itime.team.itime.utils.DateUtil;
 import com.itime.team.itime.utils.EventUtil;
@@ -74,6 +75,7 @@ public class EventDetailFragment extends Fragment {
     private String jsonString;
     private JSONObject eventJsonObject = new JSONObject();
     private boolean edited;
+    private ParcelableCalendarType calendar_type_par;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -104,6 +106,7 @@ public class EventDetailFragment extends Fragment {
         event_type = bundle.getString("repeat_type");
         event_alert = bundle.getString("alert");
         calendar_type = bundle.getString("calendar_type");
+        calendar_type_par = bundle.getParcelable("calendar_type_pacelable");
         event_id = bundle.getString("event_id");
         jsonString = bundle.getString("json");
         try {
@@ -117,7 +120,7 @@ public class EventDetailFragment extends Fragment {
         end_text.setText(DateUtil.formatToReadable(event_end));
         type.setText(event_type);
         alert.setText(event_alert);
-        calendarType.setText(calendar_type);
+        calendarType.setText(calendar_type_par.calendarName + "-" + calendar_type_par.calendarOwnerName);
         delete_button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

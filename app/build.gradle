@@ -19,7 +19,6 @@ bugtags {
 }
 
 
-apply plugin: 'com.android.application'
 apply plugin: 'io.fabric'
 
 buildscript {
@@ -90,7 +89,6 @@ dependencies {
     compile('com.google.apis:google-api-services-calendar:v3-rev125-1.20.0') {
         exclude group: 'org.apache.httpcomponents'
     }
-    compile 'com.google.android.gms:play-services-gcm:8.4.0'
     // qr code
     compile 'com.squareup.okhttp3:okhttp:3.2.0'
     compile 'com.google.android.gms:play-services-gcm:8.4.0'

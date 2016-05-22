@@ -453,7 +453,7 @@ public class MeetingDetailUpdateActivity extends AppCompatActivity implements Vi
             FragmentManager fm = getSupportFragmentManager();
             NewEventRepeatDialogFragment dialog = new NewEventRepeatDialogFragment();
             Bundle bundle = new Bundle();
-            bundle.putInt(NewEventRepeatDialogFragment.SELECTED, Arrays.asList(Events.repeatArray).indexOf(repeatString));
+            bundle.putInt(NewEventRepeatDialogFragment.SELECTED, mRepeatPosition);
             dialog.setArguments(bundle);
             dialog.setListener(new RepeatSelectionListener() {
                 @Override

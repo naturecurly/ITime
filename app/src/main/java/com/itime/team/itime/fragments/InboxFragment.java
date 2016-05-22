@@ -273,7 +273,7 @@ public class InboxFragment extends Fragment implements View.OnClickListener {
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        //setMessages();
+        checkeckNewMessagesOnMainThreadOnCreate();
 
         // schedule timer, start after 100ms and repeat every 5s
         //mTimer.scheduleAtFixedRate(mTimerTask, 100, 5000);
@@ -324,6 +324,25 @@ public class InboxFragment extends Fragment implements View.OnClickListener {
                     Message message = new Message();
                     message.what = HAS_NEW_MESSAGES;
                     mHandler.sendMessage(message);
+                }
+            }
+        };
+        inboxTask.getUnreadMessageCount(User.ID, callback);
+    }
+
+    /**
+     * this method is called on the main thread (UI thread)
+     */
+    public void checkeckNewMessagesOnMainThreadOnCreate() {
+        InboxTask inboxTask = InboxTask.getInstance(getActivity().getApplicationContext());
+        InboxTask.ResultCallBack<Integer> callback = new InboxTask.ResultCallBack<Integer>() {
+            @Override
+            public void callback(Integer result) {
+                Log.i(LOG_TAG, "unread message count: " + result);
+
+                // if count is zero, load messages, otherwise messages will be load onResume
+                if (mAdapter.getUnreadMessageCount() == 0) {
+                    setMessages();
                 }
             }
         };

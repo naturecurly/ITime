@@ -8,6 +8,8 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -149,10 +151,44 @@ public class EventDetailEditFragment extends NewEventFragment {
         } catch (JSONException e) {
             e.printStackTrace();
         }
+        event_name.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                advancedUpdate = true;
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+
+            }
+        });
+
+        event_comment.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                advancedUpdate = true;
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+
+            }
+        });
         event_venue.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(getActivity(), GooglePlacesAutocompleteActivity.class);
+                advancedUpdate = true;
                 startActivityForResult(intent, 1);
             }
         });
@@ -165,7 +201,7 @@ public class EventDetailEditFragment extends NewEventFragment {
                     @Override
                     public void onDateSet(DatePicker view, int year, int monthOfYear, int dayOfMonth) {
                         start_date.setText(DateUtil.formatDate(dayOfMonth, monthOfYear, year));
-
+                        advancedUpdate = true;
                         mYear = year;
                         mMonthOfYear = monthOfYear;
                         mDayOfMonth = dayOfMonth;
@@ -189,6 +225,7 @@ public class EventDetailEditFragment extends NewEventFragment {
                 new TimePickerDialog(getActivity(), new TimePickerDialog.OnTimeSetListener() {
                     @Override
                     public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
+                        advancedUpdate = true;
                         start_time.setText(timeFormat(hourOfDay, minute));
                         mHour = hourOfDay;
                         mMin = minute;
@@ -214,6 +251,7 @@ public class EventDetailEditFragment extends NewEventFragment {
                     @Override
                     public void onDateSet(DatePicker view, int year, int monthOfYear, int dayOfMonth) {
                         end_date.setText(DateUtil.formatDate(dayOfMonth, monthOfYear, year));
+                        advancedUpdate = true;
 
                         mEndYear = year;
                         mEndMonthOfYear = monthOfYear;
@@ -230,6 +268,7 @@ public class EventDetailEditFragment extends NewEventFragment {
                 new TimePickerDialog(getActivity(), new TimePickerDialog.OnTimeSetListener() {
                     @Override
                     public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
+                        advancedUpdate = true;
                         end_time.setText(timeFormat(hourOfDay, minute));
                         mEndHour = hourOfDay;
                         mEndMin = minute;
@@ -287,7 +326,7 @@ public class EventDetailEditFragment extends NewEventFragment {
                 dialog.setListener(new RepeatSelectionListener() {
                     @Override
                     public void selectItem(int positon) {
-                        if (originPosition!=positon){
+                        if (originPosition != positon) {
                             advancedUpdate = true;
                         }
                         calendarTypeString = Events.calendarTypeList.get(positon);
@@ -336,13 +375,13 @@ public class EventDetailEditFragment extends NewEventFragment {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         if (item.getItemId() == R.id.new_event_menu_send) {
-            if (repeatString.equals(EventUtil.ONE_TIME) && !repeatStringNew.equals(EventUtil.ONE_TIME)&&!advancedUpdate) {
+            if (repeatString.equals(EventUtil.ONE_TIME) && !repeatStringNew.equals(EventUtil.ONE_TIME) ) {
                 postEvent(event_id, repeatStringNew);
 
-            } else if (repeatString.equals(EventUtil.ONE_TIME) && repeatStringNew.equals(EventUtil.ONE_TIME)&&!advancedUpdate) {
+            } else if (repeatString.equals(EventUtil.ONE_TIME) && repeatStringNew.equals(EventUtil.ONE_TIME)) {
                 postEvent(event_id, repeatStringNew);
-            } else if (!repeatString.equals(EventUtil.ONE_TIME)||advancedUpdate) {
-                if (!repeatString.equals(repeatStringNew)||advancedUpdate) {
+            } else if (!repeatString.equals(EventUtil.ONE_TIME)) {
+                if (!repeatString.equals(repeatStringNew) || advancedUpdate) {
                     FragmentManager fm = getFragmentManager();
                     EventDetailRepeatDeleteDialogFragment dialog = new EventDetailRepeatDeleteDialogFragment();
                     dialog.setDialogTitle("Save");

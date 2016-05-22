@@ -93,7 +93,7 @@ public class MainActivity extends AppCompatActivity implements
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayShowTitleEnabled(false);
         fragmentManager = getSupportFragmentManager();
-        getSupportFragmentManager();
+//        getSupportFragmentManager();
         layoutInflater = LayoutInflater.from(this);
         title = (TextView) findViewById(R.id.toolbar_title);
 
@@ -132,10 +132,11 @@ public class MainActivity extends AppCompatActivity implements
         meetingFragment = new MeetingFragment();
         settingsFragment = new SettingsFragment();
         inboxFragment = new InboxFragment();
-        getSupportFragmentManager().beginTransaction()
-                .add(R.id.realtab_content, inboxFragment)
+        fragmentManager.beginTransaction()
+                .add(R.id.realtab_content, inboxFragment).hide(inboxFragment)
                 .add(R.id.realtab_content, calendarFragment)
                 .commit();
+
     }
 
     private void showFragment(Fragment me) {

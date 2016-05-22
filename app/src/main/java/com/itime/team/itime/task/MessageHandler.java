@@ -159,6 +159,7 @@ public class MessageHandler {
         if(!message.ifRead){
             createEvent(context, message.meetingId);
             User.hasNewMeeting = true;
+
         }
 
         AlertDialog.Builder builder = new AlertDialog.Builder(context);
@@ -175,6 +176,7 @@ public class MessageHandler {
                         Intent intent = new Intent(context, MeetingDetailActivity.class);
                         intent.putExtra(MeetingDetailActivity.ARG_MEETING_ID, message.meetingId);
                         intent.putExtra("event_id", message.meetingId);
+
                         if (event != null) {
                             try {
                                 calendarID = event.getString("calendar_id");
@@ -182,6 +184,9 @@ public class MessageHandler {
                             } catch (JSONException e) {
                                 e.printStackTrace();
                             }
+                        }else {
+                            calendarID = UserUtil.getLastUserCalendarId(context);
+                            alert = UserUtil.getDefaultAlert(context);
                         }
                         intent.putExtra("calendar_id",calendarID);
                         intent.putExtra("event_alert",alert);

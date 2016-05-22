@@ -2,9 +2,11 @@ package com.itime.team.itime.activities;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.res.Resources;
 import android.net.Uri;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.v4.content.FileProvider;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
@@ -38,6 +40,7 @@ import com.itime.team.itime.model.ParcelableCalendarType;
 import com.itime.team.itime.utils.CalendarTypeUtil;
 import com.itime.team.itime.utils.DateUtil;
 import com.itime.team.itime.utils.ICS;
+import com.itime.team.itime.utils.ITimePreferences;
 import com.itime.team.itime.utils.Invitation;
 import com.itime.team.itime.utils.JsonObjectFormRequest;
 import com.itime.team.itime.utils.MySingleton;
@@ -534,6 +537,10 @@ public class MeetingDetailActivity extends AppCompatActivity implements RadioGro
                     mAlertText.setText(alertArray[positon]);
                     mAlertID = alertArray[positon];
                     postEvent(getApplicationContext(),mEventId,mMeetingInfo);
+                    // post event, refresh meeting in calendarFragment
+                    SharedPreferences sharedPreferences =
+                            PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
+                    sharedPreferences.edit().putBoolean(ITimePreferences.CALENDAR_TYPE_CHANGED, true).apply();
                     mPosition = positon;
 
                 }
